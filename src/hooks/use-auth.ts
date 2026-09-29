@@ -24,26 +24,73 @@ type AuthSnapshot = {
   user: User | null;
   loading: boolean;
   signedIn: boolean;
+  /**
+   * The browser's saved sign-in was used while the real read was slow, and the real read then
+   * said nobody is signed in: the saved one had expired. The app shell sends the user to sign in.
+   */
+  sessionExpired: boolean;
 };
 
-const LOADING: AuthSnapshot = { session: null, user: null, loading: true, signedIn: false };
+const LOADING: AuthSnapshot = {
+  session: null,
+  user: null,
+  loading: true,
+  signedIn: false,
+  sessionExpired: false,
+};
 
 let snapshot: AuthSnapshot = LOADING;
 const listeners = new Set<() => void>();
 let unsubscribe: (() => void) | null = null;
+/** The snapshot came from the browser's saved copy, not from supabase-js; it may be stale. */
+let provisional = false;
 
-function publish(session: Session | null) {
+function publish(session: Session | null, fromStorage = false) {
   const user = session?.user ?? null;
+  const expired = provisional && !fromStorage && !user && snapshot.signedIn;
+  if (!fromStorage) provisional = false;
   // Same session, same object: skip the render entirely.
   if (!snapshot.loading && snapshot.session?.access_token === session?.access_token) return;
-  snapshot = { session, user, loading: false, signedIn: Boolean(user) };
+  if (fromStorage && user) provisional = true;
+  snapshot = { session, user, loading: false, signedIn: Boolean(user), sessionExpired: expired };
   for (const l of listeners) l();
+}
+
+/** How long anything waits on the session read before trusting the copy the browser keeps. */
+const SESSION_WAIT_MS = 2500;
+
+/*
+ * The session as supabase-js saved it in this browser, read without the network or the auth lock.
+ * getSession() can take seconds or never settle: a token refresh on a bad network, a lock held by
+ * another tab, or the Lovable preview's storage broker waiting on the editor (two 2 s round trips,
+ * src/integrations/supabase/previewAuthStorage.ts). Until it answers, this copy says whether
+ * someone is signed in; the real answer replaces it when it arrives.
+ */
+function storedSession(): Session | null {
+  try {
+    const ref = new URL(import.meta.env["VITE_SUPABASE_URL"] as string).hostname.split(".")[0];
+    const raw = localStorage.getItem(`sb-${ref}-auth-token`);
+    const parsed = raw ? (JSON.parse(raw) as Partial<Session> | null) : null;
+    return parsed?.access_token && parsed.user ? (parsed as Session) : null;
+  } catch {
+    return null;
+  }
 }
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
   if (listeners.size === 1) {
-    void supabase.auth.getSession().then(({ data }) => publish(data.session));
+    const fallback = window.setTimeout(() => {
+      if (snapshot.loading) publish(storedSession(), true);
+    }, SESSION_WAIT_MS);
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => publish(data.session))
+      // A failed read is not a hang: fall back to what the browser kept.
+      .catch(() => {
+        if (snapshot.loading) publish(storedSession(), true);
+      })
+      .finally(() => window.clearTimeout(fallback));
     const { data } = supabase.auth.onAuthStateChange((_event, next) => publish(next));
     unsubscribe = () => data.subscription.unsubscribe();
   }
@@ -54,6 +101,7 @@ function subscribe(listener: () => void) {
       unsubscribe = null;
       // The next mount re-reads the session rather than trusting a snapshot from a torn-down tree.
       snapshot = LOADING;
+      provisional = false;
     }
   };
 }
