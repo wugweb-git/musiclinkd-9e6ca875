@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed — replacement trace for three Blocks retired earlier (P1-7, 30 Sep)
+
+Checked at `fix/p0-truth`: no reference to any of the three remains in `src`.
+
+- **`StatRow`** (Connections / Followers / Plays / Credits strip) — deleted in `473c82f` (22 Sep).
+  Its job was **dropped, not moved**: Home no longer shows a stat strip (owner rule: no stat strips
+  on profiles or Home). Plays live on the owner's Performance screen (`WorkAnalytics`).
+- **`QrSheet`** — deleted in `3f637b7` (25 Sep) as dead code, imported nowhere. Its job moved to the
+  profile `ShareSheet` (now drawing a real `QrCode`) and the `/identity/qr` screen
+  (`QrIdentityCard`).
+- **`BookingListCard`** — deleted in `6ec8da8` (18 Sep) with the orphaned `bookings/$ref` screens
+  that were its only consumer. Booking lists are drawn by `/bookings` and the business booking
+  screens' own rows, which P1-8 #9 folds into `StudioBookingRecord`.
+
 ### Fixed — P0: nothing on screen claims what didn't happen (30 Sep)
 
 - **Rental dates.** `RentalCalendar` works in full `YYYY-MM-DD` days, moves month to month, opens on the
