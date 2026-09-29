@@ -9,6 +9,7 @@ import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { DrawerList, DrawerOptionRow, DrawerSearch } from "@/components/ml/drawer-list";
 import { PersonAvatar } from "@/components/ml/person-avatar";
+import { PersonRow, type PersonLike } from "@/components/ml/cards";
 import { useMessagePerson } from "@/hooks/use-message-person";
 import {
   answerConnection,
@@ -18,7 +19,6 @@ import {
 import { listConversations } from "@/lib/messages.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
-import { joinParts } from "@/lib/utils";
 
 /*
  * Messages and connections, both read from the database, laid out like a 2026 inbox: one search
@@ -63,36 +63,17 @@ function nameOf(p: { display_name: string | null; username: string | null } | nu
   return p?.display_name ?? p?.username ?? "";
 }
 
-/** A person on a row: photo, name, then headline · city, opening their profile. */
-function PersonRow({ person, children }: { person: ConnectionPerson; children?: React.ReactNode }) {
-  const name = nameOf(person);
-  const body = (
-    <>
-      <PersonAvatar name={name} photo={person.avatar_url} className="h-12 w-12 shrink-0 text-1" />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold">{name}</span>
-        <span className="block truncate text-1 text-muted-foreground">
-          {joinParts(person.headline ?? "", person.city ?? "")}
-        </span>
-      </span>
-    </>
-  );
-  return (
-    <div className="flex items-center gap-3 py-2.5">
-      {person.username ? (
-        <Link
-          to="/profile/$username"
-          params={{ username: person.username }}
-          className="flex min-w-0 flex-1 items-center gap-3"
-        >
-          {body}
-        </Link>
-      ) : (
-        <div className="flex min-w-0 flex-1 items-center gap-3">{body}</div>
-      )}
-      {children}
-    </div>
-  );
+/** A connection as the shared PersonRow reads a person. */
+function asPerson(p: ConnectionPerson): PersonLike {
+  return {
+    id: p.id,
+    username: p.username,
+    name: nameOf(p),
+    headline: p.headline,
+    city: p.city,
+    avatarUrl: p.avatar_url,
+    verified: p.is_verified,
+  };
 }
 
 function Connections() {
@@ -234,28 +215,45 @@ function Connections() {
                       <h2 className="mb-1 text-sm">Asked to connect</h2>
                       <ul>
                         {received.map((c) => (
-                          <li key={c.id}>
-                            <PersonRow person={c.person}>
-                              <span className="flex shrink-0 gap-2">
-                                <IconBtn
-                                  label="Ignore"
-                                  variant="outline"
-                                  className="h-10 w-10"
-                                  onClick={() => act.mutate({ id: c.id, accept: false })}
-                                >
-                                  <X size={iconSize.md} aria-hidden />
-                                </IconBtn>
-                                <IconBtn
-                                  label="Accept"
-                                  variant="ink"
-                                  className="h-10 w-10"
-                                  onClick={() => act.mutate({ id: c.id, accept: true })}
-                                >
-                                  <Check size={iconSize.md} aria-hidden />
-                                </IconBtn>
-                              </span>
-                            </PersonRow>
-                          </li>
+                          <PersonRow
+                            key={c.id}
+                            person={asPerson(c.person)}
+                            className="px-0 py-2.5"
+                            action={
+                              <>
+                                <span className="flex shrink-0 gap-2">
+                                  <IconBtn
+                                    label="Ignore"
+                                    variant="outline"
+                                    className="h-10 w-10"
+                                    disabled={act.isPending && act.variables?.id === c.id}
+                                    loading={
+                                      act.isPending &&
+                                      act.variables?.id === c.id &&
+                                      !act.variables.accept
+                                    }
+                                    onClick={() => act.mutate({ id: c.id, accept: false })}
+                                  >
+                                    <X size={iconSize.md} aria-hidden />
+                                  </IconBtn>
+                                  <IconBtn
+                                    label="Accept"
+                                    variant="ink"
+                                    className="h-10 w-10"
+                                    disabled={act.isPending && act.variables?.id === c.id}
+                                    loading={
+                                      act.isPending &&
+                                      act.variables?.id === c.id &&
+                                      act.variables.accept
+                                    }
+                                    onClick={() => act.mutate({ id: c.id, accept: true })}
+                                  >
+                                    <Check size={iconSize.md} aria-hidden />
+                                  </IconBtn>
+                                </span>
+                              </>
+                            }
+                          />
                         ))}
                       </ul>
                     </section>
@@ -265,13 +263,18 @@ function Connections() {
                       <h2 className="mb-1 text-sm">Waiting on them</h2>
                       <ul>
                         {sent.map((c) => (
-                          <li key={c.id}>
-                            <PersonRow person={c.person}>
-                              <span className="shrink-0 text-1 text-muted-foreground">
-                                Requested
-                              </span>
-                            </PersonRow>
-                          </li>
+                          <PersonRow
+                            key={c.id}
+                            person={asPerson(c.person)}
+                            className="px-0 py-2.5"
+                            action={
+                              <>
+                                <span className="shrink-0 text-1 text-muted-foreground">
+                                  Requested
+                                </span>
+                              </>
+                            }
+                          />
                         ))}
                       </ul>
                     </section>
@@ -292,19 +295,24 @@ function Connections() {
               connected.length ? (
                 <ul>
                   {connected.map((c) => (
-                    <li key={c.id}>
-                      <PersonRow person={c.person}>
-                        <IconBtn
-                          label={`Message ${nameOf(c.person)}`}
-                          variant="outline"
-                          className="h-10 w-10"
-                          disabled={message.pending}
-                          onClick={() => void message.open(c.person.id)}
-                        >
-                          <Send size={iconSize.sm} aria-hidden />
-                        </IconBtn>
-                      </PersonRow>
-                    </li>
+                    <PersonRow
+                      key={c.id}
+                      person={asPerson(c.person)}
+                      className="px-0 py-2.5"
+                      action={
+                        <>
+                          <IconBtn
+                            label={`Message ${nameOf(c.person)}`}
+                            variant="outline"
+                            className="h-10 w-10"
+                            disabled={message.pending}
+                            onClick={() => void message.open(c.person.id)}
+                          >
+                            <Send size={iconSize.sm} aria-hidden />
+                          </IconBtn>
+                        </>
+                      }
+                    />
                   ))}
                 </ul>
               ) : (

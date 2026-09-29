@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { FEATURED_LIMIT } from "@/data/portfolio";
-import type { ListingRow } from "@/lib/catalog.functions";
+import type { ListingRow, OpportunityRow } from "@/lib/catalog.functions";
 import { placeLine } from "@/lib/place";
 import { CITY_PATTERN, DEFAULT_COUNTRY, INDIAN_STATES, NAME_PATTERN } from "@/lib/validation";
 
@@ -590,16 +590,7 @@ export type ProfileSections = {
     details: Record<string, string | number | boolean | string[] | null>;
   }[];
   /** Open opportunities this profile posted. */
-  opportunities: {
-    id: string;
-    slug: string;
-    title: string;
-    role_required: string | null;
-    budget_paise: number | null;
-    budget_unit: string | null;
-    budget_note: string | null;
-    location: string | null;
-  }[];
+  opportunities: OpportunityRow[];
   /** Marketplace listings this profile sells, newest first. */
   listings: ListingRow[];
   /** Studios this profile owns. */
@@ -695,7 +686,10 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     client.from("profile_role_details").select("role_slug, details").eq("profile_id", profileId),
     client
       .from("opportunities")
-      .select("id, slug, title, role_required, budget_paise, budget_unit, budget_note, location")
+      // The same columns the Opportunities screen reads, so a profile draws the same card.
+      .select(
+        "id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note, collaboration_type, location, status, applicant_count, created_at, creator:profiles!opportunities_creator_profile_id_fkey(id, username, display_name, avatar_url, city, is_verified, visibility)",
+      )
       .eq("creator_profile_id", profileId)
       .eq("status", "open")
       .order("created_at", { ascending: false }),
@@ -774,7 +768,8 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     role_details: ((roleDetails.data ?? []) as ProfileSections["role_details"]).sort(
       (a, b) => rank(a.role_slug) - rank(b.role_slug),
     ),
-    opportunities: (opportunities.data ?? []) as ProfileSections["opportunities"],
+    // The creator join is one row per opportunity; the generated types read it as a list.
+    opportunities: (opportunities.data ?? []) as unknown as ProfileSections["opportunities"],
     listings: ((listings.data ?? []) as Omit<ListingRow, "seller">[]).map((l) => ({
       ...l,
       seller: null,

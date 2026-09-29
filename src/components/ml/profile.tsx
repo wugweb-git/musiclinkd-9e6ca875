@@ -18,7 +18,6 @@ import {
   Pause,
   Play,
   Share2,
-  Star,
   User,
   ArrowLeft,
   ChevronRight,
@@ -33,13 +32,11 @@ import {
   MessageSquareQuote,
   Clock,
   Check,
+  Star,
 } from "lucide-react";
 import type {
   AudioTrack,
-  Collaborator,
   ExperienceItem,
-  MarketEntry,
-  OpportunityItem,
   TalentProfile,
   ProjectItem,
   ReviewItem,
@@ -48,7 +45,7 @@ import type {
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "./ui";
-import { Price, Stars, StatusPill, Tag } from "./kit";
+import { Card, Meter, Price, Stars, StatusPill, Tag } from "./kit";
 import { PersonAvatar } from "./person-avatar";
 import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
@@ -864,33 +861,6 @@ export function ProfileHero({
 
 /* ── Portfolio pieces ──────────────────────────────────────── */
 
-/**
- * The profile's featured work: its image, title and line. It has no media of its own to play, so
- * it shows no play control and no copy beyond what the profile stores.
- */
-export function FeaturedCard({ featured }: { featured: NonNullable<TalentProfile["featured"]> }) {
-  return (
-    <article className="overflow-hidden rounded-lg border border-border/80 bg-card">
-      <div className="relative">
-        <img
-          src={sized(featured.image, { width: 176 })}
-          alt={featured.title}
-          className="h-44 w-full object-cover"
-          loading="lazy"
-        />
-        <div className="media-scrim" />
-        <div className="absolute inset-x-4 bottom-4 min-w-0 text-background">
-          <span className="rounded-full bg-primary pill text-primary-foreground font-semibold">
-            Featured {featured.kind}
-          </span>
-          <h3 className="mt-2 text-2 font-bold text-background">{featured.title}</h3>
-          <p className="text-1 opacity-90">{featured.meta}</p>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export function AudioTrackCard({
   track,
   playing,
@@ -1466,32 +1436,6 @@ export function ExperienceCard({ e }: { e: ExperienceItem }) {
   );
 }
 
-export function CollaboratorCard({ c }: { c: Collaborator }) {
-  const inner = (
-    <>
-      <img
-        src={sized(c.photo, { width: 64 })}
-        alt=""
-        aria-hidden
-        loading="lazy"
-        className="h-16 w-16 rounded-lg object-cover"
-      />
-      <p className="mt-2 w-20 truncate text-center text-1 font-semibold">{c.name}</p>
-      <p className="text-1 text-muted-foreground">{c.kind}</p>
-    </>
-  );
-  if (!c.link) return <div className="flex shrink-0 flex-col items-center">{inner}</div>;
-  return (
-    <Link
-      to={c.link.to}
-      {...(c.link.params ? { params: c.link.params } : {})}
-      className="flex shrink-0 flex-col items-center"
-    >
-      {inner}
-    </Link>
-  );
-}
-
 /**
  * One review, read the way a liner note reads: the rating, then what they said, then who said it.
  * Reviews always sit side by side in a ReviewRail and scroll left to right; they never stack
@@ -1579,6 +1523,62 @@ export function ReviewCard({
   );
 }
 
+/**
+ * A rating at a glance, from stored reviews only. `inline` is the one line a profile shows above
+ * its review rail (nothing at all while there are no reviews); `full` is the Reviews screen's
+ * summary with the big average and a bar per star.
+ */
+export function RatingSummary({
+  average,
+  count,
+  distribution,
+  variant = "full",
+}: {
+  average: number;
+  count: number;
+  /** Reviews per star, 5 to 1; the full summary draws a bar for each. */
+  distribution?: { stars: number; count: number }[] | undefined;
+  variant?: "full" | "inline" | undefined;
+}) {
+  const reviews = `${count} ${count === 1 ? "review" : "reviews"}`;
+  if (variant === "inline") {
+    if (!count) return null;
+    return (
+      <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
+        <Star size={iconSize.sm} className="fill-foreground" aria-hidden />
+        {average.toFixed(1)}
+        <span className="font-normal text-muted-foreground">· {reviews}</span>
+      </p>
+    );
+  }
+  return (
+    <Card className="space-y-3">
+      <div className="flex items-end gap-3">
+        <p className="text-4 font-bold leading-none">{count ? average.toFixed(1) : "—"}</p>
+        <div className="min-w-0 flex-1 pb-1">
+          <Stars value={average} />
+          <p className="mt-1 truncate text-1 text-muted-foreground">
+            {count ? reviews : "No reviews yet"}
+          </p>
+        </div>
+      </div>
+      {count && distribution ? (
+        <div className="space-y-1.5">
+          {distribution.map((d) => (
+            <Meter
+              key={d.stars}
+              label={`${d.stars} star`}
+              value={d.count}
+              max={count}
+              hint={`${d.count}`}
+            />
+          ))}
+        </div>
+      ) : null}
+    </Card>
+  );
+}
+
 export function ReviewCardSkeleton({ className }: { className?: string | undefined }) {
   return (
     <article
@@ -1631,54 +1631,6 @@ export function ReviewRail({
         </li>
       ))}
     </ul>
-  );
-}
-
-export function OpportunityCard({ o }: { o: OpportunityItem }) {
-  return (
-    <article className={`rounded-lg p-4 bg-subtle`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="text-2">{o.title}</h3>
-          {o.detail ? <p className="mt-0.5 text-1 text-muted-foreground">{o.detail}</p> : null}
-          <Price price={o.price} className="mt-1" amountClassName="text-1 font-semibold" />
-        </div>
-        <Link
-          to="/messages"
-          className="shrink-0 rounded-full bg-ink px-3.5 py-2 text-1 font-semibold text-background"
-        >
-          Respond
-        </Link>
-      </div>
-    </article>
-  );
-}
-
-export function MarketEntryCard({ m }: { m: MarketEntry }) {
-  // A tile, picture first: gear is chosen by how it looks, then what it is, then what it costs.
-  return (
-    <Link
-      to={m.to}
-      {...(m.params ? { params: m.params } : {})}
-      className="block w-40 shrink-0 overflow-hidden rounded-lg bg-subtle"
-    >
-      {m.image ? (
-        <img
-          src={sized(m.image, { width: 412 })}
-          alt=""
-          aria-hidden
-          loading="lazy"
-          className="aspect-[4/3] w-full object-cover"
-        />
-      ) : (
-        <div aria-hidden className="aspect-[4/3] w-full bg-background" />
-      )}
-      <div className="p-3">
-        <h3 className="truncate text-sm font-semibold">{m.title}</h3>
-        {m.meta ? <p className="mt-0.5 truncate text-1 text-muted-foreground">{m.meta}</p> : null}
-        <Price price={m.price} className="mt-1.5" amountClassName="text-sm font-semibold" />
-      </div>
-    </Link>
   );
 }
 

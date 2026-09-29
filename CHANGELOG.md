@@ -5,6 +5,133 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — the studio booking record (P1-8 #9, 30 Sep)
+
+- **`StudioBookingRecord`** draws a stored booking request for either side: the studio's requests
+  queue and workspace lists (who asked, space and room, when, notes, the screen's actions) and My
+  bookings (the studio, the reply; the whole record opens the booking). It replaces three
+  route-local lists. No price is shown: nothing is paid in the app.
+- **Statuses** come from one record typed to the database's statuses; the `as BookingStatus`
+  casts and the declined→rejected remapping are gone. A confirmed session whose day has passed
+  reads as completed (`shownBookingStatus`), on both sides.
+- **Tabs key off values**, not their wording (`Segmented` takes `labels`).
+- **Pending is per record** (Reviewing locks only its own request); buttons are 48px.
+- `BookingTimeline` no longer draws a "·" glyph for a step not reached.
+- **Removed:** `ProviderRequestCard` (no consumer; typed to design-time bookings).
+- `BookingCard` stays for rentals, `BookingSummaryCard` for the checkout draft.
+
+### Changed — work media (P1-8 #8, 30 Sep)
+
+- **`MediaEmbed` is the one player.** A work's own page plays audio and video through it; a direct
+  audio file there is drawn as a waveform (`waveform`), and a link that doesn't embed says where it
+  plays. **Removed:** `AudioPlayer`, `VideoPlayer` and `AudioPreview`. A video work no longer shows
+  a second "Open media link" beside its player; that link stays for works that are neither audio
+  nor video, with an icon rather than the "↗" glyph.
+- **Discover's trending audio** is drawn as tracks (`AudioTrackCard`), not video cards.
+- **`FeaturedCard` is removed.** No real profile ever had one (`featured` came only from the
+  design-time profiles); a featured work is a state of its own card. The fixtures' `featured`
+  blocks (Unsplash photos, "812k plays") are gone; `linked-profiles.ts` keeps its lines under a
+  local type because the migration generators never read them.
+- `AudioTrackCard`, `VideoCard` and `PortfolioMediaTile` stay separate Blocks.
+
+### Changed — reviews (P1-8 #7, 30 Sep)
+
+- **`RatingSummary`** is the rating at a glance: `full` on the Reviews screen (average, stars, a
+  bar per star) and `inline` above a profile's review rail (the profile's own inline summary is
+  gone). Both read stored reviews only.
+- **Reviews screen:** while reviews load, or when they fail, it shows loading or an error, not "No
+  reviews yet".
+- **`MatchBar` is removed.** The viewer's fit to an opportunity uses `ApplicantFit`, the line
+  applicants' fit already used (its reviews line is left out when no rating is passed).
+
+### Changed — opportunities and applications (P1-8 #6, 30 Sep)
+
+- **`ApplicationCard`** and **`ApplicantCard`** are rebuilt on the database records
+  (`MyApplication`, `ApplicantSummary`) and used by My applications and Applicants; their old
+  bodies read design-time types and had no consumer. Status labels and tones come from one record
+  per view (`APPLICANT_STATUS` also names the board's columns).
+- **Pending is per card.** Withdraw, Shortlist, Accept and Decline lock only the card being
+  answered, not every card in the list. Buttons are the 48px control height (they were 40px).
+- **Dates, not "ago".** An opportunity carries its stored timestamp (`postedAt`) and the card
+  shows the date; applications show the date they were sent.
+- **Applicants, signed out:** a sign-in state, not "No applicants here yet" over a query that never
+  ran.
+- **A profile's opportunities** use `OpportunityCard` from the same rows and columns as the
+  Opportunities screen. The profile's own `OpportunityCard` (and its "Respond" link to the inbox,
+  which answered nothing) and the `OpportunityItem` type are removed, with the design-time sample
+  opportunities on two fixture profiles. `linked-profiles.ts` keeps its lines under a local type:
+  the migration generators never read them.
+
+### Changed — the marketplace item card (P1-8 #5, 30 Sep)
+
+- **`ProductCard`** (through `ListingCard` / `ListingTile` / `ListingGrid`) is drawn with tokens:
+  no raw hex, no `cqw` type sizes or radii, no letter-spacing, no navy shadow (`shadow-sm`). The
+  owner's reference proportions are kept (photo in a rounded frame inside the card).
+- The save heart is a sibling of the card's link, not a button inside it.
+- The badge's motion is keyed off the listing's condition and type, not off the badge's words.
+- The round button shows an arrow to the listing, not a shopping cart: nothing is bought in the app.
+- `ProductItem.opens` is gone: it was ignored, every product opens `/marketplace/l/$id`.
+- **A profile's Marketplace rail** uses `ListingTile`, the Market's own card, from the same listing
+  rows. **Removed:** `MarketEntryCard`, the `MarketEntry` type, `EquipmentGrid` and
+  `productFromRental` (no consumer), and the two hard-coded sample listings (Unsplash photos) on the
+  design-time profiles in `src/data/profile.ts`.
+
+### Changed — rental provider (P1-8 #4, 30 Sep)
+
+- `ProviderSummary` shows initials when a provider has no photo (`PersonAvatar`), and no longer
+  opens an empty stats row when the only figure is a zero rating.
+- Removed `providersOf` (no consumer). `ProviderCard` stays the provider Block; its destination is
+  the seller page (P0-9, intentionally retained: a seller and a rental provider are one party).
+
+### Changed — one seller Block (P1-8 #3, 30 Sep)
+
+- **`SellerCard`** is the seller Block. Its listing count comes from the database
+  (`countSellerListings`: the seller's listings open for browsing, services included). The listing
+  page counted from its own catalog, which leaves services out, so it undercounted. It shows
+  nothing while loading. A seller with no photo shows initials (`PersonAvatar`).
+- **Removed:** the `SellerSummary` component (no consumer; carried a stored-copy "Replies within"
+  line), the `SellerSummary` type of the same name, `SellerRow` and `sellersOf` (no consumer).
+
+### Changed — one studio / business card (P1-8 #2, 30 Sep)
+
+- **`StudioCard`** has a `featured` state (photo-led, details on the scrim) and Discover's two
+  business rails use it; **`StudioMediaCard` is removed**.
+- A business with no profile and no booking page renders as a plain card or row, not a focusable
+  link that swallows the tap (`StudioCard`, and `StudioRow`, which had no guard).
+- **Previews tell the truth.** Onboarding's business preview had a 4.9 rating from 38 reviews, a
+  ₹2,500/hour rate, gear and an Unsplash photo; it now shows a new business as it is: no rating,
+  rate, photo or badge. The business-setup preview no longer shows a verified badge.
+- Name sizes follow the person cards: card `text-2`, row `text-sm`.
+
+### Changed — one person Block (P1-8 #1, 30 Sep)
+
+- **`PersonRow`** is the one row for a person: the directory, search, connections (all three tabs)
+  and an opportunity's poster. It takes an `action` slot (default the save heart; Accept / Ignore,
+  Message or "Requested" on connections; nothing for a poster), a `detail` line, and a person with
+  no username (no link). Photos go through `PersonAvatar`, so a missing photo shows initials.
+- **`PersonCard`** has a `featured` state (photo-led, name on the scrim) that replaces
+  `PersonHeroCard` on Discover. A person with no photo now shows initials, not a building icon.
+- **Names:** a card's name is `text-2`, a row's `text-sm` (they were the other way round).
+- **Connections:** Accept and Ignore lock while that request is being answered, and the chosen one
+  shows it is working.
+- **Onboarding preview:** the "your talent card" preview no longer shows a verified badge nobody has.
+- **Removed:** `PersonHeroCard`, the messages route's own `PersonRow`, `PosterRow`, and
+  `CollaboratorCard` (no consumer).
+
+### Removed — replacement trace for three Blocks retired earlier (P1-7, 30 Sep)
+
+Checked at `fix/p0-truth`: no reference to any of the three remains in `src`.
+
+- **`StatRow`** (Connections / Followers / Plays / Credits strip) — deleted in `473c82f` (22 Sep).
+  Its job was **dropped, not moved**: Home no longer shows a stat strip (owner rule: no stat strips
+  on profiles or Home). Plays live on the owner's Performance screen (`WorkAnalytics`).
+- **`QrSheet`** — deleted in `3f637b7` (25 Sep) as dead code, imported nowhere. Its job moved to the
+  profile `ShareSheet` (now drawing a real `QrCode`) and the `/identity/qr` screen
+  (`QrIdentityCard`).
+- **`BookingListCard`** — deleted in `6ec8da8` (18 Sep) with the orphaned `bookings/$ref` screens
+  that were its only consumer. Booking lists are drawn by `/bookings` and the business booking
+  screens' own rows, which P1-8 #9 folds into `StudioBookingRecord`.
+
 ### Fixed — P0: nothing on screen claims what didn't happen (30 Sep)
 
 - **Rental dates.** `RentalCalendar` works in full `YYYY-MM-DD` days, moves month to month, opens on the

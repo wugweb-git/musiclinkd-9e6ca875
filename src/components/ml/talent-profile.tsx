@@ -35,6 +35,8 @@ import {
   UserRound,
 } from "lucide-react";
 import { profileIdByUsername, type TalentProfile, type profileInsights } from "@/data/profile";
+import { ListingTile } from "./market";
+import { OpportunityCard } from "./opportunity";
 import type { WorkKind } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
@@ -43,10 +45,8 @@ import { NotificationsBell } from "./tab-header";
 import { Price } from "./kit";
 import {
   AudioTrackCard,
-  FeaturedCard,
-  MarketEntryCard,
   MoreSheet,
-  OpportunityCard,
+  RatingSummary,
   ProfileEmpty,
   type ProfileEmptyCta,
   ProfileHero,
@@ -561,12 +561,6 @@ function Overview({
         )}
       </ProfileSection>
 
-      {p.featured ? (
-        <ProfileSection title="Featured work">
-          <FeaturedCard featured={p.featured} />
-        </ProfileSection>
-      ) : null}
-
       {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
         <ProfileSection title="Music identity">
           <MusicIdentityBento p={p} />
@@ -825,15 +819,7 @@ function Reviews({ p, owner }: { p: TalentProfile; owner: boolean }) {
   return (
     <>
       <ProfileSection title="Reviews">
-        {p.reviewCount ? (
-          <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
-            <Star size={iconSize.sm} className="fill-foreground" aria-hidden />
-            {p.rating.toFixed(1)}
-            <span className="font-normal text-muted-foreground">
-              · {p.reviewCount} {p.reviewCount === 1 ? "review" : "reviews"}
-            </span>
-          </p>
-        ) : null}
+        <RatingSummary variant="inline" average={p.rating} count={p.reviewCount} />
         {p.reviews.length ? (
           <ReviewRail>
             {p.reviews.map((review) => (
@@ -896,7 +882,7 @@ function RelationshipSections({ p }: { p: TalentProfile }) {
         <ProfileSection title="Marketplace">
           <div className="rail flex gap-3 overflow-x-auto no-scrollbar">
             {p.market.map((entry) => (
-              <MarketEntryCard key={entry.id} m={entry} />
+              <ListingTile key={entry.id} l={entry} />
             ))}
           </div>
         </ProfileSection>

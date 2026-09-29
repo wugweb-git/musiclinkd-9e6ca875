@@ -4,7 +4,7 @@
  */
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback } from "react";
 import {
   Bookmark,
   CalendarDays,
@@ -23,25 +23,30 @@ import {
   SlidersHorizontal,
   Sparkles,
   Speaker,
-  Star,
   Store,
   Ticket,
   type LucideIcon,
 } from "lucide-react";
-import { Card, Price, StatusPill, ReasonChip, Stars, type Tone } from "@/components/ml/kit";
-import { IconBtn, VerifiedBadge } from "@/components/ml/ui";
+import { Price, StatusPill, Stars, type Tone } from "@/components/ml/kit";
+import { Btn, BtnLink, IconBtn, VerifiedBadge } from "@/components/ml/ui";
+import { PersonAvatar } from "./person-avatar";
+import { joinParts } from "@/lib/utils";
 import {
   categoryLabel,
   payParts,
   savedOpportunityKey,
-  type Application,
-  type Applicant,
   type Opportunity,
   type OpportunityStatus,
 } from "@/data/opportunities";
 import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";
-import { listMySavedOpportunitySlugs, setOpportunitySaved } from "@/lib/applications.functions";
+import {
+  listMySavedOpportunitySlugs,
+  setOpportunitySaved,
+  type ApplicantSummary,
+  type ApplicationStatus,
+  type MyApplication,
+} from "@/lib/applications.functions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { fitLine, type Fit } from "@/lib/fit";
@@ -143,27 +148,6 @@ export function useSavedOpportunities() {
   };
 }
 
-export function MatchBar({ score, reasons }: { score: number; reasons: string[] }) {
-  return (
-    <div className="rounded-lg bg-subtle p-3">
-      <div className="flex items-baseline justify-between">
-        <span className="text-1 font-semibold">Fit for you</span>
-        <span className="text-1 font-bold text-foreground">{score}%</span>
-      </div>
-      <div className="mt-1.5 h-1.5 rounded-full bg-card">
-        <div className="h-1.5 rounded-full bg-primary" style={{ width: `${score}%` }} />
-      </div>
-      {reasons.length ? (
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {reasons.map((r) => (
-            <ReasonChip key={r}>{r}</ReasonChip>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
 /**
  * An applicant's fit to the opportunity (src/lib/fit.ts) and their review average, as two quiet
  * lines: "82% fit · Matches: Guitarist · Acoustic" and the stars with the count.
@@ -175,9 +159,11 @@ export function ApplicantFit({
 }: {
   /** Null while the opportunity or the taxonomy has not loaded. */
   fit: Fit | null;
-  rating: number | string | null | undefined;
-  reviews: number | null | undefined;
+  /** Leave both out to show the fit alone (the viewer's own fit to an opportunity). */
+  rating?: number | string | null | undefined;
+  reviews?: number | null | undefined;
 }) {
+  const withReviews = rating !== undefined || reviews !== undefined;
   const average = Number(rating ?? 0);
   const count = reviews ?? 0;
   return (
@@ -188,7 +174,7 @@ export function ApplicantFit({
           {fit.reasons.length ? ` · ${fitLine(fit)}` : null}
         </p>
       ) : null}
-      {count > 0 && average > 0 ? (
+      {!withReviews ? null : count > 0 && average > 0 ? (
         <p className="flex items-center gap-1.5 text-1 text-muted-foreground">
           <Stars value={average} size={12} />
           <span>
@@ -202,53 +188,8 @@ export function ApplicantFit({
   );
 }
 
-export function PosterRow({ o }: { o: Opportunity }) {
-  // Stored opportunities have no poster kind, rating or hires; only what exists is shown.
-  const meta: ReactNode[] = [];
-  if (o.poster.kindLabel) meta.push(o.poster.kindLabel);
-  if (o.poster.rating)
-    meta.push(
-      <>
-        <Star size={iconSize.xs} fill="currentColor" className="inline" aria-hidden />{" "}
-        {Number(o.poster.rating).toFixed(1)}
-      </>,
-    );
-  if (o.poster.hires) meta.push(`${o.poster.hires} hires`);
-  const className = "flex items-center gap-3 rounded-lg bg-subtle p-3";
-  const body = (
-    <>
-      {o.poster.photo ? (
-        <img
-          src={sized(o.poster.photo, { width: 44 })}
-          alt=""
-          className="h-11 w-11 rounded-full object-cover"
-        />
-      ) : null}
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-1.5">
-          <span className="truncate text-sm font-semibold">{o.poster.name}</span>
-          {o.poster.verified ? <VerifiedBadge size={16} /> : null}
-        </span>
-        {meta.length ? (
-          <span className="block truncate text-1 text-muted-foreground">
-            {meta.map((m, i) => (
-              <Fragment key={i}>
-                {i ? " · " : null}
-                {m}
-              </Fragment>
-            ))}
-          </span>
-        ) : null}
-      </span>
-    </>
-  );
-  if (!o.poster.username) return <div className={className}>{body}</div>;
-  return (
-    <Link to="/profile/$username" params={{ username: o.poster.username }} className={className}>
-      {body}
-    </Link>
-  );
-}
+/** A stored timestamp as "24 Sep"; a design-time string is shown as it is. */
+const postedLine = (at: string) => (Number.isNaN(Date.parse(at)) ? at : shortDate(at));
 
 export function OpportunityCard({
   o,
@@ -275,7 +216,7 @@ export function OpportunityCard({
           ) : null}
           <p className="min-w-0 flex-1 truncate text-1 text-muted-foreground">
             <span className="font-semibold text-foreground">{o.poster.name}</span>
-            {o.postedAt ? ` · ${o.postedAt}` : null}
+            {o.postedAt ? ` · ${postedLine(o.postedAt)}` : null}
           </p>
           {o.featured ? <span className="pill shrink-0 bg-background">Featured</span> : null}
         </div>
@@ -319,74 +260,155 @@ export function OpportunityCard({
   );
 }
 
-export function ApplicationCard({ a, o }: { a: Application; o?: Opportunity }) {
+/** What the applicant sees for their own application's status. */
+const MY_STATUS: Record<ApplicationStatus, { label: string; tone: Tone }> = {
+  pending: { label: "Sent", tone: "neutral" },
+  shortlisted: { label: "Shortlisted", tone: "brand" },
+  accepted: { label: "Accepted", tone: "good" },
+  rejected: { label: "Not selected", tone: "neutral" },
+  withdrawn: { label: "Withdrawn", tone: "neutral" },
+};
+
+/** What the poster sees for an applicant's status (the board's column names). */
+// eslint-disable-next-line react-refresh/only-export-components -- labels shared with the board
+export const APPLICANT_STATUS: Record<ApplicationStatus, { label: string; tone: Tone }> = {
+  pending: { label: "New", tone: "neutral" },
+  shortlisted: { label: "Shortlisted", tone: "brand" },
+  accepted: { label: "Accepted", tone: "good" },
+  rejected: { label: "Declined", tone: "neutral" },
+  withdrawn: { label: "Withdrawn", tone: "neutral" },
+};
+
+/** A stored timestamp as a date, "24 Sep" — never "3 weeks ago". */
+const shortDate = (at: string) =>
+  new Date(at).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+
+/**
+ * One of your own applications, from the database (opportunity_applications): the opportunity,
+ * where it stands, the date you sent it, your message, then View and — while it is still open —
+ * Withdraw. `withdrawing` is this card's own pending state, not the list's.
+ */
+export function ApplicationCard({
+  a,
+  onWithdraw,
+  withdrawing = false,
+}: {
+  a: MyApplication;
+  onWithdraw?: (() => void) | undefined;
+  withdrawing?: boolean | undefined;
+}) {
+  const status = MY_STATUS[a.status];
+  const open = a.status === "pending" || a.status === "shortlisted";
   return (
-    <Link to="/opportunities/applications/$aid" params={{ aid: a.id }} className="block">
-      <Card className="space-y-2">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="min-w-0 flex-1 text-2 leading-snug">{o?.title ?? "Opportunity"}</h3>
-          <StatusPill
-            label={a.status}
-            tone={
-              a.status === "shortlisted"
-                ? "brand"
-                : a.status === "accepted"
-                  ? "good"
-                  : a.status === "rejected"
-                    ? "bad"
-                    : "neutral"
-            }
-          />
+    <article className="rounded-lg bg-subtle p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="truncate text-2 font-semibold">{a.opportunity?.title ?? "Opportunity"}</h3>
+          <p className="mt-0.5 truncate text-1 text-muted-foreground">
+            {joinParts(a.opportunity?.location, `Applied ${shortDate(a.created_at)}`)}
+          </p>
         </div>
-        <p className="truncate text-1 text-muted-foreground">
-          {o?.poster.name ?? "—"} · applied {a.submittedAt}
-        </p>
-        <p className="line-clamp-2 text-1 text-muted-foreground">{a.message}</p>
-      </Card>
-    </Link>
+        <StatusPill label={status.label} tone={status.tone} className="shrink-0" />
+      </div>
+      {a.message ? (
+        <p className="mt-2 line-clamp-2 text-1 text-muted-foreground">{a.message}</p>
+      ) : null}
+      <div className="mt-3 flex items-center gap-2">
+        {a.opportunity?.slug ? (
+          <BtnLink
+            to="/opportunities/$id"
+            params={{ id: a.opportunity.slug }}
+            variant="outline"
+            className="flex-1"
+          >
+            View
+          </BtnLink>
+        ) : null}
+        {open && onWithdraw ? (
+          <Btn variant="ghost" className="flex-1" loading={withdrawing} onClick={onWithdraw}>
+            Withdraw
+          </Btn>
+        ) : null}
+      </div>
+    </article>
   );
 }
 
-export function ApplicantCard({ a }: { a: Applicant }) {
+/**
+ * Someone who applied to your opportunity, from the database: who they are, their fit and
+ * reviews, their message, then the next step for where they stand. `moving` is this card's own
+ * pending state, so deciding on one applicant never locks the others.
+ */
+export function ApplicantCard({
+  a,
+  fit,
+  onMove,
+  moving = false,
+}: {
+  a: ApplicantSummary;
+  fit: Fit | null;
+  onMove: (status: "shortlisted" | "accepted" | "rejected") => void;
+  moving?: boolean | undefined;
+}) {
+  const name = a.person?.display_name ?? a.person?.username ?? "Applicant";
+  const status = APPLICANT_STATUS[a.status];
   return (
-    <Link
-      to="/opportunities/$id/applicants/$aid"
-      params={{ id: a.opportunityId, aid: a.id }}
-      className="block"
-    >
-      <Card className="space-y-3">
-        <div className="flex items-center gap-3">
-          <img
-            src={sized(a.photo, { width: 48 })}
-            alt=""
-            className="h-12 w-12 rounded-full object-cover"
-          />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <span className="truncate text-sm font-semibold">{a.name}</span>
-              {a.verified ? <VerifiedBadge size={16} /> : null}
-            </div>
-            <p className="truncate text-1 text-muted-foreground">
-              {a.headline} · {a.city}
-            </p>
-          </div>
-          <span className="shrink-0 text-1 font-bold text-foreground">{a.matchScore}%</span>
+    <article className="rounded-lg bg-subtle p-4">
+      <div className="flex items-center gap-3">
+        <PersonAvatar
+          name={name}
+          photo={a.person?.avatar_url ? sized(a.person.avatar_url, { width: 48 }) : null}
+          className="h-12 w-12 shrink-0 text-1"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="flex items-center gap-1">
+            <span className="truncate text-sm font-semibold">{name}</span>
+            {a.person?.is_verified ? <VerifiedBadge size={16} /> : null}
+          </p>
+          <p className="truncate text-1 text-muted-foreground">
+            {joinParts(a.person?.headline, a.person?.city, `Applied ${shortDate(a.created_at)}`)}
+          </p>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          {a.matchReasons.slice(0, 2).map((r) => (
-            <ReasonChip key={r}>{r}</ReasonChip>
-          ))}
-        </div>
-        <div className="flex items-center justify-between">
-          <StatusPill
-            label={a.status}
-            tone={
-              a.status === "shortlisted" ? "brand" : a.status === "rejected" ? "bad" : "neutral"
-            }
-          />
-          <span className="text-1 text-muted-foreground">{a.appliedAt}</span>
-        </div>
-      </Card>
-    </Link>
+        <StatusPill label={status.label} tone={status.tone} className="shrink-0" />
+      </div>
+      <div className="mt-2">
+        <ApplicantFit fit={fit} rating={a.person?.rating} reviews={a.person?.review_count} />
+      </div>
+      {a.message ? (
+        <p className="mt-2 line-clamp-3 text-1 text-muted-foreground">{a.message}</p>
+      ) : null}
+      <div className="mt-3 flex gap-2">
+        {a.person?.username ? (
+          <BtnLink
+            to="/profile/$username"
+            params={{ username: a.person.username }}
+            variant="outline"
+            className="flex-1"
+          >
+            Profile
+          </BtnLink>
+        ) : null}
+        {a.status === "pending" ? (
+          <Btn className="flex-1" disabled={moving} onClick={() => onMove("shortlisted")}>
+            Shortlist
+          </Btn>
+        ) : null}
+        {a.status === "shortlisted" ? (
+          <Btn className="flex-1" disabled={moving} onClick={() => onMove("accepted")}>
+            Accept
+          </Btn>
+        ) : null}
+        {a.status === "pending" || a.status === "shortlisted" ? (
+          <Btn
+            variant="ghost"
+            className="flex-1"
+            disabled={moving}
+            onClick={() => onMove("rejected")}
+          >
+            Decline
+          </Btn>
+        ) : null}
+      </div>
+    </article>
   );
 }

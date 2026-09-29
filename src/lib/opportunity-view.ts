@@ -16,18 +16,6 @@ import {
 } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 
-/** "5 hours ago", "1 day ago" — the format the static opportunities use. */
-function postedAgo(iso: string, now: number): string {
-  const minutes = Math.max(1, Math.floor((now - new Date(iso).getTime()) / 60000));
-  const [n, unit] =
-    minutes < 60
-      ? [minutes, "minute"]
-      : minutes < 60 * 24
-        ? [Math.floor(minutes / 60), "hour"]
-        : [Math.floor(minutes / (60 * 24)), "day"];
-  return `${n} ${unit}${n === 1 ? "" : "s"} ago`;
-}
-
 /**
  * A single role that names an existing person category ("Guitarist", "Singer") uses that category.
  * Roles are single names (no "/", 15 Sep 2026). Several roles, or a role with no matching category,
@@ -68,11 +56,7 @@ function compensationFromRow(row: OpportunityRow): Opportunity["compensation"] {
   return { ...(type ? { type } : {}), unit: "", negotiable: false, ...note };
 }
 
-export function opportunityFromRow(
-  row: OpportunityRow,
-  labels: TaxonomyLabels,
-  now = Date.now(),
-): Opportunity {
+export function opportunityFromRow(row: OpportunityRow, labels: TaxonomyLabels): Opportunity {
   const creator = row.creator;
   return {
     id: row.slug,
@@ -91,7 +75,8 @@ export function opportunityFromRow(
     },
     city: row.location ?? "",
     workMode: "",
-    postedAt: postedAgo(row.created_at, now),
+    // The stored timestamp; the card formats it. Never "3 weeks ago" in the data.
+    postedAt: row.created_at,
     closesAt: "",
     compensation: compensationFromRow(row),
     summary: "",
@@ -121,8 +106,7 @@ export async function loadDbOpportunities(): Promise<Opportunity[]> {
     // Without labels the genre chips fall back to slugs.
     getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
   ]);
-  const now = Date.now();
-  return rows.map((r) => opportunityFromRow(r, labels, now));
+  return rows.map((r) => opportunityFromRow(r, labels));
 }
 
 /** One stored opportunity by slug, or null when there is none or the database is unreachable. */
@@ -143,8 +127,7 @@ export async function loadMyDbOpportunities(): Promise<PostedOpportunity[]> {
     listMyOpportunities().catch((): OpportunityRow[] => []),
     getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
   ]);
-  const now = Date.now();
-  return rows.map((r) => opportunityFromRow(r, labels, now));
+  return rows.map((r) => opportunityFromRow(r, labels));
 }
 
 export type OpportunityViewSource =

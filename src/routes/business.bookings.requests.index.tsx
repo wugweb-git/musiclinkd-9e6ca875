@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { BusinessOnlyGate, LoadError, Segmented } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
-import { type BookingStatus } from "@/data/booking";
-import { formatDate, formatTime } from "@/lib/when";
+import { BookingSkeleton, EmptyState, StudioBookingRecord } from "@/components/ml/booking";
 import { answerBooking, listStudioBookings } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/business/bookings/requests/")({
   head: () => ({
@@ -34,7 +31,12 @@ export const Route = createFileRoute("/business/bookings/requests/")({
   component: Requests,
 });
 
-const tabs = ["All", "New", "In review"] as const;
+const tabs = ["all", "new", "reviewing"] as const;
+const tabLabels: Record<(typeof tabs)[number], string> = {
+  all: "All",
+  new: "New",
+  reviewing: "In review",
+};
 
 /** The requests people have sent to studios this account owns, and the reply to each. */
 function Requests() {
@@ -47,7 +49,7 @@ function Requests() {
 }
 
 function RequestsContent() {
-  const [tab, setTab] = useState<(typeof tabs)[number]>("All");
+  const [tab, setTab] = useState<(typeof tabs)[number]>("all");
   const { signedIn, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const load = useServerFn(listStudioBookings);
@@ -74,7 +76,7 @@ function RequestsContent() {
   const all = q.data ?? [];
   const waiting = all.filter((b) => ["requested", "reviewing"].includes(b.status));
   const list = all.filter((b) =>
-    tab === "All" ? true : tab === "New" ? b.status === "requested" : b.status === "reviewing",
+    tab === "all" ? true : tab === "new" ? b.status === "requested" : b.status === "reviewing",
   );
 
   return (
@@ -88,7 +90,7 @@ function RequestsContent() {
       />
 
       <div className="px-5 pt-4">
-        <Segmented value={tab} options={tabs} onChange={setTab} />
+        <Segmented value={tab} options={tabs} labels={tabLabels} onChange={setTab} />
       </div>
 
       <main className="space-y-3 px-5 pt-4">
@@ -108,63 +110,36 @@ function RequestsContent() {
           />
         ) : (
           list.map((b) => (
-            <article key={b.id} className="rounded-lg bg-subtle p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  {b.requester?.username ? (
-                    <Link
-                      to="/profile/$username"
-                      params={{ username: b.requester.username }}
-                      className="truncate text-2 font-semibold"
+            // Accepting happens on the review screen, which shows clashing requests and answers
+            // them with a saved reply; accepting from here could double-book a slot.
+            <StudioBookingRecord
+              key={b.id}
+              b={b}
+              side="studio"
+              actions={
+                b.status === "requested" || b.status === "reviewing" ? (
+                  <>
+                    {b.status === "requested" ? (
+                      <Btn
+                        variant="outline"
+                        className="flex-1"
+                        loading={reply.isPending && reply.variables?.id === b.id}
+                        onClick={() => reply.mutate({ id: b.id, status: "reviewing" })}
+                      >
+                        Reviewing
+                      </Btn>
+                    ) : null}
+                    <BtnLink
+                      to="/business/bookings/requests/$ref"
+                      params={{ ref: b.id }}
+                      className="flex-1"
                     >
-                      {b.requester.display_name ?? b.requester.username}
-                    </Link>
-                  ) : (
-                    <p className="truncate text-2 font-semibold">Someone</p>
-                  )}
-                  <p className="mt-0.5 truncate text-1 text-muted-foreground">
-                    {joinParts(b.studio?.name ?? b.studio_name ?? "", b.room?.name ?? "")}
-                  </p>
-                </div>
-                <BookingStatusPill
-                  status={(b.status === "declined" ? "rejected" : b.status) as BookingStatus}
-                />
-              </div>
-
-              <p className="mt-2 text-1 text-muted-foreground">
-                {joinParts(
-                  formatDate(b.session_date),
-                  b.start_time ? formatTime(b.start_time.slice(0, 5)) : "",
-                  b.hours ? `${b.hours} hrs` : "",
-                  b.people ? `${b.people} people` : "",
-                )}
-              </p>
-              {b.notes ? <p className="mt-2 text-1 leading-relaxed">{b.notes}</p> : null}
-
-              {/* Accepting happens on the review screen, which shows clashing requests and answers
-                  them with a saved reply; accepting from here could double-book a slot. */}
-              {["requested", "reviewing"].includes(b.status) ? (
-                <div className="mt-3 flex gap-2">
-                  {b.status === "requested" ? (
-                    <Btn
-                      variant="outline"
-                      className="min-h-10 flex-1 text-1"
-                      loading={reply.isPending}
-                      onClick={() => reply.mutate({ id: b.id, status: "reviewing" })}
-                    >
-                      Reviewing
-                    </Btn>
-                  ) : null}
-                  <BtnLink
-                    to="/business/bookings/requests/$ref"
-                    params={{ ref: b.id }}
-                    className="min-h-10 flex-1 text-1"
-                  >
-                    Review
-                  </BtnLink>
-                </div>
-              ) : null}
-            </article>
+                      Review
+                    </BtnLink>
+                  </>
+                ) : undefined
+              }
+            />
           ))
         )}
       </main>

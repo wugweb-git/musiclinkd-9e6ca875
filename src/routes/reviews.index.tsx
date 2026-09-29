@@ -5,17 +5,8 @@ import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import {
-  Card,
-  EmptyState,
-  LoadError,
-  Loading,
-  Meter,
-  Row,
-  Segmented,
-  Stars,
-} from "@/components/ml/kit";
-import { ReviewCard, ReviewRail } from "@/components/ml/profile";
+import { Card, EmptyState, LoadError, Loading, Row, Segmented } from "@/components/ml/kit";
+import { RatingSummary, ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { reviewItemFrom } from "@/lib/review-item";
 import { reviewPolicy } from "@/data/reviews";
 import {
@@ -96,30 +87,14 @@ function ReviewsHub() {
           </EmptyState>
         ) : (
           <>
-            <Card className="space-y-3">
-              <div className="flex items-end gap-3">
-                <p className="text-4 font-bold leading-none">{total ? average : "—"}</p>
-                <div className="min-w-0 flex-1 pb-1">
-                  <Stars value={average} />
-                  <p className="mt-1 truncate text-1 text-muted-foreground">
-                    {total ? `${total} ${total === 1 ? "review" : "reviews"}` : "No reviews yet"}
-                  </p>
-                </div>
-              </div>
-              {total ? (
-                <div className="space-y-1.5">
-                  {distribution.map((d) => (
-                    <Meter
-                      key={d.stars}
-                      label={`${d.stars} star`}
-                      value={d.count}
-                      max={total}
-                      hint={`${d.count}`}
-                    />
-                  ))}
-                </div>
-              ) : null}
-            </Card>
+            {/* Loading and a failed read are their own states: never "No reviews yet". */}
+            {about.isLoading ? (
+              <Loading rows={1} />
+            ) : about.isError ? (
+              <LoadError what="your rating" />
+            ) : (
+              <RatingSummary average={average} count={total} distribution={distribution} />
+            )}
 
             <Segmented value={tab} options={tabs} onChange={setTab} />
 

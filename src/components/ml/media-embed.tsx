@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import { embedFor } from "@/lib/embed";
 import { iconSize } from "@/lib/tokens";
+import { WavePlayer } from "@/components/waves-cn/wave-player";
 
 /**
  * A portfolio link played in place: the source's own player when it embeds, the browser's player
@@ -14,11 +15,14 @@ export function MediaEmbed({
   title,
   onOpen,
   onPlay,
+  waveform = false,
 }: {
   url: string;
   title: string;
   onOpen?: (() => void) | undefined;
   onPlay?: (() => void) | undefined;
+  /** A direct audio file drawn as a waveform (the work's own page) rather than the bare player. */
+  waveform?: boolean | undefined;
 }) {
   const embed = embedFor(url);
   if (!embed) return null;
@@ -32,6 +36,19 @@ export function MediaEmbed({
         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
         allowFullScreen
         className="w-full rounded-lg border-0 bg-background"
+      />
+    );
+  }
+  if (embed.mode === "audio" && waveform) {
+    // Colours from the app's tokens, ink on grey like everything else.
+    return (
+      <WavePlayer
+        src={embed.src}
+        waveColor="var(--color-muted-foreground)"
+        progressColor="var(--color-ink)"
+        waveHeight={56}
+        className="border-0 bg-transparent p-0 shadow-none"
+        {...(onPlay ? { onPlay } : {})}
       />
     );
   }

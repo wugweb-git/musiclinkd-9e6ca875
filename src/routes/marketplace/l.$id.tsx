@@ -54,6 +54,7 @@ import { loadCatalogListings, loadListingBySlug } from "@/lib/market-view";
 import { useSavedListings } from "@/hooks/use-saved-listings";
 import { rememberListingVisit } from "@/lib/device-history";
 import { listReviewsFor } from "@/lib/reviews.functions";
+import { countSellerListings } from "@/lib/catalog.functions";
 import { inr, priceText } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
@@ -108,6 +109,12 @@ function ListingDetail() {
   const taxonomy = useGearTaxonomy();
   const loadReviews = useServerFn(listReviewsFor);
   const ownerId = l?.owner?.id;
+  const countListings = useServerFn(countSellerListings);
+  const sellerListings = useQuery({
+    queryKey: ["marketplace", "seller-listings", ownerId],
+    queryFn: () => countListings({ data: { profileId: ownerId! } }),
+    enabled: !!ownerId,
+  });
   const realReviews = useQuery({
     queryKey: ["marketplace", "listing-owner-reviews", ownerId],
     queryFn: () => loadReviews({ data: { profileId: ownerId! } }),
@@ -409,10 +416,7 @@ function ListingDetail() {
           <>
             <h2 className="mt-6 text-2">{l.type === "product" ? "Seller" : "Provider"}</h2>
             <div className="mt-2">
-              <SellerCard
-                seller={l.owner}
-                listings={all.filter((x) => x.owner?.id && x.owner.id === l.owner?.id).length}
-              />
+              <SellerCard seller={l.owner} listings={sellerListings.data ?? null} />
             </div>
           </>
         ) : null}

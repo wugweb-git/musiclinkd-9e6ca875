@@ -5,7 +5,6 @@ import {
   Disc3,
   FileText,
   FolderOpen,
-  Headphones,
   Image as ImageIcon,
   Link2,
   Mic,
@@ -26,10 +25,8 @@ import {
   Smartphone,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { WavePlayer } from "@/components/waves-cn/wave-player";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
 import { StateCard as BaseStateCard, StatusPill as BaseStatusPill } from "@/components/ml/kit";
-import { embedFor } from "@/lib/embed";
 import { MediaEmbed } from "./media-embed";
 import { playsCountedFromLabel } from "@/lib/plays-cutoff";
 import { cn } from "@/lib/utils";
@@ -341,28 +338,6 @@ export function StateCard({
   return <BaseStateCard title={title} body={body} tone={tone} action={action} />;
 }
 
-/* ---------------- Simple audio preview ---------------------------------- */
-
-export function AudioPreview({ src, title }: { src: string; title: string }) {
-  return (
-    <div className="rounded-lg bg-subtle p-4">
-      <p className="pill bg-background text-muted-foreground">Audio preview</p>
-      <p className="mt-1 truncate text-sm font-semibold">{title}</p>
-      {/*
-       * The waveform player (waves-cn, wavesurfer): a bare <audio> element told you nothing about
-       * a take. Colours come from the app's own tokens, so it is ink on grey like everything else.
-       */}
-      <WavePlayer
-        src={src}
-        waveColor="var(--color-muted-foreground)"
-        progressColor="var(--color-ink)"
-        waveHeight={56}
-        className="mt-3 border-0 bg-transparent p-0 shadow-none"
-      />
-    </div>
-  );
-}
-
 export function SelectableChips({
   options,
   value,
@@ -535,66 +510,6 @@ export function MediaUploader({
 }
 
 /* ---------------- Players ----------------------------------------------- */
-
-export function AudioPlayer({
-  src,
-  title,
-  artwork,
-}: {
-  src: string | null;
-  title: string;
-  artwork?: string | null;
-}) {
-  if (!src) {
-    return (
-      <div className="rounded-lg bg-subtle p-4">
-        <MediaStatePill state="not-uploaded" />
-        <p className="mt-2 text-1 text-muted-foreground">{mediaStateCopy["not-uploaded"].hint}</p>
-      </div>
-    );
-  }
-  return (
-    <div className="rounded-lg bg-subtle p-4">
-      <div className="flex items-center gap-3">
-        {artwork ? (
-          <img
-            src={sized(artwork, { width: 56 })}
-            alt={`Artwork for ${title}`}
-            className="h-14 w-14 rounded-sm object-cover"
-          />
-        ) : (
-          <div
-            className="flex h-14 w-14 items-center justify-center rounded-sm bg-background text-muted-foreground"
-            aria-hidden
-          >
-            <Headphones size={iconSize.lg} />
-          </div>
-        )}
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">{title}</p>
-          <p className="text-1 text-muted-foreground">Audio</p>
-        </div>
-      </div>
-      {/* A direct file plays in the browser's player; a link plays through its source (MediaEmbed). */}
-      <div className="mt-3">
-        <MediaEmbed url={src} title={title} />
-      </div>
-    </div>
-  );
-}
-
-export function VideoPlayer({ src, title }: { src: string; title: string }) {
-  // MediaEmbed plays what embeds or is a video file, and links out for anything else.
-  if (!embedFor(src)) {
-    return (
-      <div className="rounded-lg bg-subtle p-4">
-        <p className="text-sm font-semibold">{title}</p>
-        <p className="mt-1 text-1 text-muted-foreground">This video link can't be played.</p>
-      </div>
-    );
-  }
-  return <MediaEmbed url={src} title={title} />;
-}
 
 /* ---------------- Credits & contributors -------------------------------- */
 

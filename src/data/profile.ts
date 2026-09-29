@@ -1,6 +1,8 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { singers, talents, type Talent } from "./discover";
 import { priceText, type PriceParts } from "@/lib/price";
+import type { Listing } from "./market";
+import type { Opportunity } from "./opportunities";
 
 /**
  * FLOW-02 · Profile module data contract (design-time fixtures only).
@@ -110,26 +112,6 @@ export type ReviewItem = {
   tags?: string[] | undefined;
 };
 
-export type OpportunityItem = {
-  id: string;
-  title: string;
-  detail: string;
-  /** The stored budget, rendered as amount and unit under the detail. */
-  price?: PriceParts | undefined;
-  tone: "seeking" | "offering";
-};
-
-export type MarketEntry = {
-  id: string;
-  title: string;
-  meta: string;
-  price?: PriceParts | undefined;
-  image: string;
-  kind: "sale" | "rental";
-  to: NonNullable<LinkProps["to"]>;
-  params?: LinkProps["params"];
-};
-
 export type TalentProfile = {
   username: string;
   /** profiles.id, when this view came from the database. Connect and Follow need it. */
@@ -160,8 +142,6 @@ export type TalentProfile = {
   rating: number;
   reviewCount: number;
   links: { label: string; handle: string }[];
-  featured?:
-    undefined | { kind: "Track" | "Project" | "Video"; title: string; meta: string; image: string };
   audio: AudioTrack[];
   video: VideoItem[];
   gallery: string[];
@@ -171,8 +151,10 @@ export type TalentProfile = {
   experience: ExperienceItem[];
   collaborators: Collaborator[];
   reviews: ReviewItem[];
-  opportunities: OpportunityItem[];
-  market: MarketEntry[];
+  /** Open opportunities this person posted, drawn with the Opportunities screen's card. */
+  opportunities: Opportunity[];
+  /** The person's own Market listings, drawn with the Market's product card. */
+  market: Listing[];
   studio?: { name: string; meta: string; price?: PriceParts | undefined; to: string } | undefined;
   mutuals: { name: string; photo: string }[];
 };
@@ -224,7 +206,6 @@ export function emptySections(): Omit<
     rating: 0,
     reviewCount: 0,
     links: [],
-    featured: undefined,
     audio: [],
     video: [],
     gallery: [],
@@ -294,12 +275,6 @@ const rahul: TalentProfile = {
     { label: "YouTube", handle: "@rahuliyer" },
     { label: "Instagram", handle: "@rahul.iyer" },
   ],
-  featured: {
-    kind: "Track",
-    title: "Neon Monsoon",
-    meta: "Produced & mixed · 812k plays",
-    image: u("photo-1470225620780-dba8ba36b745", 800),
-  },
   audio: [
     {
       id: "a1",
@@ -733,40 +708,8 @@ const rahul: TalentProfile = {
       text: "Great ear for vocal tuning. Schedule got tight near the end but he stayed on it.",
     },
   ],
-  opportunities: [
-    {
-      id: "o1",
-      title: "Looking for a vocalist",
-      detail: "Indie electronic EP, 3 tracks, credited release · Bengaluru or remote",
-      tone: "seeking",
-    },
-    {
-      id: "o2",
-      title: "Available for session work",
-      detail: "Keys and production, weekday afternoons through October",
-      tone: "offering",
-    },
-  ],
-  market: [
-    {
-      id: "m1",
-      title: "Neumann TLM 103",
-      meta: "For sale · Like new",
-      price: { amount: "₹68,000" },
-      image: u("photo-1590602847861-f357a9332bbc", 400),
-      kind: "sale",
-      to: "/marketplace",
-    },
-    {
-      id: "m2",
-      title: "Fender Twin Reverb",
-      meta: "For rent",
-      price: { amount: "₹2,400", unit: "day" },
-      image: u("photo-1511735111819-9a3f7709049c", 400),
-      kind: "rental",
-      to: "/marketplace/rent",
-    },
-  ],
+  opportunities: [],
+  market: [],
   studio: { name: "Yash Raj Sound", meta: "Resident engineer · book a room", to: "/studio" },
   mutuals: [
     { name: "Ananya", photo: u("photo-1534528741775-53994a69daeb", 120) },
@@ -809,12 +752,6 @@ const ananya: TalentProfile = {
   stats: { connections: "2,140", followers: "12.4k", plays: "5.8M", credits: 42 },
   rating: 4.9,
   reviewCount: 38,
-  featured: {
-    kind: "Track",
-    title: "Rangreza (Title Track)",
-    meta: "Lead vocals · T-Series · 4.2M plays",
-    image: u("photo-1511671782779-c97d3d27a1d4", 800),
-  },
   services: [
     {
       id: "s1",
@@ -837,14 +774,7 @@ const ananya: TalentProfile = {
   ],
   market: [],
   studio: undefined,
-  opportunities: [
-    {
-      id: "o1",
-      title: "Available for shows",
-      detail: "Mumbai and Pune, weekends through December",
-      tone: "offering",
-    },
-  ],
+  opportunities: [],
 };
 
 /*

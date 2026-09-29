@@ -310,6 +310,26 @@ export const setOpportunityStatus = createServerFn({ method: "POST" })
   });
 
 /**
+ * How many listings a seller has open for browsing, goods and services alike, counted by the
+ * database rather than from a list that leaves services out (the listing page's own catalog).
+ */
+export const countSellerListings = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .handler(async ({ data }): Promise<number> => {
+    const client = await anonClient();
+    const base = () =>
+      client
+        .from("marketplace_listings")
+        .select("id", { count: "exact", head: true })
+        .eq("seller_profile_id", data.profileId);
+    const browsing = await base().not("listing_status", "in", "(unavailable,archived)");
+    // Before listing_status exists, every listing is open.
+    const { count, error } = browsing.error ? await base() : browsing;
+    if (error) throw new Error(error.message);
+    return count ?? 0;
+  });
+
+/**
  * Every listing open for browsing, newest first. An owner can take a listing out of browsing
  * (listing_status unavailable or archived, 20260918230000_section_sources.sql); before that column
  * exists every listing is read as before.
