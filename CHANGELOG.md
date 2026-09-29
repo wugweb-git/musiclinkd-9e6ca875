@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one person Block (P1-8 #1, 30 Sep)
+
+- **`PersonRow`** is the one row for a person: the directory, search, connections (all three tabs)
+  and an opportunity's poster. It takes an `action` slot (default the save heart; Accept / Ignore,
+  Message or "Requested" on connections; nothing for a poster), a `detail` line, and a person with
+  no username (no link). Photos go through `PersonAvatar`, so a missing photo shows initials.
+- **`PersonCard`** has a `featured` state (photo-led, name on the scrim) that replaces
+  `PersonHeroCard` on Discover. A person with no photo now shows initials, not a building icon.
+- **Names:** a card's name is `text-2`, a row's `text-sm` (they were the other way round).
+- **Connections:** Accept and Ignore lock while that request is being answered, and the chosen one
+  shows it is working.
+- **Onboarding preview:** the "your talent card" preview no longer shows a verified badge nobody has.
+- **Removed:** `PersonHeroCard`, the messages route's own `PersonRow`, `PosterRow`, and
+  `CollaboratorCard` (no consumer).
+
 ### Removed — replacement trace for three Blocks retired earlier (P1-7, 30 Sep)
 
 Checked at `fix/p0-truth`: no reference to any of the three remains in `src`.

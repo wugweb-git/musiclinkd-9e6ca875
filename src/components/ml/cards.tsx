@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+import { PersonAvatar } from "./person-avatar";
 import { MapPin, Star, Building2, ChevronRight } from "lucide-react";
 import { Price } from "./kit";
 import type { PriceParts } from "@/lib/price";
@@ -48,10 +50,22 @@ function RatingLine({ rating, reviewCount }: { rating: number | null; reviewCoun
 /* Talent card — a person from the directory                           */
 /* ------------------------------------------------------------------ */
 
-function personDetail(person: DirectoryPerson, roleLabels?: TaxonomyOption[]) {
+/**
+ * A person as the cards need them. The directory's `DirectoryPerson` fits as-is; other lists
+ * (connections, an opportunity's poster) pass what they have. No username, no link.
+ */
+export type PersonLike = Pick<DirectoryPerson, "id" | "name" | "headline" | "city" | "verified"> & {
+  username: string | null;
+  avatarUrl: string | null;
+  roles?: string[] | undefined;
+  rating?: number | null | undefined;
+  reviewCount?: number | undefined;
+};
+
+function personDetail(person: PersonLike, roleLabels?: TaxonomyOption[]) {
   return (
     person.headline ??
-    person.roles
+    (person.roles ?? [])
       .slice(0, 2)
       .map((r) => labelFor(roleLabels, r))
       .join(" · ")
@@ -59,56 +73,83 @@ function personDetail(person: DirectoryPerson, roleLabels?: TaxonomyOption[]) {
 }
 
 /**
- * One person from the profiles table, as a row. The directory, search and anywhere else that
- * lists real people share this — the same name, headline, city and save control in every list.
+ * One person as a row. The directory, search, connections, an opportunity's poster and anywhere
+ * else that lists real people share this: photo (initials when there is none), name, one line of
+ * detail, city and rating. The row's end holds the save heart unless the screen passes its own
+ * `action` (Accept / Ignore, "Requested"); `null` leaves it empty.
  */
 export function PersonRow({
   person,
   roleLabels,
+  detail,
+  action,
+  as: Tag = "li",
+  className,
 }: {
-  person: DirectoryPerson;
+  person: PersonLike;
   roleLabels?: TaxonomyOption[] | undefined;
+  /** Replaces the headline line, e.g. an opportunity poster's kind and hires. */
+  detail?: ReactNode | undefined;
+  /** The row's end. Defaults to the save heart; `null` for nothing. */
+  action?: ReactNode | undefined;
+  as?: "li" | "div" | undefined;
+  className?: string | undefined;
 }) {
-  return (
-    <li className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-card/50">
-      <Link
-        to="/profile/$username"
-        params={{ username: person.username }}
-        className="state-layer flex min-w-0 flex-1 items-center gap-3 active:scale-[0.99]"
-      >
-        {person.avatarUrl ? (
-          <img
-            src={sized(person.avatarUrl, { width: 44 })}
-            alt=""
-            loading="lazy"
-            className="h-11 w-11 shrink-0 rounded-full border border-border/60 object-cover"
-          />
-        ) : (
-          <span className="h-11 w-11 shrink-0 rounded-full bg-subtle" aria-hidden />
-        )}
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-1">
-            <span className="truncate text-2 font-semibold text-foreground">{person.name}</span>
-            {person.verified ? <VerifiedBadge size={16} /> : null}
-          </span>
-          <span className="block truncate text-1 text-muted-foreground">
-            {personDetail(person, roleLabels)}
-          </span>
-          {person.city || person.rating != null ? (
-            <span className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
-              {person.city ? (
-                <>
-                  <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-                  <span className="truncate">{person.city}</span>
-                </>
-              ) : null}
-              <RatingLine rating={person.rating} reviewCount={person.reviewCount} />
-            </span>
-          ) : null}
+  const line = detail ?? personDetail(person, roleLabels);
+  const rating = person.rating ?? null;
+  const body = (
+    <>
+      <PersonAvatar
+        name={person.name}
+        photo={person.avatarUrl ? sized(person.avatarUrl, { width: 44 }) : null}
+        className="h-11 w-11 shrink-0 border border-border/60 text-1"
+      />
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1">
+          <span className="truncate text-sm font-semibold text-foreground">{person.name}</span>
+          {person.verified ? <VerifiedBadge size={16} /> : null}
         </span>
-      </Link>
+        {line ? <span className="block truncate text-1 text-muted-foreground">{line}</span> : null}
+        {person.city || rating != null ? (
+          <span className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
+            {person.city ? (
+              <>
+                <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
+                <span className="truncate">{person.city}</span>
+              </>
+            ) : null}
+            <RatingLine rating={rating} reviewCount={person.reviewCount ?? 0} />
+          </span>
+        ) : null}
+      </span>
+    </>
+  );
+  const end =
+    action === undefined ? (
       <SavedToggle targetType="talent" targetId={person.id} size={36} />
-    </li>
+    ) : (
+      action
+    );
+  return (
+    <Tag
+      className={cn(
+        "flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-card/50",
+        className,
+      )}
+    >
+      {person.username ? (
+        <Link
+          to="/profile/$username"
+          params={{ username: person.username }}
+          className="state-layer flex min-w-0 flex-1 items-center gap-3 active:scale-[0.99]"
+        >
+          {body}
+        </Link>
+      ) : (
+        <span className="flex min-w-0 flex-1 items-center gap-3">{body}</span>
+      )}
+      {end}
+    </Tag>
   );
 }
 
@@ -128,46 +169,70 @@ export function PersonRowSkeleton() {
 
 /**
  * One person as a card, for a rail (Discover, recommendations, booking collaborator pickers).
- * The headline wraps up to three lines rather than truncating — a card this narrow reads better
- * with a full short bio than a single clipped line.
+ * `featured` is the photo-led state: the photo carries the card and the name sits on the scrim
+ * (it replaces PersonHeroCard). Otherwise the headline wraps up to three lines rather than
+ * truncating — a card this narrow reads better with a full short bio than a clipped line.
  */
 export function PersonCard({
   person,
   roleLabels,
+  featured = false,
   disabled = false,
 }: {
-  person: DirectoryPerson;
+  person: PersonLike;
   roleLabels?: TaxonomyOption[] | undefined;
+  featured?: boolean | undefined;
   /** A preview, not a real profile to open — renders the same card with no link. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }) {
   const detail = personDetail(person, roleLabels);
-  return (
-    <Link
-      to="/profile/$username"
-      params={{ username: person.username }}
-      tabIndex={disabled ? -1 : 0}
-      aria-disabled={disabled || undefined}
-      onClick={disabled ? (e) => e.preventDefault() : undefined}
-      className={cn(
-        "block w-rail-sm shrink-0 rounded-lg border border-border/80 bg-card p-4 shadow-xs",
-        disabled
-          ? "cursor-default"
-          : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]",
-      )}
-    >
+  const rating = person.rating ?? null;
+  const body = featured ? (
+    <>
       {person.avatarUrl ? (
         <img
-          src={sized(person.avatarUrl, { width: 56 })}
+          src={sized(person.avatarUrl, { width: 412 })}
           alt=""
           loading="lazy"
-          className="h-14 w-14 rounded-full border border-border/60 object-cover"
+          className="h-full w-full object-cover"
         />
       ) : (
-        <span className="block h-14 w-14 rounded-full bg-subtle" aria-hidden />
+        <span className="flex h-full w-full items-center justify-center bg-subtle">
+          <PersonAvatar name={person.name} photo={null} className="h-20 w-20 text-3" />
+        </span>
       )}
+      <div className="media-scrim" />
+      <span className="absolute inset-x-3 bottom-3 text-background">
+        <span className="flex min-w-0 items-center gap-1">
+          <span className="truncate text-2 font-bold">{person.name}</span>
+          {person.verified ? <VerifiedBadge size={14} /> : null}
+        </span>
+        {detail ? (
+          <span className="mt-0.5 block truncate text-1 text-background/80">{detail}</span>
+        ) : null}
+        {person.city || rating != null ? (
+          <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-background/80">
+            {person.city ? <span className="truncate">{person.city}</span> : null}
+            {person.city && rating != null ? <span aria-hidden>·</span> : null}
+            {rating != null ? (
+              <span className="flex shrink-0 items-center gap-0.5">
+                <Star size={iconSize.xs} fill="currentColor" aria-hidden />
+                {rating.toFixed(1)}
+              </span>
+            ) : null}
+          </span>
+        ) : null}
+      </span>
+    </>
+  ) : (
+    <>
+      <PersonAvatar
+        name={person.name}
+        photo={person.avatarUrl ? sized(person.avatarUrl, { width: 56 }) : null}
+        className="h-14 w-14 border border-border/60 text-sm"
+      />
       <span className="mt-3 flex min-w-0 items-center gap-1">
-        <span className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+        <span className="truncate text-2 font-semibold text-foreground transition-colors group-hover:text-primary">
           {person.name}
         </span>
         {person.verified ? <VerifiedBadge size={14} /> : null}
@@ -183,11 +248,28 @@ export function PersonCard({
           <span className="truncate">{person.city}</span>
         </span>
       ) : null}
-      {person.rating != null ? (
+      {rating != null ? (
         <span className="mt-1 flex items-center text-1">
-          <RatingLine rating={person.rating} reviewCount={person.reviewCount} />
+          <RatingLine rating={rating} reviewCount={person.reviewCount ?? 0} />
         </span>
       ) : null}
+    </>
+  );
+  const shape = featured
+    ? "relative block h-56 w-rail-sm shrink-0 overflow-hidden rounded-lg text-left"
+    : "block w-rail-sm shrink-0 rounded-lg border border-border/80 bg-card p-4 shadow-xs";
+  const live = featured
+    ? "state-layer transition-transform duration-150 ease-standard active:scale-[0.985]"
+    : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]";
+  // A preview, or a person with no username, is the same card with nothing to open.
+  if (disabled || !person.username) return <div className={shape}>{body}</div>;
+  return (
+    <Link
+      to="/profile/$username"
+      params={{ username: person.username }}
+      className={cn(shape, live)}
+    >
+      {body}
     </Link>
   );
 }
@@ -201,73 +283,6 @@ export function PersonCardSkeleton() {
       <div className="mt-1 h-3 w-3/4 animate-pulse rounded bg-subtle" />
       <div className="mt-2 h-3 w-16 animate-pulse rounded bg-subtle" />
     </div>
-  );
-}
-
-/**
- * Talent as a full-bleed card — the Profile Hero idiom (guide/system) brought to a rail tile: the
- * photo carries the card, name and meta sit on the scrim. An alternate to PersonCard's white-card
- * shape for a photo-led rail like Discover's.
- */
-export function PersonHeroCard({
-  person,
-  roleLabels,
-  disabled = false,
-}: {
-  person: DirectoryPerson;
-  roleLabels?: TaxonomyOption[] | undefined;
-  disabled?: boolean;
-}) {
-  const detail = personDetail(person, roleLabels);
-  return (
-    <Link
-      to="/profile/$username"
-      params={{ username: person.username }}
-      tabIndex={disabled ? -1 : 0}
-      aria-disabled={disabled || undefined}
-      onClick={disabled ? (e) => e.preventDefault() : undefined}
-      className={cn(
-        "relative block h-56 w-rail-sm shrink-0 overflow-hidden rounded-lg text-left",
-        disabled
-          ? "cursor-default"
-          : "state-layer transition-transform duration-150 ease-standard active:scale-[0.985]",
-      )}
-    >
-      {person.avatarUrl ? (
-        <img
-          src={sized(person.avatarUrl, { width: 412 })}
-          alt=""
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        <span className="flex h-full w-full items-center justify-center bg-subtle text-muted-foreground">
-          <Building2 size={28} strokeWidth={1.5} aria-hidden />
-        </span>
-      )}
-      <div className="media-scrim" />
-      <span className="absolute inset-x-3 bottom-3 text-background">
-        <span className="flex min-w-0 items-center gap-1">
-          <span className="truncate text-2 font-bold">{person.name}</span>
-          {person.verified ? <VerifiedBadge size={14} /> : null}
-        </span>
-        {detail ? (
-          <span className="mt-0.5 block truncate text-1 text-background/80">{detail}</span>
-        ) : null}
-        {person.city || person.rating != null ? (
-          <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-background/80">
-            {person.city ? <span className="truncate">{person.city}</span> : null}
-            {person.city && person.rating != null ? <span aria-hidden>·</span> : null}
-            {person.rating != null ? (
-              <span className="flex shrink-0 items-center gap-0.5">
-                <Star size={iconSize.xs} fill="currentColor" aria-hidden />
-                {person.rating.toFixed(1)}
-              </span>
-            ) : null}
-          </span>
-        ) : null}
-      </span>
-    </Link>
   );
 }
 

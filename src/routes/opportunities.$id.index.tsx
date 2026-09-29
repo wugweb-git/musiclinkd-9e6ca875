@@ -5,18 +5,15 @@ import { useEffect, useState } from "react";
 import { Bookmark, Share2, CalendarDays, MapPin, Wallet, CheckCircle2, Circle } from "lucide-react";
 import { ActionBar, Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
-import {
-  MatchBar,
-  PosterRow,
-  statusTone,
-  useSavedOpportunities,
-} from "@/components/ml/opportunity";
+import { MatchBar, statusTone, useSavedOpportunities } from "@/components/ml/opportunity";
 import { categoryLabel, payParts } from "@/data/opportunities";
 import { loadDbOpportunity, opportunityViewSource } from "@/lib/opportunity-view";
 import { usePreviousPath } from "@/lib/flow-back";
 import { myApplicationTo, recordOpportunityView } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
+import { PersonRow } from "@/components/ml/cards";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/opportunities/$id/")({
   // The id is a stored opportunity slug.
@@ -198,7 +195,26 @@ function OpportunityDetail() {
 
         <div>
           <h2 className="mb-2 text-sm">Posted by</h2>
-          <PosterRow o={o} />
+          {/* Stored opportunities have no poster kind, rating or hires; only what exists shows. */}
+          <PersonRow
+            as="div"
+            className="rounded-lg bg-subtle p-3"
+            action={null}
+            person={{
+              id: o.poster.id,
+              username: o.poster.username || null,
+              name: o.poster.name,
+              headline: null,
+              city: null,
+              avatarUrl: o.poster.photo || null,
+              verified: o.poster.verified,
+              rating: o.poster.rating || null,
+            }}
+            detail={
+              joinParts(o.poster.kindLabel, o.poster.hires ? `${o.poster.hires} hires` : "") ||
+              undefined
+            }
+          />
         </div>
       </div>
 

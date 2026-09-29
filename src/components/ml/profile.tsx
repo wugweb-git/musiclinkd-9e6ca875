@@ -18,7 +18,6 @@ import {
   Pause,
   Play,
   Share2,
-  Star,
   User,
   ArrowLeft,
   ChevronRight,
@@ -36,7 +35,6 @@ import {
 } from "lucide-react";
 import type {
   AudioTrack,
-  Collaborator,
   ExperienceItem,
   MarketEntry,
   OpportunityItem,
@@ -1463,32 +1461,6 @@ export function ExperienceCard({ e }: { e: ExperienceItem }) {
         <p className="mt-1 text-1 leading-relaxed text-muted-foreground">{e.detail}</p>
       </div>
     </div>
-  );
-}
-
-export function CollaboratorCard({ c }: { c: Collaborator }) {
-  const inner = (
-    <>
-      <img
-        src={sized(c.photo, { width: 64 })}
-        alt=""
-        aria-hidden
-        loading="lazy"
-        className="h-16 w-16 rounded-lg object-cover"
-      />
-      <p className="mt-2 w-20 truncate text-center text-1 font-semibold">{c.name}</p>
-      <p className="text-1 text-muted-foreground">{c.kind}</p>
-    </>
-  );
-  if (!c.link) return <div className="flex shrink-0 flex-col items-center">{inner}</div>;
-  return (
-    <Link
-      to={c.link.to}
-      {...(c.link.params ? { params: c.link.params } : {})}
-      className="flex shrink-0 flex-col items-center"
-    >
-      {inner}
-    </Link>
   );
 }
 

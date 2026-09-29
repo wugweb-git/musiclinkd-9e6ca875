@@ -61,7 +61,8 @@ const demoTalent: DirectoryPerson = {
   roles: [],
   genres: [],
   avatarUrl: null,
-  verified: true,
+  // A preview of someone who has just signed up: nobody is verified yet.
+  verified: false,
   pin_code: null,
   rating: null,
   reviewCount: 0,

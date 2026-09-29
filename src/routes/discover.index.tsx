@@ -32,7 +32,7 @@ import {
 } from "@/lib/trending.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
-import { PersonHeroCard, PersonRow, StudioMediaCard } from "@/components/ml/cards";
+import { PersonCard, PersonRow, StudioMediaCard } from "@/components/ml/cards";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { VideoCard } from "@/components/ml/profile";
 import { workType } from "@/data/portfolio";
@@ -198,7 +198,7 @@ function Discover() {
           {suggested.length ? (
             <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
               {suggested.slice(0, 8).map((p) => (
-                <PersonHeroCard key={p.id} person={p} roleLabels={options?.person_types} />
+                <PersonCard key={p.id} person={p} roleLabels={options?.person_types} featured />
               ))}
             </div>
           ) : (
@@ -288,7 +288,12 @@ function Discover() {
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
             {trendingNow.map((t) =>
               "person" in t ? (
-                <PersonHeroCard key={t.key} person={t.person} roleLabels={options?.person_types} />
+                <PersonCard
+                  key={t.key}
+                  person={t.person}
+                  roleLabels={options?.person_types}
+                  featured
+                />
               ) : (
                 <StudioMediaCard key={t.key} studio={t.studio} />
               ),
@@ -302,7 +307,7 @@ function Discover() {
           <SectionHeader title="Around you" />
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
             {nearby.slice(0, 8).map((p) => (
-              <PersonHeroCard key={p.id} person={p} roleLabels={options?.person_types} />
+              <PersonCard key={p.id} person={p} roleLabels={options?.person_types} featured />
             ))}
           </div>
         </section>

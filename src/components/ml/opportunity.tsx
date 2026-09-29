@@ -4,7 +4,7 @@
  */
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Bookmark,
   CalendarDays,
@@ -23,7 +23,6 @@ import {
   SlidersHorizontal,
   Sparkles,
   Speaker,
-  Star,
   Store,
   Ticket,
   type LucideIcon,
@@ -199,54 +198,6 @@ export function ApplicantFit({
         <p className="text-1 text-muted-foreground">No reviews yet</p>
       )}
     </div>
-  );
-}
-
-export function PosterRow({ o }: { o: Opportunity }) {
-  // Stored opportunities have no poster kind, rating or hires; only what exists is shown.
-  const meta: ReactNode[] = [];
-  if (o.poster.kindLabel) meta.push(o.poster.kindLabel);
-  if (o.poster.rating)
-    meta.push(
-      <>
-        <Star size={iconSize.xs} fill="currentColor" className="inline" aria-hidden />{" "}
-        {Number(o.poster.rating).toFixed(1)}
-      </>,
-    );
-  if (o.poster.hires) meta.push(`${o.poster.hires} hires`);
-  const className = "flex items-center gap-3 rounded-lg bg-subtle p-3";
-  const body = (
-    <>
-      {o.poster.photo ? (
-        <img
-          src={sized(o.poster.photo, { width: 44 })}
-          alt=""
-          className="h-11 w-11 rounded-full object-cover"
-        />
-      ) : null}
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-1.5">
-          <span className="truncate text-sm font-semibold">{o.poster.name}</span>
-          {o.poster.verified ? <VerifiedBadge size={16} /> : null}
-        </span>
-        {meta.length ? (
-          <span className="block truncate text-1 text-muted-foreground">
-            {meta.map((m, i) => (
-              <Fragment key={i}>
-                {i ? " · " : null}
-                {m}
-              </Fragment>
-            ))}
-          </span>
-        ) : null}
-      </span>
-    </>
-  );
-  if (!o.poster.username) return <div className={className}>{body}</div>;
-  return (
-    <Link to="/profile/$username" params={{ username: o.poster.username }} className={className}>
-      {body}
-    </Link>
   );
 }
 
