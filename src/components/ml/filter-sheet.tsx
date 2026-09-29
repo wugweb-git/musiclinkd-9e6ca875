@@ -72,7 +72,7 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
       </div>
 
       <Btn className="w-full" onClick={onClose}>
-        Apply filters · 248 results
+        Apply Filters
       </Btn>
     </Sheet>
   );

@@ -112,8 +112,8 @@ export const requestRentalBooking = createServerFn({ method: "POST" })
     z
       .object({
         listingSlug: z.string().min(1).max(120),
-        startDate: z.string().min(1),
-        endDate: z.string().min(1),
+        startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
         quantity: z.number().int().min(1).max(99).optional(),
         fulfilment: z.enum(["pickup", "provider_delivery", "courier"]).optional(),
         note: z.string().max(2000).optional(),
@@ -121,8 +121,22 @@ export const requestRentalBooking = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }) => {
+    if (data.endDate < data.startDate) throw new Error("The end date is before the start date.");
+    // Listings keep India's calendar; the server's clock is UTC.
+    const today = new Date(Date.now() + 5.5 * 3_600_000).toISOString().slice(0, 10);
+    if (data.startDate < today) throw new Error("That start date has passed.");
     const client = db(context.supabase);
     const listingId = await listingIdFor(client, data.listingSlug);
+    const { data: listing, error: listingError } = await client
+      .from("marketplace_listings")
+      .select("unavailable_dates")
+      .eq("id", listingId)
+      .maybeSingle();
+    if (listingError) throw new Error(listingError.message);
+    const blocked = ((listing as { unavailable_dates: string[] | null } | null)
+      ?.unavailable_dates ?? []) as string[];
+    if (blocked.some((d) => d >= data.startDate && d <= data.endDate))
+      throw new Error("Those dates include a day the provider has blocked.");
     const { data: row, error } = await client
       .from("rental_bookings")
       .insert({

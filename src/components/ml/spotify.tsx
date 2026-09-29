@@ -26,23 +26,29 @@ export function SpotifyRow() {
   const [open, setOpen] = useState(false);
   const [sharing, setSharing] = useState<SpotifySharing>("connections");
   const [busy, setBusy] = useState(false);
+  // A failed status read is an error with a retry, never "Not available yet".
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    setFailed(false);
     void status()
       .then(setState)
-      .catch(() => setState({ state: "unavailable" }));
-  }, [status]);
+      .catch(() => setFailed(true));
+  }, [status, attempt]);
 
-  const unavailable = !state || state.state === "unavailable";
-  const hint = !state
-    ? "Checking…"
-    : state.state === "unavailable"
-      ? "Not available yet"
-      : state.state === "disconnected"
-        ? "Not connected"
-        : state.state === "revoked"
-          ? "Access ended · reconnect"
-          : `Connected${state.displayName ? ` as ${state.displayName}` : ""}`;
+  const unavailable = !failed && (!state || state.state === "unavailable");
+  const hint = failed
+    ? "Couldn't load · tap to retry"
+    : !state
+      ? "Checking…"
+      : state.state === "unavailable"
+        ? "Not available yet"
+        : state.state === "disconnected"
+          ? "Not connected"
+          : state.state === "revoked"
+            ? "Access ended · reconnect"
+            : `Connected${state.displayName ? ` as ${state.displayName}` : ""}`;
 
   const allow = async () => {
     setBusy(true);
@@ -75,7 +81,7 @@ export function SpotifyRow() {
       <button
         type="button"
         disabled={unavailable}
-        onClick={() => setOpen(true)}
+        onClick={() => (failed ? setAttempt((n) => n + 1) : setOpen(true))}
         className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left disabled:opacity-60"
       >
         <span className="flex h-10 w-7 shrink-0 items-center justify-center">

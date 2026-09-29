@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { profileUrl } from "@/lib/site";
-import { Children, useEffect, useMemo, useState, type ComponentProps, type ReactNode } from "react";
+import { Children, useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Switch } from "@/components/ui/switch";
@@ -18,7 +18,6 @@ import {
   Pause,
   Play,
   Share2,
-  ShieldCheck,
   Star,
   User,
   ArrowLeft,
@@ -34,7 +33,6 @@ import {
   MessageSquareQuote,
   Clock,
   Check,
-  ThumbsUp,
 } from "lucide-react";
 import type {
   AudioTrack,
@@ -59,9 +57,14 @@ import { roleIcon } from "@/lib/role-icons";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { MediaEmbed } from "./media-embed";
+import { QrCode } from "./qr";
 import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
 import { SavedToggle } from "./saved-toggle";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { fileReport } from "@/lib/reports.functions";
+import { saveTarget } from "@/lib/saved.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { haptic } from "@/lib/haptics";
 
 /** Works stored in the database can be saved; demo works (non-uuid ids) can't. */
@@ -861,12 +864,13 @@ export function ProfileHero({
 
 /* ── Portfolio pieces ──────────────────────────────────────── */
 
+/**
+ * The profile's featured work: its image, title and line. It has no media of its own to play, so
+ * it shows no play control and no copy beyond what the profile stores.
+ */
 export function FeaturedCard({ featured }: { featured: NonNullable<TalentProfile["featured"]> }) {
-  const [expanded, setExpanded] = useState(false);
-  const [playing, setPlaying] = useState(false);
-
   return (
-    <article className="overflow-hidden rounded-lg border border-border/80 bg-card transition-all">
+    <article className="overflow-hidden rounded-lg border border-border/80 bg-card">
       <div className="relative">
         <img
           src={sized(featured.image, { width: 176 })}
@@ -875,82 +879,15 @@ export function FeaturedCard({ featured }: { featured: NonNullable<TalentProfile
           loading="lazy"
         />
         <div className="media-scrim" />
-        <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 text-background">
-          <div className="min-w-0 flex-1">
-            <span className="rounded-full bg-primary pill text-primary-foreground font-semibold">
-              Featured {featured.kind}
-            </span>
-            <h3 className="mt-2 text-2 font-bold text-background">{featured.title}</h3>
-            <p className="text-1 opacity-90">{featured.meta}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setExpanded((e) => !e)}
-              aria-label={expanded ? "Hide details" : "View details"}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-card/90 text-foreground active:scale-95 transition-transform"
-            >
-              <ChevronDown
-                size={iconSize.sm}
-                className={cn("transition-transform duration-200", expanded && "rotate-180")}
-                aria-hidden
-              />
-            </button>
-            <button
-              type="button"
-              onClick={() => setPlaying((p) => !p)}
-              aria-label={playing ? "Pause preview" : "Play preview"}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md active:scale-95 transition-transform"
-            >
-              {playing ? (
-                <Pause size={iconSize.sm} aria-hidden />
-              ) : (
-                <Play size={iconSize.sm} aria-hidden />
-              )}
-            </button>
-          </div>
+        <div className="absolute inset-x-4 bottom-4 min-w-0 text-background">
+          <span className="rounded-full bg-primary pill text-primary-foreground font-semibold">
+            Featured {featured.kind}
+          </span>
+          <h3 className="mt-2 text-2 font-bold text-background">{featured.title}</h3>
+          <p className="text-1 opacity-90">{featured.meta}</p>
         </div>
       </div>
-
-      {playing || expanded ? (
-        <div className="border-t border-border bg-subtle p-3.5 animate-in fade-in-50 duration-150">
-          <div className="flex items-center justify-between">
-            <span className="text-1 font-semibold text-foreground">
-              {playing ? "Playing featured work in-app" : "Featured track details"}
-            </span>
-            {playing ? <PlaybackBars className="h-4 gap-0.5 text-foreground" aria-hidden /> : null}
-          </div>
-          <p className="mt-1 text-1 leading-relaxed text-foreground">
-            Mastered for Apple Digital Masters & Spotify HiFi. Recorded & produced across live
-            tracking sessions.
-          </p>
-        </div>
-      ) : null}
     </article>
-  );
-}
-
-/**
- * A "now playing" indicator: 5 fixed-height bars. Replaces AgentAudioVisualizerBar
- * (agents-ui, backed by @livekit/components-react) which this call site never used
- * for real live-audio data — it always passed a hardcoded volumeBands array, and its
- * "speaking" state has no time-varying highlight sequence, so the render was already
- * static. That import alone added 1.1MB to this route's SSR bundle (see
- * docs/component-inventory-2026-09-16.md); this reproduces the same visual output
- * with none of it. agents-ui/agent-audio-visualizer-bar.tsx is left in place for
- * actual live-audio use elsewhere in the future.
- */
-function PlaybackBars({ className, ...props }: { className?: string } & ComponentProps<"div">) {
-  return (
-    <div className={cn("relative flex items-center", className)} {...props}>
-      {[0.5, 0.9, 0.35, 0.75, 0.55].map((band, i) => (
-        <span
-          key={i}
-          className="w-[8px] min-h-[8px] rounded-full bg-current"
-          style={{ height: `${band * 100}%` }}
-        />
-      ))}
-    </div>
   );
 }
 
@@ -995,12 +932,7 @@ export function AudioTrackCard({
           <p className="truncate text-1 font-medium text-foreground">
             {joinParts(track.role, track.project)}
           </p>
-          {playing ? (
-            <div className="mt-1 flex items-center gap-1.5 text-foreground">
-              <PlaybackBars className="h-4 justify-start gap-0.5" aria-hidden />
-              <span className="eyebrow text-pink-strong">Playing in-app</span>
-            </div>
-          ) : track.duration ? (
+          {track.duration ? (
             <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
           ) : null}
         </div>
@@ -1019,21 +951,24 @@ export function AudioTrackCard({
               aria-hidden
             />
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              if (!playing) recordPlay(track.id);
-              onToggle();
-            }}
-            aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs active:scale-95 transition-transform"
-          >
-            {playing ? (
-              <Pause size={iconSize.sm} aria-hidden />
-            ) : (
-              <Play size={iconSize.sm} aria-hidden />
-            )}
-          </button>
+          {/* Opens the track's own player; no media, nothing to play, no button. */}
+          {track.media ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (!playing) recordPlay(track.id);
+                onToggle();
+              }}
+              aria-label={playing ? `Close player for ${track.title}` : `Play ${track.title}`}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs active:scale-95 transition-transform"
+            >
+              {playing ? (
+                <Pause size={iconSize.sm} aria-hidden />
+              ) : (
+                <Play size={iconSize.sm} aria-hidden />
+              )}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -1048,33 +983,10 @@ export function AudioTrackCard({
               />
             </div>
           ) : (
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-1 font-medium text-foreground">
-                <span className="flex items-center gap-1.5">
-                  <AudioLines size={14} className="text-foreground" /> In-app lossless preview
-                </span>
-                <span className="font-mono text-1">{track.duration ?? "3:42"}</span>
-              </div>
-              <div className="flex h-7 items-center gap-1 overflow-hidden rounded-sm bg-background/80 px-2 py-1">
-                {[
-                  4, 12, 18, 8, 22, 14, 26, 19, 11, 16, 24, 20, 15, 9, 21, 13, 27, 18, 10, 14, 22,
-                  16, 8, 12, 20, 15, 23, 11, 19, 7,
-                ].map((h, i) => (
-                  <span
-                    key={i}
-                    className={cn(
-                      "w-1 rounded-full transition-all duration-200",
-                      playing ? "bg-foreground" : "bg-muted-foreground/40",
-                      playing && i % 3 === 0 && "animate-pulse",
-                    )}
-                    style={{ height: `${h}px` }}
-                  />
-                ))}
-              </div>
-            </div>
+            <p className="text-1 text-muted-foreground">No audio added to this track yet.</p>
           )}
           <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 pt-1 text-1 text-foreground border-t border-border/40">
-            <span className="font-semibold">Role: {track.role || "Producer & Mix"}</span>
+            {track.role ? <span className="font-semibold">Role: {track.role}</span> : null}
             {track.project ? (
               <span className="text-muted-foreground">Project: {track.project}</span>
             ) : null}
@@ -1602,14 +1514,6 @@ export function ReviewCard({
   className?: string | undefined;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [helpfulCount, setHelpfulCount] = useState(0);
-  const [hasVoted, setHasVoted] = useState(false);
-
-  const toggleHelpful = () => {
-    haptic("select");
-    setHasVoted((v) => !v);
-    setHelpfulCount((c) => (hasVoted ? Math.max(0, c - 1) : c + 1));
-  };
 
   return (
     <article
@@ -1674,21 +1578,6 @@ export function ReviewCard({
               ) : null}
             </span>
           </div>
-
-          <button
-            type="button"
-            onClick={toggleHelpful}
-            className={cn(
-              "hit-area inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-1 font-medium transition-colors active:scale-95",
-              hasVoted
-                ? "border-foreground bg-foreground text-background font-semibold"
-                : "border-border/70 bg-subtle/40 text-muted-foreground hover:text-foreground hover:bg-card",
-            )}
-            aria-label={hasVoted ? "Marked as helpful" : "Helpful review"}
-          >
-            <ThumbsUp size={11} className={hasVoted ? "fill-background" : ""} aria-hidden />
-            <span>Helpful{helpfulCount > 0 ? ` · ${helpfulCount}` : ""}</span>
-          </button>
         </div>
         {footer ? <div className="pt-2.5">{footer}</div> : null}
       </div>
@@ -1834,24 +1723,6 @@ export function SocialLinks({ links }: { links: { label: string; handle: string 
 
 /* ── Share / QR ────────────────────────────────────────────── */
 
-export function QrBlock({ seed }: { seed: string }) {
-  const cells = Array.from({ length: 169 }).map((_, i) => {
-    const code = seed.charCodeAt(i % seed.length) + i * 7;
-    return code % 3 !== 0;
-  });
-  return (
-    <div
-      className="grid grid-cols-13 gap-0.5 rounded-lg bg-card p-3"
-      aria-label="Profile QR code"
-      role="img"
-    >
-      {cells.map((on, i) => (
-        <span key={i} className={`aspect-square rounded-sm ${on ? "bg-ink" : ""}`} />
-      ))}
-    </div>
-  );
-}
-
 export function ShareSheet({
   p,
   open,
@@ -1892,9 +1763,7 @@ export function ShareSheet({
           </div>
         </div>
         <div className="flex items-center gap-3 border-t border-background/15 p-4">
-          <div className="w-28">
-            <QrBlock seed={p.username} />
-          </div>
+          <QrCode value={url} size={112} label={`QR code for ${p.name}'s profile`} />
           <div className="min-w-0 text-background">
             <p className="pill bg-subtle/60">MusicLinkd identity</p>
             <p className="mt-1 truncate text-1 font-semibold">{url.replace(/^https?:\/\//, "")}</p>
@@ -1933,48 +1802,174 @@ export function ShareSheet({
 
 /* ── More / safety ─────────────────────────────────────────── */
 
+const PROFILE_REPORT_REASONS = {
+  impersonation: "Pretending to be someone",
+  spam: "Spam or scam",
+  offensive: "Offensive content",
+  stolen_work: "Someone else's work",
+} as const;
+type ProfileReportReason = keyof typeof PROFILE_REPORT_REASONS;
+
+/**
+ * The profile's More menu. Only actions that do something: copy the link, save to the shortlist
+ * (saved_items) and report (reports). Blocking and restricting have no backend yet, so they show
+ * disabled with the reason rather than closing the sheet as if they had worked.
+ */
 export function MoreSheet({
   open,
   onClose,
   name,
+  username,
+  profileId,
 }: {
   open: boolean;
   onClose: () => void;
   name: string;
+  username?: string | undefined;
+  profileId?: string | undefined;
 }) {
-  const items = [
-    "Copy profile link",
-    "Save contact",
-    "Add to shortlist",
-    `Restrict ${name}`,
-    `Block ${name}`,
-    "Report profile",
-    "Report content",
-  ];
-  return (
-    <Sheet open={open} onClose={onClose} title="More">
-      <div className="divide-y divide-border rounded-lg bg-subtle">
-        {items.map((i) => {
-          const danger = i.startsWith("Block") || i.startsWith("Report");
-          return (
+  const { signedIn } = useAuth();
+  const [reporting, setReporting] = useState(false);
+  const [reason, setReason] = useState<ProfileReportReason | null>(null);
+  const report = useServerFn(fileReport);
+  const send = useMutation({
+    mutationFn: (r: ProfileReportReason) =>
+      report({
+        data: { subjectType: "profile", subjectId: profileId!, reason: PROFILE_REPORT_REASONS[r] },
+      }),
+    onSuccess: () => {
+      toast.success("Report sent");
+      setReporting(false);
+      setReason(null);
+      onClose();
+    },
+    onError: () => toast.error("That didn't send. Try again."),
+  });
+  const saveProfile = useServerFn(saveTarget);
+  const queryClient = useQueryClient();
+  const save = useMutation({
+    mutationFn: () => saveProfile({ data: { targetType: "talent", targetId: profileId! } }),
+    onSuccess: async () => {
+      toast.success("Saved to your shortlist");
+      await queryClient.invalidateQueries({ queryKey: ["saved"] });
+      onClose();
+    },
+    onError: () => toast.error("Couldn't save. Try again."),
+  });
+
+  const row =
+    "flex min-h-12 w-full items-center justify-between px-4 py-4 text-left text-sm font-medium disabled:text-muted-foreground";
+  const close = () => {
+    setReporting(false);
+    setReason(null);
+    onClose();
+  };
+
+  if (reporting) {
+    return (
+      <Sheet open={open} onClose={close} title={`Report ${name}`}>
+        <div
+          className="mb-5 divide-y divide-border rounded-lg border border-border"
+          role="radiogroup"
+        >
+          {(Object.keys(PROFILE_REPORT_REASONS) as ProfileReportReason[]).map((r) => (
             <button
-              key={i}
+              key={r}
               type="button"
-              onClick={onClose}
-              className={`flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium ${
-                danger ? "text-destructive" : ""
-              }`}
+              role="radio"
+              aria-checked={reason === r}
+              onClick={() => setReason(r)}
+              className={row}
             >
-              {i}
-              <ChevronRight size={iconSize.sm} className="text-muted-foreground" aria-hidden />
+              {PROFILE_REPORT_REASONS[r]}
+              {reason === r ? <Check size={iconSize.md} aria-hidden /> : null}
             </button>
-          );
-        })}
+          ))}
+        </div>
+        <Btn
+          className="w-full"
+          disabled={!reason}
+          loading={send.isPending}
+          onClick={() => reason && send.mutate(reason)}
+        >
+          Send Report
+        </Btn>
+      </Sheet>
+    );
+  }
+
+  return (
+    <Sheet open={open} onClose={close} title="More">
+      <div className="divide-y divide-border rounded-lg bg-subtle">
+        {username ? (
+          <button
+            type="button"
+            className={row}
+            onClick={() => {
+              const url = profileUrl(username);
+              if (!navigator.clipboard) {
+                toast.error("Couldn't copy the link");
+                return;
+              }
+              navigator.clipboard
+                .writeText(url)
+                .then(() => {
+                  toast.success("Link copied");
+                  onClose();
+                })
+                .catch(() => toast.error("Couldn't copy the link"));
+            }}
+          >
+            Copy profile link
+            <ChevronRight size={iconSize.sm} className="text-muted-foreground" aria-hidden />
+          </button>
+        ) : null}
+        {profileId ? (
+          <button
+            type="button"
+            className={row}
+            disabled={save.isPending}
+            onClick={() => {
+              if (!signedIn) {
+                toast("Sign in to save this profile");
+                return;
+              }
+              save.mutate();
+            }}
+          >
+            Save to shortlist
+            <ChevronRight size={iconSize.sm} className="text-muted-foreground" aria-hidden />
+          </button>
+        ) : null}
+        <button type="button" className={row} disabled>
+          <span>
+            Restrict {name}
+            <span className="block text-1 font-normal">Not available yet</span>
+          </span>
+        </button>
+        <button type="button" className={row} disabled>
+          <span>
+            Block {name}
+            <span className="block text-1 font-normal">Not available yet</span>
+          </span>
+        </button>
+        {profileId ? (
+          <button
+            type="button"
+            className={`${row} text-destructive`}
+            onClick={() => {
+              if (!signedIn) {
+                toast("Sign in to report a profile");
+                return;
+              }
+              setReporting(true);
+            }}
+          >
+            Report profile
+            <ChevronRight size={iconSize.sm} className="text-muted-foreground" aria-hidden />
+          </button>
+        ) : null}
       </div>
-      <p className="mt-3 flex items-center gap-2 px-1 text-1 text-muted-foreground">
-        <ShieldCheck size={iconSize.xs} aria-hidden />
-        Reports are reviewed by the MusicLinkd trust team.
-      </p>
     </Sheet>
   );
 }

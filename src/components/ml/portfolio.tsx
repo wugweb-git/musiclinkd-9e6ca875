@@ -391,13 +391,14 @@ export function PortfolioHeader({
   published,
   drafts,
   featured,
-  visibility = "Public",
+  visibility,
 }: {
   total: number;
   published: number;
   drafts: number;
   featured: number;
-  visibility?: string;
+  /** The stored visibility, when the screen has it. Never assumed: no value, no line. */
+  visibility?: string | undefined;
 }) {
   const stat = (n: number, label: string) => (
     <div key={label} className="min-w-0">
@@ -413,9 +414,11 @@ export function PortfolioHeader({
         {stat(drafts, "Drafts")}
         {stat(featured, "Featured")}
       </div>
-      <p className="mt-4 text-1 text-muted-foreground">
-        Portfolio visibility: <span className="font-semibold text-foreground">{visibility}</span>
-      </p>
+      {visibility ? (
+        <p className="mt-4 text-1 text-muted-foreground">
+          Portfolio visibility: <span className="font-semibold text-foreground">{visibility}</span>
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -571,45 +574,25 @@ export function AudioPlayer({
           <p className="text-1 text-muted-foreground">Audio</p>
         </div>
       </div>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied external link (YouTube/Spotify/SoundCloud); no caption track exists to attach, and an empty <track> would assert captions that are not there */}
-      <audio controls src={src} className="mt-3 w-full" aria-label={`Play ${title}`} />
+      {/* A direct file plays in the browser's player; a link plays through its source (MediaEmbed). */}
+      <div className="mt-3">
+        <MediaEmbed url={src} title={title} />
+      </div>
     </div>
   );
 }
 
 export function VideoPlayer({ src, title }: { src: string; title: string }) {
-  const embed = embedFor(src);
-  if (embed?.mode === "iframe") {
+  // MediaEmbed plays what embeds or is a video file, and links out for anything else.
+  if (!embedFor(src)) {
     return (
-      <iframe
-        src={embed.src}
-        title={title}
-        height={embed.height}
-        loading="lazy"
-        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
-        allowFullScreen
-        className="w-full rounded-lg border-0 bg-subtle"
-      />
-    );
-  }
-  if (embed?.mode === "in-app") {
-    return (
-      <div className="block rounded-lg border border-border bg-subtle p-4">
-        <p className="pill bg-background text-foreground font-semibold">Video preview</p>
-        <p className="mt-1 truncate text-sm font-semibold text-foreground">{title}</p>
-        <p className="mt-1 truncate text-1 text-muted-foreground">{src}</p>
+      <div className="rounded-lg bg-subtle p-4">
+        <p className="text-sm font-semibold">{title}</p>
+        <p className="mt-1 text-1 text-muted-foreground">This video link can't be played.</p>
       </div>
     );
   }
-  return (
-    // eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied external link (YouTube/Spotify/SoundCloud); no caption track exists to attach, and an empty <track> would assert captions that are not there
-    <video
-      controls
-      src={src}
-      className="w-full rounded-lg border border-border"
-      aria-label={title}
-    />
-  );
+  return <MediaEmbed url={src} title={title} />;
 }
 
 /* ---------------- Credits & contributors -------------------------------- */
@@ -690,6 +673,14 @@ export function ContributorPicker({
           ))}
           {people.isFetching ? (
             <p className="px-4 py-3 text-1 text-muted-foreground">Searching…</p>
+          ) : people.isError ? (
+            // A failed search says nothing about whether they're on MusicLinkd.
+            <div className="flex items-center justify-between gap-3 px-4 py-3">
+              <p className="text-1 text-muted-foreground">Search didn't work.</p>
+              <Btn variant="outline" onClick={() => void people.refetch()}>
+                Try Again
+              </Btn>
+            </div>
           ) : matches.length === 0 ? (
             <button
               type="button"

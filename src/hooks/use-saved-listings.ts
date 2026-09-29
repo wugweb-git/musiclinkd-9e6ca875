@@ -1,39 +1,53 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { listMySavedIds, saveTarget, unsaveTarget } from "@/lib/saved.functions";
 import { useAuth } from "@/hooks/use-auth";
 
-/** Real saved-listings state (marketplace + rentals share one target_type: "listing"). */
+/** The same cache entry SavedToggle reads, so a heart on one screen is the heart on every other. */
+const queryKey = ["saved", "ids", "listing"] as const;
+
+/**
+ * Real saved-listings state (marketplace + rentals share one target_type: "listing"), keyed by a
+ * listing's row uuid. A toggle shows at once, then settles on what the server did: a failed save
+ * rolls back and says so.
+ */
 export function useSavedListings() {
   const { signedIn } = useAuth();
-  const [ids, setIds] = useState<string[]>([]);
+  const queryClient = useQueryClient();
   const fetchIds = useServerFn(listMySavedIds);
   const save = useServerFn(saveTarget);
   const unsave = useServerFn(unsaveTarget);
+  const ids = useQuery({
+    queryKey,
+    queryFn: () => fetchIds({ data: { targetType: "listing" } }),
+    enabled: signedIn,
+  });
 
-  useEffect(() => {
-    if (!signedIn) return;
-    fetchIds({ data: { targetType: "listing" } })
-      .then(setIds)
-      .catch(() => {
-        /* Saved state just stays empty; the heart still works next toggle. */
-      });
-  }, [signedIn, fetchIds]);
-
-  const has = useCallback((id: string) => ids.includes(id), [ids]);
+  const has = useCallback((id: string) => ids.data?.includes(id) ?? false, [ids.data]);
 
   const toggle = useCallback(
-    (id: string) => {
-      if (!signedIn) return;
-      const wasSaved = ids.includes(id);
-      setIds((prev) => (wasSaved ? prev.filter((x) => x !== id) : [...prev, id]));
-      const call = wasSaved ? unsave : save;
-      void call({ data: { targetType: "listing", targetId: id } }).catch(() => {
-        setIds((prev) => (wasSaved ? [...prev, id] : prev.filter((x) => x !== id)));
-      });
+    async (id: string) => {
+      if (!signedIn) {
+        toast("Sign in to save this");
+        return;
+      }
+      const wasSaved = ids.data?.includes(id) ?? false;
+      queryClient.setQueryData<string[]>([...queryKey], (prev) =>
+        wasSaved ? (prev ?? []).filter((x) => x !== id) : [...(prev ?? []), id],
+      );
+      try {
+        await (wasSaved ? unsave : save)({ data: { targetType: "listing", targetId: id } });
+        await queryClient.invalidateQueries({ queryKey: ["saved", "mine"] });
+        await queryClient.invalidateQueries({ queryKey: ["rent", "saved"] });
+      } catch {
+        toast.error("Couldn't update saved. Try again.");
+        await queryClient.invalidateQueries({ queryKey: [...queryKey] });
+      }
     },
-    [ids, signedIn, save, unsave],
+    [ids.data, signedIn, queryClient, save, unsave],
   );
 
-  return { has, toggle };
+  return { has, toggle: (id: string) => void toggle(id) };
 }

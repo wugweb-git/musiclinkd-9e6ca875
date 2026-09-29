@@ -209,7 +209,13 @@ export function TalentProfileExperience({
       </main>
 
       {share ? <ShareSheet p={p} open={shareOpen} onClose={() => setShareOpen(false)} /> : null}
-      <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} name={p.name} />
+      <MoreSheet
+        open={moreOpen}
+        onClose={() => setMoreOpen(false)}
+        name={p.name}
+        username={p.username}
+        profileId={p.profileId}
+      />
       <HireModal
         open={hireOpen}
         onClose={() => setHireOpen(false)}

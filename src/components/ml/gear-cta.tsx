@@ -112,9 +112,7 @@ export function GearCta() {
         <h2 className="text-3 font-extrabold leading-tight tracking-[-0.02em]">
           Gear gathering dust?
         </h2>
-        <p className="mt-1 text-sm text-white/80">
-          List it free. 72,000+ verified pros are looking.
-        </p>
+        <p className="mt-1 text-sm text-white/80">List it free on MusicLinkd.</p>
 
         <svg
           ref={band}

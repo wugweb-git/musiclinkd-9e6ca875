@@ -1,10 +1,11 @@
-import { AudioLines } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { embedFor } from "@/lib/embed";
 import { iconSize } from "@/lib/tokens";
 
 /**
  * A portfolio link played in place: the source's own player when it embeds, the browser's player
- * for a direct file, otherwise an Open link to a new tab. `onOpen` hears that link being followed.
+ * for a direct file, otherwise an "Open on {site}" link to a new tab. `onOpen` hears that link
+ * being followed.
  */
 export function MediaEmbed({
   url,
@@ -46,24 +47,33 @@ export function MediaEmbed({
       />
     );
   }
+  // Nothing plays in place, so say where it does play instead of pretending it plays here.
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-border bg-subtle p-3">
+    <a
+      href={embed.src}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onOpen}
+      className="flex min-h-12 items-center gap-3 rounded-lg border border-border bg-subtle p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-background">
-        <AudioLines size={iconSize.sm} aria-hidden />
+        <ExternalLink size={iconSize.sm} aria-hidden />
       </span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-foreground">{title}</p>
-        <p className="truncate text-1 text-muted-foreground">Playing in MusicLinkd</p>
-      </div>
-      <div className="flex items-center gap-0.5 text-ink" aria-hidden>
-        {[0.4, 0.9, 0.6, 0.8, 0.3].map((h, i) => (
-          <span
-            key={i}
-            className="w-1 rounded-full bg-current animate-pulse"
-            style={{ height: `${h * 16}px`, animationDelay: `${i * 120}ms` }}
-          />
-        ))}
-      </div>
-    </div>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-semibold text-foreground">{title}</span>
+        <span className="block truncate text-1 text-muted-foreground">
+          Open on {platformName(embed.src)}
+        </span>
+      </span>
+    </a>
   );
+}
+
+/** "https://www.example.com/x" → "example.com". */
+function platformName(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\.|^m\./, "");
+  } catch {
+    return "the web";
+  }
 }

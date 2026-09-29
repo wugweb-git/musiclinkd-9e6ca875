@@ -89,8 +89,9 @@ export const getStudioCalendar = createServerFn({ method: "GET" })
       .select("id, weekly_hours")
       .eq("slug", data.slug)
       .maybeSingle();
-    // No column yet (migration not applied) or no studio: no calendar.
-    if (error || !row) return { weeklyHours: {}, busy: [], noticeHours: 0, blackouts: [] };
+    // A failed read is an error, not an empty calendar; no studio is no calendar.
+    if (error) throw new Error("Availability didn't load");
+    if (!row) return { weeklyHours: {}, busy: [], noticeHours: 0, blackouts: [] };
     const { id, weekly_hours } = row as { id: string; weekly_hours: unknown };
     const weeklyHours = parseWeeklyHours(weekly_hours);
     const rules = await readRules(client, id);

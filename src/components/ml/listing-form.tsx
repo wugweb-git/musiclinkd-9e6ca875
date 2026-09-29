@@ -738,15 +738,24 @@ function PhotoSlots({
     const picked = Array.from(files ?? []).slice(0, room);
     if (!picked.length) return;
     setUploading(true);
-    try {
-      const urls: string[] = [];
-      for (const f of picked) urls.push(await uploadListingPhoto(f));
-      onChange([...photos, ...urls]);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Couldn't upload that photo");
-    } finally {
-      setUploading(false);
+    // Each photo uploads on its own: the ones that made it are kept, the ones that didn't are named.
+    const urls: string[] = [];
+    const failed: string[] = [];
+    for (const f of picked) {
+      try {
+        urls.push(await uploadListingPhoto(f));
+      } catch {
+        failed.push(f.name);
+      }
     }
+    if (urls.length) onChange([...photos, ...urls]);
+    if (failed.length)
+      toast.error(
+        failed.length === 1
+          ? `${failed[0]} didn't upload. Try it again.`
+          : `${failed.length} photos didn't upload: ${failed.join(", ")}. Try them again.`,
+      );
+    setUploading(false);
   }
   // The file stays in storage: an edit can still be cancelled, and the saved listing may use it.
   function remove(url: string) {

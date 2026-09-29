@@ -41,7 +41,9 @@ import {
 } from "@/data/opportunities";
 import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";
-import { setOpportunitySaved } from "@/lib/applications.functions";
+import { listMySavedOpportunitySlugs, setOpportunitySaved } from "@/lib/applications.functions";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { fitLine, type Fit } from "@/lib/fit";
 import { sized } from "@/lib/image-url";
 
@@ -81,38 +83,64 @@ export function statusTone(s: OpportunityStatus): Tone {
   return "neutral";
 }
 
-/** Local-only shortlist of opportunities (design-only, no backend). */
+/**
+ * The signed-in account's saved opportunities (saved_items). A toggle shows at once and settles on
+ * what the server did: a failed save rolls back and says so. Signed out, it asks to sign in rather
+ * than keeping a device-only list that looks saved. A shortlist left on this device by the old
+ * local-only version is moved to the account once, on the first signed-in load.
+ */
 // eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useSavedOpportunities() {
   const { signedIn } = useAuth();
-  const mirror = useServerFn(setOpportunitySaved);
-  const [ids, setIds] = useState<string[]>([]);
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(savedOpportunityKey);
-      if (raw) setIds(JSON.parse(raw) as string[]);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-  const toggle = useCallback(
-    (id: string) => {
-      const saving = !ids.includes(id);
-      setIds((prev) => {
-        const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-        try {
-          localStorage.setItem(savedOpportunityKey, JSON.stringify(next));
-        } catch {
-          /* ignore */
+  const queryClient = useQueryClient();
+  const persist = useServerFn(setOpportunitySaved);
+  const load = useServerFn(listMySavedOpportunitySlugs);
+  const queryKey = ["saved", "opportunities"];
+  const saved = useQuery({
+    queryKey,
+    queryFn: async () => {
+      try {
+        const raw = localStorage.getItem(savedOpportunityKey);
+        const local = raw ? (JSON.parse(raw) as string[]) : [];
+        if (local.length) {
+          await Promise.allSettled(local.map((slug) => persist({ data: { slug, saved: true } })));
         }
-        return next;
-      });
-      // Signed in, the save is also kept in saved_items so the poster's Saves count is real.
-      if (signedIn) void mirror({ data: { slug: id, saved: saving } }).catch(() => {});
+        localStorage.removeItem(savedOpportunityKey);
+      } catch {
+        /* no storage: nothing to move */
+      }
+      return load();
     },
-    [ids, signedIn, mirror],
+    enabled: signedIn,
+  });
+  const ids = saved.data ?? [];
+  const toggle = useCallback(
+    async (id: string) => {
+      if (!signedIn) {
+        toast("Sign in to save this");
+        return;
+      }
+      const saving = !ids.includes(id);
+      queryClient.setQueryData<string[]>(queryKey, (prev) =>
+        saving ? [...(prev ?? []), id] : (prev ?? []).filter((x) => x !== id),
+      );
+      try {
+        await persist({ data: { slug: id, saved: saving } });
+      } catch {
+        toast.error("Couldn't update saved. Try again.");
+        await queryClient.invalidateQueries({ queryKey });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- queryKey is a constant
+    [ids, signedIn, persist, queryClient],
   );
-  return { ids, toggle, has: (id: string) => ids.includes(id) };
+  return {
+    ids,
+    toggle: (id: string) => void toggle(id),
+    has: (id: string) => ids.includes(id),
+    isLoading: saved.isLoading,
+    isError: saved.isError,
+  };
 }
 
 export function MatchBar({ score, reasons }: { score: number; reasons: string[] }) {
