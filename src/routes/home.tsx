@@ -13,16 +13,8 @@ import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  getMyProfile,
-  listMyPortfolio,
-  getTaxonomyLabels,
-  saveMyProfile,
-} from "@/lib/portfolio.functions";
-import type { TaxonomyLabels } from "@/lib/portfolio.functions";
-import { listOpportunities, listStudios } from "@/lib/catalog.functions";
+import { getMyProfile, listMyPortfolio, saveMyProfile } from "@/lib/portfolio.functions";
 import { listPeopleByRole, type DirectoryPerson } from "@/lib/profile-groups.functions";
-import { discoverStudioFromRow } from "@/lib/studio-view";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
@@ -48,20 +40,13 @@ export const Route = createFileRoute("/home")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  // Home's content is the network's: roles being cast, people, studios. All public reads.
-  loader: async () => {
-    const [opportunities, studios, labels] = await Promise.all([
-      listOpportunities().catch(() => []),
-      listStudios().catch(() => []),
-      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-    ]);
-    // All of them: signed in, the rails are ranked by recommendations before they are cut to six.
-    return {
-      opportunities,
-      studios: studios.map((row) => discoverStudioFromRow(row, labels)),
-      labels,
-    };
-  },
+  /*
+   * No loader. There was one — three server calls for opportunities, studios and taxonomy labels
+   * — and its result was read into a variable nothing referenced. A route loader is awaited
+   * before the component mounts, so every tap on the Home tab waited on three round-trips for
+   * data no part of the screen used: 2.82s on the live site, the slowest tab in the app
+   * (measured 29 Sep 2026). Home builds what it shows from its own query (useDashboard).
+   */
   component: Dashboard,
 });
 
@@ -235,7 +220,6 @@ function Body({ home }: { home: Home }) {
   const saveProfile = useServerFn(saveMyProfile);
   const { data, cont } = home;
   const { user } = data;
-  const loaded = Route.useLoaderData();
   const { displayName } = useViewer();
   const viewerFirstName = firstNameOf(displayName);
   const hello = useGreeting();

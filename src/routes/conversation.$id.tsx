@@ -161,10 +161,22 @@ function Conversation() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages.length]);
 
-  // Opened from a Message button, or a thread with nothing in it yet: ready to type.
+  /*
+   * Opened from a Message button, or a thread with nothing in it yet: ready to type — but only
+   * where there is a mouse.
+   *
+   * Focusing a textarea on a phone opens the on-screen keyboard, which covers up to half the
+   * screen, so the chat arrived with the conversation hidden behind a keypad nobody asked for
+   * (owner, 29 Sep 2026). `compose` is set by every "Message" button that links in here, so this
+   * was most of the ways into the screen. On a pointer device the focus is a convenience and
+   * costs nothing, so it stays there.
+   */
   const fresh = q.data?.messages.length === 0;
   useEffect(() => {
-    if (compose || fresh) box.current?.focus();
+    if (!compose && !fresh) return;
+    const finePointer =
+      typeof window !== "undefined" && window.matchMedia?.("(pointer: fine)").matches;
+    if (finePointer) box.current?.focus();
   }, [compose, fresh]);
 
   // The box grows with the message, up to five lines, then scrolls.

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Bookmark,
@@ -69,7 +69,12 @@ export const Route = createFileRoute("/marketplace/")({
     search["view"] === "Buy" || search["view"] === "Rent" || search["view"] === "Nearby"
       ? { view: search["view"] }
       : {},
-  loader: () => loadCatalogListings(),
+  /*
+   * No loader. A route loader is awaited before the component mounts, so tapping the Market tab
+   * showed nothing at all until the catalogue came back — measured at 0.69s on the live site,
+   * against 0.19s for /profile, which has no loader and paints its shell first. The two fastest
+   * tabs in the app are the two without one; this follows them (owner, 29 Sep 2026).
+   */
   component: MarketHome,
 });
 
@@ -103,7 +108,12 @@ function MarketHome() {
     Route.useSearch().view ?? "Explore",
   );
   const navigate = useNavigate();
-  const catalog = Route.useLoaderData();
+  // The catalogue loads with the screen rather than before it, so the tab opens immediately.
+  const catalogQuery = useQuery<Listing[]>({
+    queryKey: ["marketplace", "catalog"],
+    queryFn: () => loadCatalogListings(),
+  });
+  const catalog = useMemo(() => catalogQuery.data ?? [], [catalogQuery.data]);
   const taxonomy = useGearTaxonomy();
   // The catalogue comes newest first; services are Discover's and never reach it. Signed in, For
   // You puts the listings matched to the viewer's instruments, saves, rentals and city first.

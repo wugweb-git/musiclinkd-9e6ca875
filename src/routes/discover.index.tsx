@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   Boxes,
@@ -60,25 +61,51 @@ export const Route = createFileRoute("/discover/")({
     ],
   }),
   // The people and studios here are the stored ones; an unreachable database leaves them empty.
-  loader: async () => {
-    const [rows, labels, trendingWork, people, trendingPages] = await Promise.all([
-      listStudios().catch(() => []),
-      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-      listTrendingWork().catch((): TrendingItem[] => []),
-      searchPeople({ data: { limit: 12 } })
-        .then((r) => r.people)
-        .catch((): DirectoryPerson[] => []),
-      listTrendingPages().catch((): TrendingPage[] => []),
-    ]);
-    return {
-      dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)),
-      trendingWork,
-      people,
-      trendingPages,
-    };
-  },
+  /*
+   * No loader. A route loader is awaited before the component mounts, so tapping Discover waited
+   * on five server round-trips with nothing on screen — 1.48s live, against 0.19s for /profile,
+   * which has no loader. The same five calls now run inside the screen (useDiscoverFeed), so the
+   * header and the category grid paint at once and the rails fill in behind them
+   * (owner, 29 Sep 2026).
+   */
   component: Discover,
 });
+
+/**
+ * Everything the Discover rails need, fetched with the screen rather than before it.
+ *
+ * One query rather than five so the network shape is unchanged from the loader this replaced —
+ * the difference is only that the screen no longer waits on it to mount. Each call keeps its own
+ * catch, so one failing source empties one rail instead of the page.
+ */
+function useDiscoverFeed() {
+  const q = useQuery({
+    queryKey: ["discover", "feed"],
+    queryFn: async () => {
+      const [rows, labels, trendingWork, people, trendingPages] = await Promise.all([
+        listStudios().catch(() => []),
+        getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+        listTrendingWork().catch((): TrendingItem[] => []),
+        searchPeople({ data: { limit: 12 } })
+          .then((r) => r.people)
+          .catch((): DirectoryPerson[] => []),
+        listTrendingPages().catch((): TrendingPage[] => []),
+      ]);
+      return {
+        dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)),
+        trendingWork,
+        people,
+        trendingPages,
+      };
+    },
+  });
+  return {
+    dbStudios: q.data?.dbStudios ?? [],
+    trendingWork: q.data?.trendingWork ?? [],
+    people: q.data?.people ?? [],
+    trendingPages: q.data?.trendingPages ?? [],
+  };
+}
 
 /** One line icon per quick category. No emoji: they render as empty boxes on real devices. */
 function categoryIcon(label: string) {
@@ -98,7 +125,8 @@ function categoryIcon(label: string) {
 }
 
 function Discover() {
-  const { dbStudios, trendingWork, people, trendingPages } = Route.useLoaderData();
+  const feed = useDiscoverFeed();
+  const { dbStudios, trendingWork, people, trendingPages } = feed;
   const [searchOpen, setSearchOpen] = useState(false);
   // A persona type is a filter here, not a screen of its own (owner, 28 Sep 2026).
   const [personaFilter, setPersonaFilter] = useState<string>("All");
