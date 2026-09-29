@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
 import { SheetSectionHeading } from "./drawer-list";
+import { PersonAvatar } from "./person-avatar";
 import { sized } from "@/lib/image-url";
 import { formatDate, isoDate, todayInIndia } from "@/lib/when";
 
@@ -93,22 +94,19 @@ export type ProviderLike = Pick<RealProvider, "id" | "name" | "photo" | "verifie
 export function ProviderSummary({ p, compact }: { p: ProviderLike; compact?: boolean }) {
   return (
     <div className="flex items-center gap-3">
-      {p.photo ? (
-        <img
-          src={sized(p.photo, { width: 48 })}
-          alt={p.name}
-          className="h-12 w-12 shrink-0 rounded-sm object-cover"
-        />
-      ) : (
-        <div className="h-12 w-12 shrink-0 rounded-sm bg-background" aria-hidden />
-      )}
+      <PersonAvatar
+        name={p.name}
+        photo={p.photo ? sized(p.photo, { width: 48 }) : null}
+        className="h-12 w-12 shrink-0 text-1"
+      />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <p className="truncate text-2 font-semibold">{p.name}</p>
           {p.verified ? <VerifiedBadge size={16} /> : null}
         </div>
         {p.role ? <p className="truncate text-1 text-muted-foreground">{p.role}</p> : null}
-        {compact || (p.rating == null && !p.followers && !p.completedRentals) ? null : (
+        {/* A zero rating shows nothing, so it can't be the only thing holding the row open. */}
+        {compact || (!p.rating && !p.followers && !p.completedRentals) ? null : (
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <Rating value={p.rating} count={p.reviews} />
             <Followers count={p.followers} />
@@ -133,26 +131,6 @@ export function ProviderCard({ p }: { p: ProviderLike }) {
       <ProviderSummary p={p} />
     </Link>
   );
-}
-
-/** The distinct providers behind a set of live rentals, in listing order. */
-// eslint-disable-next-line react-refresh/only-export-components -- helper co-located with ProviderCard
-export function providersOf(items: RentalItem[]): ProviderLike[] {
-  const seen = new Map<string, ProviderLike>();
-  for (const e of items) {
-    const o = e.owner;
-    if (!o?.id || seen.has(o.id)) continue;
-    seen.set(o.id, {
-      id: o.id,
-      name: o.name,
-      photo: o.photo,
-      verified: o.verified,
-      ...(o.rating != null ? { rating: o.rating } : {}),
-      ...(o.reviews ? { reviews: o.reviews } : {}),
-      ...(o.followers ? { followers: o.followers } : {}),
-    });
-  }
-  return [...seen.values()];
 }
 
 /**
