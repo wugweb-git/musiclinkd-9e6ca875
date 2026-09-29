@@ -68,19 +68,19 @@ const demoTalent: DirectoryPerson = {
   reviewCount: 0,
 };
 
+// A preview of a business that has just signed up: no reviews, no rate, no photo and no badge yet.
 const demoStudio: DiscoverStudio = {
   id: "preview-business",
-  slug: "preview-business",
+  slug: "",
   username: "",
   name: "Your Business Name",
   location: "Mumbai",
-  rating: 4.9,
-  reviewCount: 38,
-  verified: true,
-  rate: { amount: "₹2,500", unit: "hour" },
-  photo:
-    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80",
-  gear: ["Dolby Atmos", "Neumann U87", "SSL Duality"],
+  rating: null,
+  reviewCount: 0,
+  verified: false,
+  rate: null,
+  photo: "",
+  gear: [],
 };
 
 const kindInfo: Record<

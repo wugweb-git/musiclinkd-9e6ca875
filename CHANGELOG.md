@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one studio / business card (P1-8 #2, 30 Sep)
+
+- **`StudioCard`** has a `featured` state (photo-led, details on the scrim) and Discover's two
+  business rails use it; **`StudioMediaCard` is removed**.
+- A business with no profile and no booking page renders as a plain card or row, not a focusable
+  link that swallows the tap (`StudioCard`, and `StudioRow`, which had no guard).
+- **Previews tell the truth.** Onboarding's business preview had a 4.9 rating from 38 reviews, a
+  ₹2,500/hour rate, gear and an Unsplash photo; it now shows a new business as it is: no rating,
+  rate, photo or badge. The business-setup preview no longer shows a verified badge.
+- Name sizes follow the person cards: card `text-2`, row `text-sm`.
+
 ### Changed — one person Block (P1-8 #1, 30 Sep)
 
 - **`PersonRow`** is the one row for a person: the directory, search, connections (all three tabs)

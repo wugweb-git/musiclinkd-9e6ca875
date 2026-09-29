@@ -522,7 +522,7 @@ function NewBusiness() {
                   location: city || "City",
                   rating: null,
                   reviewCount: 0,
-                  verified: true,
+                  verified: false,
                   rate: null,
                   photo: "",
                   gear: genres.slice(0, 3),

@@ -290,108 +290,35 @@ export function PersonCardSkeleton() {
 /* Business / studio card — a business account, real bookable spaces   */
 /* ------------------------------------------------------------------ */
 
+/** Where a business opens: its profile, else its booking page, else nowhere. */
+function studioLink(studio: DiscoverStudio) {
+  if (studio.username)
+    return { to: "/profile/$username" as const, params: { username: studio.username } };
+  if (studio.slug) return { to: "/booking/$id" as const, params: { id: studio.slug } };
+  return null;
+}
+
 /**
  * One business or studio as a card, for a rail (Discover, Home "Studios to book", business
  * search). The same shape as PersonCard — verified name, one line of place, rating, then the
- * rate on its own line — so a talent card and a business card read as one family.
+ * rate on its own line — so a talent card and a business card read as one family. `featured` is
+ * the photo-led state (name, place and rate on the scrim) that replaces StudioMediaCard. A
+ * business with nowhere to open, or a preview, is the same card with no link: nothing to focus.
  */
 export function StudioCard({
   studio,
+  featured = false,
   disabled = false,
 }: {
   studio: DiscoverStudio;
+  featured?: boolean | undefined;
   /** A preview, not a real business to open — renders the same card with no link. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }) {
-  const bookable = Boolean(studio.username || studio.slug);
-  return (
-    <Link
-      to={studio.username ? "/profile/$username" : "/booking/$id"}
-      params={studio.username ? { username: studio.username } : { id: studio.slug }}
-      tabIndex={disabled ? -1 : 0}
-      aria-disabled={disabled || undefined}
-      onClick={disabled || !bookable ? (e) => e.preventDefault() : undefined}
-      className={cn(
-        "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs",
-        disabled
-          ? "cursor-default"
-          : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]",
-      )}
-    >
-      {studio.photo ? (
-        <div className="overflow-hidden">
-          <img
-            src={sized(studio.photo, { width: 112 })}
-            alt=""
-            loading="lazy"
-            className="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        </div>
-      ) : (
-        <span
-          className="flex h-28 w-full items-center justify-center bg-subtle text-muted-foreground"
-          aria-hidden
-        >
-          <Building2 size={28} strokeWidth={1.5} />
-        </span>
-      )}
-      <span className="block p-3">
-        <span className="flex min-w-0 items-center gap-1">
-          <span className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
-            {studio.name}
-          </span>
-          {studio.verified ? <VerifiedBadge size={13} /> : null}
-        </span>
-        <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-muted-foreground">
-          <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-          <span className="truncate">{shownPlace(studio.location)}</span>
-          {studio.rating != null ? (
-            <>
-              <span aria-hidden>·</span>
-              <RatingLine rating={studio.rating} reviewCount={studio.reviewCount} />
-            </>
-          ) : null}
-        </span>
-        {studio.rate ? (
-          <Price
-            price={studio.rate}
-            className="mt-2"
-            amountClassName="text-1 font-semibold"
-            unitClassName="text-1"
-          />
-        ) : null}
-      </span>
-    </Link>
-  );
-}
-
-export function StudioCardSkeleton() {
-  return (
-    <div className="w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card shadow-xs">
-      <div className="h-28 w-full animate-pulse bg-subtle" />
-      <div className="space-y-1.5 p-3">
-        <div className="h-3.5 w-28 animate-pulse rounded bg-subtle" />
-        <div className="h-3 w-20 animate-pulse rounded bg-subtle" />
-        <div className="mt-1.5 h-3.5 w-16 animate-pulse rounded bg-subtle" />
-      </div>
-    </div>
-  );
-}
-
-/**
- * A business/studio as a full-bleed card — the Media Card idiom (guide/system): the photo carries
- * the card, name/place/rate sit on the scrim. An alternate to StudioCard's white-card shape for a
- * photo-led rail like Discover's.
- */
-export function StudioMediaCard({ studio }: { studio: DiscoverStudio }) {
-  const bookable = Boolean(studio.username || studio.slug);
-  return (
-    <Link
-      to={studio.username ? "/profile/$username" : "/booking/$id"}
-      params={studio.username ? { username: studio.username } : { id: studio.slug }}
-      onClick={!bookable ? (e) => e.preventDefault() : undefined}
-      className="state-layer relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
-    >
+  const link = disabled ? null : studioLink(studio);
+  const place = shownPlace(studio.location);
+  const body = featured ? (
+    <>
       {studio.photo ? (
         <img
           src={sized(studio.photo, { width: 412 })}
@@ -411,7 +338,7 @@ export function StudioMediaCard({ studio }: { studio: DiscoverStudio }) {
           {studio.verified ? <VerifiedBadge size={14} /> : null}
         </span>
         <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-background/80">
-          <span className="truncate">{shownPlace(studio.location)}</span>
+          <span className="truncate">{place}</span>
           {studio.rating != null ? (
             <>
               <span aria-hidden>·</span>
@@ -426,7 +353,83 @@ export function StudioMediaCard({ studio }: { studio: DiscoverStudio }) {
           <Price price={studio.rate} className="mt-1" amountClassName="text-1 font-semibold" />
         ) : null}
       </span>
+    </>
+  ) : (
+    <>
+      {studio.photo ? (
+        <div className="overflow-hidden">
+          <img
+            src={sized(studio.photo, { width: 412 })}
+            alt=""
+            loading="lazy"
+            className="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+      ) : (
+        <span
+          className="flex h-28 w-full items-center justify-center bg-subtle text-muted-foreground"
+          aria-hidden
+        >
+          <Building2 size={28} strokeWidth={1.5} />
+        </span>
+      )}
+      <span className="block p-3">
+        <span className="flex min-w-0 items-center gap-1">
+          <span className="truncate text-2 font-semibold text-foreground transition-colors group-hover:text-primary">
+            {studio.name}
+          </span>
+          {studio.verified ? <VerifiedBadge size={14} /> : null}
+        </span>
+        <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-muted-foreground">
+          <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
+          <span className="truncate">{place}</span>
+          {studio.rating != null ? (
+            <>
+              <span aria-hidden>·</span>
+              <RatingLine rating={studio.rating} reviewCount={studio.reviewCount} />
+            </>
+          ) : null}
+        </span>
+        {studio.rate ? (
+          <Price
+            price={studio.rate}
+            className="mt-2"
+            amountClassName="text-1 font-semibold"
+            unitClassName="text-1"
+          />
+        ) : null}
+      </span>
+    </>
+  );
+  const shape = featured
+    ? "relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
+    : "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs";
+  if (!link) return <div className={shape}>{body}</div>;
+  return (
+    <Link
+      {...link}
+      className={cn(
+        shape,
+        featured
+          ? "state-layer"
+          : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]",
+      )}
+    >
+      {body}
     </Link>
+  );
+}
+
+export function StudioCardSkeleton() {
+  return (
+    <div className="w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card shadow-xs">
+      <div className="h-28 w-full animate-pulse bg-subtle" />
+      <div className="space-y-1.5 p-3">
+        <div className="h-3.5 w-28 animate-pulse rounded bg-subtle" />
+        <div className="h-3 w-20 animate-pulse rounded bg-subtle" />
+        <div className="mt-1.5 h-3.5 w-16 animate-pulse rounded bg-subtle" />
+      </div>
+    </div>
   );
 }
 
@@ -435,53 +438,61 @@ export function StudioMediaCard({ studio }: { studio: DiscoverStudio }) {
  * horizontally, with the same save control PersonRow uses.
  */
 export function StudioRow({ studio }: { studio: DiscoverStudio }) {
+  const link = studioLink(studio);
+  const inner = "flex min-w-0 flex-1 items-center gap-3";
+  const content = (
+    <>
+      {studio.photo ? (
+        <img
+          src={sized(studio.photo, { width: 56 })}
+          alt=""
+          loading="lazy"
+          className="h-14 w-14 shrink-0 rounded-lg border border-border/60 object-cover"
+        />
+      ) : (
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-subtle text-muted-foreground">
+          <Building2 size={20} strokeWidth={1.5} aria-hidden />
+        </span>
+      )}
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1">
+          <span className="truncate text-sm font-semibold text-foreground">{studio.name}</span>
+          {studio.verified ? <VerifiedBadge size={16} /> : null}
+        </span>
+        <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-muted-foreground">
+          <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
+          <span className="truncate">{shownPlace(studio.location)}</span>
+          {studio.rating != null ? (
+            <>
+              <span aria-hidden>·</span>
+              <RatingLine rating={studio.rating} reviewCount={studio.reviewCount} />
+            </>
+          ) : null}
+        </span>
+      </span>
+      {studio.rate ? (
+        <Price
+          price={studio.rate}
+          align="end"
+          className="shrink-0"
+          amountClassName="text-1 font-semibold"
+          unitClassName="text-1"
+        />
+      ) : (
+        <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
+      )}
+    </>
+  );
   return (
     <li className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-card/50">
-      <Link
-        to={studio.username ? "/profile/$username" : "/booking/$id"}
-        params={studio.username ? { username: studio.username } : { id: studio.slug }}
-        className="state-layer flex min-w-0 flex-1 items-center gap-3 active:scale-[0.99]"
-      >
-        {studio.photo ? (
-          <img
-            src={sized(studio.photo, { width: 56 })}
-            alt=""
-            loading="lazy"
-            className="h-14 w-14 shrink-0 rounded-lg border border-border/60 object-cover"
-          />
-        ) : (
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-subtle text-muted-foreground">
-            <Building2 size={20} strokeWidth={1.5} aria-hidden />
-          </span>
-        )}
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-1">
-            <span className="truncate text-2 font-semibold text-foreground">{studio.name}</span>
-            {studio.verified ? <VerifiedBadge size={16} /> : null}
-          </span>
-          <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-muted-foreground">
-            <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-            <span className="truncate">{shownPlace(studio.location)}</span>
-            {studio.rating != null ? (
-              <>
-                <span aria-hidden>·</span>
-                <RatingLine rating={studio.rating} reviewCount={studio.reviewCount} />
-              </>
-            ) : null}
-          </span>
-        </span>
-        {studio.rate ? (
-          <Price
-            price={studio.rate}
-            align="end"
-            className="shrink-0"
-            amountClassName="text-1 font-semibold"
-            unitClassName="text-1"
-          />
-        ) : (
-          <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
-        )}
-      </Link>
+      {link ? (
+        <Link {...link} className={cn(inner, "state-layer active:scale-[0.99]")}>
+          {content}
+        </Link>
+      ) : (
+        // Nowhere to open: the same row, not a link that goes nowhere.
+        <span className={inner}>{content}</span>
+      )}
     </li>
   );
 }

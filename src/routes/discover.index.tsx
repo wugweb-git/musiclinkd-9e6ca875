@@ -32,7 +32,7 @@ import {
 } from "@/lib/trending.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
-import { PersonCard, PersonRow, StudioMediaCard } from "@/components/ml/cards";
+import { PersonCard, PersonRow, StudioCard } from "@/components/ml/cards";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { VideoCard } from "@/components/ml/profile";
 import { workType } from "@/data/portfolio";
@@ -295,7 +295,7 @@ function Discover() {
                   featured
                 />
               ) : (
-                <StudioMediaCard key={t.key} studio={t.studio} />
+                <StudioCard key={t.key} studio={t.studio} featured />
               ),
             )}
           </div>
@@ -325,7 +325,7 @@ function Discover() {
           />
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
             {studios.map((s) => (
-              <StudioMediaCard key={s.slug} studio={s} />
+              <StudioCard key={s.slug} studio={s} featured />
             ))}
           </div>
         </section>
