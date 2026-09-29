@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — the splash can't hang (30 Sep)
+
+- **Session read.** `useAuth` no longer waits on `getSession()` forever. It can stall on a token
+  refresh over a bad network, a lock held by another tab, or the Lovable preview's storage broker
+  (`previewAuthStorage.ts`, generated, untouched). After 2.5 s, or on a failed read, it uses the
+  session supabase-js saved in this browser; the real answer replaces it when it arrives.
+- **Profile read.** The splash waits at most 5 s for the profile before going to Discover, the same
+  place a failed read already went.
+
 ### Fixed — profile visibility has three values (15 Sep)
 
 - **Public, MusicLinkd members, Limited** everywhere (owner: "keep 3"). The profile edit screen offered

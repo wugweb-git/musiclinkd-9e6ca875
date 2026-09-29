@@ -40,10 +40,39 @@ function publish(session: Session | null) {
   for (const l of listeners) l();
 }
 
+/** How long anything waits on the session read before trusting the copy the browser keeps. */
+const SESSION_WAIT_MS = 2500;
+
+/*
+ * The session as supabase-js saved it in this browser, read without the network or the auth lock.
+ * getSession() can take seconds or never settle: a token refresh on a bad network, a lock held by
+ * another tab, or the Lovable preview's storage broker waiting on the editor (two 2 s round trips,
+ * src/integrations/supabase/previewAuthStorage.ts). Until it answers, this copy says whether
+ * someone is signed in; the real answer replaces it when it arrives.
+ */
+function storedSession(): Session | null {
+  try {
+    const ref = new URL(import.meta.env["VITE_SUPABASE_URL"] as string).hostname.split(".")[0];
+    const raw = localStorage.getItem(`sb-${ref}-auth-token`);
+    const parsed = raw ? (JSON.parse(raw) as Partial<Session> | null) : null;
+    return parsed?.access_token && parsed.user ? (parsed as Session) : null;
+  } catch {
+    return null;
+  }
+}
+
 function subscribe(listener: () => void) {
   listeners.add(listener);
   if (listeners.size === 1) {
-    void supabase.auth.getSession().then(({ data }) => publish(data.session));
+    const fallback = window.setTimeout(() => {
+      if (snapshot.loading) publish(storedSession());
+    }, SESSION_WAIT_MS);
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => publish(data.session))
+      // A failed read is not a hang: fall back to what the browser kept.
+      .catch(() => publish(storedSession()))
+      .finally(() => window.clearTimeout(fallback));
     const { data } = supabase.auth.onAuthStateChange((_event, next) => publish(next));
     unsubscribe = () => data.subscription.unsubscribe();
   }

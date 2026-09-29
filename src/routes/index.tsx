@@ -25,6 +25,9 @@ export const Route = createFileRoute("/")({
   component: SessionCheck,
 });
 
+/** The longest the splash waits on the profile read before going on to Discover. */
+const PROFILE_WAIT_MS = 5000;
+
 /* Stage-light columns: tallest at the centre, each lit on its own offset. */
 const STAGE = [
   { h: 30, w: 10, delay: 0 },
@@ -66,14 +69,22 @@ function SessionCheck() {
     }
     // Google gives a name and photo; the signup trigger only captures them for a brand-new user,
     // so every sign-in fills whichever of the two is still empty before the profile is read.
-    syncIdentity()
-      .catch(() => null)
-      .then(() => loadProfile())
+    // The profile read decides between onboarding and Discover, but it never holds the splash:
+    // past PROFILE_WAIT_MS it goes to Discover, the same place a failed read goes.
+    const timeout = new Promise<never>((_, reject) =>
+      window.setTimeout(() => reject(new Error("Profile read timed out")), PROFILE_WAIT_MS),
+    );
+    Promise.race([
+      syncIdentity()
+        .catch(() => null)
+        .then(() => loadProfile()),
+      timeout,
+    ])
       // A row-less read routes to onboarding, so it has to be trusted — but a returning user's
       // row always exists; a null here on the first try is as likely to be the auth session still
       // settling as it is a genuinely new signup. One retry tells them apart without a real user
       // ever seeing the onboarding chooser they'd already finished.
-      .then((profile) => (profile ? profile : loadProfile()))
+      .then((profile) => (profile ? profile : Promise.race([loadProfile(), timeout])))
       .then((profile) => go(postAuthTarget(profile)))
       // Offline or a failed read: Discover still works from the local session.
       .catch(() => go("/discover"));
