@@ -19,7 +19,7 @@ import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
 import { SheetSectionHeading } from "./drawer-list";
 import { sized } from "@/lib/image-url";
-import { formatDate, isoDate } from "@/lib/when";
+import { formatDate, isoDate, todayInIndia } from "@/lib/when";
 
 const rentalAvailabilityTone: Record<"ok" | "warn" | "off", Tone> = {
   ok: "good",
@@ -200,7 +200,7 @@ export function RentalCalendar({
   end: string | null;
   onSelect: (date: string) => void;
 }) {
-  const today = isoDate(new Date());
+  const today = todayInIndia();
   const [cursor, setCursor] = useState(() => {
     const d = new Date(`${start ?? today}T00:00:00`);
     return { y: d.getFullYear(), m: d.getMonth() };

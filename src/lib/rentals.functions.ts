@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { todayInIndia } from "@/lib/when";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
 import type { Equipment, Provider, RentalStatus } from "@/data/rentals";
@@ -123,8 +124,7 @@ export const requestRentalBooking = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     if (data.endDate < data.startDate) throw new Error("The end date is before the start date.");
     // Listings keep India's calendar; the server's clock is UTC.
-    const today = new Date(Date.now() + 5.5 * 3_600_000).toISOString().slice(0, 10);
-    if (data.startDate < today) throw new Error("That start date has passed.");
+    if (data.startDate < todayInIndia()) throw new Error("That start date has passed.");
     const client = db(context.supabase);
     const listingId = await listingIdFor(client, data.listingSlug);
     const { data: listing, error: listingError } = await client

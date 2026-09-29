@@ -13,6 +13,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   it sends the dates picked, won't continue across a blocked day, and `requestRentalBooking` rejects
   malformed, reversed, past or blocked ranges on the server. The confirmation reads "Request sent", not
   "Rental confirmed"; "Save Draft", which saved nothing, is "Back".
+- **Rental "today" is India's day** (`todayInIndia`, `src/lib/when.ts`), on the server that draws the
+  page and the browser that hydrates it, and in the request check. Between midnight and 5:30 am
+  India time the server's UTC clock drew yesterday as selectable, then the browser redrew it.
 - **Rental price.** The invented "Platform fee (2%)" is gone. `priceFor` applies a weekly or monthly
   rate only when the owner set one: a stored 0 priced a week at ₹0.
 - **Studio availability.** The hash-generated schedule (`availabilityFor`, `nextAvailableDate`) is
