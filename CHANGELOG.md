@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one seller Block (P1-8 #3, 30 Sep)
+
+- **`SellerCard`** is the seller Block. Its listing count comes from the database
+  (`countSellerListings`: the seller's listings open for browsing, services included). The listing
+  page counted from its own catalog, which leaves services out, so it undercounted. It shows
+  nothing while loading. A seller with no photo shows initials (`PersonAvatar`).
+- **Removed:** the `SellerSummary` component (no consumer; carried a stored-copy "Replies within"
+  line), the `SellerSummary` type of the same name, `SellerRow` and `sellersOf` (no consumer).
+
 ### Changed — one studio / business card (P1-8 #2, 30 Sep)
 
 - **`StudioCard`** has a `featured` state (photo-led, details on the scrim) and Discover's two

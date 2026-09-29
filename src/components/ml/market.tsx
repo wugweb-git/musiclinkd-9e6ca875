@@ -43,6 +43,7 @@ import {
 import type { Listing } from "@/data/market";
 import type { RentalItem } from "@/data/rentals";
 import { useSavedListings } from "@/hooks/use-saved-listings";
+import { PersonAvatar } from "./person-avatar";
 import { useGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
 import { useTaxonomy } from "@/lib/taxonomy";
 import {
@@ -586,58 +587,11 @@ export function ListingRow({ l }: { l: Listing }) {
   );
 }
 
-export function SellerSummary({
-  seller,
-  compact = false,
-}: {
-  seller: {
-    id?: string | null;
-    name: string;
-    role?: string;
-    location?: string;
-    verified: boolean;
-    rating?: number;
-    reviews?: number;
-    followers?: number;
-    responseTime?: string;
-    photo?: string;
-  };
-  compact?: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      {seller.photo ? (
-        <img
-          src={sized(seller.photo, { width: 48 })}
-          alt={seller.name}
-          className="h-12 w-12 rounded-sm object-cover"
-        />
-      ) : null}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <p className="truncate text-2 font-semibold">{seller.name}</p>
-          {seller.verified ? <VerifiedBadge size={16} /> : null}
-        </div>
-        {seller.role ? (
-          <p className="truncate text-1 text-muted-foreground">{seller.role}</p>
-        ) : null}
-        {compact || !(seller.rating || seller.followers || seller.responseTime) ? null : (
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            <Rating value={seller.rating} count={seller.reviews} />
-            <Followers count={seller.followers} />
-            {seller.responseTime ? (
-              <span className="text-1 text-muted-foreground">Replies {seller.responseTime}</span>
-            ) : null}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 /**
- * The seller on a listing page: the whole card opens their profile. Photo, name and badge, then
- * one line of standing — rating, how many listings they have in Market, followers.
+ * The seller on a listing page: the whole card opens their profile. Photo (initials when there is
+ * none), name and badge, then one line of standing — rating, how many listings they have open in
+ * Market (counted by the database; nothing while it loads), followers. A rental provider shares
+ * the identity pieces but has its own card (ProviderCard, rental.tsx).
  */
 export function SellerCard({
   seller,
@@ -652,7 +606,8 @@ export function SellerCard({
     reviews?: number;
     followers?: number;
   };
-  listings: number;
+  /** Null while the count loads or when it could not be read: the line leaves it out. */
+  listings: number | null;
 }) {
   const facts = [
     listings ? `${listings} listing${listings === 1 ? "" : "s"}` : null,
@@ -660,17 +615,11 @@ export function SellerCard({
   ].filter(Boolean);
   const body = (
     <>
-      {seller.photo ? (
-        <img
-          src={sized(seller.photo, { width: 56 })}
-          alt=""
-          className="h-14 w-14 shrink-0 rounded-full object-cover"
-        />
-      ) : (
-        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-icon-chip text-2 font-semibold text-primary-foreground">
-          {seller.name.slice(0, 1).toUpperCase()}
-        </span>
-      )}
+      <PersonAvatar
+        name={seller.name}
+        photo={seller.photo ? sized(seller.photo, { width: 56 }) : null}
+        className="h-14 w-14 shrink-0 text-2"
+      />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
           <span className="truncate text-sm font-semibold text-foreground">{seller.name}</span>
