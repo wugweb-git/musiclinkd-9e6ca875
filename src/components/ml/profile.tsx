@@ -955,10 +955,7 @@ export function AudioTrackCard({
           {track.media ? (
             <button
               type="button"
-              onClick={() => {
-                if (!playing) recordPlay(track.id);
-                onToggle();
-              }}
+              onClick={onToggle}
               aria-label={playing ? `Close player for ${track.title}` : `Play ${track.title}`}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs active:scale-95 transition-transform"
             >
@@ -980,6 +977,7 @@ export function AudioTrackCard({
                 url={track.media}
                 title={track.title}
                 onOpen={() => recordWorkEvent(track.id, "link_click")}
+                onPlay={() => recordPlay(track.id)}
               />
             </div>
           ) : (
@@ -1017,12 +1015,7 @@ export function VideoCard({
   const [open, setOpen] = useState(false);
   // Shown on a profile counts as a view of the work, for its owner's Performance figures.
   useEffect(() => recordWorkEvent(v.id, "view"), [v.id]);
-  const toggle = v.media
-    ? () => {
-        if (!open) recordPlay(v.id);
-        setOpen((o) => !o);
-      }
-    : undefined;
+  const toggle = v.media ? () => setOpen((o) => !o) : undefined;
   const player =
     open && v.media ? (
       <div className="mt-3 animate-in fade-in duration-200">
@@ -1030,6 +1023,7 @@ export function VideoCard({
           url={v.media}
           title={v.title}
           onOpen={() => recordWorkEvent(v.id, "link_click")}
+          onPlay={() => recordPlay(v.id)}
         />
       </div>
     ) : null;

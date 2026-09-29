@@ -38,6 +38,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - **Failures shown as facts.** Sign-in methods, contributor search and Spotify show an error with a retry
   instead of "This is your only way to sign in", "Not on MusicLinkd yet" and "Not available yet". The
   portfolio header no longer defaults to "Public".
+- **Play counts.** A play is recorded when the browser's player reports playback starting
+  (`MediaEmbed` `onPlay`), not when a play button opens the player. An embedded source's player
+  (YouTube, Spotify, SoundCloud) reports nothing to the page, so plays there are not counted.
 - **Uploads.** A multi-photo upload keeps the photos that made it and names the ones that didn't.
 - **Fabricated figures.** "72,000+ verified pros" (Gear CTA, sell page meta), "248 results" (filter
   sheet) and the local-only review "Helpful" count are removed.

@@ -5,16 +5,20 @@ import { iconSize } from "@/lib/tokens";
 /**
  * A portfolio link played in place: the source's own player when it embeds, the browser's player
  * for a direct file, otherwise an "Open on {site}" link to a new tab. `onOpen` hears that link
- * being followed.
+ * being followed. `onPlay` hears playback actually starting, which only the browser's own player
+ * can report: an embedded source's player (YouTube, Spotify, SoundCloud…) says nothing, so no play
+ * is counted there rather than one being guessed from a tap.
  */
 export function MediaEmbed({
   url,
   title,
   onOpen,
+  onPlay,
 }: {
   url: string;
   title: string;
-  onOpen?: () => void;
+  onOpen?: (() => void) | undefined;
+  onPlay?: (() => void) | undefined;
 }) {
   const embed = embedFor(url);
   if (!embed) return null;
@@ -32,8 +36,17 @@ export function MediaEmbed({
     );
   }
   if (embed.mode === "audio") {
-    // eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied file; no caption track exists to attach
-    return <audio src={embed.src} controls preload="none" className="w-full" aria-label={title} />;
+    return (
+      // eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied file; no caption track exists to attach
+      <audio
+        src={embed.src}
+        controls
+        preload="none"
+        onPlay={onPlay}
+        className="w-full"
+        aria-label={title}
+      />
+    );
   }
   if (embed.mode === "video") {
     return (
@@ -42,6 +55,7 @@ export function MediaEmbed({
         src={embed.src}
         controls
         preload="none"
+        onPlay={onPlay}
         className="w-full rounded-lg"
         aria-label={title}
       />
