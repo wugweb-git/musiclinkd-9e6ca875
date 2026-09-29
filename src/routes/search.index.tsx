@@ -260,7 +260,7 @@ function SearchResults() {
   const L = labels.data ?? {};
   const opportunityCards = lists.opportunities.map((o) => ({
     row: o,
-    card: opportunityFromRow({ ...o, creator: o.creator ?? null, genres: o.genres ?? [] }, L, now),
+    card: opportunityFromRow({ ...o, creator: o.creator ?? null, genres: o.genres ?? [] }, L),
   }));
   const gear = lists.gear.map((l) => listingFromRow(l, L, now));
   const serviceListings = lists.serviceListings.map((l) => listingFromRow(l, L, now));

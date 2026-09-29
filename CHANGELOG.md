@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — opportunities and applications (P1-8 #6, 30 Sep)
+
+- **`ApplicationCard`** and **`ApplicantCard`** are rebuilt on the database records
+  (`MyApplication`, `ApplicantSummary`) and used by My applications and Applicants; their old
+  bodies read design-time types and had no consumer. Status labels and tones come from one record
+  per view (`APPLICANT_STATUS` also names the board's columns).
+- **Pending is per card.** Withdraw, Shortlist, Accept and Decline lock only the card being
+  answered, not every card in the list. Buttons are the 48px control height (they were 40px).
+- **Dates, not "ago".** An opportunity carries its stored timestamp (`postedAt`) and the card
+  shows the date; applications show the date they were sent.
+- **Applicants, signed out:** a sign-in state, not "No applicants here yet" over a query that never
+  ran.
+- **A profile's opportunities** use `OpportunityCard` from the same rows and columns as the
+  Opportunities screen. The profile's own `OpportunityCard` (and its "Respond" link to the inbox,
+  which answered nothing) and the `OpportunityItem` type are removed, with the design-time sample
+  opportunities on two fixture profiles. `linked-profiles.ts` keeps its lines under a local type:
+  the migration generators never read them.
+
 ### Changed — the marketplace item card (P1-8 #5, 30 Sep)
 
 - **`ProductCard`** (through `ListingCard` / `ListingTile` / `ListingGrid`) is drawn with tokens:

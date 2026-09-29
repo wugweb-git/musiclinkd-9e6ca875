@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { profileIdByUsername, type TalentProfile, type profileInsights } from "@/data/profile";
 import { ListingTile } from "./market";
+import { OpportunityCard } from "./opportunity";
 import type { WorkKind } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
@@ -46,7 +47,6 @@ import {
   AudioTrackCard,
   FeaturedCard,
   MoreSheet,
-  OpportunityCard,
   ProfileEmpty,
   type ProfileEmptyCta,
   ProfileHero,

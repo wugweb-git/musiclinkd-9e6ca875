@@ -1,11 +1,11 @@
 // Overlays the stored profile record onto the rendered profile shape so the
 // answers captured during onboarding show up on /me and public profiles.
 
+import { opportunityFromRow } from "@/lib/opportunity-view";
 import {
   emptySections,
   type AudioTrack,
   type AvailabilityState,
-  type OpportunityItem,
   type TalentProfile,
   type ProfileRole,
   type ProjectItem,
@@ -22,7 +22,6 @@ import {
   type TaxonomyLabels,
 } from "@/lib/portfolio.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
-import { joinParts } from "@/lib/utils";
 import { shownPlace } from "@/lib/place";
 
 /** Profiles store taxonomy slugs; show the published label, or the slug if it has none. */
@@ -350,17 +349,8 @@ function storedAvailability(sections: ProfileSections): AvailabilityState | unde
   return undefined;
 }
 
-function storedOpportunities(sections: ProfileSections): OpportunityItem[] {
-  return sections.opportunities.map((o): OpportunityItem => {
-    const price = priceParts(o.budget_paise, o.budget_unit, o.budget_note);
-    return {
-      id: o.id,
-      title: o.title,
-      detail: joinParts(o.role_required, o.location),
-      ...(price ? { price } : {}),
-      tone: "seeking",
-    };
-  });
+function storedOpportunities(sections: ProfileSections, labels: TaxonomyLabels | undefined) {
+  return sections.opportunities.map((row) => opportunityFromRow(row, labels ?? {}));
 }
 
 function storedMarket(sections: ProfileSections, labels: TaxonomyLabels | undefined) {
@@ -441,7 +431,7 @@ export function mergeSections(
     discography: pick(base.discography, fromPortfolio.discography),
     projects: pick(base.projects, fromPortfolio.projects),
     professional: pick(base.professional, professionalRows(sections, labels)),
-    opportunities: pick(base.opportunities, storedOpportunities(sections)),
+    opportunities: pick(base.opportunities, storedOpportunities(sections, labels)),
     market: pick(base.market, storedMarket(sections, labels)),
     studio: base.studio ?? storedStudio(sections),
     // A role's own status (e.g. Selective) is more specific than the profile-wide one.

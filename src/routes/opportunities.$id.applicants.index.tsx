@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Btn, Screen, TopBar, BtnLink, VerifiedBadge } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink, VerifiedBadge } from "@/components/ml/ui";
 import { EmptyState, LoadError, Loading, Segmented, SegmentedField } from "@/components/ml/kit";
 import {
   KanbanBoard,
@@ -18,11 +18,10 @@ import {
   type ApplicantSummary,
 } from "@/lib/applications.functions";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
-import { ApplicantFit } from "@/components/ml/opportunity";
+import { ApplicantCard, APPLICANT_STATUS } from "@/components/ml/opportunity";
 import { personFit, fitTarget } from "@/lib/fit";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { useAuth } from "@/hooks/use-auth";
-import { joinParts } from "@/lib/utils";
 import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/opportunities/$id/applicants/")({
@@ -48,12 +47,11 @@ export const Route = createFileRoute("/opportunities/$id/applicants/")({
 });
 
 const tabs = ["All", "Shortlisted", "New"] as const;
-const columns = [
-  { id: "pending", name: "New" },
-  { id: "shortlisted", name: "Shortlisted" },
-  { id: "accepted", name: "Accepted" },
-  { id: "rejected", name: "Declined" },
-];
+// The board's columns are the poster's status names, shared with ApplicantCard.
+const columns = (["pending", "shortlisted", "accepted", "rejected"] as const).map((id) => ({
+  id,
+  name: APPLICANT_STATUS[id].label,
+}));
 
 type BoardCard = { id: string; name: string; column: string; applicant: ApplicantSummary };
 
@@ -125,20 +123,30 @@ function Applicants() {
           onChange={setView}
         />
 
-        {q.isLoading ? (
+        {!signedIn ? (
+          // Signed out, nothing was read: that is not "no applicants".
+          <EmptyState
+            title="Sign in to see your applicants"
+            body="Applicants are shown only to the account that posted the opportunity."
+          >
+            <BtnLink to="/welcome" className="w-full">
+              Sign In
+            </BtnLink>
+          </EmptyState>
+        ) : q.isLoading ? (
           <Loading rows={3} />
         ) : q.isError ? (
           <LoadError what="the applicants" />
         ) : null}
 
-        {!q.isLoading && view === "Board" ? (
+        {signedIn && q.isSuccess && view === "Board" ? (
           <ApplicantBoard
             applicants={all}
             onMove={(applicationId, status) => move.mutate({ applicationId, status })}
           />
         ) : null}
 
-        {!q.isLoading && view === "List" ? (
+        {signedIn && q.isSuccess && view === "List" ? (
           <>
             <Segmented value={tab} options={tabs} onChange={setTab} />
             {list.length === 0 ? (
@@ -158,82 +166,13 @@ function Applicants() {
             ) : (
               <ul className="space-y-3">
                 {list.map((a) => (
-                  <li key={a.id} className="rounded-lg bg-subtle p-4">
-                    <div className="flex items-center gap-3">
-                      {a.person?.avatar_url ? (
-                        <img
-                          src={sized(a.person.avatar_url, { width: 48 })}
-                          alt=""
-                          className="h-12 w-12 shrink-0 rounded-full object-cover"
-                        />
-                      ) : (
-                        <span
-                          aria-hidden
-                          className="h-12 w-12 shrink-0 rounded-full bg-background"
-                        />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{personName(a)}</p>
-                        <p className="truncate text-1 text-muted-foreground">
-                          {joinParts(a.person?.headline ?? "", a.person?.city ?? "")}
-                        </p>
-                      </div>
-                      <span className="pill shrink-0 bg-background text-muted-foreground">
-                        {columns.find((c) => c.id === a.status)?.name ?? a.status}
-                      </span>
-                    </div>
-                    <div className="mt-2">
-                      <ApplicantFit
-                        fit={fitOf(a)}
-                        rating={a.person?.rating}
-                        reviews={a.person?.review_count}
-                      />
-                    </div>
-                    {a.message ? (
-                      <p className="mt-2 line-clamp-3 text-1 text-muted-foreground">{a.message}</p>
-                    ) : null}
-                    <div className="mt-3 flex gap-2">
-                      {a.person?.username ? (
-                        <BtnLink
-                          to="/profile/$username"
-                          params={{ username: a.person.username }}
-                          variant="outline"
-                          className="min-h-10 flex-1 text-1"
-                        >
-                          Profile
-                        </BtnLink>
-                      ) : null}
-                      {a.status === "pending" ? (
-                        <Btn
-                          className="min-h-10 flex-1 text-1"
-                          loading={move.isPending}
-                          onClick={() =>
-                            move.mutate({ applicationId: a.id, status: "shortlisted" })
-                          }
-                        >
-                          Shortlist
-                        </Btn>
-                      ) : null}
-                      {a.status === "shortlisted" ? (
-                        <Btn
-                          className="min-h-10 flex-1 text-1"
-                          loading={move.isPending}
-                          onClick={() => move.mutate({ applicationId: a.id, status: "accepted" })}
-                        >
-                          Accept
-                        </Btn>
-                      ) : null}
-                      {["pending", "shortlisted"].includes(a.status) ? (
-                        <Btn
-                          variant="ghost"
-                          className="min-h-10 flex-1 text-1"
-                          loading={move.isPending}
-                          onClick={() => move.mutate({ applicationId: a.id, status: "rejected" })}
-                        >
-                          Decline
-                        </Btn>
-                      ) : null}
-                    </div>
+                  <li key={a.id}>
+                    <ApplicantCard
+                      a={a}
+                      fit={fitOf(a)}
+                      moving={move.isPending && move.variables?.applicationId === a.id}
+                      onMove={(status) => move.mutate({ applicationId: a.id, status })}
+                    />
                   </li>
                 ))}
               </ul>

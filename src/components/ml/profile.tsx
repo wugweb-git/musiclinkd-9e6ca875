@@ -36,7 +36,6 @@ import {
 import type {
   AudioTrack,
   ExperienceItem,
-  OpportunityItem,
   TalentProfile,
   ProjectItem,
   ReviewItem,
@@ -1602,26 +1601,6 @@ export function ReviewRail({
         </li>
       ))}
     </ul>
-  );
-}
-
-export function OpportunityCard({ o }: { o: OpportunityItem }) {
-  return (
-    <article className={`rounded-lg p-4 bg-subtle`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="text-2">{o.title}</h3>
-          {o.detail ? <p className="mt-0.5 text-1 text-muted-foreground">{o.detail}</p> : null}
-          <Price price={o.price} className="mt-1" amountClassName="text-1 font-semibold" />
-        </div>
-        <Link
-          to="/messages"
-          className="shrink-0 rounded-full bg-ink px-3.5 py-2 text-1 font-semibold text-background"
-        >
-          Respond
-        </Link>
-      </div>
-    </article>
   );
 }
 

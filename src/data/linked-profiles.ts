@@ -8,10 +8,22 @@ import type { TalentProfile } from "./profile";
  * migration is generated from it so the two cannot drift.
  */
 
+/**
+ * An opportunity as this seed file wrote it. Profiles now draw posted opportunities from the
+ * `opportunities` table with the Opportunities screen's card, so these lines are kept for the
+ * record and read by nothing (the generators export profiles and sections, not these).
+ */
+type LinkedOpportunitySeed = {
+  id: string;
+  title: string;
+  detail: string;
+  tone: "seeking" | "offering";
+};
+
 export type LinkedProfileSeed = {
   /** `auth.users.id` and `profiles.id` in the live database. */
   id: string;
-  profile: TalentProfile;
+  profile: Omit<TalentProfile, "opportunities"> & { opportunities: LinkedOpportunitySeed[] };
   db: {
     /** Onboarding role keys where one fits; otherwise the label itself. */
     roles: string[];

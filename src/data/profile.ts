@@ -2,6 +2,7 @@ import type { LinkProps } from "@tanstack/react-router";
 import { singers, talents, type Talent } from "./discover";
 import { priceText, type PriceParts } from "@/lib/price";
 import type { Listing } from "./market";
+import type { Opportunity } from "./opportunities";
 
 /**
  * FLOW-02 · Profile module data contract (design-time fixtures only).
@@ -111,15 +112,6 @@ export type ReviewItem = {
   tags?: string[] | undefined;
 };
 
-export type OpportunityItem = {
-  id: string;
-  title: string;
-  detail: string;
-  /** The stored budget, rendered as amount and unit under the detail. */
-  price?: PriceParts | undefined;
-  tone: "seeking" | "offering";
-};
-
 export type TalentProfile = {
   username: string;
   /** profiles.id, when this view came from the database. Connect and Follow need it. */
@@ -161,7 +153,8 @@ export type TalentProfile = {
   experience: ExperienceItem[];
   collaborators: Collaborator[];
   reviews: ReviewItem[];
-  opportunities: OpportunityItem[];
+  /** Open opportunities this person posted, drawn with the Opportunities screen's card. */
+  opportunities: Opportunity[];
   /** The person's own Market listings, drawn with the Market's product card. */
   market: Listing[];
   studio?: { name: string; meta: string; price?: PriceParts | undefined; to: string } | undefined;
@@ -724,20 +717,7 @@ const rahul: TalentProfile = {
       text: "Great ear for vocal tuning. Schedule got tight near the end but he stayed on it.",
     },
   ],
-  opportunities: [
-    {
-      id: "o1",
-      title: "Looking for a vocalist",
-      detail: "Indie electronic EP, 3 tracks, credited release · Bengaluru or remote",
-      tone: "seeking",
-    },
-    {
-      id: "o2",
-      title: "Available for session work",
-      detail: "Keys and production, weekday afternoons through October",
-      tone: "offering",
-    },
-  ],
+  opportunities: [],
   market: [],
   studio: { name: "Yash Raj Sound", meta: "Resident engineer · book a room", to: "/studio" },
   mutuals: [
@@ -809,14 +789,7 @@ const ananya: TalentProfile = {
   ],
   market: [],
   studio: undefined,
-  opportunities: [
-    {
-      id: "o1",
-      title: "Available for shows",
-      detail: "Mumbai and Pune, weekends through December",
-      tone: "offering",
-    },
-  ],
+  opportunities: [],
 };
 
 /*
