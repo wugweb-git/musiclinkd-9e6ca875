@@ -38,12 +38,18 @@ export const listMyPortfolio = createServerFn({ method: "GET" })
 
 /**
  * Plays per work, for the account's own performance screen. The database counts a play when
- * somebody opens the work (record_portfolio_play). Views, shares and clicks are counted apart,
- * in myPortfolioEvents.
+ * playback starts (record_portfolio_play). `days` narrows it to the last so many days; without it,
+ * every play is counted. Views, shares and clicks are counted apart, in myPortfolioEvents.
  */
 export const myPortfolioPlays = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<Record<string, number>> => {
+  .inputValidator((d) =>
+    z
+      .object({ days: z.number().int().min(1).max(365).optional() })
+      .optional()
+      .parse(d),
+  )
+  .handler(async ({ context, data: input }): Promise<Record<string, number>> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { data: mine, error: mineError } = await client
       .from("portfolio_items")
@@ -62,10 +68,10 @@ export const myPortfolioPlays = createServerFn({ method: "GET" })
      */
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const plays = supabaseAdmin as unknown as SupabaseClient;
-    const { data, error } = await plays
-      .from("portfolio_item_plays")
-      .select("item_id")
-      .in("item_id", ids);
+    let query = plays.from("portfolio_item_plays").select("item_id").in("item_id", ids);
+    if (input?.days)
+      query = query.gte("played_at", new Date(Date.now() - input.days * 86_400_000).toISOString());
+    const { data, error } = await query;
     if (error) throw new Error(error.message);
     const counts: Record<string, number> = Object.fromEntries(ids.map((id) => [id, 0]));
     for (const row of (data ?? []) as { item_id: string }[]) {

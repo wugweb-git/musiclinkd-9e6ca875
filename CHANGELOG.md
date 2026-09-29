@@ -44,6 +44,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - **Play counts.** A play is recorded when the browser's player reports playback starting
   (`MediaEmbed` `onPlay`), not when a play button opens the player. An embedded source's player
   (YouTube, Spotify, SoundCloud) reports nothing to the page, so plays there are not counted.
+- **Plays before the fix.** Rows recorded before it can't be told apart from real plays, so they are
+  marked by date (`PLAYS_COUNTED_FROM`, `src/lib/plays-cutoff.ts`): Discover's Trending work ignores
+  them (ranked from the rows in `listTrendingWork`, since the RPC only takes whole days), the
+  Performance screen counts the last 30 days its title already names, and both owner views say
+  "Plays counted from {date}". The Performance screen's "There's no analytics table yet, so these
+  figures aren't tracked" is removed: plays are tracked.
 - **Uploads.** A multi-photo upload keeps the photos that made it and names the ones that didn't.
 - **Fabricated figures.** "72,000+ verified pros" (Gear CTA, sell page meta), "248 results" (filter
   sheet) and the local-only review "Helpful" count are removed.

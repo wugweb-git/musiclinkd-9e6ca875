@@ -31,6 +31,7 @@ import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml
 import { StateCard as BaseStateCard, StatusPill as BaseStatusPill } from "@/components/ml/kit";
 import { embedFor } from "@/lib/embed";
 import { MediaEmbed } from "./media-embed";
+import { playsCountedFromLabel } from "@/lib/plays-cutoff";
 import { cn } from "@/lib/utils";
 import {
   analyticsFor,
@@ -701,7 +702,14 @@ export function ContributorPicker({
 
 /* ---------------- Analytics --------------------------------------------- */
 
-export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
+export function WorkAnalytics({
+  figures,
+  playsNote = false,
+}: {
+  figures: WorkAnalyticsFigures;
+  /** Real figures: say from when plays are counted (see src/lib/plays-cutoff.ts). */
+  playsNote?: boolean | undefined;
+}) {
   // A figure nothing counts yet is null, and shows an em-dash rather than a zero it cannot mean.
   const rows: [string, number | null][] = [
     ["Views", figures.views],
@@ -721,6 +729,15 @@ export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
           <p className="mt-1 text-1 text-muted-foreground">{label}</p>
         </div>
       ))}
+      {playsNote ? (
+        <p className="col-span-2 text-1 text-muted-foreground">
+          <span className="font-semibold text-foreground">
+            Plays counted from {playsCountedFromLabel}.
+          </span>{" "}
+          Plays before then were counted when a player was opened, so they may be higher than real
+          listens.
+        </p>
+      ) : null}
     </div>
   );
 }
