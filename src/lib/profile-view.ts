@@ -5,7 +5,6 @@ import {
   emptySections,
   type AudioTrack,
   type AvailabilityState,
-  type MarketEntry,
   type OpportunityItem,
   type TalentProfile,
   type ProfileRole,
@@ -366,19 +365,7 @@ function storedOpportunities(sections: ProfileSections): OpportunityItem[] {
 
 function storedMarket(sections: ProfileSections, labels: TaxonomyLabels | undefined) {
   const now = Date.now();
-  return sections.listings.map((row): MarketEntry => {
-    const listing = listingFromRow(row, labels ?? {}, now);
-    return {
-      id: row.id,
-      title: listing.title,
-      meta: listing.condition ?? "",
-      ...(listing.price.amount ? { price: listing.price } : {}),
-      image: listing.photos[0] ?? "",
-      kind: listing.type === "rental" ? "rental" : "sale",
-      to: "/marketplace/l/$id",
-      params: { id: row.slug },
-    };
-  });
+  return sections.listings.map((row) => listingFromRow(row, labels ?? {}, now));
 }
 
 function storedStudio(sections: ProfileSections): TalentProfile["studio"] {

@@ -35,6 +35,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { profileIdByUsername, type TalentProfile, type profileInsights } from "@/data/profile";
+import { ListingTile } from "./market";
 import type { WorkKind } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
@@ -44,7 +45,6 @@ import { Price } from "./kit";
 import {
   AudioTrackCard,
   FeaturedCard,
-  MarketEntryCard,
   MoreSheet,
   OpportunityCard,
   ProfileEmpty,
@@ -896,7 +896,7 @@ function RelationshipSections({ p }: { p: TalentProfile }) {
         <ProfileSection title="Marketplace">
           <div className="rail flex gap-3 overflow-x-auto no-scrollbar">
             {p.market.map((entry) => (
-              <MarketEntryCard key={entry.id} m={entry} />
+              <ListingTile key={entry.id} l={entry} />
             ))}
           </div>
         </ProfileSection>

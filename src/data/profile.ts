@@ -1,6 +1,7 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { singers, talents, type Talent } from "./discover";
 import { priceText, type PriceParts } from "@/lib/price";
+import type { Listing } from "./market";
 
 /**
  * FLOW-02 · Profile module data contract (design-time fixtures only).
@@ -119,17 +120,6 @@ export type OpportunityItem = {
   tone: "seeking" | "offering";
 };
 
-export type MarketEntry = {
-  id: string;
-  title: string;
-  meta: string;
-  price?: PriceParts | undefined;
-  image: string;
-  kind: "sale" | "rental";
-  to: NonNullable<LinkProps["to"]>;
-  params?: LinkProps["params"];
-};
-
 export type TalentProfile = {
   username: string;
   /** profiles.id, when this view came from the database. Connect and Follow need it. */
@@ -172,7 +162,8 @@ export type TalentProfile = {
   collaborators: Collaborator[];
   reviews: ReviewItem[];
   opportunities: OpportunityItem[];
-  market: MarketEntry[];
+  /** The person's own Market listings, drawn with the Market's product card. */
+  market: Listing[];
   studio?: { name: string; meta: string; price?: PriceParts | undefined; to: string } | undefined;
   mutuals: { name: string; photo: string }[];
 };
@@ -747,26 +738,7 @@ const rahul: TalentProfile = {
       tone: "offering",
     },
   ],
-  market: [
-    {
-      id: "m1",
-      title: "Neumann TLM 103",
-      meta: "For sale · Like new",
-      price: { amount: "₹68,000" },
-      image: u("photo-1590602847861-f357a9332bbc", 400),
-      kind: "sale",
-      to: "/marketplace",
-    },
-    {
-      id: "m2",
-      title: "Fender Twin Reverb",
-      meta: "For rent",
-      price: { amount: "₹2,400", unit: "day" },
-      image: u("photo-1511735111819-9a3f7709049c", 400),
-      kind: "rental",
-      to: "/marketplace/rent",
-    },
-  ],
+  market: [],
   studio: { name: "Yash Raj Sound", meta: "Resident engineer · book a room", to: "/studio" },
   mutuals: [
     { name: "Ananya", photo: u("photo-1534528741775-53994a69daeb", 120) },

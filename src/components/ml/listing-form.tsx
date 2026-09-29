@@ -1027,12 +1027,19 @@ export function ListingCardPreview({ value }: { value: ListingDraft }) {
       preview
       rail
       item={{
-        opens: "listing",
         id: "preview",
         title: value.name.trim() || "Untitled listing",
         photos: value.photos,
         category: gearCategoryOf(value.sub, taxonomy) ?? "other",
-        badge: listingConditions.find((c) => c.value === value.condition)!.label,
+        badge: {
+          label: listingConditions.find((c) => c.value === value.condition)!.label,
+          motion:
+            value.condition === "new"
+              ? "glimmer"
+              : value.condition === "like_new"
+                ? "glimmer-slow"
+                : "still",
+        },
         price: {
           amount: `₹${value.price || "0"}`,
           ...(rental ? { unit: value.unit } : {}),

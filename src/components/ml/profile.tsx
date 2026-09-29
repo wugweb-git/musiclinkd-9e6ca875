@@ -36,7 +36,6 @@ import {
 import type {
   AudioTrack,
   ExperienceItem,
-  MarketEntry,
   OpportunityItem,
   TalentProfile,
   ProjectItem,
@@ -1623,34 +1622,6 @@ export function OpportunityCard({ o }: { o: OpportunityItem }) {
         </Link>
       </div>
     </article>
-  );
-}
-
-export function MarketEntryCard({ m }: { m: MarketEntry }) {
-  // A tile, picture first: gear is chosen by how it looks, then what it is, then what it costs.
-  return (
-    <Link
-      to={m.to}
-      {...(m.params ? { params: m.params } : {})}
-      className="block w-40 shrink-0 overflow-hidden rounded-lg bg-subtle"
-    >
-      {m.image ? (
-        <img
-          src={sized(m.image, { width: 412 })}
-          alt=""
-          aria-hidden
-          loading="lazy"
-          className="aspect-[4/3] w-full object-cover"
-        />
-      ) : (
-        <div aria-hidden className="aspect-[4/3] w-full bg-background" />
-      )}
-      <div className="p-3">
-        <h3 className="truncate text-sm font-semibold">{m.title}</h3>
-        {m.meta ? <p className="mt-0.5 truncate text-1 text-muted-foreground">{m.meta}</p> : null}
-        <Price price={m.price} className="mt-1.5" amountClassName="text-sm font-semibold" />
-      </div>
-    </Link>
   );
 }
 

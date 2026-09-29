@@ -5,6 +5,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — the marketplace item card (P1-8 #5, 30 Sep)
+
+- **`ProductCard`** (through `ListingCard` / `ListingTile` / `ListingGrid`) is drawn with tokens:
+  no raw hex, no `cqw` type sizes or radii, no letter-spacing, no navy shadow (`shadow-sm`). The
+  owner's reference proportions are kept (photo in a rounded frame inside the card).
+- The save heart is a sibling of the card's link, not a button inside it.
+- The badge's motion is keyed off the listing's condition and type, not off the badge's words.
+- The round button shows an arrow to the listing, not a shopping cart: nothing is bought in the app.
+- `ProductItem.opens` is gone: it was ignored, every product opens `/marketplace/l/$id`.
+- **A profile's Marketplace rail** uses `ListingTile`, the Market's own card, from the same listing
+  rows. **Removed:** `MarketEntryCard`, the `MarketEntry` type, `EquipmentGrid` and
+  `productFromRental` (no consumer), and the two hard-coded sample listings (Unsplash photos) on the
+  design-time profiles in `src/data/profile.ts`.
+
+### Changed — rental provider (P1-8 #4, 30 Sep)
+
+- `ProviderSummary` shows initials when a provider has no photo (`PersonAvatar`), and no longer
+  opens an empty stats row when the only figure is a zero rating.
+- Removed `providersOf` (no consumer). `ProviderCard` stays the provider Block; its destination is
+  the seller page (P0-9, intentionally retained: a seller and a rental provider are one party).
+
 ### Changed — one seller Block (P1-8 #3, 30 Sep)
 
 - **`SellerCard`** is the seller Block. Its listing count comes from the database

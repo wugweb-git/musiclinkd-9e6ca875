@@ -22,7 +22,7 @@ import {
   Building2,
   Disc3,
   Speaker,
-  ShoppingCart,
+  ArrowUpRight,
   Piano,
   Drum,
   Wind,
@@ -41,7 +41,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Listing } from "@/data/market";
-import type { RentalItem } from "@/data/rentals";
 import { useSavedListings } from "@/hooks/use-saved-listings";
 import { PersonAvatar } from "./person-avatar";
 import { useGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
@@ -63,7 +62,7 @@ import {
 } from "@/lib/market-filter";
 import { Btn, Chip, IconBtn, Sheet, VerifiedBadge } from "./ui";
 import { EmptyState as BaseEmptyState, Price, Segmented } from "./kit";
-import { rupeeParts, unitLabel, unitName, type PriceParts } from "@/lib/price";
+import { unitLabel, unitName, type PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 import { StateIcon } from "./tab-icon";
@@ -268,66 +267,64 @@ function typeMeta(l: Listing) {
 // eslint-disable-next-line react-refresh/only-export-components -- predicate co-located with the card it gates
 export const isProduct = (l: Listing) => l.type === "product" || l.type === "rental";
 
-/** What the product card draws, whichever side of the market it came from. */
+/** How a product card's badge moves: keyed off what the listing is, never off the badge's words. */
+type BadgeMotion = "glimmer" | "glimmer-slow" | "breathe" | "still";
+
+/** What the product card draws. Every product opens its listing (/marketplace/l/$id). */
 export type ProductItem = {
-  /** Which detail page opens: a marketplace listing, or a piece of rental equipment. */
-  opens: "listing" | "equipment";
   id: string;
   /** The listing's row uuid, which saves are keyed by. No uuid, no save control. */
   saveId?: string | undefined;
   title: string;
   photos: string[];
   category: string;
-  badge: string | null;
+  badge: { label: string; motion: BadgeMotion } | null;
   price: PriceParts | null;
+};
+
+/* The badge moves by what the item is. New catches the light; nearly new catches it more slowly; a
+   rental breathes, as if on offer right now; worn gear and brand names stay still — a used amp
+   shouldn't sparkle. Reduced motion stops all of it. */
+const CONDITION_MOTION: Record<NonNullable<Listing["condition"]>, BadgeMotion> = {
+  New: "glimmer",
+  "Like New": "glimmer-slow",
+  Excellent: "glimmer-slow",
+  Good: "still",
+  Fair: "still",
+  Used: "still",
+};
+const SWEEP =
+  "bg-[linear-gradient(110deg,transparent_35%,rgb(255_255_255/0.55)_50%,transparent_65%)] bg-[length:200%_100%] bg-no-repeat";
+const MOTION_CLASS: Record<BadgeMotion, string> = {
+  glimmer: `${SWEEP} motion-safe:animate-glimmer`,
+  "glimmer-slow": `${SWEEP} motion-safe:animate-glimmer-slow`,
+  breathe: "motion-safe:animate-breathe",
+  still: "",
 };
 
 // eslint-disable-next-line react-refresh/only-export-components -- adapter co-located with the card
 export function productFromListing(l: Listing): ProductItem {
+  const tag = typeMeta(l).tag;
   return {
-    opens: "listing",
     id: l.id,
     saveId: l.dbId,
     title: l.title,
     photos: l.photos,
     category: l.category,
-    badge: l.condition ?? typeMeta(l).tag,
+    badge: l.condition
+      ? { label: l.condition, motion: CONDITION_MOTION[l.condition] }
+      : tag
+        ? { label: tag, motion: l.type === "rental" ? "breathe" : "still" }
+        : null,
     price: l.price,
   };
 }
 
-// eslint-disable-next-line react-refresh/only-export-components -- adapter co-located with the card
-export function productFromRental(e: RentalItem): ProductItem {
-  return {
-    opens: "equipment",
-    id: e.id,
-    saveId: e.dbId,
-    title: e.name,
-    photos: e.photos,
-    category: e.category ?? "other",
-    badge: e.condition ?? "Rental",
-    price:
-      e.daily != null ? rupeeParts(e.daily, "day") : e.priceNote ? { amount: e.priceNote } : null,
-  };
-}
-
-/* The badge moves by what it says. New catches the light; nearly new catches it more slowly; a
-   rental breathes, as if on offer right now; worn gear and brand names stay still — a used amp
-   shouldn't sparkle. Reduced motion stops all of it. */
-const SWEEP =
-  "bg-[linear-gradient(110deg,transparent_35%,rgb(255_255_255/0.55)_50%,transparent_65%)] bg-[length:200%_100%] bg-no-repeat";
-function badgeMotion(label: string) {
-  if (label === "New") return `${SWEEP} motion-safe:animate-glimmer`;
-  if (label === "Like New" || label === "Excellent")
-    return `${SWEEP} motion-safe:animate-glimmer-slow`;
-  if (label === "Rental") return "motion-safe:animate-breathe";
-  return "";
-}
-
 /*
- * The product card, drawn to the owner's reference (a 750px-wide product card). Every size, gap
- * and radius is that reference's pixel value as a share of the card's width (cqw), so the card
- * keeps its proportions at any width — a rail tile or half of a grid. Small text has a floor.
+ * The product card, drawn to the owner's reference (a 750px-wide product card): a photo in a
+ * rounded frame inside a white card, the title, then the price with a round arrow showing where
+ * the card goes. Sizes, radii and colours are tokens. The save heart sits over the photo as a
+ * sibling of the card's link, never inside it.
  */
 export function ProductCard({
   item,
@@ -337,11 +334,11 @@ export function ProductCard({
   preview = false,
 }: {
   item: ProductItem;
-  saved?: boolean;
-  onSave?: () => void;
-  rail?: boolean;
+  saved?: boolean | undefined;
+  onSave?: (() => void) | undefined;
+  rail?: boolean | undefined;
   /** Drawn for a listing still being written: the same card, not a link. */
-  preview?: boolean;
+  preview?: boolean | undefined;
 }) {
   const store = useSavedListings();
   const [shown, setShown] = useState(0);
@@ -350,14 +347,11 @@ export function ProductCard({
   const canSave = !preview && Boolean(onSave || item.saveId);
   const isSaved = saved ?? (item.saveId ? store.has(item.saveId) : false);
   const unit = unitName(item.price?.unit);
-  const className = `group @container block ${rail ? "w-[224px] shrink-0" : ""}`;
 
   const body = (
-    // The container can't size itself in cqw (it would measure the screen), so the card's own
-    // radius, fill and shadow live one layer in, where cqw means the card's width.
-    <div className="overflow-hidden rounded-[6.93cqw] bg-white shadow-[0_10px_24px_-12px_rgba(13,11,38,0.16)] transition-transform duration-[260ms] ease-spring group-active:scale-[0.96]">
-      <div className="p-[2.93cqw]">
-        <div className="relative aspect-[705/690] overflow-hidden rounded-[5.07cqw] bg-[#EEEEEE]">
+    <div className="overflow-hidden rounded-lg bg-card shadow-sm transition-transform duration-300 ease-spring group-active:scale-[0.96]">
+      <div className="p-2">
+        <div className="relative aspect-square overflow-hidden rounded-md bg-subtle">
           {item.photos.length ? (
             <div
               className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto"
@@ -372,7 +366,7 @@ export function ProductCard({
                   src={sized(src, { width: 412 })}
                   alt={i === 0 ? item.title : ""}
                   loading="lazy"
-                  className="h-full w-full shrink-0 snap-center object-cover transition-transform duration-[600ms] ease-standard group-hover:scale-[1.04]"
+                  className="h-full w-full shrink-0 snap-center object-cover transition-transform duration-500 ease-standard group-hover:scale-[1.04]"
                 />
               ))}
             </div>
@@ -383,50 +377,18 @@ export function ProductCard({
           )}
           {item.badge ? (
             <span
-              className={`absolute left-[3.73cqw] top-[4cqw] rounded-full bg-white/25 px-[2.67cqw] py-[1.07cqw] text-[max(3.47cqw,11px)] leading-[1.2] text-white backdrop-blur-md ${badgeMotion(item.badge)}`}
+              className={`absolute left-2 top-2 rounded-full bg-background/25 px-2 py-1 text-1 leading-none text-background backdrop-blur-md ${MOTION_CLASS[item.badge.motion]}`}
             >
-              {item.badge}
+              {item.badge.label}
             </span>
           ) : null}
-          {canSave ? (
-            <button
-              type="button"
-              aria-label={isSaved ? "Remove bookmark" : "Bookmark"}
-              aria-pressed={isSaved}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setTapped(true);
-                if (onSave) onSave();
-                else if (item.saveId) store.toggle(item.saveId);
-              }}
-              onAnimationEnd={(e) => {
-                if (e.target === e.currentTarget) setTapped(false);
-              }}
-              className={`hit-area absolute right-[3.47cqw] top-[2.93cqw] flex h-[10.4cqw] w-[10.4cqw] items-center justify-center rounded-full backdrop-blur-md transition-[color,background-color] duration-200 ${
-                isSaved ? "bg-red-500/20 text-red-500" : "bg-white/50 text-[#0D0D0D]"
-              } ${tapped ? "animate-tab-tap" : ""}`}
-            >
-              <StateIcon
-                outline={Heart}
-                solid="heart"
-                active={isSaved}
-                size="4.8cqw"
-                move="beat"
-                strokeWidth={2}
-              />
-            </button>
-          ) : null}
           {item.photos.length > 1 ? (
-            <div
-              className="absolute inset-x-0 bottom-[3.73cqw] flex justify-center gap-[1.2cqw]"
-              aria-hidden
-            >
+            <div className="absolute inset-x-0 bottom-2 flex justify-center gap-1" aria-hidden>
               {item.photos.map((src, i) => (
                 <span
                   key={src}
-                  className={`h-[1.6cqw] rounded-full transition-[width,background-color] duration-300 ease-standard ${
-                    i === shown ? "w-[4cqw] bg-white" : "w-[1.6cqw] bg-white/60"
+                  className={`h-1 rounded-full transition-[width,background-color] duration-300 ease-standard ${
+                    i === shown ? "w-3 bg-background" : "w-1 bg-background/60"
                   }`}
                 />
               ))}
@@ -435,39 +397,64 @@ export function ProductCard({
         </div>
       </div>
 
-      <div className="px-[5.6cqw] pb-[2.93cqw] pt-[3.2cqw]">
-        <h3 className="truncate text-[max(5.33cqw,14px)] font-semibold leading-[1.15] tracking-[-0.02em] text-[#0D0D0D]">
-          {item.title}
-        </h3>
-        <div className="mt-[4.8cqw] flex items-center justify-between gap-[2cqw]">
+      <div className="px-4 pb-3 pt-2">
+        <h3 className="truncate text-sm font-semibold text-foreground">{item.title}</h3>
+        <div className="mt-3 flex items-center justify-between gap-2">
           {/* A rate reads as one line: the amount, then "/day" in the small grey unit style. */}
           <span className="min-w-0 truncate leading-none">
-            <span className="text-[max(4.8cqw,13px)] font-semibold text-price">
-              {item.price?.amount ?? ""}
-            </span>
-            {unit ? <span className="text-[max(3.47cqw,11px)] text-[#8A8A8A]">/{unit}</span> : null}
+            <span className="text-sm font-semibold text-price">{item.price?.amount ?? ""}</span>
+            {unit ? <span className="text-1 text-muted-foreground">/{unit}</span> : null}
           </span>
-          {/* The whole card is the link; this only shows where it goes. */}
+          {/* The whole card is the link; this only shows where it goes. Nothing is bought here. */}
           <span
             aria-hidden
-            className="flex h-[9.6cqw] w-[9.6cqw] shrink-0 items-center justify-center rounded-full bg-[#0D0D0D] text-white transition-transform duration-300 ease-spring group-hover:-rotate-12 group-hover:translate-x-[0.4cqw] group-active:scale-90"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-background transition-transform duration-300 ease-spring group-hover:translate-x-0.5 group-active:scale-90"
           >
-            <ShoppingCart className="h-[4.8cqw] w-[4.8cqw]" strokeWidth={2} />
+            <ArrowUpRight size={iconSize.sm} strokeWidth={2} />
           </span>
         </div>
       </div>
     </div>
   );
 
-  if (preview) return <div className={className}>{body}</div>;
-  // Sale and rent are one flow, so a listing has one detail screen. This used to send rentals to
-  // /marketplace/rent/e/$id, a second page over the same database row that showed the deposit and
-  // the rental terms while /marketplace/l/$id showed the photos — so the same item read differently
-  // depending on which card you happened to tap. The terms live on the listing now.
+  const heart = canSave ? (
+    <button
+      type="button"
+      aria-label={isSaved ? "Remove bookmark" : "Bookmark"}
+      aria-pressed={isSaved}
+      onClick={() => {
+        setTapped(true);
+        if (onSave) onSave();
+        else if (item.saveId) store.toggle(item.saveId);
+      }}
+      onAnimationEnd={(e) => {
+        if (e.target === e.currentTarget) setTapped(false);
+      }}
+      className={`hit-area absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background/60 text-foreground backdrop-blur-md transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+        tapped ? "animate-tab-tap" : ""
+      }`}
+    >
+      <StateIcon
+        outline={Heart}
+        solid="heart"
+        active={isSaved}
+        size={iconSize.sm}
+        move="beat"
+        strokeWidth={2}
+      />
+    </button>
+  ) : null;
+
+  const width = rail ? "w-rail-md shrink-0" : "";
+  if (preview) return <div className={`group relative block ${width}`}>{body}</div>;
+  // Sale and rent are one flow, so a listing has one detail screen (/marketplace/l/$id).
   return (
-    <Link to="/marketplace/l/$id" params={{ id: item.id }} className={className}>
-      {body}
-    </Link>
+    <div className={`group relative ${width}`}>
+      <Link to="/marketplace/l/$id" params={{ id: item.id }} className="block">
+        {body}
+      </Link>
+      {heart}
+    </div>
   );
 }
 
@@ -528,17 +515,6 @@ export function ListingGrid({
       ) : null}
       {others.map((l) => (
         <ListingRow key={l.id} l={l} />
-      ))}
-    </div>
-  );
-}
-
-/** Rental equipment as a two-column grid of product cards. */
-export function EquipmentGrid({ items }: { items: RentalItem[] }) {
-  return (
-    <div className="grid grid-cols-2 gap-3">
-      {items.map((e) => (
-        <ProductCard key={e.id} item={productFromRental(e)} />
       ))}
     </div>
   );
