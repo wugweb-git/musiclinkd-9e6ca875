@@ -861,33 +861,6 @@ export function ProfileHero({
 
 /* ── Portfolio pieces ──────────────────────────────────────── */
 
-/**
- * The profile's featured work: its image, title and line. It has no media of its own to play, so
- * it shows no play control and no copy beyond what the profile stores.
- */
-export function FeaturedCard({ featured }: { featured: NonNullable<TalentProfile["featured"]> }) {
-  return (
-    <article className="overflow-hidden rounded-lg border border-border/80 bg-card">
-      <div className="relative">
-        <img
-          src={sized(featured.image, { width: 176 })}
-          alt={featured.title}
-          className="h-44 w-full object-cover"
-          loading="lazy"
-        />
-        <div className="media-scrim" />
-        <div className="absolute inset-x-4 bottom-4 min-w-0 text-background">
-          <span className="rounded-full bg-primary pill text-primary-foreground font-semibold">
-            Featured {featured.kind}
-          </span>
-          <h3 className="mt-2 text-2 font-bold text-background">{featured.title}</h3>
-          <p className="text-1 opacity-90">{featured.meta}</p>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export function AudioTrackCard({
   track,
   playing,

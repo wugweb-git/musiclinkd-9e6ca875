@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — work media (P1-8 #8, 30 Sep)
+
+- **`MediaEmbed` is the one player.** A work's own page plays audio and video through it; a direct
+  audio file there is drawn as a waveform (`waveform`), and a link that doesn't embed says where it
+  plays. **Removed:** `AudioPlayer`, `VideoPlayer` and `AudioPreview`. A video work no longer shows
+  a second "Open media link" beside its player; that link stays for works that are neither audio
+  nor video, with an icon rather than the "↗" glyph.
+- **Discover's trending audio** is drawn as tracks (`AudioTrackCard`), not video cards.
+- **`FeaturedCard` is removed.** No real profile ever had one (`featured` came only from the
+  design-time profiles); a featured work is a state of its own card. The fixtures' `featured`
+  blocks (Unsplash photos, "812k plays") are gone; `linked-profiles.ts` keeps its lines under a
+  local type because the migration generators never read them.
+- `AudioTrackCard`, `VideoCard` and `PortfolioMediaTile` stay separate Blocks.
+
 ### Changed — reviews (P1-8 #7, 30 Sep)
 
 - **`RatingSummary`** is the rating at a glance: `full` on the Reviews screen (average, stars, a

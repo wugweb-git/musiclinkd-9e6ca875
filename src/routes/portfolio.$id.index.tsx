@@ -3,19 +3,19 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Pencil, Plus, Share2, Trash2 } from "lucide-react";
+import { ExternalLink, Pencil, Plus, Share2, Trash2 } from "lucide-react";
 import { ActionBar, Btn, BtnLink, IconBtn, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
 import {
-  AudioPlayer,
+  MediaStatePill,
   CreditRow,
   PortfolioSkeleton,
   StateCard,
   StatusPill,
-  VideoPlayer,
   WorkAnalytics,
   WorkTypeIcon,
 } from "@/components/ml/portfolio";
-import { workType, type PortfolioItem } from "@/data/portfolio";
+import { mediaStateCopy, workType, type PortfolioItem } from "@/data/portfolio";
+import { MediaEmbed } from "@/components/ml/media-embed";
 import { Dialog } from "@/components/ml/kit";
 import {
   deletePortfolioItem,
@@ -170,26 +170,36 @@ function WorkDetail() {
               ) : null}
             </section>
 
-            {workType(item.kind).media === "audio" ? (
-              <div className="mt-4">
-                <AudioPlayer src={item.media_url} title={item.title} artwork={item.cover_url} />
+            {/* One player for every work: MediaEmbed plays what embeds or is a file, links out
+                otherwise, and draws a direct audio file as a waveform. */}
+            {workType(item.kind).media === "audio" && !item.media_url ? (
+              <div className="mt-4 rounded-lg bg-subtle p-4">
+                <MediaStatePill state="not-uploaded" />
+                <p className="mt-2 text-1 text-muted-foreground">
+                  {mediaStateCopy["not-uploaded"].hint}
+                </p>
               </div>
             ) : null}
 
-            {item.media_url && workType(item.kind).media === "video" ? (
+            {item.media_url &&
+            (workType(item.kind).media === "audio" || workType(item.kind).media === "video") ? (
               <div className="mt-4">
-                <VideoPlayer src={item.media_url} title={item.title} />
+                <MediaEmbed url={item.media_url} title={item.title} waveform />
               </div>
             ) : null}
 
-            {item.media_url && workType(item.kind).media !== "audio" ? (
+            {/* Neither audio nor video (a credit, a live date): the link, opened elsewhere. */}
+            {item.media_url &&
+            workType(item.kind).media !== "audio" &&
+            workType(item.kind).media !== "video" ? (
               <a
                 href={item.media_url}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 block rounded-lg bg-subtle p-4 text-sm font-semibold text-foreground"
+                className="mt-4 flex min-h-12 items-center gap-2 rounded-lg bg-subtle p-4 text-sm font-semibold text-foreground"
               >
-                Open media link ↗
+                Open media link
+                <ExternalLink size={iconSize.sm} aria-hidden />
               </a>
             ) : null}
 

@@ -34,7 +34,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
 import { PersonCard, PersonRow, StudioCard } from "@/components/ml/cards";
 import { useTaxonomy } from "@/lib/taxonomy";
-import { VideoCard } from "@/components/ml/profile";
+import { AudioTrackCard, VideoCard } from "@/components/ml/profile";
 import { workType } from "@/data/portfolio";
 import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
@@ -100,6 +100,8 @@ function categoryIcon(label: string) {
 function Discover() {
   const { dbStudios, trendingWork, people, trendingPages } = Route.useLoaderData();
   const [searchOpen, setSearchOpen] = useState(false);
+  // One trending track open at a time, as on a profile.
+  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   // A persona type is a filter here, not a screen of its own (owner, 28 Sep 2026).
   const [personaFilter, setPersonaFilter] = useState<string>("All");
   const personaOptions = ["All", ...categories.map((c) => c.label)];
@@ -214,20 +216,24 @@ function Discover() {
           <SectionHeader title="Trending audio" />
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
             {audioWork.map((item) => (
-              <VideoCard
-                key={item.id}
-                v={{
-                  id: item.id,
-                  title: item.title,
-                  context: joinParts(
-                    item.display_name ?? "",
-                    `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
-                  ),
-                  duration: "",
-                  thumb: item.cover_url ?? "",
-                  ...(item.media_url ? { media: item.media_url } : {}),
-                }}
-              />
+              <div key={item.id} className="w-rail-lg shrink-0">
+                <AudioTrackCard
+                  track={{
+                    id: item.id,
+                    title: item.title,
+                    role: "",
+                    project: joinParts(
+                      item.display_name ?? "",
+                      `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
+                    ),
+                    duration: "",
+                    artwork: item.cover_url ?? "",
+                    ...(item.media_url ? { media: item.media_url } : {}),
+                  }}
+                  playing={playingAudio === item.id}
+                  onToggle={() => setPlayingAudio((id) => (id === item.id ? null : item.id))}
+                />
+              </div>
             ))}
           </div>
         </section>

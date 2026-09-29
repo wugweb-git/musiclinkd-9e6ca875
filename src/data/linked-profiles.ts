@@ -23,7 +23,11 @@ type LinkedOpportunitySeed = {
 export type LinkedProfileSeed = {
   /** `auth.users.id` and `profiles.id` in the live database. */
   id: string;
-  profile: Omit<TalentProfile, "opportunities"> & { opportunities: LinkedOpportunitySeed[] };
+  profile: Omit<TalentProfile, "opportunities"> & {
+    opportunities: LinkedOpportunitySeed[];
+    /** A lead work as this seed wrote it; profiles show featured work as a state of its own card. */
+    featured?: { kind: string; title: string; meta: string; image: string } | undefined;
+  };
   db: {
     /** Onboarding role keys where one fits; otherwise the label itself. */
     roles: string[];

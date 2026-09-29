@@ -142,8 +142,6 @@ export type TalentProfile = {
   rating: number;
   reviewCount: number;
   links: { label: string; handle: string }[];
-  featured?:
-    undefined | { kind: "Track" | "Project" | "Video"; title: string; meta: string; image: string };
   audio: AudioTrack[];
   video: VideoItem[];
   gallery: string[];
@@ -208,7 +206,6 @@ export function emptySections(): Omit<
     rating: 0,
     reviewCount: 0,
     links: [],
-    featured: undefined,
     audio: [],
     video: [],
     gallery: [],
@@ -278,12 +275,6 @@ const rahul: TalentProfile = {
     { label: "YouTube", handle: "@rahuliyer" },
     { label: "Instagram", handle: "@rahul.iyer" },
   ],
-  featured: {
-    kind: "Track",
-    title: "Neon Monsoon",
-    meta: "Produced & mixed · 812k plays",
-    image: u("photo-1470225620780-dba8ba36b745", 800),
-  },
   audio: [
     {
       id: "a1",
@@ -761,12 +752,6 @@ const ananya: TalentProfile = {
   stats: { connections: "2,140", followers: "12.4k", plays: "5.8M", credits: 42 },
   rating: 4.9,
   reviewCount: 38,
-  featured: {
-    kind: "Track",
-    title: "Rangreza (Title Track)",
-    meta: "Lead vocals · T-Series · 4.2M plays",
-    image: u("photo-1511671782779-c97d3d27a1d4", 800),
-  },
   services: [
     {
       id: "s1",

@@ -45,7 +45,6 @@ import { NotificationsBell } from "./tab-header";
 import { Price } from "./kit";
 import {
   AudioTrackCard,
-  FeaturedCard,
   MoreSheet,
   RatingSummary,
   ProfileEmpty,
@@ -561,12 +560,6 @@ function Overview({
           />
         )}
       </ProfileSection>
-
-      {p.featured ? (
-        <ProfileSection title="Featured work">
-          <FeaturedCard featured={p.featured} />
-        </ProfileSection>
-      ) : null}
 
       {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
         <ProfileSection title="Music identity">
