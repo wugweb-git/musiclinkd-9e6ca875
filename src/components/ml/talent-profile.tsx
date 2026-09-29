@@ -47,6 +47,7 @@ import {
   AudioTrackCard,
   FeaturedCard,
   MoreSheet,
+  RatingSummary,
   ProfileEmpty,
   type ProfileEmptyCta,
   ProfileHero,
@@ -825,15 +826,7 @@ function Reviews({ p, owner }: { p: TalentProfile; owner: boolean }) {
   return (
     <>
       <ProfileSection title="Reviews">
-        {p.reviewCount ? (
-          <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
-            <Star size={iconSize.sm} className="fill-foreground" aria-hidden />
-            {p.rating.toFixed(1)}
-            <span className="font-normal text-muted-foreground">
-              · {p.reviewCount} {p.reviewCount === 1 ? "review" : "reviews"}
-            </span>
-          </p>
-        ) : null}
+        <RatingSummary variant="inline" average={p.rating} count={p.reviewCount} />
         {p.reviews.length ? (
           <ReviewRail>
             {p.reviews.map((review) => (

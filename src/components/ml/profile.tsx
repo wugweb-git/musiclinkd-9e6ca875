@@ -32,6 +32,7 @@ import {
   MessageSquareQuote,
   Clock,
   Check,
+  Star,
 } from "lucide-react";
 import type {
   AudioTrack,
@@ -44,7 +45,7 @@ import type {
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "./ui";
-import { Price, Stars, StatusPill, Tag } from "./kit";
+import { Card, Meter, Price, Stars, StatusPill, Tag } from "./kit";
 import { PersonAvatar } from "./person-avatar";
 import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
@@ -1546,6 +1547,62 @@ export function ReviewCard({
         {footer ? <div className="pt-2.5">{footer}</div> : null}
       </div>
     </article>
+  );
+}
+
+/**
+ * A rating at a glance, from stored reviews only. `inline` is the one line a profile shows above
+ * its review rail (nothing at all while there are no reviews); `full` is the Reviews screen's
+ * summary with the big average and a bar per star.
+ */
+export function RatingSummary({
+  average,
+  count,
+  distribution,
+  variant = "full",
+}: {
+  average: number;
+  count: number;
+  /** Reviews per star, 5 to 1; the full summary draws a bar for each. */
+  distribution?: { stars: number; count: number }[] | undefined;
+  variant?: "full" | "inline" | undefined;
+}) {
+  const reviews = `${count} ${count === 1 ? "review" : "reviews"}`;
+  if (variant === "inline") {
+    if (!count) return null;
+    return (
+      <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
+        <Star size={iconSize.sm} className="fill-foreground" aria-hidden />
+        {average.toFixed(1)}
+        <span className="font-normal text-muted-foreground">· {reviews}</span>
+      </p>
+    );
+  }
+  return (
+    <Card className="space-y-3">
+      <div className="flex items-end gap-3">
+        <p className="text-4 font-bold leading-none">{count ? average.toFixed(1) : "—"}</p>
+        <div className="min-w-0 flex-1 pb-1">
+          <Stars value={average} />
+          <p className="mt-1 truncate text-1 text-muted-foreground">
+            {count ? reviews : "No reviews yet"}
+          </p>
+        </div>
+      </div>
+      {count && distribution ? (
+        <div className="space-y-1.5">
+          {distribution.map((d) => (
+            <Meter
+              key={d.stars}
+              label={`${d.stars} star`}
+              value={d.count}
+              max={count}
+              hint={`${d.count}`}
+            />
+          ))}
+        </div>
+      ) : null}
+    </Card>
   );
 }
 

@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — reviews (P1-8 #7, 30 Sep)
+
+- **`RatingSummary`** is the rating at a glance: `full` on the Reviews screen (average, stars, a
+  bar per star) and `inline` above a profile's review rail (the profile's own inline summary is
+  gone). Both read stored reviews only.
+- **Reviews screen:** while reviews load, or when they fail, it shows loading or an error, not "No
+  reviews yet".
+- **`MatchBar` is removed.** The viewer's fit to an opportunity uses `ApplicantFit`, the line
+  applicants' fit already used (its reviews line is left out when no rating is passed).
+
 ### Changed — opportunities and applications (P1-8 #6, 30 Sep)
 
 - **`ApplicationCard`** and **`ApplicantCard`** are rebuilt on the database records

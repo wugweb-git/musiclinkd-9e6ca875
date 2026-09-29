@@ -27,7 +27,7 @@ import {
   Ticket,
   type LucideIcon,
 } from "lucide-react";
-import { Price, StatusPill, ReasonChip, Stars, type Tone } from "@/components/ml/kit";
+import { Price, StatusPill, Stars, type Tone } from "@/components/ml/kit";
 import { Btn, BtnLink, IconBtn, VerifiedBadge } from "@/components/ml/ui";
 import { PersonAvatar } from "./person-avatar";
 import { joinParts } from "@/lib/utils";
@@ -148,27 +148,6 @@ export function useSavedOpportunities() {
   };
 }
 
-export function MatchBar({ score, reasons }: { score: number; reasons: string[] }) {
-  return (
-    <div className="rounded-lg bg-subtle p-3">
-      <div className="flex items-baseline justify-between">
-        <span className="text-1 font-semibold">Fit for you</span>
-        <span className="text-1 font-bold text-foreground">{score}%</span>
-      </div>
-      <div className="mt-1.5 h-1.5 rounded-full bg-card">
-        <div className="h-1.5 rounded-full bg-primary" style={{ width: `${score}%` }} />
-      </div>
-      {reasons.length ? (
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {reasons.map((r) => (
-            <ReasonChip key={r}>{r}</ReasonChip>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
 /**
  * An applicant's fit to the opportunity (src/lib/fit.ts) and their review average, as two quiet
  * lines: "82% fit · Matches: Guitarist · Acoustic" and the stars with the count.
@@ -180,9 +159,11 @@ export function ApplicantFit({
 }: {
   /** Null while the opportunity or the taxonomy has not loaded. */
   fit: Fit | null;
-  rating: number | string | null | undefined;
-  reviews: number | null | undefined;
+  /** Leave both out to show the fit alone (the viewer's own fit to an opportunity). */
+  rating?: number | string | null | undefined;
+  reviews?: number | null | undefined;
 }) {
+  const withReviews = rating !== undefined || reviews !== undefined;
   const average = Number(rating ?? 0);
   const count = reviews ?? 0;
   return (
@@ -193,7 +174,7 @@ export function ApplicantFit({
           {fit.reasons.length ? ` · ${fitLine(fit)}` : null}
         </p>
       ) : null}
-      {count > 0 && average > 0 ? (
+      {!withReviews ? null : count > 0 && average > 0 ? (
         <p className="flex items-center gap-1.5 text-1 text-muted-foreground">
           <Stars value={average} size={12} />
           <span>

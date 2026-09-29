@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Bookmark, Share2, CalendarDays, MapPin, Wallet, CheckCircle2, Circle } from "lucide-react";
 import { ActionBar, Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
-import { MatchBar, statusTone, useSavedOpportunities } from "@/components/ml/opportunity";
+import { ApplicantFit, statusTone, useSavedOpportunities } from "@/components/ml/opportunity";
 import { categoryLabel, payParts } from "@/data/opportunities";
 import { loadDbOpportunity, opportunityViewSource } from "@/lib/opportunity-view";
 import { usePreviousPath } from "@/lib/flow-back";
@@ -147,7 +147,18 @@ function OpportunityDetail() {
             ))}
         </div>
 
-        {o.matchScore ? <MatchBar score={o.matchScore} reasons={o.matchReasons} /> : null}
+        {/* The viewer's own fit to this opportunity, as applicants' fit is shown. */}
+        {o.matchScore ? (
+          <div className="rounded-lg bg-subtle p-3">
+            <ApplicantFit
+              fit={{
+                score: o.matchScore,
+                reasons: o.matchReasons,
+                matches: o.matchReasons.length,
+              }}
+            />
+          </div>
+        ) : null}
 
         {o.brief.length ? (
           <Card className="space-y-2">
