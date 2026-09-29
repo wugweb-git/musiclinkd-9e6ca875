@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — the studio booking record (P1-8 #9, 30 Sep)
+
+- **`StudioBookingRecord`** draws a stored booking request for either side: the studio's requests
+  queue and workspace lists (who asked, space and room, when, notes, the screen's actions) and My
+  bookings (the studio, the reply; the whole record opens the booking). It replaces three
+  route-local lists. No price is shown: nothing is paid in the app.
+- **Statuses** come from one record typed to the database's statuses; the `as BookingStatus`
+  casts and the declined→rejected remapping are gone. A confirmed session whose day has passed
+  reads as completed (`shownBookingStatus`), on both sides.
+- **Tabs key off values**, not their wording (`Segmented` takes `labels`).
+- **Pending is per record** (Reviewing locks only its own request); buttons are 48px.
+- `BookingTimeline` no longer draws a "·" glyph for a step not reached.
+- **Removed:** `ProviderRequestCard` (no consumer; typed to design-time bookings).
+- `BookingCard` stays for rentals, `BookingSummaryCard` for the checkout draft.
+
 ### Changed — work media (P1-8 #8, 30 Sep)
 
 - **`MediaEmbed` is the one player.** A work's own page plays audio and video through it; a direct

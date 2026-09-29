@@ -39,6 +39,8 @@ import {
   type Slot,
 } from "@/data/booking";
 import { formatDate, formatTime, isoDate } from "@/lib/when";
+import { joinParts } from "@/lib/utils";
+import type { BookingRequest, BookingStatus as DbBookingStatus } from "@/lib/bookings.functions";
 import { inr } from "@/lib/price";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
@@ -80,7 +82,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
                 }`}
                 aria-hidden
               >
-                {done ? <Check size={iconSize.xs} strokeWidth={3} /> : "·"}
+                {done ? <Check size={iconSize.xs} strokeWidth={3} /> : null}
               </span>
               {i < bookingTimeline.length - 1 ? (
                 <span className={`min-h-4.5 w-px flex-1 ${done ? "bg-primary" : "bg-border"}`} />
@@ -674,48 +676,106 @@ export function Detail({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-export function ProviderRequestCard({
-  booking,
-  entityResource,
+/* ------------------------------------------------------------------ */
+/* Studio booking record                                               */
+/* ------------------------------------------------------------------ */
+
+/** A stored booking's status as both sides read it. */
+const STUDIO_BOOKING_STATUS: Record<DbBookingStatus, { label: string; tone: Tone }> = {
+  requested: { label: "Requested", tone: "warn" },
+  reviewing: { label: "Provider reviewing", tone: "warn" },
+  confirmed: { label: "Confirmed", tone: "good" },
+  declined: { label: "Declined", tone: "neutral" },
+  cancelled: { label: "Cancelled", tone: "neutral" },
+  completed: { label: "Completed", tone: "neutral" },
+};
+
+/** A confirmed session whose day has passed is history: it reads as completed. */
+// eslint-disable-next-line react-refresh/only-export-components -- shared with the list screens
+export function shownBookingStatus(
+  b: Pick<BookingRequest, "status" | "session_date">,
+  today = isoDate(new Date()),
+): DbBookingStatus {
+  return b.status === "confirmed" && b.session_date < today ? "completed" : b.status;
+}
+
+/**
+ * One studio booking request, from the database (booking_requests), for either side. The studio
+ * sees who asked (their name opens their profile), the space and room, when, and their notes, with
+ * the screen's own actions below; the person who booked sees the studio and the studio's reply,
+ * and the whole record opens their booking. No price: nothing is paid in the app.
+ */
+export function StudioBookingRecord({
+  b,
+  side,
+  actions,
 }: {
-  booking: Booking;
-  entityResource: string;
+  b: BookingRequest;
+  side: "studio" | "requester";
+  /** The studio side's controls for this record (Reviewing, Review). */
+  actions?: ReactNode | undefined;
 }) {
-  return (
-    <div className="rounded-lg bg-subtle p-4">
-      <div className="flex items-start gap-3">
-        <img
-          src={sized(booking.customerAvatar, { width: 44 })}
-          alt=""
-          className="h-11 w-11 shrink-0 rounded-full object-cover"
-        />
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold">{booking.customer}</p>
-          <p className="truncate text-1 text-muted-foreground">{booking.customerRole}</p>
+  const status = STUDIO_BOOKING_STATUS[shownBookingStatus(b)];
+  const when = joinParts(
+    formatDate(b.session_date),
+    b.start_time ? formatTime(b.start_time.slice(0, 5)) : "",
+    b.hours ? `${b.hours} hrs` : "",
+    side === "studio" && b.people ? `${b.people} people` : "",
+  );
+  const studioName =
+    b.studio?.name ?? b.studio_name ?? (side === "studio" ? "Your space" : "Studio");
+  const pill = <StatusPill label={status.label} tone={status.tone} className="shrink-0" />;
+
+  if (side === "requester") {
+    return (
+      <Link
+        to="/booking/confirmed/$ref"
+        params={{ ref: b.id }}
+        className="state-layer block rounded-lg bg-subtle p-4"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="truncate text-2 font-semibold">{studioName}</p>
+            <p className="mt-0.5 truncate text-1 text-muted-foreground">
+              {joinParts(b.room?.name ?? "", b.studio?.location ?? "")}
+            </p>
+          </div>
+          {pill}
         </div>
-        <BookingStatusPill status={booking.status} />
+        <p className="mt-2 text-1 text-muted-foreground">{when}</p>
+        {b.reply ? (
+          <p className="mt-2 line-clamp-2 text-1 text-muted-foreground">{b.reply}</p>
+        ) : null}
+      </Link>
+    );
+  }
+
+  const who = b.requester?.display_name ?? b.requester?.username ?? b.requester_name ?? "Someone";
+  return (
+    <article className="rounded-lg bg-subtle p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          {b.requester?.username ? (
+            <Link
+              to="/profile/$username"
+              params={{ username: b.requester.username }}
+              className="block truncate text-2 font-semibold"
+            >
+              {who}
+            </Link>
+          ) : (
+            <p className="truncate text-2 font-semibold">{who}</p>
+          )}
+          <p className="mt-0.5 truncate text-1 text-muted-foreground">
+            {joinParts(studioName, b.room?.name ?? "")}
+          </p>
+        </div>
+        {pill}
       </div>
-      <div className="mt-3 rounded-lg bg-subtle px-3 py-2 text-1 text-muted-foreground">
-        <p className="font-semibold text-foreground">{entityResource}</p>
-        <p className="mt-0.5">
-          {formatDate(booking.date)} · {formatTime(booking.start)} – {formatTime(booking.end)} ·{" "}
-          {booking.hours} hrs
-        </p>
-        <p className="mt-0.5">
-          {booking.people} people · {booking.purpose}
-        </p>
-      </div>
-      <div className="mt-3 flex items-center justify-between">
-        <span className="text-sm font-bold text-price">{inr(booking.amount)}</span>
-        <TextLink
-          to="/business/bookings/requests/$ref"
-          params={{ ref: booking.ref }}
-          className="gap-1 text-1 font-bold"
-        >
-          Review Request <ChevronRight size={iconSize.sm} />
-        </TextLink>
-      </div>
-    </div>
+      <p className="mt-2 text-1 text-muted-foreground">{when}</p>
+      {b.notes ? <p className="mt-2 text-1 leading-relaxed">{b.notes}</p> : null}
+      {actions ? <div className="mt-3 flex gap-2">{actions}</div> : null}
+    </article>
   );
 }
 

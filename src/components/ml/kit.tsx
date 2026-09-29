@@ -258,12 +258,15 @@ export function Segmented<T extends string>({
   options,
   onChange,
   icons,
+  labels,
   label,
   className = "-mx-5 border-b border-border px-5",
 }: {
   value: T;
   options: readonly T[];
   onChange: (v: T) => void;
+  /** What each option says, when the value is a key rather than its own wording. */
+  labels?: Partial<Record<T, string>> | undefined;
   /** Per-option icon, animated in on selection (SPEC-issue17). Options without an entry render no icon. */
   icons?: Partial<Record<T, LucideIcon>>;
   /** Edge to edge with its underline by default; pass "" inside a row that draws its own line. */
@@ -298,7 +301,7 @@ export function Segmented<T extends string>({
             }`}
           >
             {Icon ? <SegmentedIcon Icon={Icon} active={active} /> : null}
-            {o}
+            {labels?.[o] ?? o}
             {active ? (
               <span className="absolute inset-x-3 bottom-0 h-0.5 animate-underline rounded-full bg-brand [button:first-child>&]:left-0" />
             ) : null}

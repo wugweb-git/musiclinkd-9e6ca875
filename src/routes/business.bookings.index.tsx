@@ -4,15 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarClock, XCircle } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
-import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
+import { BookingSkeleton, EmptyState, StudioBookingRecord } from "@/components/ml/booking";
 import { BusinessOnlyGate, LoadError, Segmented } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { type BookingStatus } from "@/data/booking";
-import { formatDate, formatTime, isoDate } from "@/lib/when";
+import { isoDate } from "@/lib/when";
 import { listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { TextLink } from "@/components/ml/links";
-import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/bookings/")({
@@ -36,7 +34,19 @@ export const Route = createFileRoute("/business/bookings/")({
   component: ProviderBookings,
 });
 
-const tabs = ["Requests", "Today", "Upcoming", "Past"] as const;
+const tabs = ["requests", "today", "upcoming", "past"] as const;
+const tabLabels: Record<(typeof tabs)[number], string> = {
+  requests: "Requests",
+  today: "Today",
+  upcoming: "Upcoming",
+  past: "Past",
+};
+const emptyTitles: Record<(typeof tabs)[number], string> = {
+  requests: "No requests waiting",
+  today: "Nothing today",
+  upcoming: "Nothing upcoming",
+  past: "Nothing past",
+};
 
 function ProviderBookings() {
   const gate = useRequireBusiness();
@@ -48,7 +58,7 @@ function ProviderBookings() {
 }
 
 function ProviderBookingsContent() {
-  const [tab, setTab] = useState<(typeof tabs)[number]>("Requests");
+  const [tab, setTab] = useState<(typeof tabs)[number]>("requests");
   const { signedIn } = useAuth();
   const load = useServerFn(listStudioBookings);
   const q = useQuery({
@@ -66,7 +76,7 @@ function ProviderBookingsContent() {
   const past = all.filter((b) => b.session_date < today || b.status === "completed");
 
   const list =
-    tab === "Requests" ? pending : tab === "Today" ? todays : tab === "Upcoming" ? upcoming : past;
+    tab === "requests" ? pending : tab === "today" ? todays : tab === "upcoming" ? upcoming : past;
 
   return (
     <Screen>
@@ -106,7 +116,7 @@ function ProviderBookingsContent() {
         </div>
 
         <div className="mt-4 px-5 pb-1">
-          <Segmented value={tab} options={tabs} onChange={setTab} />
+          <Segmented value={tab} options={tabs} labels={tabLabels} onChange={setTab} />
         </div>
 
         <div className="mt-4">
@@ -120,7 +130,7 @@ function ProviderBookingsContent() {
           ) : q.isError ? (
             <LoadError what="your booking requests" />
           ) : (
-            <List items={list} emptyTitle={`Nothing ${tab.toLowerCase()}`} />
+            <List items={list} emptyTitle={emptyTitles[tab]} />
           )}
         </div>
       </main>
@@ -135,36 +145,7 @@ function List({ items, emptyTitle }: { items: BookingRequest[]; emptyTitle: stri
   return (
     <div className="space-y-3">
       {items.map((b) => (
-        <article key={b.id} className="rounded-lg bg-subtle p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              {b.requester?.username ? (
-                <Link
-                  to="/profile/$username"
-                  params={{ username: b.requester.username }}
-                  className="truncate text-2 font-semibold"
-                >
-                  {b.requester.display_name ?? b.requester.username}
-                </Link>
-              ) : (
-                <p className="truncate text-2 font-semibold">Someone</p>
-              )}
-              <p className="mt-0.5 truncate text-1 text-muted-foreground">
-                {joinParts(b.studio?.name ?? b.studio_name ?? "Your space", b.room?.name ?? "")}
-              </p>
-            </div>
-            <BookingStatusPill
-              status={(b.status === "declined" ? "rejected" : b.status) as BookingStatus}
-            />
-          </div>
-          <p className="mt-2 text-1 text-muted-foreground">
-            {joinParts(
-              formatDate(b.session_date),
-              b.start_time ? formatTime(b.start_time.slice(0, 5)) : "",
-              b.hours ? `${b.hours} hrs` : "",
-            )}
-          </p>
-        </article>
+        <StudioBookingRecord key={b.id} b={b} side="studio" />
       ))}
     </div>
   );
