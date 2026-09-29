@@ -25,8 +25,10 @@ export const Route = createFileRoute("/")({
   component: SessionCheck,
 });
 
-/** The longest the splash waits on the profile read before going on to Discover. */
+/** The longest the splash stays, counted from when the app opened. */
 const PROFILE_WAIT_MS = 5000;
+/** An account this new, with no profile answer, is treated as a signup. */
+const NEW_ACCOUNT_MS = 10 * 60_000;
 
 /* Stage-light columns: tallest at the centre, each lit on its own offset. */
 const STAGE = [
@@ -42,7 +44,7 @@ const STAGE = [
 ];
 
 function SessionCheck() {
-  const { signedIn, loading } = useAuth();
+  const { signedIn, loading, user } = useAuth();
   const navigate = useNavigate();
   const loadProfile = useServerFn(getMyProfile);
   const syncIdentity = useServerFn(syncIdentityFromProvider);
@@ -69,11 +71,16 @@ function SessionCheck() {
     }
     // Google gives a name and photo; the signup trigger only captures them for a brand-new user,
     // so every sign-in fills whichever of the two is still empty before the profile is read.
-    // The profile read decides between onboarding and Discover, but it never holds the splash:
-    // past PROFILE_WAIT_MS it goes to Discover, the same place a failed read goes.
+    // The profile read decides between onboarding and Discover, but it never holds the splash
+    // past PROFILE_WAIT_MS from the moment the app opened, the session read included.
+    const left = Math.max(0, PROFILE_WAIT_MS - (Date.now() - mountedAt.current));
     const timeout = new Promise<never>((_, reject) =>
-      window.setTimeout(() => reject(new Error("Profile read timed out")), PROFILE_WAIT_MS),
+      window.setTimeout(() => reject(new Error("Profile read timed out")), left),
     );
+    // Unanswered, a sign-in made in the last few minutes is a signup and goes to onboarding, which
+    // the saved session can tell without the network; anyone else goes to Discover.
+    const createdAt = user?.created_at ? new Date(user.created_at).getTime() : 0;
+    const fallback = Date.now() - createdAt < NEW_ACCOUNT_MS ? "/onboarding" : "/discover";
     Promise.race([
       syncIdentity()
         .catch(() => null)
@@ -86,11 +93,12 @@ function SessionCheck() {
       // ever seeing the onboarding chooser they'd already finished.
       .then((profile) => (profile ? profile : Promise.race([loadProfile(), timeout])))
       .then((profile) => go(postAuthTarget(profile)))
-      // Offline or a failed read: Discover still works from the local session.
-      .catch(() => go("/discover"));
+      // Offline, slow or a failed read.
+      .catch(() => go(fallback));
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `user` is read once, when routing
   }, [loading, signedIn, navigate, loadProfile, syncIdentity, reducedMotion]);
 
   return (

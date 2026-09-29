@@ -11,8 +11,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   refresh over a bad network, a lock held by another tab, or the Lovable preview's storage broker
   (`previewAuthStorage.ts`, generated, untouched). After 2.5 s, or on a failed read, it uses the
   session supabase-js saved in this browser; the real answer replaces it when it arrives.
-- **Profile read.** The splash waits at most 5 s for the profile before going to Discover, the same
-  place a failed read already went.
+- **Profile read.** The splash stays at most 5 s from the moment the app opened, the session read
+  included. Unanswered, an account made in the last 10 minutes goes to onboarding (read from the
+  saved session, no network); anyone else goes to Discover, as a failed read already did.
+- **Expired saved sign-in.** If the saved copy was used and the real read then says nobody is signed
+  in, the app says the sign-in expired and opens Welcome.
 
 ### Fixed — profile visibility has three values (15 Sep)
 

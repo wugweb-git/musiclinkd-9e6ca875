@@ -24,19 +24,35 @@ type AuthSnapshot = {
   user: User | null;
   loading: boolean;
   signedIn: boolean;
+  /**
+   * The browser's saved sign-in was used while the real read was slow, and the real read then
+   * said nobody is signed in: the saved one had expired. The app shell sends the user to sign in.
+   */
+  sessionExpired: boolean;
 };
 
-const LOADING: AuthSnapshot = { session: null, user: null, loading: true, signedIn: false };
+const LOADING: AuthSnapshot = {
+  session: null,
+  user: null,
+  loading: true,
+  signedIn: false,
+  sessionExpired: false,
+};
 
 let snapshot: AuthSnapshot = LOADING;
 const listeners = new Set<() => void>();
 let unsubscribe: (() => void) | null = null;
+/** The snapshot came from the browser's saved copy, not from supabase-js; it may be stale. */
+let provisional = false;
 
-function publish(session: Session | null) {
+function publish(session: Session | null, fromStorage = false) {
   const user = session?.user ?? null;
+  const expired = provisional && !fromStorage && !user && snapshot.signedIn;
+  if (!fromStorage) provisional = false;
   // Same session, same object: skip the render entirely.
   if (!snapshot.loading && snapshot.session?.access_token === session?.access_token) return;
-  snapshot = { session, user, loading: false, signedIn: Boolean(user) };
+  if (fromStorage && user) provisional = true;
+  snapshot = { session, user, loading: false, signedIn: Boolean(user), sessionExpired: expired };
   for (const l of listeners) l();
 }
 
@@ -65,13 +81,15 @@ function subscribe(listener: () => void) {
   listeners.add(listener);
   if (listeners.size === 1) {
     const fallback = window.setTimeout(() => {
-      if (snapshot.loading) publish(storedSession());
+      if (snapshot.loading) publish(storedSession(), true);
     }, SESSION_WAIT_MS);
     void supabase.auth
       .getSession()
       .then(({ data }) => publish(data.session))
       // A failed read is not a hang: fall back to what the browser kept.
-      .catch(() => publish(storedSession()))
+      .catch(() => {
+        if (snapshot.loading) publish(storedSession(), true);
+      })
       .finally(() => window.clearTimeout(fallback));
     const { data } = supabase.auth.onAuthStateChange((_event, next) => publish(next));
     unsubscribe = () => data.subscription.unsubscribe();
@@ -83,6 +101,7 @@ function subscribe(listener: () => void) {
       unsubscribe = null;
       // The next mount re-reads the session rather than trusting a snapshot from a torn-down tree.
       snapshot = LOADING;
+      provisional = false;
     }
   };
 }

@@ -152,7 +152,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { user } = useAuth();
+  const { user, sessionExpired } = useAuth();
   const userId = user?.id;
   const path = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
@@ -179,6 +179,14 @@ function RootComponent() {
       }),
     [router],
   );
+
+  // The saved sign-in used while the session read was slow turned out to be expired: sign in again
+  // rather than stay on screens whose server calls will all be refused.
+  useEffect(() => {
+    if (!sessionExpired) return;
+    toast("Your sign-in expired. Sign in again.");
+    void router.navigate({ to: "/welcome", replace: true });
+  }, [sessionExpired, router]);
 
   // Android's hardware back: close the top overlay, else go back, else exit. A no-op in a browser.
   useEffect(() => startBackButton(), []);
