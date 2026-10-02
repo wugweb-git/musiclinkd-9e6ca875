@@ -13,7 +13,8 @@ import { myStudioId } from "@/lib/studio-calendar.functions";
  * Before 20260921150000_studio_proof_photos.sql is applied every read comes back empty.
  */
 
-export const STUDIO_MEDIA_BUCKET = "studio-media";
+/** Equipment and facilities of a bookable space; gear for sale or rent is listing-media. */
+export const BUSINESS_MEDIA_BUCKET = "business-media";
 /** Photos per facility or equipment item. */
 export const MAX_STUDIO_PHOTOS = 6;
 
@@ -38,9 +39,9 @@ export type MyStudioPhotos = {
 const db = (client: unknown) => client as unknown as SupabaseClient;
 const COLUMNS = "id, subject_type, subject_id, url";
 
-/** The storage path of a studio-media URL inside `studioId`'s folder, or null for any other URL. */
+/** The storage path of a business-media URL inside `studioId`'s folder, or null for any other URL. */
 function mediaPath(url: string, studioId: string) {
-  const marker = `/storage/v1/object/public/${STUDIO_MEDIA_BUCKET}/`;
+  const marker = `/storage/v1/object/public/${BUSINESS_MEDIA_BUCKET}/`;
   const at = url.indexOf(marker);
   if (at < 0) return null;
   const path = decodeURIComponent(url.slice(at + marker.length).split("?")[0] ?? "");
@@ -50,7 +51,7 @@ function mediaPath(url: string, studioId: string) {
 /** Removes the files behind these URLs; a file that is already gone is not an error. */
 async function removeFiles(client: SupabaseClient, studioId: string, urls: string[]) {
   const paths = urls.map((u) => mediaPath(u, studioId)).filter((p): p is string => !!p);
-  if (paths.length) await client.storage.from(STUDIO_MEDIA_BUCKET).remove(paths);
+  if (paths.length) await client.storage.from(BUSINESS_MEDIA_BUCKET).remove(paths);
 }
 
 /** Every facility and equipment photo of one studio, in order. Public; empty on any failure. */

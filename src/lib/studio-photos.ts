@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { checkImageFile, checkPickedImage } from "@/lib/profile-images";
 import { downscale, downscaleImage } from "@/lib/image-downscale";
-import { STUDIO_MEDIA_BUCKET } from "@/lib/studio-photos.functions";
+import { BUSINESS_MEDIA_BUCKET } from "@/lib/studio-photos.functions";
 
 /*
  * Photo uploads for a studio's facilities and equipment, the same way profile photos upload
@@ -18,7 +18,7 @@ export async function uploadStudioPhoto(studioId: string, file: File): Promise<s
   const scaled = await downscaleImage(file, downscale.photo);
   const ext = checkImageFile(scaled, MAX_BYTES);
   const path = `${studioId}/photo-${Date.now()}.${ext}`;
-  const bucket = supabase.storage.from(STUDIO_MEDIA_BUCKET);
+  const bucket = supabase.storage.from(BUSINESS_MEDIA_BUCKET);
   const { error } = await bucket.upload(path, scaled, {
     contentType: scaled.type,
     upsert: false,

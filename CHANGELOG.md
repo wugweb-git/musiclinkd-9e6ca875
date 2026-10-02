@@ -5,16 +5,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Fixed — studio photos could never upload (3 Oct)
+### Fixed — studio photos could never upload; their bucket is renamed for its job (3 Oct)
 
 - The four `studio-media` storage rules checked the file's folder inside a subquery on `studios`,
   where a bare `name` meant the studio's display name, not the file's path, so the check never
-  passed: owners could not upload, replace or delete studio photos. Migration
-  `20261003100000_fix_studio_media_policies.sql` says `objects.name`. **Not applied yet:** it needs
-  a snapshot in `supabase/dumps/` first, then applying to the live database, then one studio photo
-  upload to confirm.
-- `AGENTS.md` records why browser uploads are allowed (the storage rules enforce ownership) and the
-  `objects.name` rule for storage policies.
+  passed: owners could not upload, replace or delete studio photos.
+- Migration `20261003110000_business_media_bucket.sql` creates **`business-media`** (same limits)
+  with the rules saying `objects.name`, and drops the old rules and the empty `studio-media`
+  bucket. The code uploads to and removes from `business-media` (`BUSINESS_MEDIA_BUCKET`). The
+  first fix, `20261003100000_fix_studio_media_policies.sql`, was never applied and is deleted.
+  **Not applied yet:** the policy snapshot is committed first, then Lovable applies it after the
+  merge, then one facility photo upload confirms it.
+- **Location data never leaves the phone in a public photo.** The resize used to hand back the
+  original file when it was already small or when re-encoding came out bigger, with its EXIF and
+  GPS position inside. Every public photo (profile, cover, gallery, listing, facility) is now
+  always re-drawn, which drops all metadata (checked in Chromium: a JPEG with a GPS tag comes out
+  with neither EXIF nor GPS, as WebP or JPEG); a photo that can't be re-drawn is refused with
+  "Couldn't prepare this photo. Try another one." Verification documents upload as picked, to a
+  private, owner-only bucket.
+- **`AGENTS.md`:** why browser uploads are allowed (the storage rules enforce ownership); the
+  `objects.name` rule; storage, tables and files named by the job, never one persona, with the
+  media bucket table; no new table, bucket or rename without owner approval; migrations applied
+  through Lovable, never by hand; snapshots hold definitions and counts, never user data; the
+  route count (27 of 146 in folders). `CLAUDE.local.md` is git-ignored.
 
 ### Changed — uploads stay in the browser, with conditions (3 Oct)
 

@@ -56,3 +56,6 @@ storybook-static/
 *.keystore
 google-services-account*.json
 service-account*.json
+
+# Personal, machine-local agent notes: never committed (Lovable would sync them).
+CLAUDE.local.md

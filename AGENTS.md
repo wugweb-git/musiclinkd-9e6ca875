@@ -90,7 +90,7 @@ canonical directories are now the Blocks and Components pages under Design Syste
 - `:focus-visible` ring on every control; 48dp touch targets.
 
 **Routing.** Mostly flat dot-named files in `src/routes/`; `marketplace/`, `marketplace/rent/` and
-`onboarding/` are real directories (28 of 181 route files). `routeTree.gen.ts` is generated, never edit it.
+`onboarding/` are real directories (27 of 146 route files). `routeTree.gen.ts` is generated, never edit it.
 Every route has `head()`. A route with children must render `<Outlet />` or be an `x.index.tsx`
 leaf — check whether `x.tsx` exists before adding `x.y.tsx`. Never move or rename route files to
 group screens.
@@ -106,10 +106,30 @@ work modes, amenities — comes from `taxonomy_options`, never from an array in 
 `metadata.app_key` where a category sets one and the slug otherwise, so read values back with
 `labelFor`, and compare cities with `sameCity` (`src/lib/place.ts`) rather than `===`.
 
-**Database.** Every schema change is a file in `supabase/migrations/`. Ask before adding tables.
+**Database.** Every schema change is a file in `supabase/migrations/`, applied through Lovable's
+own tooling, never pasted into the live database by hand. No new table, bucket, or rename of
+either without owner approval; propose the plan first.
 **Commit a snapshot to `supabase/dumps/` before any write to the live database**, named
 `YYYY-MM-DD-before-<change>.sql`, and reference it from the migration's header — that file is the
-undo.
+undo. A snapshot holds only what the change touches (definitions, row counts), never user data:
+the repo syncs to Lovable.
+
+**Naming (owner, 3 Oct 2026).** Storage, tables, files, routes and functions are named by the job,
+never by one persona type: a studio is one business type, and a singer's cover and a studio's cover
+are the same profile cover. Media buckets, by job:
+
+| Bucket | Holds |
+|---|---|
+| `avatars` | Profile pictures, any persona |
+| `covers` | Profile covers, any persona |
+| `gallery` | Profile and band gallery photos |
+| `listing-media` | Anything listed in Market: gear for sale or rent, any persona |
+| `business-media` | Equipment and facilities of a bookable space, as proof of what it offers; never for sale |
+| `verification-documents` | Private, owner-only |
+
+Equipment for sale or rent belongs in `listing-media`; the two buckets are not merged. The
+`studio_*` tables and `studio-*.ts` files still carry the old name; renaming them is a planned
+migration, not a pattern to copy.
 Data access is server-side `createServerFn` in `*.functions.ts` with `requireSupabaseAuth`; no
 client-side Supabase writes. The one exception is file uploads (photos, verification documents):
 they go from the browser straight to Supabase Storage (owner, 3 Oct 2026). That is allowed because

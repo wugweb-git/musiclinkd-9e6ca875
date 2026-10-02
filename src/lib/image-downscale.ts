@@ -9,9 +9,15 @@
  * This is deliberately the upload side only. Transforming on read would need Supabase's image
  * transformation add-on, which is a billing decision, not a code one.
  *
- * It never blocks an upload: anything unexpected — an undecodable file, no canvas, a re-encode
- * that somehow comes out bigger — returns the original file and the upload proceeds as before.
+ * Every photo it returns has been re-drawn through a canvas, which also strips the file's metadata
+ * (EXIF: camera, time and the GPS position it was taken at). Every caller uploads to a public
+ * bucket, so it never hands back the original: not when it is already small, and not when the
+ * re-encode comes out bigger. A photo the browser can't re-draw is refused with a reason rather
+ * than uploaded with its location inside.
  */
+
+/** Why a photo could not be prepared for upload. */
+const CANT_PREPARE = "Couldn't prepare this photo. Try another one.";
 
 export type DownscaleOptions = {
   /** Longest edge, in CSS pixels, after scaling. Smaller side keeps the aspect ratio. */
@@ -19,9 +25,6 @@ export type DownscaleOptions = {
   /** JPEG/WebP quality, 0–1. */
   quality?: number;
 };
-
-/** Below this, re-encoding costs more than it saves. */
-const SKIP_UNDER_BYTES = 200 * 1024;
 
 /** WebP is smaller than JPEG at the same quality and all three buckets accept it. */
 function outputType(): "image/webp" | "image/jpeg" {
@@ -53,38 +56,35 @@ async function bitmapOf(file: File) {
 
 export async function downscaleImage(file: File, opts: DownscaleOptions): Promise<File> {
   const { maxEdge, quality = 0.82 } = opts;
-  if (!file.type.startsWith("image/")) return file;
-  // A GIF would lose its animation, and an SVG has no pixels to scale.
-  if (file.type === "image/gif" || file.type === "image/svg+xml") return file;
-  if (file.size <= SKIP_UNDER_BYTES) return file;
+  // The upload helpers only pass JPEG, PNG and WebP (checkPickedImage); nothing else is re-drawn.
+  if (!file.type.startsWith("image/")) throw new Error(CANT_PREPARE);
 
   try {
     const source = await bitmapOf(file);
     const w = "width" in source ? source.width : 0;
     const h = "height" in source ? source.height : 0;
-    if (!w || !h) return file;
+    if (!w || !h) throw new Error(CANT_PREPARE);
 
     const scale = Math.min(1, maxEdge / Math.max(w, h));
-    // Already small enough and already cheap: nothing to do.
-    if (scale === 1 && file.size <= 600 * 1024) return file;
-
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(w * scale);
     canvas.height = Math.round(h * scale);
     const ctx = canvas.getContext("2d");
-    if (!ctx) return file;
+    if (!ctx) throw new Error(CANT_PREPARE);
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(source as CanvasImageSource, 0, 0, canvas.width, canvas.height);
     if ("close" in source) source.close();
 
     const type = outputType();
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, quality));
-    if (!blob || blob.size >= file.size) return file;
+    // Kept even when it comes out bigger than the original: only the re-drawn file is free of the
+    // original's metadata.
+    if (!blob) throw new Error(CANT_PREPARE);
 
     const name = file.name.replace(/\.[^.]+$/, "") + (type === "image/webp" ? ".webp" : ".jpg");
     return new File([blob], name, { type, lastModified: Date.now() });
   } catch {
-    return file;
+    throw new Error(CANT_PREPARE);
   }
 }
 
