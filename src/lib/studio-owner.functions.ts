@@ -2,18 +2,18 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { myBookableId } from "@/lib/bookable-calendar.functions";
-import { removeSubjectPhotos } from "@/lib/bookable-photos.functions";
+import { myStudioId } from "@/lib/studio-calendar.functions";
+import { removeSubjectPhotos } from "@/lib/studio-photos.functions";
 
 /*
  * The studio owner's own edit surface for the real, flat columns that exist today:
  * studios.hourly_rate_paise, .operating_hours, .cancellation_policy, and each
- * bookable_rooms.hourly_rate_paise. The weekly booking hours and closed times are edited through
- * src/lib/bookable-calendar.functions.ts, and the equipment list below.
- * RLS: "Owners write their own" on both studios and bookable_rooms (20260914180000_catalog.sql).
+ * studio_rooms.hourly_rate_paise. The weekly booking hours and closed times are edited through
+ * src/lib/studio-calendar.functions.ts, and the equipment list below.
+ * RLS: "Owners write their own" on both studios and studio_rooms (20260914180000_catalog.sql).
  */
 
-export type MyBookable = {
+export type MyStudio = {
   id: string;
   slug: string;
   name: string;
@@ -21,12 +21,12 @@ export type MyBookable = {
   operating_hours: string | null;
   cancellation_policy: string | null;
   /** studios.add_ons — extras a session can have, shown on /booking/$id. */
-  add_ons: BookableAddOnRow[];
+  add_ons: StudioAddOnRow[];
   rooms: {
     id: string;
     name: string;
     hourly_rate_paise: number | null;
-    /** bookable_rooms.tiers — package rates beside the hourly one ("Half day", 4 hours). */
+    /** studio_rooms.tiers — package rates beside the hourly one ("Half day", 4 hours). */
     tiers: RoomTierRow[];
   }[];
 };
@@ -43,7 +43,7 @@ export type RoomTierRow = {
 };
 
 /** One stored add-on. `unit` "hour" is charged per hour, anything else per that unit. */
-export type BookableAddOnRow = {
+export type StudioAddOnRow = {
   name: string;
   price_paise: number | null;
   unit: string | null;
@@ -52,20 +52,20 @@ export type BookableAddOnRow = {
   quantity?: boolean;
 };
 
-export const getMyBookable = createServerFn({ method: "GET" })
+export const getMyStudio = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<MyBookable | null> => {
+  .handler(async ({ context }): Promise<MyStudio | null> => {
     const { data, error } = await context.supabase
-      .from("bookables" as never)
+      .from("studios" as never)
       .select(
-        "id, slug, name, hourly_rate_paise, operating_hours, cancellation_policy, add_ons, rooms:bookable_rooms(id, name, hourly_rate_paise, tiers, sort_order)",
+        "id, slug, name, hourly_rate_paise, operating_hours, cancellation_policy, add_ons, rooms:studio_rooms(id, name, hourly_rate_paise, tiers, sort_order)",
       )
       .eq("owner_profile_id", context.userId)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!data) return null;
-    const row = data as unknown as MyBookable & {
-      rooms: (MyBookable["rooms"][number] & { sort_order?: number | null })[];
+    const row = data as unknown as MyStudio & {
+      rooms: (MyStudio["rooms"][number] & { sort_order?: number | null })[];
     };
     return {
       ...row,
@@ -82,7 +82,7 @@ export const getMyBookable = createServerFn({ method: "GET" })
 const PAISE = z.number().int().min(0).max(100_000_000).nullable();
 
 /** A room's package rates, replacing the stored list. Scoped to the owner's own studio. */
-export const updateBookableRoomTiers = createServerFn({ method: "POST" })
+export const updateStudioRoomTiers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z
@@ -105,18 +105,18 @@ export const updateBookableRoomTiers = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
+    const studioId = await myStudioId(client, context.userId);
     const { error } = await client
-      .from("bookable_rooms")
+      .from("studio_rooms")
       .update({ tiers: data.tiers } as never)
       .eq("id", data.roomId)
-      .eq("bookable_id", studioId);
+      .eq("studio_id", studioId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
 
 /** The studio's add-ons, replacing the stored list. */
-export const updateMyBookableAddOns = createServerFn({ method: "POST" })
+export const updateMyStudioAddOns = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z
@@ -137,14 +137,14 @@ export const updateMyBookableAddOns = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const { error } = await db(context.supabase)
-      .from("bookables")
+      .from("studios")
       .update({ add_ons: data.addOns } as never)
       .eq("owner_profile_id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
 
-export const updateMyBookable = createServerFn({ method: "POST" })
+export const updateMyStudio = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z
@@ -163,22 +163,22 @@ export const updateMyBookable = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const patch = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
     const { error } = await context.supabase
-      .from("bookables" as never)
+      .from("studios" as never)
       .update(patch as never)
       .eq("owner_profile_id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
 
-export const updateBookableRoomRate = createServerFn({ method: "POST" })
+export const updateStudioRoomRate = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z.object({ roomId: z.string().uuid(), hourly_rate_paise: z.number().int().min(0) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
-    // bookable_rooms has no owner column of its own — scope the write through the owner's studio.
+    // studio_rooms has no owner column of its own — scope the write through the owner's studio.
     const { data: studio, error: studioError } = await context.supabase
-      .from("bookables" as never)
+      .from("studios" as never)
       .select("id")
       .eq("owner_profile_id", context.userId)
       .maybeSingle();
@@ -186,22 +186,22 @@ export const updateBookableRoomRate = createServerFn({ method: "POST" })
     const studioId = (studio as { id: string } | null)?.id;
     if (!studioId) throw new Error("You don't have a studio yet.");
     const { error } = await context.supabase
-      .from("bookable_rooms" as never)
+      .from("studio_rooms" as never)
       .update({ hourly_rate_paise: data.hourly_rate_paise } as never)
       .eq("id", data.roomId)
-      .eq("bookable_id", studioId);
+      .eq("studio_id", studioId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
 
 /*
- * The studio's equipment list (bookable_equipment), shown on the studio page and the business
+ * The studio's equipment list (studio_equipment), shown on the studio page and the business
  * profile. Categories are equipment_categories slugs from taxonomy_options; a row may have none.
- * RLS: "Owners write their own" on bookable_equipment, so every write is also scoped to the owner's
+ * RLS: "Owners write their own" on studio_equipment, so every write is also scoped to the owner's
  * studio here.
  */
 
-export type BookableEquipment = {
+export type StudioEquipment = {
   id: string;
   name: string;
   /** An equipment_categories slug, or an instrument's slug (the gear list Market uses). */
@@ -211,24 +211,24 @@ export type BookableEquipment = {
   included: boolean;
 };
 
-export type MyBookableEquipment = {
-  items: BookableEquipment[];
+export type MyStudioEquipment = {
+  items: StudioEquipment[];
   categories: { slug: string; label: string }[];
 };
 
 const db = (client: unknown) => client as unknown as SupabaseClient;
 
 /** The owner's equipment in page order, and the published categories in picker order. */
-export const getMyBookableEquipment = createServerFn({ method: "GET" })
+export const getMyStudioEquipment = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<MyBookableEquipment> => {
+  .handler(async ({ context }): Promise<MyStudioEquipment> => {
     const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
+    const studioId = await myStudioId(client, context.userId);
     const [items, categories] = await Promise.all([
       client
-        .from("bookable_equipment")
+        .from("studio_equipment")
         .select("id, name, category, quantity, included")
-        .eq("bookable_id", studioId)
+        .eq("studio_id", studioId)
         .order("sort_order")
         .order("name"),
       client
@@ -239,11 +239,11 @@ export const getMyBookableEquipment = createServerFn({ method: "GET" })
     ]);
     if (items.error) throw new Error(items.error.message);
     return {
-      items: (items.data ?? []) as BookableEquipment[],
+      items: (items.data ?? []) as StudioEquipment[],
       // Without categories the picker offers none; the name alone still saves.
       categories: categories.error
         ? []
-        : ((categories.data ?? []) as MyBookableEquipment["categories"]),
+        : ((categories.data ?? []) as MyStudioEquipment["categories"]),
     };
   });
 
@@ -255,12 +255,12 @@ const EQUIPMENT = z.object({
 });
 
 /** Adds an item after the last one, or with an id changes that item. */
-export const saveMyBookableEquipment = createServerFn({ method: "POST" })
+export const saveMyStudioEquipment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => EQUIPMENT.extend({ id: z.string().uuid().optional() }).parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
+    const studioId = await myStudioId(client, context.userId);
     const fields = {
       name: data.name,
       category: data.category,
@@ -269,25 +269,25 @@ export const saveMyBookableEquipment = createServerFn({ method: "POST" })
     };
     if (data.id) {
       const { error } = await client
-        .from("bookable_equipment")
+        .from("studio_equipment")
         .update(fields as never)
         .eq("id", data.id)
-        .eq("bookable_id", studioId);
+        .eq("studio_id", studioId);
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
     const { data: last } = await client
-      .from("bookable_equipment")
+      .from("studio_equipment")
       .select("sort_order")
-      .eq("bookable_id", studioId)
+      .eq("studio_id", studioId)
       .order("sort_order", { ascending: false })
       .limit(1)
       .maybeSingle();
     const { data: row, error } = await client
-      .from("bookable_equipment")
+      .from("studio_equipment")
       .insert({
         ...fields,
-        bookable_id: studioId,
+        studio_id: studioId,
         sort_order: ((last as { sort_order: number } | null)?.sort_order ?? -1) + 1,
       } as never)
       .select("id")
@@ -296,19 +296,19 @@ export const saveMyBookableEquipment = createServerFn({ method: "POST" })
     return row as { id: string };
   });
 
-export const removeMyBookableEquipment = createServerFn({ method: "POST" })
+export const removeMyStudioEquipment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
+    const studioId = await myStudioId(client, context.userId);
     const { error } = await client
-      .from("bookable_equipment")
+      .from("studio_equipment")
       .delete()
       .eq("id", data.id)
-      .eq("bookable_id", studioId);
+      .eq("studio_id", studioId);
     if (error) throw new Error(error.message);
-    // Its photos go with it; bookable_photos has no foreign key to the item (subject_id is text).
+    // Its photos go with it; studio_photos has no foreign key to the item (subject_id is text).
     await removeSubjectPhotos(client, studioId, "equipment", data.id);
     return { ok: true };
   });

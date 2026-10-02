@@ -134,7 +134,7 @@ export const listMySaved = createServerFn({ method: "GET" })
           : Promise.resolve({ data: [], error: null }),
         studioIds.length
           ? context.supabase
-              .from("bookables" as never)
+              .from("studios" as never)
               .select("id, name, location, slug")
               .in("id", studioIds)
           : Promise.resolve({ data: [], error: null }),

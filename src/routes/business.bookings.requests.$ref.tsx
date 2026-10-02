@@ -14,7 +14,7 @@ import {
 } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { Detail, StickyBar } from "@/components/ml/booking";
-import { answerBooking, getBookingRequest, listBookableBookings } from "@/lib/bookings.functions";
+import { answerBooking, getBookingRequest, listStudioBookings } from "@/lib/bookings.functions";
 import { waitingAlongside } from "@/lib/booking-overlaps";
 import { bookingReplies } from "@/data/booking";
 import { iconSize } from "@/lib/tokens";
@@ -81,7 +81,7 @@ function RequestReviewContent() {
   const [decision, setDecision] = useState<"none" | "declining" | "sending">("none");
   const [reply, setReply] = useState("");
   // Requests don't hold their slot: the others who asked for this time are answered here too.
-  const loadAll = useServerFn(listBookableBookings);
+  const loadAll = useServerFn(listStudioBookings);
   const all = useQuery({ queryKey: ["studio-bookings"], queryFn: () => loadAll() });
   const others = q.data ? waitingAlongside(q.data, all.data ?? []) : [];
   const [othersChoice, setOthersChoice] = useState<(typeof OTHERS_CHOICES)[number]>(
@@ -157,7 +157,7 @@ function RequestReviewContent() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar
         title="Request"
-        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.bookable_name ?? "Studio"}
+        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.studio_name ?? "Studio"}
         back="/business/bookings"
       />
       <main className="px-5 pt-4">

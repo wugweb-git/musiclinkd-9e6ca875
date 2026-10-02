@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { ChevronRight, CircleCheck, Check } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { Dialog } from "@/components/ml/kit";
-import { BookableCard } from "@/components/ml/cards";
+import { StudioCard } from "@/components/ml/cards";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import {
@@ -20,7 +20,7 @@ import {
 } from "@/components/ml/onboarding";
 import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
 import { createMyBusiness } from "@/lib/profile-groups.functions";
-import { AmenitiesEditor, EquipmentEditor, PoliciesEditor } from "@/components/ml/bookable-setup";
+import { AmenitiesEditor, EquipmentEditor, PoliciesEditor } from "@/components/ml/studio-setup";
 import { enterLinkedProfile } from "@/lib/pages.functions";
 import { readMapsLink, type MapsPlace } from "@/lib/maps-link.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
@@ -512,7 +512,7 @@ function NewBusiness() {
           <div className="space-y-4">
             <div>
               <p className="eyebrow mb-2 text-muted-foreground">Live Studio Card Preview</p>
-              <BookableCard
+              <StudioCard
                 disabled
                 studio={{
                   id: "preview-business",

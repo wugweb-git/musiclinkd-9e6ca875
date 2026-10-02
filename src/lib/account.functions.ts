@@ -22,7 +22,7 @@ const OWNED: [string, string[]][] = [
   ["profile_service_packages", ["profile_id"]],
   ["profile_service_addons", ["profile_id"]],
   ["portfolio_items", ["user_id"]],
-  ["bookables", ["owner_profile_id"]],
+  ["studios", ["owner_profile_id"]],
   ["opportunities", ["creator_profile_id"]],
   ["opportunity_applications", ["applicant_profile_id"]],
   ["marketplace_listings", ["seller_profile_id"]],
@@ -97,10 +97,10 @@ type Client = SupabaseClient;
 /** Sessions still to come on either side of a booking; a delete waits until these are settled. */
 export async function upcomingBookingsOf(client: Client, me: string): Promise<number> {
   const today = new Date().toISOString().slice(0, 10);
-  const { data: studios } = await client.from("bookables").select("id").eq("owner_profile_id", me);
+  const { data: studios } = await client.from("studios").select("id").eq("owner_profile_id", me);
   const ids = ((studios ?? []) as { id: string }[]).map((s) => s.id);
   const who = ids.length
-    ? `requester_profile_id.eq.${me},bookable_id.in.(${ids.join(",")})`
+    ? `requester_profile_id.eq.${me},studio_id.in.(${ids.join(",")})`
     : `requester_profile_id.eq.${me}`;
   const { data, error } = await client
     .from("booking_requests")
@@ -138,7 +138,7 @@ export const deactivateMyAccount = createServerFn({ method: "POST" })
       .eq("id", me);
     if (error) throw new Error(error.message);
     const { error: studioError } = await client
-      .from("bookables")
+      .from("studios")
       .update({ archived_at: new Date().toISOString() } as never)
       .eq("owner_profile_id", me);
     if (studioError) throw new Error(studioError.message);
@@ -170,7 +170,7 @@ export const reactivateMyAccount = createServerFn({ method: "POST" })
       .eq("id", me);
     if (error) throw new Error(error.message);
     const { error: studioError } = await client
-      .from("bookables")
+      .from("studios")
       .update({ archived_at: null } as never)
       .eq("owner_profile_id", me);
     if (studioError) throw new Error(studioError.message);

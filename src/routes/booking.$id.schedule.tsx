@@ -19,15 +19,15 @@ import { durationOptions } from "@/data/booking";
 import { formatDate, formatTime } from "@/lib/when";
 import { inr } from "@/lib/price";
 import { showDemoControls } from "@/lib/dev";
-import { getBookableCalendar } from "@/lib/bookable-calendar.functions";
+import { getStudioCalendar } from "@/lib/studio-calendar.functions";
 import {
   calendarWindow,
   earliestBookingDate,
   hasWeeklyHours,
   nextOpenDay,
   spanIsOpen,
-  bookableDay,
-} from "@/lib/bookable-slots";
+  studioDay,
+} from "@/lib/studio-slots";
 
 export const Route = createFileRoute("/booking/$id/schedule")({
   head: () => ({
@@ -72,7 +72,7 @@ function Schedule() {
   // The studio's weekly hours and its taken and closed times, read again every minute so a slot
   // someone else books meanwhile stops being offered.
   const range = useMemo(() => calendarWindow(), []);
-  const loadCalendar = useServerFn(getBookableCalendar);
+  const loadCalendar = useServerFn(getStudioCalendar);
   const calendar = useQuery({
     queryKey: ["studio-calendar", b.id, range.from],
     queryFn: () => loadCalendar({ data: { slug: b.id, ...range } }),
@@ -82,7 +82,7 @@ function Schedule() {
   const dayOf = useCallback(
     // The studio's notice and blackout days (cal) close slots and days on top of its hours.
     (date: string) =>
-      bookableDay(cal?.weeklyHours ?? {}, cal?.busy ?? [], r.id, date, fromPrice, cal),
+      studioDay(cal?.weeklyHours ?? {}, cal?.busy ?? [], r.id, date, fromPrice, cal),
     [cal, r.id, fromPrice],
   );
   const day = useMemo(

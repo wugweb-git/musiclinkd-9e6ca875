@@ -23,7 +23,7 @@ import { NotificationsBell, SearchField, SearchIconButton } from "@/components/m
 import { SectionActionLink } from "@/components/ml/links";
 import { useState } from "react";
 import { categories, quickCategories } from "@/data/discover";
-import { listBookables } from "@/lib/catalog.functions";
+import { listStudios } from "@/lib/catalog.functions";
 import {
   listTrendingPages,
   listTrendingWork,
@@ -32,13 +32,13 @@ import {
 } from "@/lib/trending.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
-import { PersonCard, PersonRow, BookableCard } from "@/components/ml/cards";
+import { PersonCard, PersonRow, StudioCard } from "@/components/ml/cards";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { AudioTrackCard, VideoCard } from "@/components/ml/profile";
 import { workType } from "@/data/portfolio";
 import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { discoverBookableFromRow } from "@/lib/bookable-view";
+import { discoverStudioFromRow } from "@/lib/studio-view";
 import { iconSize } from "@/lib/tokens";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 
@@ -62,7 +62,7 @@ export const Route = createFileRoute("/discover/")({
   // The people and studios here are the stored ones; an unreachable database leaves them empty.
   loader: async () => {
     const [rows, labels, trendingWork, people, trendingPages] = await Promise.all([
-      listBookables().catch(() => []),
+      listStudios().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
       listTrendingWork().catch((): TrendingItem[] => []),
       searchPeople({ data: { limit: 12 } })
@@ -71,7 +71,7 @@ export const Route = createFileRoute("/discover/")({
       listTrendingPages().catch((): TrendingPage[] => []),
     ]);
     return {
-      dbStudios: rows.map((row) => discoverBookableFromRow(row, labels)),
+      dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)),
       trendingWork,
       people,
       trendingPages,
@@ -301,7 +301,7 @@ function Discover() {
                   featured
                 />
               ) : (
-                <BookableCard key={t.key} studio={t.studio} featured />
+                <StudioCard key={t.key} studio={t.studio} featured />
               ),
             )}
           </div>
@@ -331,7 +331,7 @@ function Discover() {
           />
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
             {studios.map((s) => (
-              <BookableCard key={s.slug} studio={s} featured />
+              <StudioCard key={s.slug} studio={s} featured />
             ))}
           </div>
         </section>

@@ -5,7 +5,7 @@ import {
   isBlackout,
   type BlackoutRange,
   type WeeklyHours,
-} from "@/lib/bookable-slots";
+} from "@/lib/studio-slots";
 
 /*
  * Which booking requests ask for the same time. A request doesn't hold its slot (owner, 21 Sep
@@ -18,7 +18,7 @@ const ACTIVE = ["requested", "reviewing", "confirmed"];
 /** Same studio, same room (or the whole studio), same day, and the hours cross. */
 export function overlaps(a: BookingRequest, b: BookingRequest) {
   if (a.id === b.id || a.session_date !== b.session_date) return false;
-  if ((a.studio?.id ?? a.bookable_name) !== (b.studio?.id ?? b.bookable_name)) return false;
+  if ((a.studio?.id ?? a.studio_name) !== (b.studio?.id ?? b.studio_name)) return false;
   if (a.room && b.room && a.room.id !== b.room.id) return false;
   if (!a.start_time || !a.end_time || !b.start_time || !b.end_time) return false;
   return a.start_time < b.end_time && b.start_time < a.end_time;

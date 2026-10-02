@@ -8,8 +8,8 @@ import { toast } from "sonner";
 import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { BusinessOnlyGate, LoadError, Segmented, EmptyState } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { BookingSkeleton, BookingRecord } from "@/components/ml/booking";
-import { answerBooking, listBookableBookings } from "@/lib/bookings.functions";
+import { BookingSkeleton, StudioBookingRecord } from "@/components/ml/booking";
+import { answerBooking, listStudioBookings } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/business/bookings/requests/")({
@@ -54,7 +54,7 @@ function RequestsContent() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("all");
   const { signedIn, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
-  const load = useServerFn(listBookableBookings);
+  const load = useServerFn(listStudioBookings);
   const answer = useServerFn(answerBooking);
 
   const q = useQuery({
@@ -116,7 +116,7 @@ function RequestsContent() {
           list.map((b) => (
             // Accepting happens on the review screen, which shows clashing requests and answers
             // them with a saved reply; accepting from here could double-book a slot.
-            <BookingRecord
+            <StudioBookingRecord
               key={b.id}
               b={b}
               side="studio"

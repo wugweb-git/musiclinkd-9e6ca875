@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { earliestBookingDate } from "@/lib/bookable-slots";
-import { assertBookableTakes } from "@/lib/bookable-calendar.functions";
+import { earliestBookingDate } from "@/lib/studio-slots";
+import { assertStudioTakes } from "@/lib/studio-calendar.functions";
 
 /*
  * Booking requests: someone asks a studio for a room at a time, the studio answers. No money is
@@ -31,7 +31,7 @@ export type BookingRequest = {
   created_at: string;
   studio: { id: string; slug: string; name: string; location: string | null } | null;
   /** Copied when the booking is made, so the history reads after the studio or person is gone. */
-  bookable_name: string | null;
+  studio_name: string | null;
   requester_name: string | null;
   room: { id: string; name: string } | null;
   requester: {
@@ -43,9 +43,9 @@ export type BookingRequest = {
 };
 
 const SELECT = `id, session_date, start_time, end_time, hours, people, purpose, notes, reply, status, created_at,
-  bookable_name, requester_name,
-  studio:bookables(id, slug, name, location),
-  room:bookable_rooms(id, name),
+  studio_name, requester_name,
+  studio:studios(id, slug, name, location),
+  room:studio_rooms(id, name),
   requester:profiles!booking_requests_requester_profile_id_fkey(id, username, display_name, avatar_url)`;
 
 /** Ask a studio for a session. The studio is addressed by slug, the way its screens do. */
@@ -76,24 +76,24 @@ export const requestBooking = createServerFn({ method: "POST" })
     if (data.date < earliestBookingDate()) throw new Error("Pick a day from tomorrow onwards.");
     const client = db(context.supabase);
     const { data: studio, error: studioError } = await client
-      .from("bookables")
+      .from("studios")
       .select("id")
       .eq("slug", data.studioSlug)
       .maybeSingle();
     if (studioError) throw new Error(studioError.message);
     const studioId = (studio as { id: string } | null)?.id;
     if (!studioId) throw new Error("That studio is not taking requests yet.");
-    await assertBookableTakes(client, studioId, data.date, data.startTime);
+    await assertStudioTakes(client, studioId, data.date, data.startTime);
 
     // A studio with no rooms of its own is asked as a whole: the screens then carry the studio's
     // id where a room id would be, so it is only stored when it really is one of that studio's rooms.
     let roomId: string | null = null;
     if (data.roomId) {
       const { data: room } = await client
-        .from("bookable_rooms")
+        .from("studio_rooms")
         .select("id")
         .eq("id", data.roomId)
-        .eq("bookable_id", studioId)
+        .eq("studio_id", studioId)
         .maybeSingle();
       roomId = (room as { id: string } | null)?.id ?? null;
     }
@@ -101,7 +101,7 @@ export const requestBooking = createServerFn({ method: "POST" })
     const { data: row, error } = await client
       .from("booking_requests")
       .insert({
-        bookable_id: studioId,
+        studio_id: studioId,
         room_id: roomId,
         requester_profile_id: context.userId,
         session_date: data.date,
@@ -146,12 +146,12 @@ export const getBookingRequest = createServerFn({ method: "GET" })
   });
 
 /** The requests made to studios this account owns. */
-export const listBookableBookings = createServerFn({ method: "GET" })
+export const listStudioBookings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<BookingRequest[]> => {
     const client = db(context.supabase);
     const { data: studios, error: studioError } = await client
-      .from("bookables")
+      .from("studios")
       .select("id")
       .eq("owner_profile_id", context.userId);
     if (studioError) throw new Error(studioError.message);
@@ -160,7 +160,7 @@ export const listBookableBookings = createServerFn({ method: "GET" })
     const { data, error } = await client
       .from("booking_requests")
       .select(SELECT)
-      .in("bookable_id", ids)
+      .in("studio_id", ids)
       .order("session_date", { ascending: true });
     if (error) throw new Error(error.message);
     return (data ?? []) as unknown as BookingRequest[];
@@ -183,7 +183,7 @@ export const answerBooking = createServerFn({ method: "POST" })
     // so without this they could confirm their own request.
     const client = db(context.supabase);
     const { data: studios, error: studioError } = await client
-      .from("bookables")
+      .from("studios")
       .select("id")
       .eq("owner_profile_id", context.userId);
     if (studioError) throw new Error(studioError.message);
@@ -196,7 +196,7 @@ export const answerBooking = createServerFn({ method: "POST" })
         ...(data.reply === undefined ? {} : { reply: data.reply }),
       } as never)
       .eq("id", data.id)
-      .in("bookable_id", ids)
+      .in("studio_id", ids)
       .select("id");
     if (error) throw new Error(error.message);
     if (!(updated as unknown[] | null)?.length) {
@@ -246,12 +246,12 @@ export const rescheduleBooking = createServerFn({ method: "POST" })
     if (data.date < earliestBookingDate()) throw new Error("Pick a day from tomorrow onwards.");
     const { data: current } = await db(context.supabase)
       .from("booking_requests")
-      .select("bookable_id")
+      .select("studio_id")
       .eq("id", data.id)
       .maybeSingle();
-    const studioId = (current as { bookable_id: string | null } | null)?.bookable_id;
+    const studioId = (current as { studio_id: string | null } | null)?.studio_id;
     if (studioId)
-      await assertBookableTakes(db(context.supabase), studioId, data.date, data.startTime);
+      await assertStudioTakes(db(context.supabase), studioId, data.date, data.startTime);
     const { error } = await db(context.supabase)
       .from("booking_requests")
       .update({

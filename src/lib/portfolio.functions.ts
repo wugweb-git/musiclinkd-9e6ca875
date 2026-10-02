@@ -391,7 +391,7 @@ export const saveMyProfile = createServerFn({ method: "POST" })
         .update({ business_address: place } as never)
         .eq("profile_id", context.userId);
       await client
-        .from("bookables")
+        .from("studios")
         .update({ location: place } as never)
         .eq("owner_profile_id", context.userId);
     }
@@ -701,7 +701,7 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
       .eq("seller_profile_id", profileId)
       .order("created_at", { ascending: false }),
     client
-      .from("bookables")
+      .from("studios")
       .select("slug, name, location, hourly_rate_paise")
       .eq("owner_profile_id", profileId)
       .order("created_at"),

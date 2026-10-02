@@ -8,10 +8,10 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, LoadError, Loading, Tag } from "@/components/ml/kit";
 import { BusinessOnlyGate } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { answerBooking, listBookableBookings, type BookingRequest } from "@/lib/bookings.functions";
+import { answerBooking, listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
 import { availabilityConflicts, findConflicts } from "@/lib/booking-overlaps";
-import { getMyBookable } from "@/lib/bookable-owner.functions";
-import { getBookableCalendar } from "@/lib/bookable-calendar.functions";
+import { getMyStudio } from "@/lib/studio-owner.functions";
+import { getStudioCalendar } from "@/lib/studio-calendar.functions";
 import { formatDate, formatTime, isoDate } from "@/lib/when";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
@@ -50,7 +50,7 @@ function Conflicts() {
 function ConflictsContent() {
   const [dismissed, setDismissed] = useState<string[]>([]);
   const queryClient = useQueryClient();
-  const load = useServerFn(listBookableBookings);
+  const load = useServerFn(listStudioBookings);
   const answer = useServerFn(answerBooking);
 
   const q = useQuery({ queryKey: ["studio-bookings"], queryFn: () => load() });
@@ -58,13 +58,13 @@ function ConflictsContent() {
     (c) => !dismissed.includes(`${c.a.id}:${c.b.id}`),
   );
   // The studio's weekly hours and blackout days, for requests its calendar doesn't allow.
-  const loadStudio = useServerFn(getMyBookable);
+  const loadStudio = useServerFn(getMyStudio);
   const studio = useQuery({
     queryKey: ["business", "studio", "mine"],
     queryFn: () => loadStudio(),
   });
   const slug = studio.data?.slug;
-  const loadCalendar = useServerFn(getBookableCalendar);
+  const loadCalendar = useServerFn(getStudioCalendar);
   const calendar = useQuery({
     queryKey: ["studio-calendar", slug, "rules"],
     queryFn: () => loadCalendar({ data: { slug: slug! } }),

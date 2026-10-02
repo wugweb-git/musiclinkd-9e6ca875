@@ -182,24 +182,24 @@ export const listTrendingPages = createServerFn({ method: "GET" }).handler(
         rowsOf<{ business_profile_id: string }>(
           db.from("enquiries").select("business_profile_id").gte("created_at", since).limit(5000),
         ),
-        rowsOf<{ bookable_id: string }>(
-          db.from("booking_requests").select("bookable_id").gte("created_at", since).limit(5000),
+        rowsOf<{ studio_id: string }>(
+          db.from("booking_requests").select("studio_id").gte("created_at", since).limit(5000),
         ),
-        rowsOf<{ target_profile_id: string | null; target_bookable_id: string | null }>(
+        rowsOf<{ target_profile_id: string | null; target_studio_id: string | null }>(
           db
             .from("reviews")
-            .select("target_profile_id, target_bookable_id")
+            .select("target_profile_id, target_studio_id")
             .gte("created_at", since)
             .limit(5000),
         ),
         rowsOf<{ id: string; owner_profile_id: string | null }>(
           (async () => {
             const live = await db
-              .from("bookables")
+              .from("studios")
               .select("id, owner_profile_id")
               .is("archived_at", null);
             return live.error?.message.includes("archived_at")
-              ? db.from("bookables").select("id, owner_profile_id")
+              ? db.from("studios").select("id, owner_profile_id")
               : live;
           })(),
         ),
@@ -225,9 +225,9 @@ export const listTrendingPages = createServerFn({ method: "GET" }).handler(
     for (const s of saves)
       add(s.target_type === "studio" ? byStudio : byProfile, s.target_id, WEIGHT.save);
     for (const e of enquiries) add(byProfile, e.business_profile_id, WEIGHT.enquiry);
-    for (const b of bookings) add(byStudio, b.bookable_id, WEIGHT.booking);
+    for (const b of bookings) add(byStudio, b.studio_id, WEIGHT.booking);
     for (const r of reviews) {
-      if (r.target_bookable_id) add(byStudio, r.target_bookable_id, WEIGHT.review);
+      if (r.target_studio_id) add(byStudio, r.target_studio_id, WEIGHT.review);
       else add(byProfile, r.target_profile_id, WEIGHT.review);
     }
 

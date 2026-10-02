@@ -7,7 +7,7 @@ import { anonClient } from "@/lib/portfolio.functions";
 /*
  * Reviews follow real work: a studio you had a confirmed session with, or a person whose
  * application you accepted (or who accepted yours). The database decides that, not the screen —
- * see can_review_profile / can_review_bookable in
+ * see can_review_profile / can_review_studio in
  * supabase/migrations/20260918110000_reviews_write.sql. One review per subject, and the reviewed
  * party may reply.
  */
@@ -25,13 +25,13 @@ export type ReviewRow = {
   author_name: string;
   author_profile_id: string | null;
   target_profile_id: string | null;
-  target_bookable_id: string | null;
+  target_studio_id: string | null;
   /** What the reviewer picked out ("On time", "Great sound"); absent before 20260918240000. */
   tags?: string[];
 };
 
 const SELECT =
-  "id, rating, body, context, response, created_at, author_name, author_profile_id, target_profile_id, target_bookable_id";
+  "id, rating, body, context, response, created_at, author_name, author_profile_id, target_profile_id, target_studio_id";
 
 /** What someone may review right now: the studios and people this account has worked with. */
 export const listReviewable = createServerFn({ method: "GET" })
@@ -41,7 +41,7 @@ export const listReviewable = createServerFn({ method: "GET" })
     const [bookings, applications, written, rentals] = await Promise.all([
       client
         .from("booking_requests")
-        .select("bookable_id, session_date, studio:bookables(id, slug, name)")
+        .select("studio_id, session_date, studio:studios(id, slug, name)")
         .eq("requester_profile_id", context.userId)
         .in("status", ["confirmed", "completed"]),
       client
@@ -52,7 +52,7 @@ export const listReviewable = createServerFn({ method: "GET" })
         .eq("status", "accepted"),
       client
         .from("reviews")
-        .select("target_profile_id, target_bookable_id")
+        .select("target_profile_id, target_studio_id")
         .eq("author_profile_id", context.userId),
       // A completed rental, either side: the renter reviews the owner, the owner the renter.
       client
@@ -69,21 +69,21 @@ export const listReviewable = createServerFn({ method: "GET" })
 
     const done = (written.data ?? []) as {
       target_profile_id: string | null;
-      target_bookable_id: string | null;
+      target_studio_id: string | null;
     }[];
-    const studioDone = new Set(done.map((r) => r.target_bookable_id).filter(Boolean));
+    const studioDone = new Set(done.map((r) => r.target_studio_id).filter(Boolean));
     const profileDone = new Set(done.map((r) => r.target_profile_id).filter(Boolean));
 
     type BookingRow = {
-      bookable_id: string;
+      studio_id: string;
       session_date: string;
       studio: { id: string; slug: string; name: string } | null;
     };
     const studios = ((bookings.data ?? []) as unknown as BookingRow[])
-      .filter((b) => b.studio && !studioDone.has(b.bookable_id))
+      .filter((b) => b.studio && !studioDone.has(b.studio_id))
       .map((b) => ({
         kind: "studio" as const,
-        id: b.bookable_id,
+        id: b.studio_id,
         slug: b.studio!.slug,
         name: b.studio!.name,
         context: `Session on ${b.session_date}`,
@@ -175,7 +175,7 @@ export const writeReview = createServerFn({ method: "POST" })
         author_profile_id: context.userId,
         author_name: data.authorName,
         target_profile_id: data.targetProfileId ?? null,
-        target_bookable_id: data.targetStudioId ?? null,
+        target_studio_id: data.targetStudioId ?? null,
         rating: data.rating,
         body: data.body,
         context: data.context ?? null,

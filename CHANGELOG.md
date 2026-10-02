@@ -5,55 +5,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Fixed — every page returned 500 on the published site (3 Oct)
-
-- The published app (and Lovable's preview) answered every route with "This page didn't load".
-  Cause: the profile share sheet's real QR code (P0) imported `qrcode` statically into
-  `profile.tsx`, which most pages load; the library's server build imports `node:fs`, which the
-  Cloudflare worker doesn't have, so every server render failed with `No such module "node:fs"`.
-  It ran fine under Node, which is why local builds looked healthy.
-- `qrcode` is now loaded only in the browser, when a code is drawn or saved (`qr.tsx`).
-- Reproduced and verified under Cloudflare's own runtime (`wrangler dev` on the production build):
-  before, `/` and `/discover` returned 500 with that error; after, `/`, `/discover`, a booking page,
-  Market, Welcome, Help and a profile return 200.
-
-### Changed — code names follow the bookable rename (3 Oct)
-
-- Exported names that meant the bookable space say so: `getStudioCalendar` → `getBookableCalendar`,
-  `DiscoverStudio` → `DiscoverBookable`, `StudioCard` / `StudioRow` / `StudioCardSkeleton` →
-  `BookableCard` / `BookableRow` / `BookableCardSkeleton`, `StudioBookingRecord` → `BookingRecord`,
-  `getStudio` → `getBookableBySlug` (`getBookable` was taken), and the owner, photo, block and
-  equipment functions and types (`getMyBookable`, `BookablePhoto`, `addMyBookableBlock`…), 47 in all.
-  `studio-setup.tsx` is `bookable-setup.tsx`.
-- Unchanged: local variables, on-screen words, the `studio` persona slug, saved and recently-viewed
-  values, the `/discover/studios` route and search keys.
-- Checked at 412px against the live database after the rename: Discover, a studio's booking page
-  and Market render, with no horizontal scroll.
-
-### Changed — studio tables become bookables (3 Oct)
-
-- **Applied live** (owner, 3 Oct): the migration ran unchanged from `161ee4e` and every built-in
-  check passed. Snapshot: `supabase/dumps/2026-10-03-before-bookables.sql` (definitions and counts,
-  no user data).
-
-- **Migration `20261003130000_bookables_rename.sql`** (not applied): `studios` → `bookables`,
-  `studio_rooms` / `_blocks` / `_equipment` / `_photos` → `bookable_…`, every `studio_id` →
-  `bookable_id`, `reviews.target_studio_id` → `target_bookable_id`, `booking_requests.studio_name`
-  → `bookable_name`, and the four studio-named functions renamed. The 12 functions that name them
-  are rewritten from their live definitions by exact name swaps. Compatibility views (security
-  invoker) and wrapper functions keep the old table and function names working; the two renamed
-  columns on `booking_requests` and `reviews` can't keep an old name, so this and the code below go
-  live together. It rolls back unless the counts are 21 / 25 / 0 / 116 / 57, reviews 43 and
-  bookings 10, and every review, booking, room, equipment and photo link is unchanged. Nothing is
-  deleted: the 57 photo rows and all 43 reviews carry over.
-- **Code:** every query, row type and RPC uses the new table, column and function names, and the
-  generated database types match. `src/lib/studio-*.ts` are `src/lib/bookable-*.ts`. Constraint
-  names in join hints (`studios_owner_profile_id_fkey`), on-screen words, the `/discover/studios`
-  route and stored values (`studio`) are unchanged.
-- **Not yet:** exported names such as `getStudioCalendar`, `DiscoverStudio` and `StudioCard`, and
-  `studio-setup.tsx`; the cleanup migration that drops the compatibility views and functions.
-- `AGENTS.md` names the bookable tables and says the `studio*` shims are temporary.
-
 ### Changed — business-media takes 5 MB; how migrations are applied (3 Oct)
 
 - **`business-media` limit is 5 MB** (owner), was 10: migration

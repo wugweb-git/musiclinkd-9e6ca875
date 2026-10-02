@@ -134,7 +134,7 @@ function ProviderBookingDetailContent() {
     <Screen>
       <TopBar
         title="Session"
-        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.bookable_name ?? "Studio"}
+        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.studio_name ?? "Studio"}
         back="/business/bookings"
       />
       <main className="px-5 pt-4">

@@ -5,16 +5,16 @@ import {
   PersonCardSkeleton,
   PersonRow,
   PersonRowSkeleton,
-  BookableCard,
-  BookableCardSkeleton,
-  BookableRow,
+  StudioCard,
+  StudioCardSkeleton,
+  StudioRow,
   ServiceCard,
   ServiceCardSkeleton,
   ReviewCard,
   ReviewCardSkeleton,
 } from "./cards";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
-import type { DiscoverBookable } from "@/lib/bookable-view";
+import type { DiscoverStudio } from "@/lib/studio-view";
 
 const demoPerson: DirectoryPerson = {
   id: "demo-person-1",
@@ -93,7 +93,7 @@ export const PersonRowSkeletonStory: Story = {
 /* Business / studio card                                              */
 /* ------------------------------------------------------------------ */
 
-const demoStudio: DiscoverBookable = {
+const demoStudio: DiscoverStudio = {
   id: "soundhouse-bandra",
   slug: "soundhouse-bandra",
   username: "soundhouse.bandra",
@@ -109,37 +109,37 @@ const demoStudio: DiscoverBookable = {
 };
 
 export const StudioCardStory: Story = {
-  name: "BookableCard (Default)",
+  name: "StudioCard (Default)",
   render: () => (
     <div className="max-w-md">
-      <BookableCard studio={demoStudio} />
+      <StudioCard studio={demoStudio} />
     </div>
   ),
 };
 
 export const StudioCardDisabledStory: Story = {
-  name: "BookableCard (Preview / disabled)",
+  name: "StudioCard (Preview / disabled)",
   render: () => (
     <div className="max-w-md">
-      <BookableCard studio={demoStudio} disabled />
+      <StudioCard studio={demoStudio} disabled />
     </div>
   ),
 };
 
 export const StudioCardSkeletonStory: Story = {
-  name: "BookableCardSkeleton",
+  name: "StudioCardSkeleton",
   render: () => (
     <div className="max-w-md">
-      <BookableCardSkeleton />
+      <StudioCardSkeleton />
     </div>
   ),
 };
 
 export const StudioRowStory: Story = {
-  name: "BookableRow (Default)",
+  name: "StudioRow (Default)",
   render: () => (
     <ul className="max-w-md divide-y divide-border">
-      <BookableRow studio={demoStudio} />
+      <StudioRow studio={demoStudio} />
     </ul>
   ),
 };

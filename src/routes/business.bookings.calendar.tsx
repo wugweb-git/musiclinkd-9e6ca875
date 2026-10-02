@@ -14,7 +14,7 @@ import {
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { isoDate } from "@/lib/when";
 import {
-  listBookableBookings,
+  listStudioBookings,
   type BookingRequest,
   type BookingStatus,
 } from "@/lib/bookings.functions";
@@ -95,7 +95,7 @@ function ProviderCalendarContent() {
   const [view, setView] = useState<(typeof views)[number]>("Day");
   const today = new Date();
   const [cursor, setCursor] = useState(isoDate(today));
-  const load = useServerFn(listBookableBookings);
+  const load = useServerFn(listStudioBookings);
   const q = useQuery({ queryKey: ["business", "bookings", "mine"], queryFn: () => load() });
   const all = q.data ?? [];
 
