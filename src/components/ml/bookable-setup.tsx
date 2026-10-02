@@ -33,7 +33,7 @@ import { sized } from "@/lib/image-url";
 
 /*
  * A studio's amenities, equipment and policies, each with photos where it has them (owner, 22 Sep
- * 2026). One set of editors for Create business and for Manage → Photos & spaces:
+ * 2026). One set of editors for Create business and for Edit profile → Facilities & equipment:
  *   amenities — what the place has (studios.amenities, from studio_amenities);
  *   equipment — gear with a type (an instrument or an equipment category, the list Market uses),
  *     quantity and included-or-extra (bookable_equipment);
@@ -47,9 +47,10 @@ export const EQUIPMENT_KEY = ["studio-equipment", "mine"];
 const inputCls =
   "min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary";
 
-export function useMyBookablePhotos() {
+/** The owner's bookable, its facilities and photos. Off for accounts that can't have one. */
+export function useMyBookablePhotos(enabled = true) {
   const load = useServerFn(listMyBookablePhotos);
-  return useQuery({ queryKey: PHOTOS_KEY, queryFn: () => load() });
+  return useQuery({ queryKey: PHOTOS_KEY, queryFn: () => load(), enabled, retry: false });
 }
 
 /* ------------------------------------------------------------------ */
@@ -63,7 +64,7 @@ export function AmenitiesEditor() {
   const tx = useTaxonomy().options;
   const save = useServerFn(updateMyBookable);
   const section = useRef<HTMLElement>(null);
-  // Manage > Photos & spaces lands here (#facilities) once the section has rendered.
+  // Edit profile > Facilities & equipment lands here (#facilities) once the section has rendered.
   const shown = Boolean(q.data?.ready);
   useEffect(() => {
     if (shown && window.location.hash === "#facilities") {

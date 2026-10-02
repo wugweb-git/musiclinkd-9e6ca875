@@ -26,7 +26,6 @@ import {
   type WeeklyHours,
 } from "@/lib/bookable-slots";
 import { Field, inputClass } from "@/components/ml/listing-form";
-import { AmenitiesEditor, EquipmentEditor } from "@/components/ml/bookable-setup";
 
 export const Route = createFileRoute("/business/availability")({
   head: () => ({
@@ -121,10 +120,15 @@ function AvailabilityContent() {
         <WeeklyHoursEditor studio={q.data} />
         <NoticeAndBlackouts studio={q.data} />
         <ClosedTimes studio={q.data} />
-        <div className="mt-8 space-y-8">
-          <AmenitiesEditor />
-          <EquipmentEditor />
-        </div>
+        {/* Facilities and equipment, with their photos, are edited in Edit profile. */}
+        <BtnLink
+          to="/profile/edit"
+          search={{ section: "facilities" }}
+          variant="outline"
+          className="mt-8 w-full"
+        >
+          Facilities &amp; Equipment
+        </BtnLink>
 
         <BtnLink to="/business/bookings" variant="ghost" className="mt-2 w-full">
           Back to Workspace

@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — facility photos are added in Edit profile (3 Oct)
+
+- **Owner decision:** a business's facilities and equipment, each with its photos, are edited in
+  **Edit profile → Facilities & equipment**, using the same shared editors. The section shows for a
+  business account that runs a bookable space. The workspace's Availability screen keeps the
+  hours and links to it; Add service's "Add Amenities / Equipment" opens it.
+- The facilities query runs only for business accounts and doesn't retry when there is no
+  bookable.
+
 ### Fixed — every page returned 500 on the published site (3 Oct)
 
 - The published app (and Lovable's preview) answered every route with "This page didn't load".

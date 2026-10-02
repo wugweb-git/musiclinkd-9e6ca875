@@ -33,6 +33,11 @@ import { InlineField, SelectField } from "@/components/ml/onboarding";
 import { CityField } from "@/components/ml/listing-form";
 import { usePinFill } from "@/hooks/use-pin-fill";
 import { useRequireBusiness } from "@/hooks/use-require-business";
+import {
+  AmenitiesEditor,
+  EquipmentEditor,
+  useMyBookablePhotos,
+} from "@/components/ml/bookable-setup";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
 import { sized } from "@/lib/image-url";
@@ -154,6 +159,10 @@ function EditProfile() {
   // A business's rules live in the same form as the rest of its details, not on a screen of their
   // own (owner, 28 Sep 2026) — /business/policies was the last business field without a home here.
   const [policies, setPolicies] = useState("");
+  // A business that runs a bookable space shows what it has here, with a photo of each
+  // (owner, 3 Oct 2026: facility photos belong in Edit profile). The editors are the shared ones.
+  const facilities = useMyBookablePhotos(isBusiness);
+  const hasBookable = isBusiness && Boolean(facilities.data?.ready);
   useEffect(() => {
     if (!isBusiness) return;
     void loadBusiness()
@@ -708,6 +717,22 @@ function EditProfile() {
         </div>
       ),
     },
+    ...(hasBookable
+      ? [
+          {
+            id: "facilities",
+            label: "Facilities & equipment",
+            detail: "What your space has, with a photo of each",
+            done: (facilities.data?.facilities ?? []).length > 0,
+            body: (
+              <div className="space-y-8">
+                <AmenitiesEditor />
+                <EquipmentEditor />
+              </div>
+            ),
+          },
+        ]
+      : []),
     {
       id: "links",
       label: "Links",
