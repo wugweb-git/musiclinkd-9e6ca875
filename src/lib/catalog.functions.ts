@@ -31,12 +31,12 @@ export type SellerOwnerSummary = OwnerSummary & {
 };
 
 /** A studio's extra, priced per unit when it has a price ("Engineer", ₹800, "hour"). */
-export type StudioAddOn = { name: string; price_paise: number | null; unit: string | null };
+export type BookableAddOn = { name: string; price_paise: number | null; unit: string | null };
 
 /** A room's package rate beside its hourly one ("Half day", 4 hours, ₹8,000). */
 export type RoomTier = { label: string; hours: number | null; price_paise: number | null };
 
-export type StudioRow = {
+export type BookableRow = {
   id: string;
   slug: string;
   name: string;
@@ -55,7 +55,7 @@ export type StudioRow = {
   images: string[];
   /** How soon the studio usually replies ("within 2 hours"); null before the column exists. */
   response_time?: string | null;
-  add_ons?: StudioAddOn[];
+  add_ons?: BookableAddOn[];
   owner: SellerOwnerSummary | null;
   rooms: {
     id: string;
@@ -205,7 +205,7 @@ async function liveOnly(run: (live: boolean) => PromiseLike<Result>) {
 type Sorted = { sort_order?: number };
 const bySort = (a: Sorted, b: Sorted) => (a.sort_order ?? 0) - (b.sort_order ?? 0);
 
-function shapeStudio(raw: StudioRow): StudioRow {
+function shapeStudio(raw: BookableRow): BookableRow {
   return {
     ...raw,
     rating: raw.rating == null ? null : Number(raw.rating),
@@ -220,7 +220,7 @@ function shapeStudio(raw: StudioRow): StudioRow {
   };
 }
 
-export const listStudios = createServerFn({ method: "GET" }).handler(async () => {
+export const listBookables = createServerFn({ method: "GET" }).handler(async () => {
   const client = await anonClient();
   const { data, error } = await withFallback(
     (select) =>
@@ -235,10 +235,10 @@ export const listStudios = createServerFn({ method: "GET" }).handler(async () =>
     [STUDIO, STUDIO_BEFORE],
   );
   if (error) throw new Error(error.message);
-  return ((data ?? []) as unknown as StudioRow[]).map(shapeStudio);
+  return ((data ?? []) as unknown as BookableRow[]).map(shapeStudio);
 });
 
-export const getStudio = createServerFn({ method: "GET" })
+export const getBookableBySlug = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
@@ -251,7 +251,7 @@ export const getStudio = createServerFn({ method: "GET" })
       [STUDIO, STUDIO_BEFORE],
     );
     if (error) throw new Error(error.message);
-    return row ? shapeStudio(row as unknown as StudioRow) : null;
+    return row ? shapeStudio(row as unknown as BookableRow) : null;
   });
 
 export const listOpportunities = createServerFn({ method: "GET" }).handler(async () => {

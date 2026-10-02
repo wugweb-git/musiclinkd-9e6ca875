@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { earliestBookingDate } from "@/lib/bookable-slots";
-import { assertStudioTakes } from "@/lib/bookable-calendar.functions";
+import { assertBookableTakes } from "@/lib/bookable-calendar.functions";
 
 /*
  * Booking requests: someone asks a studio for a room at a time, the studio answers. No money is
@@ -83,7 +83,7 @@ export const requestBooking = createServerFn({ method: "POST" })
     if (studioError) throw new Error(studioError.message);
     const studioId = (studio as { id: string } | null)?.id;
     if (!studioId) throw new Error("That studio is not taking requests yet.");
-    await assertStudioTakes(client, studioId, data.date, data.startTime);
+    await assertBookableTakes(client, studioId, data.date, data.startTime);
 
     // A studio with no rooms of its own is asked as a whole: the screens then carry the studio's
     // id where a room id would be, so it is only stored when it really is one of that studio's rooms.
@@ -146,7 +146,7 @@ export const getBookingRequest = createServerFn({ method: "GET" })
   });
 
 /** The requests made to studios this account owns. */
-export const listStudioBookings = createServerFn({ method: "GET" })
+export const listBookableBookings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<BookingRequest[]> => {
     const client = db(context.supabase);
@@ -251,7 +251,7 @@ export const rescheduleBooking = createServerFn({ method: "POST" })
       .maybeSingle();
     const studioId = (current as { bookable_id: string | null } | null)?.bookable_id;
     if (studioId)
-      await assertStudioTakes(db(context.supabase), studioId, data.date, data.startTime);
+      await assertBookableTakes(db(context.supabase), studioId, data.date, data.startTime);
     const { error } = await db(context.supabase)
       .from("booking_requests")
       .update({

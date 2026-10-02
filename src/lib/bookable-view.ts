@@ -1,9 +1,9 @@
 import type { AddOn, Bookable, DurationUnit, PricingTier, Resource } from "@/data/booking";
-import { taxonomyLabel, type RoomTier, type StudioRow } from "@/lib/catalog.functions";
+import { taxonomyLabel, type RoomTier, type BookableRow } from "@/lib/catalog.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
 import { hasWeeklyHours, type WeeklyHours } from "@/lib/bookable-slots";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
-import type { StudioPhoto } from "@/lib/bookable-photos.functions";
+import type { BookablePhoto } from "@/lib/bookable-photos.functions";
 import { parsePlace, shownPlace } from "@/lib/place";
 
 /*
@@ -14,7 +14,7 @@ import { parsePlace, shownPlace } from "@/lib/place";
  * studio has reviews (studios.rating is kept from them by the database).
  */
 
-export type DiscoverStudio = {
+export type DiscoverBookable = {
   id: string;
   slug: string;
   /** The owning business account's username, which is the studio's profile. */
@@ -30,7 +30,10 @@ export type DiscoverStudio = {
   gear: string[];
 };
 
-export function discoverStudioFromRow(row: StudioRow, labels: TaxonomyLabels): DiscoverStudio {
+export function discoverBookableFromRow(
+  row: BookableRow,
+  labels: TaxonomyLabels,
+): DiscoverBookable {
   return {
     id: row.id,
     slug: row.slug,
@@ -107,7 +110,7 @@ function hourlyResource(
 }
 
 /** Photo URLs per subject id, in order. */
-function photosBy(photos: StudioPhoto[], type: StudioPhoto["subject_type"]) {
+function photosBy(photos: BookablePhoto[], type: BookablePhoto["subject_type"]) {
   const by = new Map<string, string[]>();
   for (const p of photos) {
     if (p.subject_type === type) by.set(p.subject_id, [...(by.get(p.subject_id) ?? []), p.url]);
@@ -115,11 +118,11 @@ function photosBy(photos: StudioPhoto[], type: StudioPhoto["subject_type"]) {
   return by;
 }
 
-export function bookableFromStudio(
-  row: StudioRow,
+export function bookableFromRow(
+  row: BookableRow,
   labels: TaxonomyLabels,
   weeklyHours: WeeklyHours = {},
-  photos: StudioPhoto[] = [],
+  photos: BookablePhoto[] = [],
 ): Bookable | null {
   const resources = row.rooms.length
     ? row.rooms.map((room) =>
