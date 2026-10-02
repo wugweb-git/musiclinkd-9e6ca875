@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { myStudioId } from "@/lib/bookable-calendar.functions";
+import { myBookableId } from "@/lib/bookable-calendar.functions";
 import { removeSubjectPhotos } from "@/lib/bookable-photos.functions";
 
 /*
@@ -13,7 +13,7 @@ import { removeSubjectPhotos } from "@/lib/bookable-photos.functions";
  * RLS: "Owners write their own" on both studios and bookable_rooms (20260914180000_catalog.sql).
  */
 
-export type MyStudio = {
+export type MyBookable = {
   id: string;
   slug: string;
   name: string;
@@ -21,7 +21,7 @@ export type MyStudio = {
   operating_hours: string | null;
   cancellation_policy: string | null;
   /** studios.add_ons — extras a session can have, shown on /booking/$id. */
-  add_ons: StudioAddOnRow[];
+  add_ons: BookableAddOnRow[];
   rooms: {
     id: string;
     name: string;
@@ -43,7 +43,7 @@ export type RoomTierRow = {
 };
 
 /** One stored add-on. `unit` "hour" is charged per hour, anything else per that unit. */
-export type StudioAddOnRow = {
+export type BookableAddOnRow = {
   name: string;
   price_paise: number | null;
   unit: string | null;
@@ -52,9 +52,9 @@ export type StudioAddOnRow = {
   quantity?: boolean;
 };
 
-export const getMyStudio = createServerFn({ method: "GET" })
+export const getMyBookable = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<MyStudio | null> => {
+  .handler(async ({ context }): Promise<MyBookable | null> => {
     const { data, error } = await context.supabase
       .from("bookables" as never)
       .select(
@@ -64,8 +64,8 @@ export const getMyStudio = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!data) return null;
-    const row = data as unknown as MyStudio & {
-      rooms: (MyStudio["rooms"][number] & { sort_order?: number | null })[];
+    const row = data as unknown as MyBookable & {
+      rooms: (MyBookable["rooms"][number] & { sort_order?: number | null })[];
     };
     return {
       ...row,
@@ -82,7 +82,7 @@ export const getMyStudio = createServerFn({ method: "GET" })
 const PAISE = z.number().int().min(0).max(100_000_000).nullable();
 
 /** A room's package rates, replacing the stored list. Scoped to the owner's own studio. */
-export const updateStudioRoomTiers = createServerFn({ method: "POST" })
+export const updateBookableRoomTiers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z
@@ -105,7 +105,7 @@ export const updateStudioRoomTiers = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = db(context.supabase);
-    const studioId = await myStudioId(client, context.userId);
+    const studioId = await myBookableId(client, context.userId);
     const { error } = await client
       .from("bookable_rooms")
       .update({ tiers: data.tiers } as never)
@@ -116,7 +116,7 @@ export const updateStudioRoomTiers = createServerFn({ method: "POST" })
   });
 
 /** The studio's add-ons, replacing the stored list. */
-export const updateMyStudioAddOns = createServerFn({ method: "POST" })
+export const updateMyBookableAddOns = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z
@@ -144,7 +144,7 @@ export const updateMyStudioAddOns = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export const updateMyStudio = createServerFn({ method: "POST" })
+export const updateMyBookable = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z
@@ -170,7 +170,7 @@ export const updateMyStudio = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export const updateStudioRoomRate = createServerFn({ method: "POST" })
+export const updateBookableRoomRate = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z.object({ roomId: z.string().uuid(), hourly_rate_paise: z.number().int().min(0) }).parse(d),
@@ -201,7 +201,7 @@ export const updateStudioRoomRate = createServerFn({ method: "POST" })
  * studio here.
  */
 
-export type StudioEquipment = {
+export type BookableEquipment = {
   id: string;
   name: string;
   /** An equipment_categories slug, or an instrument's slug (the gear list Market uses). */
@@ -211,19 +211,19 @@ export type StudioEquipment = {
   included: boolean;
 };
 
-export type MyStudioEquipment = {
-  items: StudioEquipment[];
+export type MyBookableEquipment = {
+  items: BookableEquipment[];
   categories: { slug: string; label: string }[];
 };
 
 const db = (client: unknown) => client as unknown as SupabaseClient;
 
 /** The owner's equipment in page order, and the published categories in picker order. */
-export const getMyStudioEquipment = createServerFn({ method: "GET" })
+export const getMyBookableEquipment = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<MyStudioEquipment> => {
+  .handler(async ({ context }): Promise<MyBookableEquipment> => {
     const client = db(context.supabase);
-    const studioId = await myStudioId(client, context.userId);
+    const studioId = await myBookableId(client, context.userId);
     const [items, categories] = await Promise.all([
       client
         .from("bookable_equipment")
@@ -239,11 +239,11 @@ export const getMyStudioEquipment = createServerFn({ method: "GET" })
     ]);
     if (items.error) throw new Error(items.error.message);
     return {
-      items: (items.data ?? []) as StudioEquipment[],
+      items: (items.data ?? []) as BookableEquipment[],
       // Without categories the picker offers none; the name alone still saves.
       categories: categories.error
         ? []
-        : ((categories.data ?? []) as MyStudioEquipment["categories"]),
+        : ((categories.data ?? []) as MyBookableEquipment["categories"]),
     };
   });
 
@@ -255,12 +255,12 @@ const EQUIPMENT = z.object({
 });
 
 /** Adds an item after the last one, or with an id changes that item. */
-export const saveMyStudioEquipment = createServerFn({ method: "POST" })
+export const saveMyBookableEquipment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => EQUIPMENT.extend({ id: z.string().uuid().optional() }).parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = db(context.supabase);
-    const studioId = await myStudioId(client, context.userId);
+    const studioId = await myBookableId(client, context.userId);
     const fields = {
       name: data.name,
       category: data.category,
@@ -296,12 +296,12 @@ export const saveMyStudioEquipment = createServerFn({ method: "POST" })
     return row as { id: string };
   });
 
-export const removeMyStudioEquipment = createServerFn({ method: "POST" })
+export const removeMyBookableEquipment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = db(context.supabase);
-    const studioId = await myStudioId(client, context.userId);
+    const studioId = await myBookableId(client, context.userId);
     const { error } = await client
       .from("bookable_equipment")
       .delete()

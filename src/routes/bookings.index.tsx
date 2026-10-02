@@ -6,7 +6,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Btn, Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { BookingSkeleton, StudioBookingRecord, shownBookingStatus } from "@/components/ml/booking";
+import { BookingSkeleton, BookingRecord, shownBookingStatus } from "@/components/ml/booking";
 import { listMyBookings, type BookingStatus as DbBookingStatus } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -97,7 +97,7 @@ function MyBookings() {
           <ul className="space-y-3">
             {list.map((b) => (
               <li key={b.id}>
-                <StudioBookingRecord b={b} side="requester" />
+                <BookingRecord b={b} side="requester" />
               </li>
             ))}
           </ul>

@@ -20,9 +20,9 @@ import {
   saveMyProfile,
 } from "@/lib/portfolio.functions";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
-import { listOpportunities, listStudios } from "@/lib/catalog.functions";
+import { listOpportunities, listBookables } from "@/lib/catalog.functions";
 import { listPeopleByRole, type DirectoryPerson } from "@/lib/profile-groups.functions";
-import { discoverStudioFromRow } from "@/lib/bookable-view";
+import { discoverBookableFromRow } from "@/lib/bookable-view";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
@@ -52,13 +52,13 @@ export const Route = createFileRoute("/home")({
   loader: async () => {
     const [opportunities, studios, labels] = await Promise.all([
       listOpportunities().catch(() => []),
-      listStudios().catch(() => []),
+      listBookables().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
     ]);
     // All of them: signed in, the rails are ranked by recommendations before they are cut to six.
     return {
       opportunities,
-      studios: studios.map((row) => discoverStudioFromRow(row, labels)),
+      studios: studios.map((row) => discoverBookableFromRow(row, labels)),
       labels,
     };
   },

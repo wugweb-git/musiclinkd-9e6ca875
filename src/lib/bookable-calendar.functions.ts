@@ -25,7 +25,7 @@ import {
 const db = (client: unknown) => client as unknown as SupabaseClient;
 const DATE = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
-export type StudioCalendar = {
+export type BookableCalendar = {
   weeklyHours: WeeklyHours;
   busy: BusyInterval[];
   /** Hours of notice the studio needs before a session; 0 for none. */
@@ -52,7 +52,7 @@ async function readRules(client: SupabaseClient, studioId: string) {
  * Refuses a session the studio doesn't take: on a blackout day, or starting inside its notice.
  * Shared by the request and reschedule functions, so the rule holds whatever screen sent it.
  */
-export async function assertStudioTakes(
+export async function assertBookableTakes(
   client: SupabaseClient,
   studioId: string,
   date: string,
@@ -76,13 +76,13 @@ export function noticeLabel(hours: number) {
 const local = (ts: string) => ts.replace(" ", "T").slice(0, 19);
 
 /** The weekly hours, and with a date range the busy times inside it. Public. */
-export const getStudioCalendar = createServerFn({ method: "GET" })
+export const getBookableCalendar = createServerFn({ method: "GET" })
   .inputValidator((d) =>
     z
       .object({ slug: z.string().min(1).max(120), from: DATE.optional(), to: DATE.optional() })
       .parse(d),
   )
-  .handler(async ({ data }): Promise<StudioCalendar> => {
+  .handler(async ({ data }): Promise<BookableCalendar> => {
     const client = db(await anonClient());
     const { data: row, error } = await client
       .from("bookables")
@@ -175,7 +175,7 @@ export const updateMyBookingRules = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export type StudioBlock = {
+export type BookableBlock = {
   id: string;
   room_id: string | null;
   starts_at: string;
@@ -184,7 +184,7 @@ export type StudioBlock = {
 };
 
 /** The owner's own studio id, which every block and equipment write is scoped through. */
-export async function myStudioId(client: SupabaseClient, userId: string) {
+export async function myBookableId(client: SupabaseClient, userId: string) {
   const { data, error } = await client
     .from("bookables")
     .select("id")
@@ -197,11 +197,11 @@ export async function myStudioId(client: SupabaseClient, userId: string) {
 }
 
 /** The times the owner has closed, from today on. Empty before the table exists. */
-export const listMyStudioBlocks = createServerFn({ method: "GET" })
+export const listMyBookableBlocks = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<StudioBlock[]> => {
+  .handler(async ({ context }): Promise<BookableBlock[]> => {
     const client = db(context.supabase);
-    const studioId = await myStudioId(client, context.userId);
+    const studioId = await myBookableId(client, context.userId);
     const { data, error } = await client
       .from("bookable_blocks")
       .select("id, room_id, starts_at, ends_at, reason")
@@ -209,14 +209,14 @@ export const listMyStudioBlocks = createServerFn({ method: "GET" })
       .gte("ends_at", new Date().toISOString().slice(0, 10))
       .order("starts_at", { ascending: true });
     if (error) return [];
-    return ((data ?? []) as StudioBlock[]).map((b) => ({
+    return ((data ?? []) as BookableBlock[]).map((b) => ({
       ...b,
       starts_at: local(b.starts_at),
       ends_at: local(b.ends_at),
     }));
   });
 
-export const addMyStudioBlock = createServerFn({ method: "POST" })
+export const addMyBookableBlock = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z
@@ -231,7 +231,7 @@ export const addMyStudioBlock = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = db(context.supabase);
-    const studioId = await myStudioId(client, context.userId);
+    const studioId = await myBookableId(client, context.userId);
     const { data: row, error } = await client
       .from("bookable_blocks")
       .insert({
@@ -247,7 +247,7 @@ export const addMyStudioBlock = createServerFn({ method: "POST" })
     return row as { id: string };
   });
 
-export const removeMyStudioBlock = createServerFn({ method: "POST" })
+export const removeMyBookableBlock = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {

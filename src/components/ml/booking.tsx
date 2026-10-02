@@ -772,7 +772,7 @@ export function shownBookingStatus(
  * the screen's own actions below; the person who booked sees the studio and the studio's reply,
  * and the whole record opens their booking. No price: nothing is paid in the app.
  */
-export function StudioBookingRecord({
+export function BookingRecord({
   b,
   side,
   actions,

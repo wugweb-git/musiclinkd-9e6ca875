@@ -18,13 +18,13 @@ import { StickyBar } from "@/components/ml/booking";
 import { unitLabel } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 import {
-  getMyStudio,
-  updateMyStudio,
-  updateMyStudioAddOns,
-  updateStudioRoomRate,
-  updateStudioRoomTiers,
+  getMyBookable,
+  updateMyBookable,
+  updateMyBookableAddOns,
+  updateBookableRoomRate,
+  updateBookableRoomTiers,
   type RoomTierRow,
-  type StudioAddOnRow,
+  type BookableAddOnRow,
 } from "@/lib/bookable-owner.functions";
 
 export const Route = createFileRoute("/business/pricing")({
@@ -64,7 +64,7 @@ const paise = (v: string) => (v.trim() ? Math.round(Number(v) * 100) : null);
 /** A package tier as it is edited: the stored row plus the typed amount. */
 type TierDraft = { row: RoomTierRow; price: string };
 /** An add-on as it is edited: the stored row plus the typed amount. */
-type AddOnDraft = { row: StudioAddOnRow; price: string };
+type AddOnDraft = { row: BookableAddOnRow; price: string };
 
 const TIER_KINDS = [
   { value: "halfDay", label: "Half day" },
@@ -77,11 +77,11 @@ const isHourTier = (t: RoomTierRow) => t.unit === "hour";
 
 function PricingContent() {
   const queryClient = useQueryClient();
-  const load = useServerFn(getMyStudio);
-  const saveStudio = useServerFn(updateMyStudio);
-  const saveRoom = useServerFn(updateStudioRoomRate);
-  const saveTiers = useServerFn(updateStudioRoomTiers);
-  const saveAddOns = useServerFn(updateMyStudioAddOns);
+  const load = useServerFn(getMyBookable);
+  const saveStudio = useServerFn(updateMyBookable);
+  const saveRoom = useServerFn(updateBookableRoomRate);
+  const saveTiers = useServerFn(updateBookableRoomTiers);
+  const saveAddOns = useServerFn(updateMyBookableAddOns);
   const q = useQuery({ queryKey: ["business", "studio", "mine"], queryFn: () => load() });
 
   const [baseRate, setBaseRate] = useState("");
@@ -451,7 +451,7 @@ function NewAddOnSheet({
 }: {
   open: boolean;
   onClose: () => void;
-  onAdd: (row: StudioAddOnRow) => void;
+  onAdd: (row: BookableAddOnRow) => void;
 }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");

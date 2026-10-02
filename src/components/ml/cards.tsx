@@ -7,7 +7,7 @@ import type { PriceParts } from "@/lib/price";
 import { VerifiedBadge } from "./ui";
 import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
-import type { DiscoverStudio } from "@/lib/bookable-view";
+import type { DiscoverBookable } from "@/lib/bookable-view";
 import { labelFor, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
@@ -291,7 +291,7 @@ export function PersonCardSkeleton() {
 /* ------------------------------------------------------------------ */
 
 /** Where a business opens: its profile, else its booking page, else nowhere. */
-function studioLink(studio: DiscoverStudio) {
+function studioLink(studio: DiscoverBookable) {
   if (studio.username)
     return { to: "/profile/$username" as const, params: { username: studio.username } };
   if (studio.slug) return { to: "/booking/$id" as const, params: { id: studio.slug } };
@@ -305,12 +305,12 @@ function studioLink(studio: DiscoverStudio) {
  * the photo-led state (name, place and rate on the scrim) that replaces StudioMediaCard. A
  * business with nowhere to open, or a preview, is the same card with no link: nothing to focus.
  */
-export function StudioCard({
+export function BookableCard({
   studio,
   featured = false,
   disabled = false,
 }: {
-  studio: DiscoverStudio;
+  studio: DiscoverBookable;
   featured?: boolean | undefined;
   /** A preview, not a real business to open — renders the same card with no link. */
   disabled?: boolean | undefined;
@@ -420,7 +420,7 @@ export function StudioCard({
   );
 }
 
-export function StudioCardSkeleton() {
+export function BookableCardSkeleton() {
   return (
     <div className="w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card shadow-xs">
       <div className="h-28 w-full animate-pulse bg-subtle" />
@@ -434,10 +434,10 @@ export function StudioCardSkeleton() {
 }
 
 /**
- * A business row for a list (search results, directory). Same fields as StudioCard, laid out
+ * A business row for a list (search results, directory). Same fields as BookableCard, laid out
  * horizontally, with the same save control PersonRow uses.
  */
-export function StudioRow({ studio }: { studio: DiscoverStudio }) {
+export function BookableRow({ studio }: { studio: DiscoverBookable }) {
   const link = studioLink(studio);
   const inner = "flex min-w-0 flex-1 items-center gap-3";
   const content = (

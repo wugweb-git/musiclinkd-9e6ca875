@@ -151,7 +151,7 @@ export function calendarWindow(now = new Date()) {
 }
 
 /** One room's day: whole-hour slots inside the opening hours, each open, booked or past. */
-export function studioDay(
+export function bookableDay(
   weekly: WeeklyHours,
   busy: BusyInterval[],
   roomId: string,

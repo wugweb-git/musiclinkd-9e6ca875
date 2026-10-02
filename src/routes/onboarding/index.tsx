@@ -18,9 +18,9 @@ import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 import { haptic } from "@/lib/haptics";
-import { PersonCard, StudioCard } from "@/components/ml/cards";
+import { PersonCard, BookableCard } from "@/components/ml/cards";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
-import type { DiscoverStudio } from "@/lib/bookable-view";
+import type { DiscoverBookable } from "@/lib/bookable-view";
 
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({
@@ -51,7 +51,7 @@ const kindOrder = ["Talent", "Business"] as const;
 type AccountKind = (typeof kindOrder)[number];
 
 // The wizard's "what your card will look like" preview, in the exact shapes the real
-// PersonCard/StudioCard take — so the preview and the live card are always the same component.
+// PersonCard/BookableCard take — so the preview and the live card are always the same component.
 const demoTalent: DirectoryPerson = {
   id: "preview-talent",
   username: "you",
@@ -69,7 +69,7 @@ const demoTalent: DirectoryPerson = {
 };
 
 // A preview of a business that has just signed up: no reviews, no rate, no photo and no badge yet.
-const demoStudio: DiscoverStudio = {
+const demoStudio: DiscoverBookable = {
   id: "preview-business",
   slug: "",
   username: "",
@@ -323,7 +323,7 @@ function Welcome() {
             {kind === "Talent" ? (
               <PersonCard person={demoTalent} disabled />
             ) : (
-              <StudioCard studio={demoStudio} disabled />
+              <BookableCard studio={demoStudio} disabled />
             )}
           </div>
         ) : (

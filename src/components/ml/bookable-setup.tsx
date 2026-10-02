@@ -10,21 +10,21 @@ import { ImagePickButton } from "@/components/ml/profile";
 import { ChipPicker, DrawerField } from "@/components/ml/onboarding";
 import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
 import {
-  type MyStudioEquipment,
-  type StudioEquipment,
-  getMyStudioEquipment,
-  removeMyStudioEquipment,
-  saveMyStudioEquipment,
-  updateMyStudio,
+  type MyBookableEquipment,
+  type BookableEquipment,
+  getMyBookableEquipment,
+  removeMyBookableEquipment,
+  saveMyBookableEquipment,
+  updateMyBookable,
 } from "@/lib/bookable-owner.functions";
 import {
-  MAX_STUDIO_PHOTOS,
-  type StudioPhotoSubject,
-  addMyStudioPhoto,
-  listMyStudioPhotos,
-  removeMyStudioPhoto,
+  MAX_BOOKABLE_PHOTOS,
+  type BookablePhotoSubject,
+  addMyBookablePhoto,
+  listMyBookablePhotos,
+  removeMyBookablePhoto,
 } from "@/lib/bookable-photos.functions";
-import { uploadStudioPhoto } from "@/lib/bookable-photos";
+import { uploadBookablePhoto } from "@/lib/bookable-photos";
 import { useGearTaxonomy } from "@/lib/listing-category";
 import { choicesFor, useTaxonomy } from "@/lib/taxonomy";
 import { amenityIcon } from "@/lib/amenity-icons";
@@ -47,8 +47,8 @@ export const EQUIPMENT_KEY = ["studio-equipment", "mine"];
 const inputCls =
   "min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary";
 
-export function useMyStudioPhotos() {
-  const load = useServerFn(listMyStudioPhotos);
+export function useMyBookablePhotos() {
+  const load = useServerFn(listMyBookablePhotos);
   return useQuery({ queryKey: PHOTOS_KEY, queryFn: () => load() });
 }
 
@@ -59,9 +59,9 @@ export function useMyStudioPhotos() {
 /** Pick the studio's amenities in a drawer, then add a photo of each. */
 export function AmenitiesEditor() {
   const queryClient = useQueryClient();
-  const q = useMyStudioPhotos();
+  const q = useMyBookablePhotos();
   const tx = useTaxonomy().options;
-  const save = useServerFn(updateMyStudio);
+  const save = useServerFn(updateMyBookable);
   const section = useRef<HTMLElement>(null);
   // Manage > Photos & spaces lands here (#facilities) once the section has rendered.
   const shown = Boolean(q.data?.ready);
@@ -131,9 +131,9 @@ const INCLUSION = ["Included", "Extra cost"] as const;
 /** Add, change or remove the studio's equipment, each with its photos. */
 export function EquipmentEditor() {
   const queryClient = useQueryClient();
-  const load = useServerFn(getMyStudioEquipment);
-  const save = useServerFn(saveMyStudioEquipment);
-  const remove = useServerFn(removeMyStudioEquipment);
+  const load = useServerFn(getMyBookableEquipment);
+  const save = useServerFn(saveMyBookableEquipment);
+  const remove = useServerFn(removeMyBookableEquipment);
   const q = useQuery({ queryKey: EQUIPMENT_KEY, queryFn: () => load() });
   const gear = useGearTaxonomy();
   const [draft, setDraft] = useState<EquipmentDraft | null>(null);
@@ -185,9 +185,9 @@ export function EquipmentEditor() {
     mutationFn: (id: string) => remove({ data: { id } }),
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: EQUIPMENT_KEY });
-      const before = queryClient.getQueryData<MyStudioEquipment>(EQUIPMENT_KEY);
+      const before = queryClient.getQueryData<MyBookableEquipment>(EQUIPMENT_KEY);
       if (before) {
-        queryClient.setQueryData<MyStudioEquipment>(EQUIPMENT_KEY, {
+        queryClient.setQueryData<MyBookableEquipment>(EQUIPMENT_KEY, {
           ...before,
           items: before.items.filter((i) => i.id !== id),
         });
@@ -206,7 +206,7 @@ export function EquipmentEditor() {
       ]),
   });
 
-  const edit = (i: StudioEquipment) =>
+  const edit = (i: BookableEquipment) =>
     setDraft({
       id: i.id,
       name: i.name,
@@ -403,21 +403,21 @@ export function PoliciesEditor({
 
 /**
  * One facility's or equipment item's photos: tap one to view it, remove it, or add another, up to
- * MAX_STUDIO_PHOTOS. Shows nothing until the photos table exists.
+ * MAX_BOOKABLE_PHOTOS. Shows nothing until the photos table exists.
  */
 export function ProofPhotos({
   subjectType,
   subjectId,
   name,
 }: {
-  subjectType: StudioPhotoSubject;
+  subjectType: BookablePhotoSubject;
   subjectId: string;
   name: string;
 }) {
   const queryClient = useQueryClient();
-  const q = useMyStudioPhotos();
-  const add = useServerFn(addMyStudioPhoto);
-  const remove = useServerFn(removeMyStudioPhoto);
+  const q = useMyBookablePhotos();
+  const add = useServerFn(addMyBookablePhoto);
+  const remove = useServerFn(removeMyBookablePhoto);
   const [viewing, setViewing] = useState(false);
   if (!q.data?.ready) return null;
   const { studioId } = q.data;
@@ -425,9 +425,9 @@ export function ProofPhotos({
     (p) => p.subject_type === subjectType && p.subject_id === subjectId,
   );
 
-  async function onPick(kind: StudioPhotoSubject, file: File) {
+  async function onPick(kind: BookablePhotoSubject, file: File) {
     try {
-      const url = await uploadStudioPhoto(studioId, file);
+      const url = await uploadBookablePhoto(studioId, file);
       await add({ data: { subjectType: kind, subjectId, url } });
       await queryClient.invalidateQueries({ queryKey: PHOTOS_KEY });
       toast.success("Photo added");
@@ -474,7 +474,7 @@ export function ProofPhotos({
           </button>
         </div>
       ))}
-      {photos.length < MAX_STUDIO_PHOTOS ? (
+      {photos.length < MAX_BOOKABLE_PHOTOS ? (
         <ImagePickButton
           kind={subjectType}
           label={`Add a photo of ${name}`}

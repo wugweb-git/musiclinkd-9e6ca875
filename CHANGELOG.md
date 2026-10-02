@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — code names follow the bookable rename (3 Oct)
+
+- Exported names that meant the bookable space say so: `getStudioCalendar` → `getBookableCalendar`,
+  `DiscoverStudio` → `DiscoverBookable`, `StudioCard` / `StudioRow` / `StudioCardSkeleton` →
+  `BookableCard` / `BookableRow` / `BookableCardSkeleton`, `StudioBookingRecord` → `BookingRecord`,
+  `getStudio` → `getBookableBySlug` (`getBookable` was taken), and the owner, photo, block and
+  equipment functions and types (`getMyBookable`, `BookablePhoto`, `addMyBookableBlock`…), 47 in all.
+  `studio-setup.tsx` is `bookable-setup.tsx`.
+- Unchanged: local variables, on-screen words, the `studio` persona slug, saved and recently-viewed
+  values, the `/discover/studios` route and search keys.
+- Checked at 412px against the live database after the rename: Discover, a studio's booking page
+  and Market render, with no horizontal scroll.
+
 ### Changed — studio tables become bookables (3 Oct)
 
 - **Applied live** (owner, 3 Oct): the migration ran unchanged from `161ee4e` and every built-in
