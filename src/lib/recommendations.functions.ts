@@ -183,8 +183,8 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
           .eq("creator_profile_id", me)
           .eq("status", "open"),
       ),
-      rowsOf<{ studio_id: string }>(
-        client.from("booking_requests").select("studio_id").eq("requester_profile_id", me),
+      rowsOf<{ bookable_id: string }>(
+        client.from("booking_requests").select("bookable_id").eq("requester_profile_id", me),
       ),
       rowsOf<{ listing_id: string }>(
         client.from("rental_bookings").select("listing_id").eq("renter_profile_id", me),
@@ -224,9 +224,9 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
         // every studio is live.
         (async () => {
           const columns = "id, owner_profile_id, location, services, rating";
-          const live = await client.from("studios").select(columns).is("archived_at", null);
+          const live = await client.from("bookables").select(columns).is("archived_at", null);
           return live.error?.message.includes("archived_at")
-            ? client.from("studios").select(columns)
+            ? client.from("bookables").select(columns)
             : live;
         })(),
       ),
@@ -378,7 +378,7 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
     opportunityPicks.sort((a, b) => b.score - a.score);
 
     /* Studios -------------------------------------------------------------------------------- */
-    const booked = new Set(bookedStudios.map((b) => b.studio_id));
+    const booked = new Set(bookedStudios.map((b) => b.bookable_id));
     const bookedServices = new Set(
       studios
         .filter((st) => booked.has(st.id) || savedStudios.has(st.id))

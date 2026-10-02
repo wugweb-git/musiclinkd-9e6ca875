@@ -30,8 +30,8 @@ export type Database = {
           session_date: string
           start_time: string | null
           status: string
-          studio_id: string | null
-          studio_name: string | null
+          bookable_id: string | null
+          bookable_name: string | null
           updated_at: string
         }
         Insert: {
@@ -49,8 +49,8 @@ export type Database = {
           session_date: string
           start_time?: string | null
           status?: string
-          studio_id?: string | null
-          studio_name?: string | null
+          bookable_id?: string | null
+          bookable_name?: string | null
           updated_at?: string
         }
         Update: {
@@ -68,8 +68,8 @@ export type Database = {
           session_date?: string
           start_time?: string | null
           status?: string
-          studio_id?: string | null
-          studio_name?: string | null
+          bookable_id?: string | null
+          bookable_name?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -84,14 +84,14 @@ export type Database = {
             foreignKeyName: "booking_requests_room_id_fkey"
             columns: ["room_id"]
             isOneToOne: false
-            referencedRelation: "studio_rooms"
+            referencedRelation: "bookable_rooms"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "booking_requests_studio_id_fkey"
-            columns: ["studio_id"]
+            columns: ["bookable_id"]
             isOneToOne: false
-            referencedRelation: "studios"
+            referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
         ]
@@ -2571,7 +2571,7 @@ export type Database = {
           response: string | null
           tags: string[]
           target_profile_id: string | null
-          target_studio_id: string | null
+          target_bookable_id: string | null
         }
         Insert: {
           author_name: string
@@ -2585,7 +2585,7 @@ export type Database = {
           response?: string | null
           tags?: string[]
           target_profile_id?: string | null
-          target_studio_id?: string | null
+          target_bookable_id?: string | null
         }
         Update: {
           author_name?: string
@@ -2599,7 +2599,7 @@ export type Database = {
           response?: string | null
           tags?: string[]
           target_profile_id?: string | null
-          target_studio_id?: string | null
+          target_bookable_id?: string | null
         }
         Relationships: [
           {
@@ -2618,9 +2618,9 @@ export type Database = {
           },
           {
             foreignKeyName: "reviews_target_studio_id_fkey"
-            columns: ["target_studio_id"]
+            columns: ["target_bookable_id"]
             isOneToOne: false
-            referencedRelation: "studios"
+            referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
         ]
@@ -2835,7 +2835,7 @@ export type Database = {
         }
         Relationships: []
       }
-      studio_blocks: {
+      bookable_blocks: {
         Row: {
           created_at: string
           ends_at: string
@@ -2843,7 +2843,7 @@ export type Database = {
           reason: string | null
           room_id: string | null
           starts_at: string
-          studio_id: string
+          bookable_id: string
         }
         Insert: {
           created_at?: string
@@ -2852,7 +2852,7 @@ export type Database = {
           reason?: string | null
           room_id?: string | null
           starts_at: string
-          studio_id: string
+          bookable_id: string
         }
         Update: {
           created_at?: string
@@ -2861,26 +2861,26 @@ export type Database = {
           reason?: string | null
           room_id?: string | null
           starts_at?: string
-          studio_id?: string
+          bookable_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "studio_blocks_room_id_fkey"
             columns: ["room_id"]
             isOneToOne: false
-            referencedRelation: "studio_rooms"
+            referencedRelation: "bookable_rooms"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "studio_blocks_studio_id_fkey"
-            columns: ["studio_id"]
+            columns: ["bookable_id"]
             isOneToOne: false
-            referencedRelation: "studios"
+            referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
         ]
       }
-      studio_equipment: {
+      bookable_equipment: {
         Row: {
           category: string | null
           id: string
@@ -2888,7 +2888,7 @@ export type Database = {
           name: string
           quantity: number | null
           sort_order: number
-          studio_id: string
+          bookable_id: string
         }
         Insert: {
           category?: string | null
@@ -2897,7 +2897,7 @@ export type Database = {
           name: string
           quantity?: number | null
           sort_order?: number
-          studio_id: string
+          bookable_id: string
         }
         Update: {
           category?: string | null
@@ -2906,24 +2906,24 @@ export type Database = {
           name?: string
           quantity?: number | null
           sort_order?: number
-          studio_id?: string
+          bookable_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "studio_equipment_studio_id_fkey"
-            columns: ["studio_id"]
+            columns: ["bookable_id"]
             isOneToOne: false
-            referencedRelation: "studios"
+            referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
         ]
       }
-      studio_photos: {
+      bookable_photos: {
         Row: {
           created_at: string
           id: string
           sort_order: number
-          studio_id: string
+          bookable_id: string
           subject_id: string
           subject_type: string
           url: string
@@ -2932,7 +2932,7 @@ export type Database = {
           created_at?: string
           id?: string
           sort_order?: number
-          studio_id: string
+          bookable_id: string
           subject_id: string
           subject_type: string
           url: string
@@ -2941,7 +2941,7 @@ export type Database = {
           created_at?: string
           id?: string
           sort_order?: number
-          studio_id?: string
+          bookable_id?: string
           subject_id?: string
           subject_type?: string
           url?: string
@@ -2949,14 +2949,14 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "studio_photos_studio_id_fkey"
-            columns: ["studio_id"]
+            columns: ["bookable_id"]
             isOneToOne: false
-            referencedRelation: "studios"
+            referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
         ]
       }
-      studio_rooms: {
+      bookable_rooms: {
         Row: {
           amenities: string[]
           capacity: number | null
@@ -2968,7 +2968,7 @@ export type Database = {
           name: string
           photo_url: string | null
           sort_order: number
-          studio_id: string
+          bookable_id: string
           tiers: Json
         }
         Insert: {
@@ -2982,7 +2982,7 @@ export type Database = {
           name: string
           photo_url?: string | null
           sort_order?: number
-          studio_id: string
+          bookable_id: string
           tiers?: Json
         }
         Update: {
@@ -2996,20 +2996,20 @@ export type Database = {
           name?: string
           photo_url?: string | null
           sort_order?: number
-          studio_id?: string
+          bookable_id?: string
           tiers?: Json
         }
         Relationships: [
           {
             foreignKeyName: "studio_rooms_studio_id_fkey"
-            columns: ["studio_id"]
+            columns: ["bookable_id"]
             isOneToOne: false
-            referencedRelation: "studios"
+            referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
         ]
       }
-      studios: {
+      bookables: {
         Row: {
           add_ons: Json
           amenities: string[]
@@ -3736,7 +3736,7 @@ export type Database = {
         Args: { p_target_profile_id: string }
         Returns: boolean
       }
-      can_review_studio: { Args: { p_studio_id: string }; Returns: boolean }
+      can_review_bookable: { Args: { p_studio_id: string }; Returns: boolean }
       collab_can_manage: { Args: { p_collab_id: string }; Returns: boolean }
       collab_can_write: { Args: { p_collab_id: string }; Returns: boolean }
       collab_is_owner: { Args: { p_collab_id: string }; Returns: boolean }
@@ -3852,7 +3852,7 @@ export type Database = {
         Args: { p_other_profile_id: string }
         Returns: string
       }
-      studio_busy: {
+      bookable_busy: {
         Args: { p_from: string; p_studio: string; p_to: string }
         Returns: {
           ends_at: string
@@ -3860,7 +3860,7 @@ export type Database = {
           starts_at: string
         }[]
       }
-      studio_is_mine: { Args: { p_studio_id: string }; Returns: boolean }
+      bookable_is_mine: { Args: { p_studio_id: string }; Returns: boolean }
       trending_portfolio_items: {
         Args: { days?: number; lim?: number }
         Returns: {

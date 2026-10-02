@@ -38,7 +38,7 @@ import { AudioTrackCard, VideoCard } from "@/components/ml/profile";
 import { workType } from "@/data/portfolio";
 import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { discoverStudioFromRow } from "@/lib/studio-view";
+import { discoverStudioFromRow } from "@/lib/bookable-view";
 import { iconSize } from "@/lib/tokens";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 

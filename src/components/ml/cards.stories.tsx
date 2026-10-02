@@ -14,7 +14,7 @@ import {
   ReviewCardSkeleton,
 } from "./cards";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
-import type { DiscoverStudio } from "@/lib/studio-view";
+import type { DiscoverStudio } from "@/lib/bookable-view";
 
 const demoPerson: DirectoryPerson = {
   id: "demo-person-1",

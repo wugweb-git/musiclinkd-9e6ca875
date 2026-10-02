@@ -22,7 +22,7 @@ import { addToCalendar, shareLink } from "@/lib/booking-actions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
-import { earliestBookingDate } from "@/lib/studio-slots";
+import { earliestBookingDate } from "@/lib/bookable-slots";
 
 /*
  * What happened after you asked: the request as the studio will see it. A request is the end of the
@@ -128,14 +128,14 @@ function Confirmed() {
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {confirmed
-            ? `${b?.studio?.name ?? b?.studio_name ?? "The studio"} has confirmed your session. Settle payment with them directly.`
+            ? `${b?.studio?.name ?? b?.bookable_name ?? "The studio"} has confirmed your session. Settle payment with them directly.`
             : b?.status === "cancelled"
               ? "You cancelled this request."
               : b?.status === "declined"
-                ? `${b?.studio?.name ?? b?.studio_name ?? "The studio"} declined this request.`
+                ? `${b?.studio?.name ?? b?.bookable_name ?? "The studio"} declined this request.`
                 : b?.status === "completed"
                   ? "This session has already happened."
-                  : `${b?.studio?.name ?? b?.studio_name ?? "The studio"} will review your request and reply. Nothing is confirmed yet.`}
+                  : `${b?.studio?.name ?? b?.bookable_name ?? "The studio"} will review your request and reply. Nothing is confirmed yet.`}
         </p>
 
         {q.isLoading ? (
@@ -146,7 +146,7 @@ function Confirmed() {
           <div className="mt-5 rounded-lg bg-subtle p-4">
             <div className="flex items-center justify-between gap-3">
               <p className="truncate font-semibold">
-                {b.studio?.name ?? b.studio_name ?? "Studio"}
+                {b.studio?.name ?? b.bookable_name ?? "Studio"}
               </p>
               <BookingStatusPill status={b.status === "declined" ? "rejected" : b.status} />
             </div>
@@ -187,14 +187,14 @@ function Confirmed() {
                 addToCalendar({
                   uid: b.id,
                   title: joinParts(
-                    b.studio?.name ?? b.studio_name ?? "Session",
+                    b.studio?.name ?? b.bookable_name ?? "Session",
                     b.room?.name ?? "",
                   ),
                   date: b.session_date,
                   start: (b.start_time ?? "10:00").slice(0, 5),
                   end: (b.end_time ?? "14:00").slice(0, 5),
                   location: joinParts(
-                    b.studio?.name ?? b.studio_name ?? "",
+                    b.studio?.name ?? b.bookable_name ?? "",
                     b.studio?.location ?? "",
                   ),
                   description: b.purpose ?? "",
@@ -207,7 +207,7 @@ function Confirmed() {
               variant="outline"
               onClick={() =>
                 void shareLink({
-                  title: b.studio?.name ?? b.studio_name ?? "Studio session",
+                  title: b.studio?.name ?? b.bookable_name ?? "Studio session",
                   // The studio booked, not a stub: /booking/<slug> is its bookable page.
                   url: shareUrl(b.studio?.slug ? `/booking/${b.studio.slug}` : "/discover/studios"),
                 })

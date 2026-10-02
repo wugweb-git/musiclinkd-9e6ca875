@@ -7,7 +7,7 @@ import type { PriceParts } from "@/lib/price";
 import { VerifiedBadge } from "./ui";
 import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
-import type { DiscoverStudio } from "@/lib/studio-view";
+import type { DiscoverStudio } from "@/lib/bookable-view";
 import { labelFor, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";

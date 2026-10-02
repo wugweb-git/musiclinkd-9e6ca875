@@ -156,7 +156,7 @@ async function serviceUses(
   const none = { amenities: [], equipment: [] };
   if (!amenitySlugs.length && !equipmentIds.length) return none;
   const { data: studio } = await client
-    .from("studios")
+    .from("bookables")
     .select("id")
     .eq("owner_profile_id", ownerId)
     .limit(1)
@@ -173,15 +173,15 @@ async function serviceUses(
       : { data: [] },
     equipmentIds.length
       ? client
-          .from("studio_equipment")
+          .from("bookable_equipment")
           .select("id, name")
-          .eq("studio_id", studioId)
+          .eq("bookable_id", studioId)
           .in("id", equipmentIds)
       : { data: [] },
     client
-      .from("studio_photos")
+      .from("bookable_photos")
       .select("subject_type, subject_id, url")
-      .eq("studio_id", studioId)
+      .eq("bookable_id", studioId)
       .order("sort_order"),
   ]);
   const photoRows = (photos.data ?? []) as {
@@ -387,7 +387,9 @@ export const listPublicServices = createServerFn({ method: "GET" })
             .eq("category_key", "studio_amenities")
             .in("slug", slugs)
         : { data: [] },
-      ids.length ? client.from("studio_equipment").select("id, name").in("id", ids) : { data: [] },
+      ids.length
+        ? client.from("bookable_equipment").select("id, name").in("id", ids)
+        : { data: [] },
     ]);
     const label = new Map(
       ((labels.data ?? []) as { slug: string; label: string }[]).map((l) => [l.slug, l.label]),

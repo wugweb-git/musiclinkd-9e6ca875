@@ -1,16 +1,16 @@
 import type { AddOn, Bookable, DurationUnit, PricingTier, Resource } from "@/data/booking";
 import { taxonomyLabel, type RoomTier, type StudioRow } from "@/lib/catalog.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
-import { hasWeeklyHours, type WeeklyHours } from "@/lib/studio-slots";
+import { hasWeeklyHours, type WeeklyHours } from "@/lib/bookable-slots";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
-import type { StudioPhoto } from "@/lib/studio-photos.functions";
+import type { StudioPhoto } from "@/lib/bookable-photos.functions";
 import { parsePlace, shownPlace } from "@/lib/place";
 
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
  * filled; everything else is a neutral empty value ("", 0, []) that the render paths skip.
  * There is no tax, distance or timezone. The availability calendar is on once the studio has
- * weekly hours (studios.weekly_hours, src/lib/studio-slots.ts). A rating shows only once the
+ * weekly hours (studios.weekly_hours, src/lib/bookable-slots.ts). A rating shows only once the
  * studio has reviews (studios.rating is kept from them by the database).
  */
 

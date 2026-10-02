@@ -22,7 +22,7 @@ import {
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import { listOpportunities, listStudios } from "@/lib/catalog.functions";
 import { listPeopleByRole, type DirectoryPerson } from "@/lib/profile-groups.functions";
-import { discoverStudioFromRow } from "@/lib/studio-view";
+import { discoverStudioFromRow } from "@/lib/bookable-view";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";

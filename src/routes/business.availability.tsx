@@ -16,15 +16,15 @@ import {
   removeMyStudioBlock,
   updateMyBookingRules,
   updateMyWeeklyHours,
-} from "@/lib/studio-calendar.functions";
-import { type MyStudio, getMyStudio } from "@/lib/studio-owner.functions";
+} from "@/lib/bookable-calendar.functions";
+import { type MyStudio, getMyStudio } from "@/lib/bookable-owner.functions";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import {
   earliestBookingDate,
   type BlackoutRange,
   type Weekday,
   type WeeklyHours,
-} from "@/lib/studio-slots";
+} from "@/lib/bookable-slots";
 import { Field, inputClass } from "@/components/ml/listing-form";
 import { AmenitiesEditor, EquipmentEditor } from "@/components/ml/studio-setup";
 

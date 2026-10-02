@@ -25,7 +25,7 @@ import {
   updateStudioRoomTiers,
   type RoomTierRow,
   type StudioAddOnRow,
-} from "@/lib/studio-owner.functions";
+} from "@/lib/bookable-owner.functions";
 
 export const Route = createFileRoute("/business/pricing")({
   head: () => ({

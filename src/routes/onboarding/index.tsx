@@ -20,7 +20,7 @@ import { iconSize } from "@/lib/tokens";
 import { haptic } from "@/lib/haptics";
 import { PersonCard, StudioCard } from "@/components/ml/cards";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
-import type { DiscoverStudio } from "@/lib/studio-view";
+import type { DiscoverStudio } from "@/lib/bookable-view";
 
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({

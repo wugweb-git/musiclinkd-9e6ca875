@@ -2,15 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { myStudioId } from "@/lib/studio-calendar.functions";
-import { removeSubjectPhotos } from "@/lib/studio-photos.functions";
+import { myStudioId } from "@/lib/bookable-calendar.functions";
+import { removeSubjectPhotos } from "@/lib/bookable-photos.functions";
 
 /*
  * The studio owner's own edit surface for the real, flat columns that exist today:
  * studios.hourly_rate_paise, .operating_hours, .cancellation_policy, and each
- * studio_rooms.hourly_rate_paise. The weekly booking hours and closed times are edited through
- * src/lib/studio-calendar.functions.ts, and the equipment list below.
- * RLS: "Owners write their own" on both studios and studio_rooms (20260914180000_catalog.sql).
+ * bookable_rooms.hourly_rate_paise. The weekly booking hours and closed times are edited through
+ * src/lib/bookable-calendar.functions.ts, and the equipment list below.
+ * RLS: "Owners write their own" on both studios and bookable_rooms (20260914180000_catalog.sql).
  */
 
 export type MyStudio = {
@@ -26,7 +26,7 @@ export type MyStudio = {
     id: string;
     name: string;
     hourly_rate_paise: number | null;
-    /** studio_rooms.tiers — package rates beside the hourly one ("Half day", 4 hours). */
+    /** bookable_rooms.tiers — package rates beside the hourly one ("Half day", 4 hours). */
     tiers: RoomTierRow[];
   }[];
 };
@@ -56,9 +56,9 @@ export const getMyStudio = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<MyStudio | null> => {
     const { data, error } = await context.supabase
-      .from("studios" as never)
+      .from("bookables" as never)
       .select(
-        "id, slug, name, hourly_rate_paise, operating_hours, cancellation_policy, add_ons, rooms:studio_rooms(id, name, hourly_rate_paise, tiers, sort_order)",
+        "id, slug, name, hourly_rate_paise, operating_hours, cancellation_policy, add_ons, rooms:bookable_rooms(id, name, hourly_rate_paise, tiers, sort_order)",
       )
       .eq("owner_profile_id", context.userId)
       .maybeSingle();
@@ -107,10 +107,10 @@ export const updateStudioRoomTiers = createServerFn({ method: "POST" })
     const client = db(context.supabase);
     const studioId = await myStudioId(client, context.userId);
     const { error } = await client
-      .from("studio_rooms")
+      .from("bookable_rooms")
       .update({ tiers: data.tiers } as never)
       .eq("id", data.roomId)
-      .eq("studio_id", studioId);
+      .eq("bookable_id", studioId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -137,7 +137,7 @@ export const updateMyStudioAddOns = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const { error } = await db(context.supabase)
-      .from("studios")
+      .from("bookables")
       .update({ add_ons: data.addOns } as never)
       .eq("owner_profile_id", context.userId);
     if (error) throw new Error(error.message);
@@ -163,7 +163,7 @@ export const updateMyStudio = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const patch = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
     const { error } = await context.supabase
-      .from("studios" as never)
+      .from("bookables" as never)
       .update(patch as never)
       .eq("owner_profile_id", context.userId);
     if (error) throw new Error(error.message);
@@ -176,9 +176,9 @@ export const updateStudioRoomRate = createServerFn({ method: "POST" })
     z.object({ roomId: z.string().uuid(), hourly_rate_paise: z.number().int().min(0) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
-    // studio_rooms has no owner column of its own — scope the write through the owner's studio.
+    // bookable_rooms has no owner column of its own — scope the write through the owner's studio.
     const { data: studio, error: studioError } = await context.supabase
-      .from("studios" as never)
+      .from("bookables" as never)
       .select("id")
       .eq("owner_profile_id", context.userId)
       .maybeSingle();
@@ -186,18 +186,18 @@ export const updateStudioRoomRate = createServerFn({ method: "POST" })
     const studioId = (studio as { id: string } | null)?.id;
     if (!studioId) throw new Error("You don't have a studio yet.");
     const { error } = await context.supabase
-      .from("studio_rooms" as never)
+      .from("bookable_rooms" as never)
       .update({ hourly_rate_paise: data.hourly_rate_paise } as never)
       .eq("id", data.roomId)
-      .eq("studio_id", studioId);
+      .eq("bookable_id", studioId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
 
 /*
- * The studio's equipment list (studio_equipment), shown on the studio page and the business
+ * The studio's equipment list (bookable_equipment), shown on the studio page and the business
  * profile. Categories are equipment_categories slugs from taxonomy_options; a row may have none.
- * RLS: "Owners write their own" on studio_equipment, so every write is also scoped to the owner's
+ * RLS: "Owners write their own" on bookable_equipment, so every write is also scoped to the owner's
  * studio here.
  */
 
@@ -226,9 +226,9 @@ export const getMyStudioEquipment = createServerFn({ method: "GET" })
     const studioId = await myStudioId(client, context.userId);
     const [items, categories] = await Promise.all([
       client
-        .from("studio_equipment")
+        .from("bookable_equipment")
         .select("id, name, category, quantity, included")
-        .eq("studio_id", studioId)
+        .eq("bookable_id", studioId)
         .order("sort_order")
         .order("name"),
       client
@@ -269,25 +269,25 @@ export const saveMyStudioEquipment = createServerFn({ method: "POST" })
     };
     if (data.id) {
       const { error } = await client
-        .from("studio_equipment")
+        .from("bookable_equipment")
         .update(fields as never)
         .eq("id", data.id)
-        .eq("studio_id", studioId);
+        .eq("bookable_id", studioId);
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
     const { data: last } = await client
-      .from("studio_equipment")
+      .from("bookable_equipment")
       .select("sort_order")
-      .eq("studio_id", studioId)
+      .eq("bookable_id", studioId)
       .order("sort_order", { ascending: false })
       .limit(1)
       .maybeSingle();
     const { data: row, error } = await client
-      .from("studio_equipment")
+      .from("bookable_equipment")
       .insert({
         ...fields,
-        studio_id: studioId,
+        bookable_id: studioId,
         sort_order: ((last as { sort_order: number } | null)?.sort_order ?? -1) + 1,
       } as never)
       .select("id")
@@ -303,12 +303,12 @@ export const removeMyStudioEquipment = createServerFn({ method: "POST" })
     const client = db(context.supabase);
     const studioId = await myStudioId(client, context.userId);
     const { error } = await client
-      .from("studio_equipment")
+      .from("bookable_equipment")
       .delete()
       .eq("id", data.id)
-      .eq("studio_id", studioId);
+      .eq("bookable_id", studioId);
     if (error) throw new Error(error.message);
-    // Its photos go with it; studio_photos has no foreign key to the item (subject_id is text).
+    // Its photos go with it; bookable_photos has no foreign key to the item (subject_id is text).
     await removeSubjectPhotos(client, studioId, "equipment", data.id);
     return { ok: true };
   });

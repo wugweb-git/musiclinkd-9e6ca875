@@ -19,7 +19,7 @@ import { durationOptions } from "@/data/booking";
 import { formatDate, formatTime } from "@/lib/when";
 import { inr } from "@/lib/price";
 import { showDemoControls } from "@/lib/dev";
-import { getStudioCalendar } from "@/lib/studio-calendar.functions";
+import { getStudioCalendar } from "@/lib/bookable-calendar.functions";
 import {
   calendarWindow,
   earliestBookingDate,
@@ -27,7 +27,7 @@ import {
   nextOpenDay,
   spanIsOpen,
   studioDay,
-} from "@/lib/studio-slots";
+} from "@/lib/bookable-slots";
 
 export const Route = createFileRoute("/booking/$id/schedule")({
   head: () => ({

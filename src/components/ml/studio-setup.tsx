@@ -16,15 +16,15 @@ import {
   removeMyStudioEquipment,
   saveMyStudioEquipment,
   updateMyStudio,
-} from "@/lib/studio-owner.functions";
+} from "@/lib/bookable-owner.functions";
 import {
   MAX_STUDIO_PHOTOS,
   type StudioPhotoSubject,
   addMyStudioPhoto,
   listMyStudioPhotos,
   removeMyStudioPhoto,
-} from "@/lib/studio-photos.functions";
-import { uploadStudioPhoto } from "@/lib/studio-photos";
+} from "@/lib/bookable-photos.functions";
+import { uploadStudioPhoto } from "@/lib/bookable-photos";
 import { useGearTaxonomy } from "@/lib/listing-category";
 import { choicesFor, useTaxonomy } from "@/lib/taxonomy";
 import { amenityIcon } from "@/lib/amenity-icons";
@@ -36,7 +36,7 @@ import { sized } from "@/lib/image-url";
  * 2026). One set of editors for Create business and for Manage → Photos & spaces:
  *   amenities — what the place has (studios.amenities, from studio_amenities);
  *   equipment — gear with a type (an instrument or an equipment category, the list Market uses),
- *     quantity and included-or-extra (studio_equipment);
+ *     quantity and included-or-extra (bookable_equipment);
  *   policies — the business's rules (profile_business.policies), with suggestions from the
  *     business_policies taxonomy.
  */
