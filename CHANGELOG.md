@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one profile completion (P1-8 #13, 3 Oct)
+
+- **`ProfileCompletion`** draws completion from `profileGaps` everywhere: profile edit's "Finish your
+  profile" and the end of onboarding's "Profile strength". Home's figure was already
+  `profileGaps`.
+- **Onboarding's number was wrong.** `completionPercent` counted portfolio, services and
+  verification as never done (hard-wired `false`), so a finished profile read as half done; it now
+  measures the profile just saved with the same ten checks. `completionPercent` is removed.
+- **Removed:** `CompletionCard` (no consumer; its missing-item links took any string as a route).
+  `ReadinessCard` stays for onboarding's next-step hand-offs. `profileGaps` reads only the ten
+  fields it checks (`ProfileGaps` type), so a draft can be measured before it is a row.
+
 ### Changed — one set of state surfaces (P1-8 #12, 3 Oct)
 
 - **`EmptyState`** (kit) is the one empty state, with a semantic `kind`: `default`, `no-results`,

@@ -58,6 +58,7 @@ import { QrCode } from "./qr";
 import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
 import { SavedToggle } from "./saved-toggle";
+import type { ProfileGaps } from "@/lib/profile-map";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ReportSheet } from "./market";
 import { saveTarget } from "@/lib/saved.functions";
@@ -1866,48 +1867,47 @@ export function MoreSheet({
 
 /* ── Owner mode ────────────────────────────────────────────── */
 
-export function CompletionCard({
-  percent,
-  missing,
+/**
+ * How complete a profile is, always from `profileGaps` (src/lib/profile-map.ts) — the same ten
+ * checks on Home, profile edit and the end of onboarding, so the number never disagrees with
+ * itself. The bar, then what is still missing, then (when `cta`) the way to fill it in.
+ */
+export function ProfileCompletion({
+  gaps,
+  title = "Finish your profile",
+  cta = false,
 }: {
-  percent: number;
-  /** Each gap links to where it is filled in; profile edit when it names no place. */
-  missing: { id: string; label: string; to?: string }[];
+  gaps: ProfileGaps;
+  title?: string | undefined;
+  /** A Complete Profile button to profile edit. */
+  cta?: boolean | undefined;
 }) {
   return (
-    <div className="rounded-lg bg-subtle p-4">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-2">Your profile is {percent}% complete</h2>
-        <span className="text-1 font-semibold text-foreground">{missing.length} left</span>
+    <div className="rounded-lg border border-border/80 bg-card p-4 shadow-xs">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-1 font-bold text-foreground">{title}</p>
+        <span className="tabular-nums text-1 font-bold text-foreground">{gaps.percent}%</span>
       </div>
-      <div className="mt-3 h-2 overflow-hidden rounded-full bg-card">
-        <div
-          className="h-full rounded-full bg-primary"
-          style={{ width: `${percent}%` }}
-          role="progressbar"
-          aria-valuenow={percent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Profile completion"
-        />
+      <div
+        className="mt-2 h-2 overflow-hidden rounded-full bg-subtle"
+        role="progressbar"
+        aria-valuenow={gaps.percent}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Profile completion"
+      >
+        <div className="h-full rounded-full bg-foreground" style={{ width: `${gaps.percent}%` }} />
       </div>
-      <ul className="mt-3 space-y-0.5">
-        {missing.map((m) => (
-          <li key={m.id}>
-            <Link
-              to={m.to ?? "/profile/edit"}
-              className="state-layer flex min-h-control-sm items-center gap-2 rounded-sm text-1 text-muted-foreground transition-transform duration-125 ease-standard active:scale-97"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              {m.label}
-              <ChevronRight size={iconSize.sm} className="ml-auto shrink-0" aria-hidden />
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <BtnLink to="/profile/edit" className="mt-3 min-h-touch w-full text-1">
-        Complete Profile
-      </BtnLink>
+      {gaps.missing.length ? (
+        <p className="mt-2 text-1 leading-relaxed text-muted-foreground">
+          Still missing: {gaps.missing.map((m) => m.label).join(", ")}.
+        </p>
+      ) : null}
+      {cta && gaps.missing.length ? (
+        <BtnLink to="/profile/edit" variant="outline" className="mt-3 w-full">
+          Complete Profile
+        </BtnLink>
+      ) : null}
     </div>
   );
 }

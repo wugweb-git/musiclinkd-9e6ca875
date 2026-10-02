@@ -711,11 +711,6 @@ export function readiness(d: OnboardingDraft): Readiness[] {
   ];
 }
 
-export function completionPercent(d: OnboardingDraft): number {
-  const r = readiness(d);
-  return Math.round((r.filter((x) => x.done).length / r.length) * 100);
-}
-
 export const screenContracts = {
   welcome: contract(
     "ONB-01",

@@ -15,6 +15,7 @@ import {
   saveMyRoleDetails,
 } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
+import { ProfileCompletion } from "@/components/ml/profile";
 import { useAuth } from "@/hooks/use-auth";
 import { linkPlatforms, workModes as workModeOptions } from "@/data/onboarding";
 import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
@@ -739,11 +740,8 @@ function EditProfile() {
       <TopBar title="Edit profile" subtitle={`${gaps.percent}% complete`} back="/profile" />
       <main className="px-5 pb-40 pt-5">
         {gaps.missing.length ? (
-          <div className="mb-4 rounded-lg border border-border/80 bg-card p-4 shadow-xs">
-            <p className="text-1 font-bold text-foreground">Finish your profile</p>
-            <p className="mt-1 text-1 leading-relaxed text-foreground">
-              Still missing: {gaps.missing.map((m) => m.label).join(", ")}.
-            </p>
+          <div className="mb-4">
+            <ProfileCompletion gaps={gaps} />
           </div>
         ) : null}
 
