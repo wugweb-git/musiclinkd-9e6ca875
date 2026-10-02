@@ -3,8 +3,6 @@ import { profileUrl } from "@/lib/site";
 import { Children, useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import { Switch } from "@/components/ui/switch";
-import { saveMyProfile } from "@/lib/portfolio.functions";
 import {
   CalendarDays,
   Camera,
@@ -109,62 +107,6 @@ export function ProfileSection({
 /** Where a stacked section's footer link can go. */
 export type StackDestination =
   "/portfolio" | "/services" | "/reviews" | "/profile/edit" | "/verification" | "/collab";
-
-/**
- * The owner's own "Taking work" switch: flips availability straight from wherever it's shown
- * (Home's hero, the profile's own Location & availability card), no trip to Edit profile needed.
- */
-export function AvailabilityToggle({
-  available,
-  tone = "subtle",
-}: {
-  available: boolean;
-  /** "subtle" sits on a light card (the profile); "dark" sits on Home's hero. */
-  tone?: "subtle" | "dark";
-}) {
-  const save = useServerFn(saveMyProfile);
-  const [on, setOn] = useState(available);
-  const [saving, setSaving] = useState(false);
-
-  const toggle = async (next: boolean) => {
-    setOn(next);
-    setSaving(true);
-    try {
-      // "Collaborations" is one of the stored values profile-view maps to a status people see.
-      await save({ data: { availability: next ? "Collaborations" : null } });
-    } catch {
-      setOn(!next);
-      toast.error("Could not update. Try again.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const dark = tone === "dark";
-  return (
-    <div
-      className={cn(
-        "flex items-center gap-3 rounded-lg px-4 py-3",
-        dark ? "bg-background/10" : "bg-subtle",
-      )}
-    >
-      <span className="min-w-0 flex-1">
-        <span className={cn("block text-sm font-semibold", dark ? undefined : "text-foreground")}>
-          Taking work
-        </span>
-        <span className={cn("block text-1", dark ? "text-background/70" : "text-muted-foreground")}>
-          {on ? "People can see you are open" : "Hidden from people looking to hire"}
-        </span>
-      </span>
-      <Switch
-        checked={on}
-        disabled={saving}
-        onCheckedChange={(next) => void toggle(next)}
-        aria-label="Taking work"
-      />
-    </div>
-  );
-}
 
 /**
  * A stacked profile section: full-bleed block, thick divider under it, the title with the owner's
