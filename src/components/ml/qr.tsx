@@ -5,7 +5,13 @@
 
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import QRCode from "qrcode";
+/*
+ * The qrcode library is loaded only in the browser, when a code is drawn or saved. Its server
+ * build imports node:fs, which the Cloudflare worker that renders every page does not have; a
+ * static import here put it in the server bundle of every page that shows a profile, and every
+ * page failed with "No such module node:fs" (3 Oct 2026).
+ */
+const loadQrCode = () => import("qrcode").then((m) => m.default);
 import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, BtnLink, Sheet, VerifiedBadge } from "./ui";
@@ -22,6 +28,7 @@ import { DOWNLOAD_UNAVAILABLE, downloadBlob } from "@/lib/download";
  */
 export async function downloadQr(value: string, fileName: string) {
   try {
+    const QRCode = await loadQrCode();
     const dataUrl = await QRCode.toDataURL(value, {
       width: 1024,
       margin: 4,
@@ -64,12 +71,15 @@ export function QrCode({
   useEffect(() => {
     let alive = true;
     setFailed(false);
-    QRCode.toDataURL(value, {
-      errorCorrectionLevel: overlay ? "H" : "M",
-      margin: 2, // quiet zone
-      width: size * 3,
-      color: { dark: s.dark, light: s.light },
-    })
+    loadQrCode()
+      .then((QRCode) =>
+        QRCode.toDataURL(value, {
+          errorCorrectionLevel: overlay ? "H" : "M",
+          margin: 2, // quiet zone
+          width: size * 3,
+          color: { dark: s.dark, light: s.light },
+        }),
+      )
       .then((d) => {
         if (alive) setSrc(d);
       })
