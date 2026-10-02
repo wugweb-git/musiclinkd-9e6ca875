@@ -1,3 +1,4 @@
+import type { PriceLines } from "./booking";
 export type RentalCategory = "instruments" | "audio" | "studio" | "dj" | "live" | "other";
 
 export type RentalStatus =
@@ -875,6 +876,31 @@ export const popularRentalSearches = [
  * The owner's rates for `days`: monthly and weekly rates apply only when the owner set them (a
  * stored 0 means "no weekly rate", never "free for a week").
  */
+/**
+ * A rental's price as the shared breakdown draws it: the days at the owner's rates, times the
+ * quantity, delivery when chosen, and the deposit held apart. No platform fee: none exists.
+ */
+export function rentalPriceLines(
+  e: Equipment,
+  days: number,
+  quantity: number,
+  delivery: boolean,
+): PriceLines {
+  const subtotal = priceFor(e, days) * quantity;
+  const deliveryFee = delivery ? (e.deliveryFee ?? 0) : 0;
+  return {
+    baseLabel: `${days} day${days > 1 ? "s" : ""} × ${quantity}`,
+    base: subtotal,
+    addOns: delivery ? [{ name: "Delivery & pickup", price: deliveryFee }] : [],
+    subtotal: subtotal + deliveryFee,
+    tax: 0,
+    taxPct: 0,
+    total: subtotal + deliveryFee,
+    deposit: e.deposit * quantity,
+    estimate: true,
+  };
+}
+
 export const priceFor = (e: Equipment, days: number) => {
   const months = e.monthly > 0 ? Math.floor(days / 30) : 0;
   const afterMonths = days - months * 30;

@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one calendar, one price breakdown (P1-8 #10, 3 Oct)
+
+- **`AvailabilityCalendar`** is the one calendar. A studio picks a day from its real hours
+  (`single`); a rental picks a range around the owner's blocked days (`range`, with the minimum
+  days and notice in the legend). Month buttons are 48px icon buttons, not "‹ ›" glyphs.
+  **`RentalCalendar` is removed.**
+- **`PriceBreakdownCard`** draws rentals too: the refundable deposit held apart, "Estimated total"
+  and the estimate note. The rental maths moved into data (`rentalPriceLines`,
+  `src/data/rentals.ts`). **`PriceBreakdown` is removed.**
+
 ### Changed — the studio booking record (P1-8 #9, 30 Sep)
 
 - **`StudioBookingRecord`** draws a stored booking request for either side: the studio's requests

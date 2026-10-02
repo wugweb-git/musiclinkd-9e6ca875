@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import {
   Calendar,
   Check,
+  ChevronLeft,
   ChevronRight,
   Clock,
   MapPin,
@@ -15,7 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { ActionBar, Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
+import { ActionBar, Btn, IconBtn, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import {
   EmptyState as BaseEmptyState,
   OfflineBanner as BaseOfflineBanner,
@@ -45,6 +46,7 @@ import { inr } from "@/lib/price";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 import { earliestBookingDate } from "@/lib/studio-slots";
+import { todayInIndia } from "@/lib/when";
 import { sized } from "@/lib/image-url";
 
 /* ------------------------------------------------------------------ */
@@ -255,60 +257,70 @@ const dayStyle: Record<DayState, string> = {
   closed: "text-muted-foreground",
 };
 
-export function AvailabilityCalendar({
-  selected,
-  onSelect,
-  timezone,
-  dayOf,
-}: {
-  selected?: string | undefined;
-  onSelect: (date: string) => void;
-  timezone: string;
-  /** The studio's real day from the database (src/lib/studio-slots.ts). There is no fallback. */
-  dayOf: (date: string) => DayAvailability;
-}) {
-  const today = new Date();
-  const earliest = earliestBookingDate(today);
+type CalendarProps =
+  | {
+      /** One day, from a studio's real hours (src/lib/studio-slots.ts). There is no fallback. */
+      mode?: "single" | undefined;
+      selected?: string | undefined;
+      onSelect: (date: string) => void;
+      timezone: string;
+      dayOf: (date: string) => DayAvailability;
+    }
+  | {
+      /** A run of days for a rental: the listing's blocked days can't be picked or crossed. */
+      mode: "range";
+      start: string | null;
+      end: string | null;
+      onSelect: (date: string) => void;
+      /** The listing's unavailable days, `YYYY-MM-DD`. */
+      blocked: string[];
+      minDays: number;
+      noticePeriod: string;
+    };
+
+/**
+ * The one calendar: month by month, past days not offered, every day a 48px button with a label
+ * and a pressed state. A studio picks a single day from its real hours (`single`); a rental picks
+ * a range around the owner's blocked days (`range`). Dates are full `YYYY-MM-DD` days.
+ */
+export function AvailabilityCalendar(props: CalendarProps) {
+  const range = props.mode === "range";
+  // Studios book from tomorrow; rentals from today, on India's calendar.
+  const earliest = range ? todayInIndia() : earliestBookingDate(new Date());
+  const opening = range ? (props.start ?? earliest) : (props.selected ?? earliest);
   const [cursor, setCursor] = useState(() => {
-    const d = new Date(`${earliest}T00:00:00`);
+    const d = new Date(`${opening}T00:00:00`);
     return { y: d.getFullYear(), m: d.getMonth() };
   });
   const days = useMemo(() => monthGrid(cursor.y, cursor.m), [cursor]);
-  // Nothing before tomorrow is shown, so the calendar opens on tomorrow's month and stops there.
+  const blocked = useMemo(() => new Set(range ? props.blocked : []), [range, props]);
   const first = new Date(`${earliest}T00:00:00`);
   const atFirstMonth = cursor.y === first.getFullYear() && cursor.m === first.getMonth();
   const monthLabel = new Date(cursor.y, cursor.m, 1).toLocaleDateString("en-IN", {
     month: "long",
     year: "numeric",
   });
+  const step = (by: number) =>
+    setCursor((c) => {
+      const d = new Date(c.y, c.m + by, 1);
+      return { y: d.getFullYear(), m: d.getMonth() };
+    });
 
   return (
     <div className="rounded-lg bg-subtle p-4">
       <div className="flex items-center justify-between">
-        <button
-          type="button"
-          aria-label="Previous month"
+        <IconBtn
+          label="Previous month"
           disabled={atFirstMonth}
-          onClick={() =>
-            setCursor((c) => (c.m === 0 ? { y: c.y - 1, m: 11 } : { ...c, m: c.m - 1 }))
-          }
-          className={`flex h-10 w-10 items-center justify-center rounded-full border border-border ${
-            atFirstMonth ? "invisible" : ""
-          }`}
+          onClick={() => step(-1)}
+          className={atFirstMonth ? "invisible" : ""}
         >
-          ‹
-        </button>
+          <ChevronLeft size={iconSize.sm} aria-hidden />
+        </IconBtn>
         <p className="text-sm font-semibold">{monthLabel}</p>
-        <button
-          type="button"
-          aria-label="Next month"
-          onClick={() =>
-            setCursor((c) => (c.m === 11 ? { y: c.y + 1, m: 0 } : { ...c, m: c.m + 1 }))
-          }
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
-        >
-          ›
-        </button>
+        <IconBtn label="Next month" onClick={() => step(1)}>
+          <ChevronRight size={iconSize.sm} aria-hidden />
+        </IconBtn>
       </div>
 
       <div className="mt-3 grid grid-cols-7 gap-1 text-center text-1 font-medium uppercase text-muted-foreground">
@@ -322,16 +334,42 @@ export function AvailabilityCalendar({
           const iso = isoDate(d);
           const inMonth = d.getMonth() === cursor.m;
           if (iso < earliest) return <span key={iso} aria-hidden className="h-12" />;
-          const a = dayOf(iso);
-          // Bookings start tomorrow at the earliest, whatever the schedule says.
+          if (range) {
+            const isBlocked = blocked.has(iso);
+            const edge = iso === props.start || iso === props.end;
+            const inRange =
+              props.start !== null && props.end !== null && iso >= props.start && iso <= props.end;
+            return (
+              <button
+                key={iso}
+                type="button"
+                disabled={isBlocked}
+                onClick={() => props.onSelect(iso)}
+                aria-label={`${formatDate(iso)}${isBlocked ? ", unavailable" : ""}`}
+                aria-pressed={edge || inRange}
+                className={`flex h-12 items-center justify-center rounded-sm text-sm ${
+                  edge
+                    ? "bg-primary font-bold text-primary-foreground"
+                    : inRange
+                      ? "bg-background font-semibold text-foreground"
+                      : isBlocked
+                        ? "bg-transparent text-muted-foreground line-through"
+                        : "bg-background text-foreground"
+                } ${inMonth ? "" : "opacity-35"}`}
+              >
+                {d.getDate()}
+              </button>
+            );
+          }
+          const a = props.dayOf(iso);
           const disabled = a.state === "unavailable" || a.state === "closed";
-          const isSel = selected === iso;
+          const isSel = props.selected === iso;
           return (
             <button
               key={iso}
               type="button"
               disabled={disabled}
-              onClick={() => onSelect(iso)}
+              onClick={() => props.onSelect(iso)}
               aria-label={`${formatDate(iso)} — ${a.state}`}
               aria-pressed={isSel}
               className={`flex h-12 flex-col items-center justify-center rounded-sm text-sm ${
@@ -361,11 +399,25 @@ export function AvailabilityCalendar({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-1 text-muted-foreground">
-        <Legend dot="bg-success" label="Available" />
-        <Legend dot="bg-warn" label="Limited" />
-        <Legend dot="bg-border" label="Unavailable" />
+        {range ? (
+          <>
+            <Legend dot="bg-primary" label="Selected" />
+            <Legend dot="bg-border" label="Unavailable" />
+            <span>
+              Min {props.minDays} day{props.minDays > 1 ? "s" : ""}, notice {props.noticePeriod}
+            </span>
+          </>
+        ) : (
+          <>
+            <Legend dot="bg-success" label="Available" />
+            <Legend dot="bg-warn" label="Limited" />
+            <Legend dot="bg-border" label="Unavailable" />
+          </>
+        )}
       </div>
-      <p className="mt-2 text-1 text-muted-foreground">All times shown in {timezone}.</p>
+      {range ? null : (
+        <p className="mt-2 text-1 text-muted-foreground">All times shown in {props.timezone}.</p>
+      )}
     </div>
   );
 }
@@ -528,6 +580,11 @@ export function AddOnCard({
   );
 }
 
+/**
+ * What something costs, line by line, from the provider's own rates: a studio session (base,
+ * add-ons, tax) or a rental (days, delivery, and the refundable deposit held apart). Rentals are
+ * an estimate the provider confirms; nothing is charged in the app either way.
+ */
 export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: boolean }) {
   return (
     <div className="rounded-lg bg-subtle p-4">
@@ -539,13 +596,29 @@ export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: bo
       <Row label="Subtotal" value={inr(p.subtotal)} />
       {p.taxPct ? <Row label={`Taxes (${p.taxPct}%)`} value={inr(p.tax)} muted /> : null}
       <div className="my-2 h-px bg-border" />
-      <Row label="Total" value={inr(p.total)} strong />
-      {!compact ? (
+      <Row label={p.estimate ? "Estimated total" : "Total"} value={inr(p.total)} strong />
+      {p.deposit ? (
+        <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
+          <div className="min-w-0">
+            <p className="text-1 font-bold text-warn-strong">Refundable security deposit</p>
+            <p className="text-1 text-muted-foreground">
+              Held by the provider, returned after the equipment is checked.
+            </p>
+          </div>
+          <span className="shrink-0 text-1 font-bold text-price">{inr(p.deposit)}</span>
+        </div>
+      ) : null}
+      {compact ? null : p.estimate ? (
+        <p className="mt-3 text-1 text-muted-foreground">
+          Estimate only. Nothing is charged on MusicLinkd — the provider confirms the final amount
+          in your conversation.
+        </p>
+      ) : (
         <p className="mt-3 text-1 text-muted-foreground">
           Prices come from the provider's configured rates. You settle payment with the provider
           directly.
         </p>
-      ) : null}
+      )}
     </div>
   );
 }
