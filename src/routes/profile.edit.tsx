@@ -18,7 +18,19 @@ import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { ProfileCompletion } from "@/components/ml/profile";
 import { useAuth } from "@/hooks/use-auth";
 import { linkPlatforms, workModes as workModeOptions } from "@/data/onboarding";
-import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
+import {
+  businessTypes,
+  choicesFor,
+  labelFor,
+  talentTypes,
+  useTaxonomy,
+  type TaxonomyOption,
+} from "@/lib/taxonomy";
+import { SheetSelect } from "@/components/ml/listing-form";
+import { DrawerField, PersonTypePicker } from "@/components/ml/onboarding";
+import { roleIcon } from "@/lib/role-icons";
+
+const BUSINESS_GROUPS = [{ key: "business", label: "Business" }] as const;
 import { iconSize } from "@/lib/tokens";
 import { GOOGLE_MAPS, PIN_CODE } from "@/lib/place";
 import {
@@ -36,6 +48,7 @@ import { useRequireBusiness } from "@/hooks/use-require-business";
 import {
   AmenitiesEditor,
   EquipmentEditor,
+  PoliciesEditor,
   useMyBookablePhotos,
 } from "@/components/ml/bookable-setup";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
@@ -158,17 +171,16 @@ function EditProfile() {
   const [mapsUrl, setMapsUrl] = useState("");
   // A business's rules live in the same form as the rest of its details, not on a screen of their
   // own (owner, 28 Sep 2026) — /business/policies was the last business field without a home here.
-  const [policies, setPolicies] = useState("");
-  // A business that runs a bookable space shows what it has here, with a photo of each
-  // (owner, 3 Oct 2026: facility photos belong in Edit profile). The editors are the shared ones.
+  const [policies, setPolicies] = useState<string[]>([]);
+  // Every business lists what its place has here, with a photo of each (owner, 3 Oct 2026). The
+  // first amenity or equipment item creates the business's bookable on the server.
   const facilities = useMyBookablePhotos(isBusiness);
-  const hasBookable = isBusiness && Boolean(facilities.data?.ready);
   useEffect(() => {
     if (!isBusiness) return;
     void loadBusiness()
       .then((r) => {
         setMapsUrl(r?.business.maps_url ?? "");
-        setPolicies((r?.business.policies ?? []).join("\n"));
+        setPolicies(r?.business.policies ?? []);
       })
       .catch(() => undefined);
   }, [isBusiness, loadBusiness]);
@@ -252,6 +264,8 @@ function EditProfile() {
   }, [signedIn, loadSections, loadLabels]);
   const [form, setForm] = useState<Form>(empty);
   const [row, setRow] = useState<ProfileRow | null>(null);
+  // Years on each instrument, asked in onboarding (discovery_prefs.instrumentExperience).
+  const [instrumentExperience, setInstrumentExperience] = useState<Record<string, string>>({});
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [status, setStatus] = useState<
     "idle" | "saving" | "saved" | "error" | "offline" | "taken" | "reserved" | "invalid"
@@ -290,6 +304,10 @@ function EditProfile() {
         const next = (r ?? null) as ProfileRow | null;
         setRow(next);
         setForm(fromRow(next));
+        setInstrumentExperience(
+          ((next?.discovery_prefs ?? {}) as { instrumentExperience?: Record<string, string> })
+            .instrumentExperience ?? {},
+        );
         setState("ready");
       })
       .catch(() => setState("error"));
@@ -369,6 +387,14 @@ function EditProfile() {
           availability: form.availability || null,
           visibility: form.visibility || "public",
           experience_level: form.experience_level || null,
+          // Merged into the stored discovery_prefs on the server; other keys are kept.
+          discovery_prefs: {
+            instrumentExperience: Object.fromEntries(
+              Object.entries(instrumentExperience).filter(([slug]) =>
+                form.instruments.includes(slug),
+              ),
+            ),
+          },
           roles: form.roles,
           genres: form.genres,
           instruments: form.instruments,
@@ -396,7 +422,6 @@ function EditProfile() {
       if (isBusiness) {
         const link = mapsUrl.trim();
         const rules = policies
-          .split("\n")
           .map((r) => r.trim())
           .filter(Boolean)
           .slice(0, 12);
@@ -525,13 +550,30 @@ function EditProfile() {
       done: form.roles.length > 0 && form.genres.length > 0 && form.languages.length > 0,
       body: (
         <div className="space-y-4">
-          <TaxonomyChips
-            label="Type"
-            options={roleOptions}
-            state={taxonomyState}
-            selected={form.roles}
-            onToggle={(v) => toggle("roles", v)}
-          />
+          {isBusiness ? (
+            // A business's type, with the same picker and list as business setup; one type. Talent
+            // types are not offered: the two journeys don't cross.
+            <DrawerField label="Business type">
+              <PersonTypePicker
+                groups={BUSINESS_GROUPS}
+                options={taxonomy ? businessTypes(taxonomy.person_types) : []}
+                selected={form.roles.slice(0, 1)}
+                icon={(o) => {
+                  const Icon = roleIcon(o);
+                  return <Icon size={iconSize.sm} aria-hidden />;
+                }}
+                onToggle={(v) => update({ roles: form.roles[0] === v ? [] : [v] })}
+              />
+            </DrawerField>
+          ) : (
+            <TaxonomyChips
+              label="Type"
+              options={roleOptions}
+              state={taxonomyState}
+              selected={form.roles}
+              onToggle={(v) => toggle("roles", v)}
+            />
+          )}
           <TaxonomyChips
             label="Genres"
             options={genreOptions}
@@ -577,11 +619,29 @@ function EditProfile() {
             selected={form.work_modes}
             onToggle={(v) => toggle("work_modes", v)}
           />
-          <Field
-            label="Experience"
-            value={form.experience_level}
-            onChange={(v) => update({ experience_level: v })}
-          />
+          {/* Onboarding's own questions and lists (step "work-mode"), not free text. */}
+          <DrawerField label="How long have you worked in music?">
+            <SheetSelect
+              title="How long have you worked in music?"
+              value={form.experience_level || null}
+              options={choicesFor(taxonomy?.experience_levels)}
+              placeholder="Choose"
+              onChange={(v) => update({ experience_level: v })}
+            />
+          </DrawerField>
+          {isBusiness
+            ? null
+            : form.instruments.map((slug) => (
+                <DrawerField key={slug} label={labelFor(taxonomy?.instruments, slug)}>
+                  <SheetSelect
+                    title={labelFor(taxonomy?.instruments, slug)}
+                    value={instrumentExperience[slug] ?? null}
+                    options={choicesFor(taxonomy?.experience_levels)}
+                    placeholder="Choose"
+                    onChange={(v) => setInstrumentExperience((m) => ({ ...m, [slug]: v }))}
+                  />
+                </DrawerField>
+              ))}
         </div>
       ),
     },
@@ -698,13 +758,9 @@ function EditProfile() {
                 Sync from Google
               </Btn>
               <div className="mt-3">
-                <Field
-                  label="Policies"
-                  value={policies}
-                  onChange={setPolicies}
-                  multiline
-                  hint="Your rules, one per line — cancellation, deposits, what you expect. Up to 12."
-                />
+                {/* The same policies editor as business setup (/business/new). */}
+                <p className="mb-2 text-1 font-semibold text-foreground">Policies</p>
+                <PoliciesEditor value={policies} onChange={setPolicies} />
               </div>
             </div>
           ) : null}
@@ -717,7 +773,7 @@ function EditProfile() {
         </div>
       ),
     },
-    ...(hasBookable
+    ...(isBusiness
       ? [
           {
             id: "facilities",

@@ -2,7 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { myBookableId } from "@/lib/bookable-calendar.functions";
+import {
+  ensureMyBookableId,
+  myBookableId,
+  myBookableIdOrNull,
+} from "@/lib/bookable-calendar.functions";
 import { removeSubjectPhotos } from "@/lib/bookable-photos.functions";
 
 /*
@@ -162,11 +166,16 @@ export const updateMyBookable = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const patch = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
-    const { error } = await context.supabase
+    // A business with no bookable yet gets one on its first save; an update that matched no row
+    // used to report success.
+    const id = await ensureMyBookableId(db(context.supabase), context.userId);
+    const { data: rows, error } = await context.supabase
       .from("bookables" as never)
       .update(patch as never)
-      .eq("owner_profile_id", context.userId);
+      .eq("id", id)
+      .select("id");
     if (error) throw new Error(error.message);
+    if (!rows?.length) throw new Error("That didn't save. Try again.");
     return { ok: true };
   });
 
@@ -223,14 +232,17 @@ export const getMyBookableEquipment = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<MyBookableEquipment> => {
     const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
+    // No bookable yet: no items, but still the categories to pick from for the first one.
+    const studioId = await myBookableIdOrNull(client, context.userId);
     const [items, categories] = await Promise.all([
-      client
-        .from("bookable_equipment")
-        .select("id, name, category, quantity, included")
-        .eq("bookable_id", studioId)
-        .order("sort_order")
-        .order("name"),
+      studioId
+        ? client
+            .from("bookable_equipment")
+            .select("id, name, category, quantity, included")
+            .eq("bookable_id", studioId)
+            .order("sort_order")
+            .order("name")
+        : Promise.resolve({ data: [], error: null }),
       client
         .from("taxonomy_options")
         .select("slug, label")
@@ -260,7 +272,7 @@ export const saveMyBookableEquipment = createServerFn({ method: "POST" })
   .inputValidator((d) => EQUIPMENT.extend({ id: z.string().uuid().optional() }).parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
+    const studioId = await ensureMyBookableId(client, context.userId);
     const fields = {
       name: data.name,
       category: data.category,

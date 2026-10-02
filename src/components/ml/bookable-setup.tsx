@@ -4,7 +4,7 @@ import { ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Btn, Chip, IconBtn, Sheet } from "@/components/ml/ui";
-import { Card, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
+import { Card, EmptyState, LoadError, Loading, SegmentedField } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
 import { ImagePickButton } from "@/components/ml/profile";
 import { ChipPicker, DrawerField } from "@/components/ml/onboarding";
@@ -80,7 +80,14 @@ export function AmenitiesEditor() {
   });
 
   if (q.isLoading) return <Loading rows={2} />;
-  if (q.isError || !q.data?.ready) return null;
+  if (q.isError)
+    return (
+      <LoadError
+        what="your amenities"
+        action={<Btn onClick={() => void q.refetch()}>Try Again</Btn>}
+      />
+    );
+  if (!q.data?.ready) return null;
   return (
     <section id="facilities" ref={section} className="scroll-mt-4 space-y-3">
       {/*
@@ -420,8 +427,9 @@ export function ProofPhotos({
   const add = useServerFn(addMyBookablePhoto);
   const remove = useServerFn(removeMyBookablePhoto);
   const [viewing, setViewing] = useState(false);
-  if (!q.data?.ready) return null;
-  const { studioId } = q.data;
+  // A subject (an amenity, a saved item) only exists once the business has its bookable.
+  if (!q.data?.ready || !q.data.studioId) return null;
+  const studioId = q.data.studioId;
   const photos = q.data.photos.filter(
     (p) => p.subject_type === subjectType && p.subject_id === subjectId,
   );

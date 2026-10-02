@@ -184,6 +184,66 @@ export type BookableBlock = {
 };
 
 /** The owner's own studio id, which every block and equipment write is scoped through. */
+/** The owner's bookable id, or null when the business has none yet. */
+export async function myBookableIdOrNull(client: SupabaseClient, userId: string) {
+  const { data, error } = await client
+    .from("bookables")
+    .select("id")
+    .eq("owner_profile_id", userId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as { id: string } | null)?.id ?? null;
+}
+
+/**
+ * The owner's bookable id, creating the bookable on the first thing they add (an amenity, an
+ * equipment item, a photo) when their business has none yet (owner, 3 Oct 2026: every business type
+ * can list what its place offers). One per owner (studios_one_per_owner): if two saves race, the
+ * loser reads the winner's row. Named and placed from the business's own profile; nothing invented.
+ */
+export async function ensureMyBookableId(client: SupabaseClient, userId: string) {
+  const existing = await myBookableIdOrNull(client, userId);
+  if (existing) return existing;
+  const [{ data: profile }, { data: business }] = await Promise.all([
+    client.from("profiles").select("username, display_name").eq("id", userId).maybeSingle(),
+    client
+      .from("profile_business")
+      .select("profile_id, business_address")
+      .eq("profile_id", userId)
+      .maybeSingle(),
+  ]);
+  if (!business) throw new Error("Only a business account can add amenities and equipment.");
+  const p = profile as { username: string | null; display_name: string | null } | null;
+  const name = p?.display_name || p?.username || "My business";
+  const base =
+    (p?.username || name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")
+      .slice(0, 60) || "business";
+  const { data: taken } = await client.from("bookables").select("id").eq("slug", base).limit(1);
+  const slug = taken?.length ? `${base}-${Math.random().toString(36).slice(2, 7)}` : base;
+  const { data: row, error } = await client
+    .from("bookables")
+    .insert({
+      owner_profile_id: userId,
+      slug,
+      name,
+      location: (business as { business_address: string | null }).business_address ?? null,
+    } as never)
+    .select("id")
+    .single();
+  if (error) {
+    // Another save created it first.
+    if (error.code === "23505") {
+      const again = await myBookableIdOrNull(client, userId);
+      if (again) return again;
+    }
+    throw new Error(error.message);
+  }
+  return (row as { id: string }).id;
+}
+
 export async function myBookableId(client: SupabaseClient, userId: string) {
   const { data, error } = await client
     .from("bookables")
