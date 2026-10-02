@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — every page returned 500 on the published site (3 Oct)
+
+- The published app (and Lovable's preview) answered every route with "This page didn't load".
+  Cause: the profile share sheet's real QR code (P0) imported `qrcode` statically into
+  `profile.tsx`, which most pages load; the library's server build imports `node:fs`, which the
+  Cloudflare worker doesn't have, so every server render failed with `No such module "node:fs"`.
+  It ran fine under Node, which is why local builds looked healthy.
+- `qrcode` is now loaded only in the browser, when a code is drawn or saved (`qr.tsx`).
+- Reproduced and verified under Cloudflare's own runtime (`wrangler dev` on the production build):
+  before, `/` and `/discover` returned 500 with that error; after, `/`, `/discover`, a booking page,
+  Market, Welcome, Help and a profile return 200.
+
 ### Changed — code names follow the bookable rename (3 Oct)
 
 - Exported names that meant the bookable space say so: `getStudioCalendar` → `getBookableCalendar`,
