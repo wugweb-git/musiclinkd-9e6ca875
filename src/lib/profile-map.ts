@@ -158,7 +158,26 @@ export function profileToDraft(row: ProfileRow | null | undefined): OnboardingDr
 }
 
 /** Fields the profile still needs, used for completion meters and prompts. */
-export function profileGaps(row: ProfileRow | null | undefined) {
+export type ProfileGaps = ReturnType<typeof profileGaps>;
+
+/** Just the fields the checks read, so a draft about to be saved can be measured too. */
+type GapFields = Pick<
+  ProfileRow,
+  | "display_name"
+  | "username"
+  | "avatar_url"
+  | "roles"
+  | "city"
+  | "bio"
+  | "genres"
+  | "languages"
+  | "availability"
+  | "links"
+>;
+
+export function profileGaps(
+  row: { [K in keyof GapFields]?: GapFields[K] | undefined } | null | undefined,
+) {
   const checks: { id: string; label: string; done: boolean }[] = [
     { id: "name", label: "Display name", done: Boolean(row?.display_name) },
     { id: "username", label: "Username", done: Boolean(row?.username) },

@@ -1,3 +1,4 @@
+import { OfflineBanner } from "./kit";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
@@ -7,7 +8,6 @@ import {
   ChipPicker,
   ErrorBanner,
   InlineField,
-  OfflineBanner,
   OptionList,
   SavingBanner,
   SelectField,
@@ -103,7 +103,12 @@ export const Offline: Story = {
   render: () => (
     <StepShell
       {...shell}
-      banner={<OfflineBanner />}
+      banner={
+        <OfflineBanner
+          variant="warn"
+          body="Your answers are kept on this phone and saved to your account when you're back online."
+        />
+      }
       footer={<Btn className="w-full">Continue</Btn>}
       status="offline"
     >

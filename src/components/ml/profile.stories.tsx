@@ -1,3 +1,4 @@
+import { EmptyState } from "./kit";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Globe, Guitar, Music2 } from "lucide-react";
 
@@ -5,7 +6,7 @@ import {
   ChipGroup,
   ChipGroupList,
   InfoRow,
-  ProfileEmpty,
+  ProfileCta,
   ProfileSection,
   ProfileSkeleton,
   StatusBadge,
@@ -40,24 +41,26 @@ export const Loading: Story = { render: () => <ProfileSkeleton /> };
 export const EmptyStates: Story = {
   render: () => (
     <div className="space-y-3">
-      <ProfileEmpty
+      <EmptyState
         title="No work yet"
         body="Add a track, video or credit so people can hear what you do."
-        cta={{ label: "Add a Track", to: "/portfolio/new/$kind", kind: "track" }}
+        action={
+          <ProfileCta cta={{ label: "Add a Track", to: "/portfolio/new/$kind", kind: "track" }} />
+        }
       />
-      <ProfileEmpty
+      <EmptyState
         title="No bio yet"
         body="A couple of lines about what you do and who you've worked with."
-        cta={{ label: "Edit Profile", to: "/profile/edit" }}
+        action={<ProfileCta cta={{ label: "Edit Profile", to: "/profile/edit" }} />}
       />
-      <ProfileEmpty title="No reviews yet" body="Reviews appear here once you've been booked." />
+      <EmptyState title="No reviews yet" body="Reviews appear here once you've been booked." />
     </div>
   ),
 };
 
 /** A visitor's view of the same empty profile: no owner actions, so no call to action. */
 export const EmptyAsVisitor: Story = {
-  render: () => <ProfileEmpty title="No work yet" body="This profile hasn't published any work." />,
+  render: () => <EmptyState title="No work yet" body="This profile hasn't published any work." />,
 };
 
 export const Badges: Story = {

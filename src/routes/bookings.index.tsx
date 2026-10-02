@@ -1,16 +1,12 @@
-import { Segmented } from "@/components/ml/kit";
+import { iconSize } from "@/lib/tokens";
+import { CalendarDays } from "lucide-react";
+import { Segmented, EmptyState, LoadError } from "@/components/ml/kit";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import {
-  BookingSkeleton,
-  StudioBookingRecord,
-  shownBookingStatus,
-  EmptyState,
-  ErrorState,
-} from "@/components/ml/booking";
+import { Btn, Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { BookingSkeleton, StudioBookingRecord, shownBookingStatus } from "@/components/ml/booking";
 import { listMyBookings, type BookingStatus as DbBookingStatus } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -74,6 +70,7 @@ function MyBookings() {
       <main className="px-5">
         {!signedIn && !authLoading ? (
           <EmptyState
+            icon={<CalendarDays size={iconSize.lg} aria-hidden />}
             title="Sign in to see your bookings"
             body="Requests you send to studios are tracked here."
             action={<BtnLink to="/welcome">Sign In</BtnLink>}
@@ -81,12 +78,13 @@ function MyBookings() {
         ) : q.isLoading ? (
           <BookingSkeleton />
         ) : q.isError ? (
-          <ErrorState
-            message="We couldn't load your bookings just now."
-            onRetry={() => void q.refetch()}
+          <LoadError
+            what="your bookings"
+            action={<Btn onClick={() => void q.refetch()}>Try Again</Btn>}
           />
         ) : list.length === 0 ? (
           <EmptyState
+            icon={<CalendarDays size={iconSize.lg} aria-hidden />}
             title="No bookings yet"
             body="When you ask a studio for a session it shows up here."
             action={

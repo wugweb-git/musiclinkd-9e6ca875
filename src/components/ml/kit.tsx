@@ -3,6 +3,7 @@
  * These are enhancements to the existing system (same tokens, radii, type scale),
  * not a second design language.
  */
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -462,45 +463,42 @@ export function RowGroup({ title, children }: { title: string; children: ReactNo
 }
 
 /**
- * `icon` is for states that carry a meaning the words alone don't — offline, failed to load.
- *
- * `variant` reproduces the icon treatment three other modules each hand-rolled before this was
- * consolidated (see docs/component-inventory-2026-09-16.md): "circle-sm" (default, this module's
- * original look), "bare" (icon.tsx-era booking screens — no circle, tighter padding, no title
- * heading tag, no body max-width), "circle-lg" (collab screens — bigger, tinted circle), and
- * "square-lg" (market screens — square swatch, sized for an emoji character rather than an icon).
- * Each variant is byte-for-byte the markup it replaces, so no screen's pixels changed when the
- * three duplicate EmptyStates were removed in favour of this one.
+ * `icon` is for states that carry a meaning the words alone don't — offline, failed to load. The
+ * layouts are the ones the app's screens already drew; "bare" (the old booking treatment) folded
+ * into the default when booking's own EmptyState wrapper was retired (P1-8 #12).
  */
-export type EmptyStateVariant = "circle-sm" | "bare" | "circle-lg" | "square-lg";
+/**
+ * What an empty state means. Each kind keeps the layout the screens of that kind already drew;
+ * no new layouts. `default` — nothing here yet; `no-results` — a search found nothing;
+ * `filtered` — filters hid everything; `action-required` — the list fills when you do something.
+ */
+export type EmptyStateKind = "default" | "no-results" | "filtered" | "action-required";
+type EmptyLayout = "circle-sm" | "circle-lg" | "square-lg";
+const KIND_LAYOUT: Record<EmptyStateKind, EmptyLayout> = {
+  default: "circle-sm",
+  "no-results": "square-lg",
+  filtered: "square-lg",
+  "action-required": "circle-lg",
+};
 
 export function EmptyState({
   icon,
-  variant = "circle-sm",
+  kind = "default",
   title,
   body,
   action,
   children,
 }: {
+  /** A Lucide icon. Never an emoji. */
   icon?: ReactNode;
-  variant?: EmptyStateVariant;
+  kind?: EmptyStateKind | undefined;
   title: string;
   body: string;
   action?: ReactNode;
   children?: ReactNode;
 }) {
+  const variant = KIND_LAYOUT[kind];
   const extra = action ?? children;
-
-  if (variant === "bare") {
-    return (
-      <div className="rounded-lg border border-dashed border-border bg-card p-6 text-center">
-        {icon}
-        <p className="mt-2 font-semibold">{title}</p>
-        <p className="mt-1 text-1 text-muted-foreground">{body}</p>
-        {extra ? <div className="mt-4">{extra}</div> : null}
-      </div>
-    );
-  }
 
   if (variant === "circle-lg") {
     return (
@@ -636,7 +634,7 @@ export function Loading({ rows = 3 }: { rows?: number }) {
   return (
     <div className="flex flex-col gap-2" role="status" aria-busy aria-label="Loading">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-20 animate-pulse rounded-lg bg-subtle" />
+        <Skeleton key={i} className="h-20 rounded-lg" />
       ))}
     </div>
   );

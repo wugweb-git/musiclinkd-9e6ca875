@@ -10,15 +10,15 @@ import {
   ShoppingBag,
   SlidersHorizontal,
   Plus,
+  Guitar,
 } from "lucide-react";
 import { Screen, IconBtn } from "@/components/ml/ui";
-import { Segmented } from "@/components/ml/kit";
+import { Segmented, EmptyState } from "@/components/ml/kit";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
   ActiveFilters,
   FilterButton,
   CategoryTile,
-  EmptyState,
   ListingGrid,
   ListingTile,
   CategorySheet,
@@ -217,7 +217,8 @@ function MarketHome() {
             <ListingGrid items={grid} />
           ) : (
             <EmptyState
-              emoji="🎸"
+              icon={<Guitar size={iconSize.lg} aria-hidden />}
+              kind="default"
               title="Nothing listed yet"
               body="New listings show up here as soon as they're published."
             />

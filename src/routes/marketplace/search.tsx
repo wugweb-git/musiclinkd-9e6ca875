@@ -1,16 +1,13 @@
+import { iconSize } from "@/lib/tokens";
+import { Search } from "lucide-react";
+import { EmptyState } from "@/components/ml/kit";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, SearchBar, TopBar, Chip, Btn } from "@/components/ml/ui";
-import {
-  EmptyState,
-  ListingGrid,
-  MarketFilterSheet,
-  SortSheet,
-  useMarketCity,
-} from "@/components/ml/market";
+import { ListingGrid, MarketFilterSheet, SortSheet, useMarketCity } from "@/components/ml/market";
 import { loadCatalogListings } from "@/lib/market-view";
 import { readRecentSearches } from "@/lib/device-history";
 import { useSearchRecorder } from "@/lib/search-events";
@@ -150,7 +147,8 @@ function MarketSearch() {
               <ListingGrid items={results} />
             ) : (
               <EmptyState
-                emoji="🔍"
+                icon={<Search size={iconSize.lg} aria-hidden />}
+                kind="no-results"
                 title="No matches yet"
                 body="Try a broader term, widen the distance, or save this search to get alerts."
                 action={

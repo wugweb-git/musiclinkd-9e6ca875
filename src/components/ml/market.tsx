@@ -55,9 +55,12 @@ import {
 } from "./drawer-list";
 import {
   applyMarketFilter,
+  conditionOptions,
   emptyMarketFilter,
+  fulfilmentOptions,
   priceBands,
   rateOptions,
+  typeOptions,
   type MarketFilter,
 } from "@/lib/market-filter";
 import { Btn, Chip, IconBtn, Sheet, VerifiedBadge } from "./ui";
@@ -627,23 +630,6 @@ export function SellerCard({
   );
 }
 
-/** Market's own emoji/spacing treatment, preserved via kit.tsx's EmptyState "square-lg" variant. */
-export function EmptyState({
-  emoji,
-  title,
-  body,
-  action,
-}: {
-  emoji: string;
-  title: string;
-  body: string;
-  action?: ReactNode;
-}) {
-  return (
-    <BaseEmptyState variant="square-lg" icon={emoji} title={title} body={body} action={action} />
-  );
-}
-
 export function ListingSkeleton() {
   return (
     <div className="overflow-hidden rounded-lg bg-subtle">
@@ -913,7 +899,7 @@ const filterGroupsFor = (taxonomy: GearTaxonomy): FilterGroup[] => [
   {
     key: "types",
     label: "Listing type",
-    options: ["For sale", "For rent"].map((c) => ({ label: c, value: c })),
+    options: typeOptions,
   },
   {
     key: "categories",
@@ -923,18 +909,18 @@ const filterGroupsFor = (taxonomy: GearTaxonomy): FilterGroup[] => [
   {
     key: "conditions",
     label: "Condition",
-    options: ["New", "Like New", "Used"].map((c) => ({ label: c, value: c })),
+    options: conditionOptions,
   },
   { key: "rates", label: "Rental rate", options: rateOptions, rentalOnly: true },
   {
     key: "fulfilment",
     label: "Fulfilment",
-    options: ["Pickup", "Delivery"].map((c) => ({ label: c, value: c })),
+    options: fulfilmentOptions,
   },
   {
     key: "prices",
     label: "Price",
-    options: priceBands.map((b) => ({ label: b.label, value: b.label })),
+    options: priceBands.map((b) => ({ label: b.label, value: b.key })),
   },
 ];
 
@@ -984,7 +970,7 @@ export function MarketFilterSheet({
       }
     >
       {filterGroupsFor(taxonomy)
-        .filter((g) => !(g.rentalOnly && f.types.length === 1 && f.types[0] === "For sale"))
+        .filter((g) => !(g.rentalOnly && f.types.length === 1 && f.types[0] === "sale"))
         .map((g) => (
           <div key={g.key} className="mb-5">
             <SheetSectionHeading>{g.label}</SheetSectionHeading>
@@ -1146,12 +1132,15 @@ export function SortSheet({
   value,
   onChange,
   options,
+  labels,
 }: {
   open: boolean;
   onClose: () => void;
   value: string;
   onChange: (v: string) => void;
-  options: string[];
+  options: readonly string[];
+  /** What each option says, when the value is a key rather than its own wording. */
+  labels?: Record<string, string> | undefined;
 }) {
   return (
     <Sheet open={open} onClose={onClose} title="Sort by">
@@ -1159,7 +1148,7 @@ export function SortSheet({
         {options.map((o) => (
           <DrawerOptionRow
             key={o}
-            option={{ value: o, label: o }}
+            option={{ value: o, label: labels?.[o] ?? o }}
             selected={value === o}
             onClick={() => {
               onChange(o);
@@ -1310,48 +1299,97 @@ export function useFileReport(onDone: () => void) {
   });
 }
 
+/** What a report can say, by what is being reported. The stored reason is the label. */
+const REPORT_REASONS: Record<ReportSubject, { key: string; label: string }[]> = {
+  listing: [
+    { key: "incorrect", label: "Incorrect information" },
+    { key: "scam", label: "Suspected scam" },
+    { key: "sold", label: "Item already sold" },
+    { key: "prohibited", label: "Prohibited item" },
+    { key: "seller", label: "Seller behaviour" },
+  ],
+  rental: [
+    { key: "incorrect", label: "Incorrect information" },
+    { key: "scam", label: "Suspected scam" },
+    { key: "equipment", label: "Equipment not as described" },
+    { key: "provider", label: "Provider behaviour" },
+  ],
+  profile: [
+    { key: "impersonation", label: "Pretending to be someone" },
+    { key: "spam", label: "Spam or scam" },
+    { key: "offensive", label: "Offensive content" },
+    { key: "stolen_work", label: "Someone else's work" },
+  ],
+  review: [
+    { key: "false", label: "False or misleading" },
+    { key: "offensive", label: "Offensive content" },
+    { key: "unrelated", label: "Not about real work" },
+  ],
+};
+const REPORT_TITLE: Record<ReportSubject, string> = {
+  listing: "Report listing",
+  rental: "Report rental",
+  profile: "Report profile",
+  review: "Report review",
+};
+
+/**
+ * The one report sheet, for anything that can be reported (reports table): pick a reason, send.
+ * The reasons follow the subject; the chosen one is a checked radio. Nothing is sent until a
+ * reason is picked, and success is said only once the report is stored.
+ */
 export function ReportSheet({
   open,
   onClose,
-  subjectId,
+  subject,
+  title,
 }: {
   open: boolean;
   onClose: () => void;
-  /** The listing being reported. */
-  subjectId: string;
+  subject: { type: ReportSubject; id: string };
+  /** Overrides the sheet's title, e.g. "Report Ana". */
+  title?: string | undefined;
 }) {
-  const reasons = [
-    "Incorrect information",
-    "Suspected scam",
-    "Item already sold",
-    "Prohibited item",
-    "Seller behaviour",
-  ];
-  const [reason, setReason] = useState(reasons[0]!);
-  const send = useFileReport(onClose);
+  const reasons = REPORT_REASONS[subject.type];
+  const [reason, setReason] = useState<string | null>(null);
+  const close = () => {
+    setReason(null);
+    onClose();
+  };
+  const send = useFileReport(close);
+  const picked = reasons.find((r) => r.key === reason);
   return (
-    <Sheet open={open} onClose={onClose} title="Report listing">
-      <div className="mb-5 divide-y divide-border rounded-lg border border-border">
+    <Sheet open={open} onClose={close} title={title ?? REPORT_TITLE[subject.type]}>
+      <div
+        role="radiogroup"
+        aria-label="Why are you reporting this?"
+        className="mb-3 divide-y divide-border rounded-lg border border-border"
+      >
         {reasons.map((r) => (
           <button
-            key={r}
+            key={r.key}
             type="button"
-            onClick={() => setReason(r)}
-            className="flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium"
+            role="radio"
+            aria-checked={reason === r.key}
+            onClick={() => setReason(r.key)}
+            className="flex min-h-12 w-full items-center justify-between px-4 py-3 text-left text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            {r}
-            {reason === r ? (
-              <Check size={iconSize.md} className="text-primary" aria-label="Selected" />
-            ) : null}
+            {r.label}
+            {reason === r.key ? <Check size={iconSize.md} aria-hidden /> : null}
           </button>
         ))}
       </div>
+      <p className="mb-5 text-1 text-muted-foreground">Nobody is told who reported this.</p>
       <Btn
         className="w-full"
+        disabled={!picked}
         loading={send.isPending}
-        onClick={() => send.mutate({ subjectType: "listing", subjectId, reason })}
+        onClick={() =>
+          picked &&
+          send.mutate({ subjectType: subject.type, subjectId: subject.id, reason: picked.label })
+        }
       >
-        Submit Report
+        Send Report
       </Btn>
     </Sheet>
   );

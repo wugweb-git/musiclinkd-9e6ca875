@@ -558,6 +558,10 @@ export type PriceLines = {
   tax: number;
   taxPct: number;
   total: number;
+  /** A refundable deposit held apart from the total (rentals). */
+  deposit?: number | undefined;
+  /** An estimate the provider confirms (rentals), not a quoted total. */
+  estimate?: boolean | undefined;
 };
 
 export function priceFor(b: Bookable, r: Resource, hours: number, addOnIds: string[]): PriceLines {

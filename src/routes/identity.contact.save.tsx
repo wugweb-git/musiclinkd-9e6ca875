@@ -1,3 +1,4 @@
+import { StateCard } from "@/components/ml/kit";
 /**
  * FLOW-23 · QR-20 "Save contact" · route: /identity/contact/save
  * states: ready, saving, success, error
@@ -6,7 +7,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, UserRoundPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { StateCard, ActionRow } from "@/components/ml/qr";
+import { ActionRow } from "@/components/ml/qr";
 import { useMyTalentIdentity } from "@/hooks/use-my-talent-identity";
 import { iconSize } from "@/lib/tokens";
 import { downloadBlob } from "@/lib/download";
@@ -63,6 +64,7 @@ function SaveContact() {
       <main className="px-5 pt-4">
         {phase === "done" ? (
           <StateCard
+            variant="subtle"
             title="Contact file downloaded"
             body={`Open the downloaded file to add ${me.name || "this contact"} to your phone contacts, with their MusicLinkd profile link.`}
           >
@@ -72,6 +74,7 @@ function SaveContact() {
           </StateCard>
         ) : phase === "error" ? (
           <StateCard
+            variant="subtle"
             title="Couldn't save the contact"
             body="Your browser blocked the download. You can copy the details manually instead."
           >

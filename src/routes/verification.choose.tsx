@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Lock, ChevronRight } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, Loading, StatusPill } from "@/components/ml/kit";
-import { StateCard } from "@/components/ml/portfolio";
+import { Card, Loading, StatusPill, StateCard } from "@/components/ml/kit";
+
 import { gateFor, useMyVerification } from "@/hooks/use-my-verification";
 import { statusLabel, statusTone } from "@/data/verification";
 import { TextLink } from "@/components/ml/links";

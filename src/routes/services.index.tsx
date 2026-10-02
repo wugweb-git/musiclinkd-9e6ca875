@@ -11,9 +11,10 @@ import {
   Row,
   SoonBadge,
   Segmented,
+  StateCard,
 } from "@/components/ml/kit";
 import { toast } from "sonner";
-import { StateCard } from "@/components/ml/portfolio";
+
 import { serviceStatusTone } from "@/data/services";
 import { categoryEmoji, optionLabel, useMyServices, useServiceOptions } from "@/hooks/use-services";
 import { priceParts } from "@/lib/price";

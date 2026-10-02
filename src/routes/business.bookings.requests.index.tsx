@@ -1,12 +1,14 @@
+import { iconSize } from "@/lib/tokens";
+import { CalendarDays } from "lucide-react";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
-import { BusinessOnlyGate, LoadError, Segmented } from "@/components/ml/kit";
+import { BusinessOnlyGate, LoadError, Segmented, EmptyState } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { BookingSkeleton, EmptyState, StudioBookingRecord } from "@/components/ml/booking";
+import { BookingSkeleton, StudioBookingRecord } from "@/components/ml/booking";
 import { answerBooking, listStudioBookings } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -96,6 +98,7 @@ function RequestsContent() {
       <main className="space-y-3 px-5 pt-4">
         {!signedIn && !authLoading ? (
           <EmptyState
+            icon={<CalendarDays size={iconSize.lg} aria-hidden />}
             title="Sign in to see requests"
             body="Requests for a space you run appear here."
           />
@@ -105,6 +108,7 @@ function RequestsContent() {
           <LoadError what="your requests" />
         ) : list.length === 0 ? (
           <EmptyState
+            icon={<CalendarDays size={iconSize.lg} aria-hidden />}
             title="No requests here"
             body="New booking requests for your space will appear in this queue. Keep your availability up to date so people can find open dates."
           />

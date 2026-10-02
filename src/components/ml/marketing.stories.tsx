@@ -50,7 +50,6 @@ export const Download: Story = {
     <DownloadCta
       title="Download the app to start creating."
       body="Connect with the global music community on iOS and Android."
-      ios={{ label: "Download on iOS", to: "https://apps.apple.com" }}
       android={{ label: "Download on Android", to: "https://play.google.com" }}
     />
   ),

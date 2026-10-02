@@ -4,8 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { PersonRow } from "@/components/ml/cards";
-import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
-import { StateCard } from "@/components/ml/portfolio";
+import { Card, EmptyState, StatusPill, StateCard } from "@/components/ml/kit";
+
 import { CollabKindSheet } from "@/components/ml/collab";
 import { categories } from "@/data/discover";
 import { workType } from "@/data/portfolio";

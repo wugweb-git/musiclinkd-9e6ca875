@@ -1,9 +1,10 @@
+import { ProfileCompletion } from "@/components/ml/profile";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { PartyPopper } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { listMyPortfolio, saveMyProfile } from "@/lib/portfolio.functions";
-import { draftToProfile } from "@/lib/profile-map";
+import { draftToProfile, profileGaps } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
 import { BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import {
@@ -13,7 +14,7 @@ import {
   useOnboarding,
   useScrollEdges,
 } from "@/components/ml/onboarding";
-import { completionPercent, readiness } from "@/data/onboarding";
+import { readiness } from "@/data/onboarding";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -68,7 +69,8 @@ function Complete() {
       savedRef.current = false;
     });
   }, [hydrated, signedIn, persist, d]);
-  const pct = completionPercent(d);
+  // The same ten checks as Home and profile edit, read from what was just saved.
+  const gaps = profileGaps(draftToProfile(d));
   const first = d.displayName.split(" ")[0];
   const rise = useArrival("onboarding-complete") ? "animate-rise" : "";
   const edges = useScrollEdges();
@@ -110,24 +112,8 @@ function Complete() {
               your visibility.
             </p>
 
-            <div className="mt-5 rounded-md bg-subtle p-3.5 border border-border/60">
-              <div className="flex items-baseline justify-between text-1">
-                <span className="font-semibold text-foreground">Profile Strength</span>
-                <span className="tabular-nums font-bold text-foreground">{pct}%</span>
-              </div>
-              <div
-                className="mt-2 h-2 overflow-hidden rounded-full bg-background"
-                role="progressbar"
-                aria-valuenow={pct}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label="Profile strength"
-              >
-                <div
-                  className="h-full origin-left animate-fill rounded-full bg-foreground transition-all duration-500"
-                  style={{ width: `${pct}%`, ...beat(3) }}
-                />
-              </div>
+            <div className="mt-5">
+              <ProfileCompletion gaps={gaps} title="Profile strength" />
             </div>
           </div>
         </section>

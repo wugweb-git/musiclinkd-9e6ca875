@@ -5,6 +5,72 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — the smaller calls (P1-8 #14, 3 Oct)
+
+- **Saved searches show.** They were stored (`saved_searches`) and could be saved from Market and
+  Search, but no screen listed them. Bookmarked has a Searches tab (`SavedSearchList`), with
+  loading, empty and error states. **`SavedSearchRow`** is one link that runs the search again,
+  with a separate 48px remove that deletes the stored record. It refreshed the wrong cache key
+  (`saved-searches`); it now uses the one the search screens save into. Its date is the stored
+  date, not "3 days ago".
+- Bookmarked's tabs key off values (`Segmented` labels), and a failed load is `LoadError`, not an
+  empty state.
+- **`DownloadCta`** no longer requires an iOS link: MusicLinkd ships on Android only.
+- **Removed:** `ServicesProvided`, `PhotoPicker` and `MediaUploader` (no consumer).
+- **Kept as canonical:** `ExperienceCard` (no screen draws it yet), `ServiceCard`,
+  `ImagePickButton`, `GalleryEditor`, `PhotoSlots`, `BottomCta`, `DownloadCta`.
+
+### Changed — one profile completion (P1-8 #13, 3 Oct)
+
+- **`ProfileCompletion`** draws completion from `profileGaps` everywhere: profile edit's "Finish your
+  profile" and the end of onboarding's "Profile strength". Home's figure was already
+  `profileGaps`.
+- **Onboarding's number was wrong.** `completionPercent` counted portfolio, services and
+  verification as never done (hard-wired `false`), so a finished profile read as half done; it now
+  measures the profile just saved with the same ten checks. `completionPercent` is removed.
+- **Removed:** `CompletionCard` (no consumer; its missing-item links took any string as a route).
+  `ReadinessCard` stays for onboarding's next-step hand-offs. `profileGaps` reads only the ten
+  fields it checks (`ProfileGaps` type), so a draft can be measured before it is a row.
+
+### Changed — one set of state surfaces (P1-8 #12, 3 Oct)
+
+- **`EmptyState`** (kit) is the one empty state, with a semantic `kind`: `default`, `no-results`,
+  `filtered`, `action-required`. Each kind draws a layout screens already used (no new layouts);
+  the old `variant` prop is gone. The six Market empty states that showed an emoji (📭 🎚 🛍️ 🤝 🎸
+  🔍) show Lucide icons. Booking's empty states keep their calendar icon in the default layout.
+- **`LoadError`** is the error state: the bookings list and a studio's availability use it, with
+  Try Again. **`OfflineBanner`** (kit) is the offline state: booking and onboarding pass their own
+  words. **`StateCard`** (kit) replaces the portfolio and QR copies. **`Loading`** is built on
+  shadcn's `Skeleton`.
+- An empty profile section is `EmptyState` with `ProfileCta`, the owner's typed way out (profile
+  edit, or new work of one kind).
+- **Removed:** Market's and booking's `EmptyState` wrappers, booking's `ErrorState`, booking's and
+  onboarding's `OfflineBanner`, `ProfileEmpty`, the portfolio and QR `StateCard` wrappers, QR's
+  `Skeleton`, `RentalSkeleton` and `LoaderSkeleton` (`src/components/skeleton.tsx`, no consumer).
+
+### Changed — filters and reports (P1-8 #11, 3 Oct)
+
+- **`ReportSheet`** is the one report sheet: any subject (listing, rental, profile, review) with
+  reasons for that subject, keyed by value and stored as their label. Reasons are radios with a
+  checked state, nothing is preselected, and Send stays off until one is picked. Listing pages
+  report the listing (or rental) by its row id; the seller page and the profile More menu use it.
+  "Nobody is told who reported this" stays; nothing claims a moderation team.
+- **Removed:** `RentalReportSheet`, `RentalFilterSheet` (no consumer) and `filter-sheet.tsx`'s
+  `FilterSheet` (no consumer). `MarketFilterSheet` is the filter sheet.
+- **Filters key off values.** Market's type, condition, fulfilment and price filters store keys
+  (`sale`, `like_new`, `pickup`, `under_10k`…) with their wording beside them
+  (`src/lib/market-filter.ts`); a category's sort does too (`SortSheet` takes `labels`).
+
+### Changed — one calendar, one price breakdown (P1-8 #10, 3 Oct)
+
+- **`AvailabilityCalendar`** is the one calendar. A studio picks a day from its real hours
+  (`single`); a rental picks a range around the owner's blocked days (`range`, with the minimum
+  days and notice in the legend). Month buttons are 48px icon buttons, not "‹ ›" glyphs.
+  **`RentalCalendar` is removed.**
+- **`PriceBreakdownCard`** draws rentals too: the refundable deposit held apart, "Estimated total"
+  and the estimate note. The rental maths moved into data (`rentalPriceLines`,
+  `src/data/rentals.ts`). **`PriceBreakdown` is removed.**
+
 ### Changed — the studio booking record (P1-8 #9, 30 Sep)
 
 - **`StudioBookingRecord`** draws a stored booking request for either side: the studio's requests

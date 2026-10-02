@@ -1,13 +1,13 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronLeft, ChevronRight, Package, Truck } from "lucide-react";
-import { Btn, Chip, IconBtn, Sheet, VerifiedBadge } from "./ui";
-import { Followers, Rating, useFileReport } from "./market";
+import { Package, Truck } from "lucide-react";
+import { VerifiedBadge } from "./ui";
+import { Followers, Rating } from "./market";
 import { Price, StatusPill, type Tone } from "./kit";
 import { rupeeParts } from "@/lib/price";
-import { priceFor, type Equipment, type RentalItem, type RentalStatus } from "@/data/rentals";
+import { type Equipment, type RentalItem, type RentalStatus } from "@/data/rentals";
 import { inr } from "@/lib/price";
 import type { RealProvider } from "@/lib/rentals.functions";
 import { listListings } from "@/lib/catalog.functions";
@@ -17,10 +17,8 @@ import { listMySavedIds } from "@/lib/saved.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
-import { SheetSectionHeading } from "./drawer-list";
 import { PersonAvatar } from "./person-avatar";
 import { sized } from "@/lib/image-url";
-import { formatDate, isoDate, todayInIndia } from "@/lib/when";
 
 const rentalAvailabilityTone: Record<"ok" | "warn" | "off", Tone> = {
   ok: "good",
@@ -160,164 +158,6 @@ export function useSavedRentals(enabled = true) {
   });
 }
 
-const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
-
-/**
- * Rental dates as the listing stores them: full `YYYY-MM-DD` days in the viewer's own calendar.
- * The month opens on the chosen start (or today) and moves forward and back; past days and the
- * owner's blocked days can't be picked.
- */
-export function RentalCalendar({
-  e,
-  start,
-  end,
-  onSelect,
-}: {
-  e: Equipment;
-  start: string | null;
-  end: string | null;
-  onSelect: (date: string) => void;
-}) {
-  const today = todayInIndia();
-  const [cursor, setCursor] = useState(() => {
-    const d = new Date(`${start ?? today}T00:00:00`);
-    return { y: d.getFullYear(), m: d.getMonth() };
-  });
-  const first = new Date(cursor.y, cursor.m, 1);
-  const daysInMonth = new Date(cursor.y, cursor.m + 1, 0).getDate();
-  const lead = (first.getDay() + 6) % 7;
-  const blocked = useMemo(() => new Set(e.unavailableDates), [e.unavailableDates]);
-  const now = new Date(`${today}T00:00:00`);
-  const atFirstMonth = cursor.y === now.getFullYear() && cursor.m === now.getMonth();
-  const step = (by: number) =>
-    setCursor((c) => {
-      const d = new Date(c.y, c.m + by, 1);
-      return { y: d.getFullYear(), m: d.getMonth() };
-    });
-
-  return (
-    <div className="rounded-lg bg-subtle p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <IconBtn
-          label="Previous month"
-          disabled={atFirstMonth}
-          onClick={() => step(-1)}
-          className={atFirstMonth ? "invisible" : ""}
-        >
-          <ChevronLeft size={iconSize.sm} />
-        </IconBtn>
-        <p className="text-2 font-semibold">
-          {first.toLocaleString("en-IN", { month: "long", year: "numeric" })}
-        </p>
-        <IconBtn label="Next month" onClick={() => step(1)}>
-          <ChevronRight size={iconSize.sm} />
-        </IconBtn>
-      </div>
-      <div className="grid grid-cols-7 gap-1 text-center">
-        {DAY_LABELS.map((d, i) => (
-          <span key={`${d}${i}`} className="py-1 text-1 font-bold text-muted-foreground">
-            {d}
-          </span>
-        ))}
-        {Array.from({ length: lead }).map((_, i) => (
-          <span key={`lead${i}`} />
-        ))}
-        {Array.from({ length: daysInMonth }).map((_, i) => {
-          const iso = isoDate(new Date(cursor.y, cursor.m, i + 1));
-          const isBlocked = blocked.has(iso);
-          const isPast = iso < today;
-          const inRange = start !== null && end !== null && iso >= start && iso <= end;
-          const isEdge = iso === start || iso === end;
-          return (
-            <button
-              key={iso}
-              type="button"
-              disabled={isBlocked || isPast}
-              onClick={() => onSelect(iso)}
-              aria-label={`${formatDate(iso)}${isBlocked ? ", unavailable" : ""}`}
-              aria-pressed={isEdge || inRange}
-              className={`flex h-12 items-center justify-center rounded-sm text-1 font-semibold transition-colors ${
-                isBlocked ? "text-muted-foreground line-through opacity-50" : ""
-              } ${isPast && !isBlocked ? "text-muted-foreground opacity-50" : ""} ${
-                isEdge
-                  ? "bg-primary text-primary-foreground"
-                  : inRange
-                    ? "bg-background text-foreground"
-                    : ""
-              }`}
-            >
-              {i + 1}
-            </button>
-          );
-        })}
-      </div>
-      <div className="mt-3 flex flex-wrap gap-3 text-1 text-muted-foreground">
-        <span className="inline-flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full bg-primary" /> Selected
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full bg-border" /> Unavailable
-        </span>
-        <span>
-          Min {e.minDays} day{e.minDays > 1 ? "s" : ""}, notice {e.noticePeriod}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-export function PriceBreakdown({
-  e,
-  days,
-  quantity,
-  delivery,
-}: {
-  e: Equipment;
-  days: number;
-  quantity: number;
-  delivery: boolean;
-}) {
-  const subtotal = priceFor(e, days) * quantity;
-  const deliveryFee = delivery ? (e.deliveryFee ?? 0) : 0;
-  const deposit = e.deposit * quantity;
-  const total = subtotal + deliveryFee;
-
-  const rows = [
-    { k: `${days} day${days > 1 ? "s" : ""} × ${quantity}`, v: inr(subtotal) },
-    ...(delivery ? [{ k: "Delivery & pickup", v: inr(deliveryFee) }] : []),
-  ];
-
-  return (
-    <div className="rounded-lg bg-subtle p-4">
-      <div className="space-y-2.5">
-        {rows.map((r) => (
-          <div key={r.k} className="flex items-start justify-between gap-3">
-            <span className="text-1 text-muted-foreground">{r.k}</span>
-            <span className="shrink-0 text-1 font-semibold">{r.v}</span>
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
-        <span className="text-1 font-semibold">Estimated total</span>
-        <span className="text-3 font-bold text-price">{inr(total)}</span>
-      </div>
-      <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
-        <div className="min-w-0">
-          <p className="text-1 font-bold text-warn-strong">Refundable security deposit</p>
-          <p className="text-1 text-muted-foreground">
-            Held by the provider, returned after the equipment is checked.
-          </p>
-        </div>
-        <span className="shrink-0 text-1 font-bold text-price">{inr(deposit)}</span>
-      </div>
-      <p className="mt-3 text-1 text-muted-foreground">
-        Estimate only. Nothing is charged on MusicLinkd — the provider confirms the final amount in
-        your conversation.
-      </p>
-    </div>
-  );
-}
-
 export function FulfilmentPicker({
   e,
   value,
@@ -451,20 +291,6 @@ export function BookingCard({
   );
 }
 
-export function RentalSkeleton() {
-  return (
-    <div className="overflow-hidden rounded-lg bg-subtle">
-      <div className="h-44 w-full animate-pulse bg-background" />
-      <div className="space-y-2 p-4">
-        <div className="h-4 w-28 animate-pulse rounded-full bg-background" />
-        <div className="h-3 w-full animate-pulse rounded-full bg-background" />
-        <div className="h-3 w-2/3 animate-pulse rounded-full bg-background" />
-        <div className="h-10 w-full animate-pulse rounded-full bg-background" />
-      </div>
-    </div>
-  );
-}
-
 const rentalFilterGroups: { label: string; options: string[] }[] = [
   { label: "Category", options: ["Instruments", "Audio", "Studio", "DJ", "Live"] },
   { label: "Location", options: ["Mumbai", "Delhi NCR", "Bengaluru", "Pune", "Goa"] },
@@ -478,101 +304,6 @@ const moreFilterGroups: { label: string; options: string[] }[] = [
   { label: "Brand", options: ["Shure", "Fender", "Pearl", "Pioneer DJ", "JBL", "Nord", "Swaraj"] },
   { label: "Security deposit", options: ["Under ₹10k", "₹10k–30k", "Above ₹30k"] },
 ];
-
-export function RentalFilterSheet({
-  open,
-  onClose,
-  results,
-}: {
-  open: boolean;
-  onClose: () => void;
-  results: number;
-}) {
-  const [selected, setSelected] = useState<string[]>(["Mumbai"]);
-  const [more, setMore] = useState(false);
-  const [dates, setDates] = useState("Any dates");
-  const [switches, setSwitches] = useState({
-    available: true,
-    delivery: false,
-    pickup: false,
-    verified: true,
-  });
-  const toggle = (v: string) =>
-    setSelected((s) => (s.includes(v) ? s.filter((x) => x !== v) : [...s, v]));
-
-  const groups = more ? [...rentalFilterGroups, ...moreFilterGroups] : rentalFilterGroups;
-
-  return (
-    <Sheet
-      open={open}
-      onClose={onClose}
-      title="Filters"
-      titleAction={
-        <button
-          onClick={() => setSelected([])}
-          className="shrink-0 text-1 font-semibold text-foreground"
-        >
-          Clear all
-        </button>
-      }
-    >
-      <SheetSectionHeading>Rental dates</SheetSectionHeading>
-      <div className="mb-5 flex flex-wrap gap-2">
-        {["Any dates", "This weekend", "Next week", "Pick dates"].map((d) => (
-          <Chip key={d} active={dates === d} onClick={() => setDates(d)}>
-            {d}
-          </Chip>
-        ))}
-      </div>
-
-      {groups.map((g) => (
-        <div key={g.label} className="mb-5">
-          <SheetSectionHeading>{g.label}</SheetSectionHeading>
-          <div className="flex flex-wrap gap-2">
-            {g.options.map((o) => (
-              <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>
-                {o}
-              </Chip>
-            ))}
-          </div>
-        </div>
-      ))}
-
-      {!more ? (
-        <button onClick={() => setMore(true)} className="mb-5 text-1 font-semibold text-foreground">
-          More filters
-        </button>
-      ) : null}
-
-      <div className="mb-6 divide-y divide-border rounded-lg border border-border">
-        <RentalSwitch
-          label="Available on my dates"
-          value={switches.available}
-          onChange={(v) => setSwitches((s) => ({ ...s, available: v }))}
-        />
-        <RentalSwitch
-          label="Delivery available"
-          value={switches.delivery}
-          onChange={(v) => setSwitches((s) => ({ ...s, delivery: v }))}
-        />
-        <RentalSwitch
-          label="Pickup available"
-          value={switches.pickup}
-          onChange={(v) => setSwitches((s) => ({ ...s, pickup: v }))}
-        />
-        <RentalSwitch
-          label="Verified providers only"
-          value={switches.verified}
-          onChange={(v) => setSwitches((s) => ({ ...s, verified: v }))}
-        />
-      </div>
-
-      <Btn className="w-full" onClick={onClose}>
-        Show {results} results
-      </Btn>
-    </Sheet>
-  );
-}
 
 function RentalSwitch({
   label,
@@ -613,39 +344,3 @@ export const rentalSortOptions = [
   "Best rated",
   "Newest",
 ];
-
-export function RentalReportSheet({
-  open,
-  onClose,
-  subject,
-}: {
-  open: boolean;
-  onClose: () => void;
-  /** The rental listing, or — on a provider's page — the provider. */
-  subject: { type: "rental" | "profile"; id: string };
-}) {
-  const send = useFileReport(onClose);
-  const reasons = ["Report equipment", "Report provider", "Report a scam", "Incorrect information"];
-  return (
-    <Sheet open={open} onClose={onClose} title="Report">
-      <div className="divide-y divide-border rounded-lg border border-border">
-        {reasons.map((r) => (
-          <button
-            key={r}
-            type="button"
-            onClick={() =>
-              send.mutate({ subjectType: subject.type, subjectId: subject.id, reason: r })
-            }
-            disabled={send.isPending}
-            className="w-full px-4 py-4 text-left text-sm font-medium"
-          >
-            {r}
-          </button>
-        ))}
-      </div>
-      <p className="mt-3 text-1 text-muted-foreground">
-        Reports go to MusicLinkd moderation. Nobody is told who reported a listing.
-      </p>
-    </Sheet>
-  );
-}

@@ -5,14 +5,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import {
-  FulfilmentPicker,
-  PriceBreakdown,
-  ProviderSummary,
-  RentalAvailabilityBadge,
-  RentalCalendar,
-} from "@/components/ml/rental";
+import { FulfilmentPicker, ProviderSummary, RentalAvailabilityBadge } from "@/components/ml/rental";
 import { Loading, Price, StepProgress } from "@/components/ml/kit";
+import { AvailabilityCalendar, PriceBreakdownCard } from "@/components/ml/booking";
+import { rentalPriceLines } from "@/data/rentals";
 import { inr } from "@/lib/price";
 import { rupeeParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
@@ -205,7 +201,15 @@ function RequestFlow() {
 
         {step === "dates" ? (
           <>
-            <RentalCalendar e={e} start={start} end={end} onSelect={pick} />
+            <AvailabilityCalendar
+              mode="range"
+              start={start}
+              end={end}
+              onSelect={pick}
+              blocked={e.unavailableDates}
+              minDays={e.minDays}
+              noticePeriod={e.noticePeriod}
+            />
             <div className="mt-4 flex items-center justify-between rounded-lg bg-subtle px-4 py-3">
               <div>
                 <p className="text-1 font-semibold">Quantity</p>
@@ -256,7 +260,7 @@ function RequestFlow() {
             <h2 className="mb-2 text-sm">Delivery or pickup</h2>
             <FulfilmentPicker e={e} value={fulfilment} onChange={setFulfilment} />
             <h2 className="mb-2 mt-5 text-sm">Price breakdown</h2>
-            <PriceBreakdown e={e} days={days} quantity={qty} delivery={delivery} />
+            <PriceBreakdownCard p={rentalPriceLines(e, days, qty, delivery)} />
             <Btn className="mt-5 w-full" onClick={() => setStep("request")}>
               Request Rental
             </Btn>

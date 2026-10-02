@@ -1,3 +1,4 @@
+import { StateCard } from "@/components/ml/kit";
 /**
  * FLOW-23 · QR-06 "Scanner", QR-07 "Scanning", QR-25/26 permission, QR-27 image scan
  * route: /identity/scan · states: permission, denied, ready, scanning, error, offline
@@ -15,7 +16,7 @@ import { Camera, Image as ImageIcon, ScanLine, ShieldQuestion } from "lucide-rea
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { CameraSurface, ScanFrame, StateCard, ActionRow } from "@/components/ml/qr";
+import { CameraSurface, ScanFrame, ActionRow } from "@/components/ml/qr";
 import { recordScan } from "@/lib/qr.functions";
 import { decodeQr } from "@/lib/qr-decode";
 import { iconSize } from "@/lib/tokens";
@@ -203,6 +204,7 @@ function Scanner() {
       <main className="flex flex-col px-5 pt-4">
         {phase === "denied" ? (
           <StateCard
+            variant="subtle"
             title="Camera is blocked"
             body="Enable camera permission for MusicLinkd in your browser or Android settings, or scan a saved QR image instead."
           >
@@ -218,6 +220,7 @@ function Scanner() {
           </StateCard>
         ) : phase === "unsupported" ? (
           <StateCard
+            variant="subtle"
             title="Camera scanning isn't supported in this browser"
             body="Take a photo of the code, or type the username or paste the profile link."
           >
@@ -248,6 +251,7 @@ function Scanner() {
           </StateCard>
         ) : phase === "error" ? (
           <StateCard
+            variant="subtle"
             title="The camera couldn't start"
             body="Another app may be using it. Close other camera apps and try again."
           >

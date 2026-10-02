@@ -1,3 +1,5 @@
+import { Skeleton } from "@/components/ui/skeleton";
+import { StateCard } from "@/components/ml/kit";
 /**
  * FLOW-23 · QR-01 "MusicLinkd ID" + QR-02 "Personal QR" + QR-05 "Share sheet"
  * route: /identity/qr · dataSource: profile, businessProfile, share
@@ -32,8 +34,6 @@ import {
   CopyLinkRow,
   ShareActions,
   ActionRow,
-  StateCard,
-  Skeleton,
   DownloadNote,
   downloadQr,
   nativeShare,
@@ -115,6 +115,7 @@ function DigitalId() {
         ) : phase === "offline" ? (
           <div className="mt-6">
             <StateCard
+              variant="subtle"
               title="You're offline"
               body="Your QR still works — anyone scanning it opens your profile once they're online."
             >

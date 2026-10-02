@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Lock, ShieldCheck, Star, type LucideIcon } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, StatusPill, Row } from "@/components/ml/kit";
-import { StateCard } from "@/components/ml/portfolio";
+import { Card, StatusPill, Row, StateCard } from "@/components/ml/kit";
+
 import { formatDay, gateFor, useMyVerification } from "@/hooks/use-my-verification";
 import { statusLabel, statusTone, overallStatus } from "@/data/verification";
 import { listReviewsAboutMe } from "@/lib/reviews.functions";
