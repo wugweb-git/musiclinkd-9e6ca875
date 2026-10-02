@@ -3,7 +3,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
-import { myBookableId } from "@/lib/bookable-calendar.functions";
+import {
+  ensureMyBookableId,
+  myBookableId,
+  myBookableIdOrNull,
+} from "@/lib/bookable-calendar.functions";
 
 /*
  * Photos as proof for a studio's facilities and equipment (bookable_photos): the owner adds and
@@ -28,7 +32,8 @@ export type BookablePhoto = {
 };
 
 export type MyBookablePhotos = {
-  studioId: string;
+  /** Null until the business has a bookable: its first amenity or equipment item creates one. */
+  studioId: string | null;
   /** The studio's facilities (studios.amenities) with their published labels, in page order. */
   facilities: { slug: string; label: string }[];
   photos: BookablePhoto[];
@@ -73,7 +78,8 @@ export const listMyBookablePhotos = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<MyBookablePhotos> => {
     const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
+    const studioId = await myBookableIdOrNull(client, context.userId);
+    if (!studioId) return { studioId: null, facilities: [], photos: [], ready: true };
     const [studio, labels, photos] = await Promise.all([
       client.from("bookables").select("amenities").eq("id", studioId).single(),
       client.from("taxonomy_options").select("slug, label").eq("category_key", "studio_amenities"),
@@ -111,7 +117,7 @@ export const addMyBookablePhoto = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<BookablePhoto> => {
     const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
+    const studioId = await ensureMyBookableId(client, context.userId);
     if (!data.url.startsWith("https://") || !mediaPath(data.url, studioId)) {
       throw new Error("That photo isn't in your studio's folder.");
     }

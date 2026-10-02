@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — Edit profile edits everything onboarding asks (3 Oct)
+
+- **Every business** sees Edit profile → Facilities & equipment, not only one that already had a
+  bookable. Its first amenity, equipment item or photo creates the business's bookable on the
+  server (`ensureMyBookableId`, one per owner, safe if two saves race). `updateMyBookable` used to
+  report success when it matched no row; it now saves or says it didn't.
+- **Business type** in Edit profile uses business setup's picker and list, one type; it offered
+  talent types before. **Policies** use business setup's editor instead of a text box.
+- **Experience** (how long in music) is picked from onboarding's list, not typed; **experience per
+  instrument**, asked in onboarding, can now be edited (merged into `discovery_prefs`).
+- **Errors are errors:** a failed load on Availability, or of the amenities, shows a retry instead
+  of the empty "no bookable" screen or nothing.
+
 ### Changed — facility photos are added in Edit profile (3 Oct)
 
 - **Owner decision:** a business's facilities and equipment, each with its photos, are edited in

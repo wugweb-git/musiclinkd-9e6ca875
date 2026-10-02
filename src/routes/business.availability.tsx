@@ -5,7 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, IconBtn, Sheet } from "@/components/ml/ui";
-import { BusinessOnlyGate, Card, Loading, SegmentedField } from "@/components/ml/kit";
+import { BusinessOnlyGate, Card, LoadError, Loading, SegmentedField } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { formatDate, formatTime } from "@/lib/when";
 import { iconSize } from "@/lib/tokens";
@@ -87,6 +87,20 @@ function AvailabilityContent() {
         <TopBar title="Availability" back="/business/bookings" />
         <div className="px-5 pt-8">
           <Loading />
+        </div>
+      </Screen>
+    );
+  }
+  // A failed read is an error with a retry, never the "no bookable" screen below.
+  if (q.isError) {
+    return (
+      <Screen>
+        <TopBar title="Availability" back="/business/bookings" />
+        <div className="px-5 pt-4">
+          <LoadError
+            what="your availability"
+            action={<Btn onClick={() => void q.refetch()}>Try Again</Btn>}
+          />
         </div>
       </Screen>
     );
