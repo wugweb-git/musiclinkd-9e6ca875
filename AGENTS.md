@@ -107,7 +107,12 @@ work modes, amenities — comes from `taxonomy_options`, never from an array in 
 `labelFor`, and compare cities with `sameCity` (`src/lib/place.ts`) rather than `===`.
 
 **Database.** Every schema change is a file in `supabase/migrations/`, applied through Lovable's
-own tooling, never pasted into the live database by hand. No new table, bucket, or rename of
+own tooling, never pasted into the live database by hand. While Lovable is out of credits, the
+owner may have a migration applied directly from the committed file on `main` — unchanged, and
+verified against the live database afterwards. It is always a committed file first.
+`supabase_migrations.schema_migrations` stopped being updated after `20260918160000`: later
+migrations are live without being recorded there, so it is not a record of what is applied.
+Nobody writes to it by hand. No new table, bucket, or rename of
 either without owner approval; propose the plan first.
 **Commit a snapshot to `supabase/dumps/` before any write to the live database**, named
 `YYYY-MM-DD-before-<change>.sql`, and reference it from the migration's header — that file is the
@@ -124,7 +129,7 @@ are the same profile cover. Media buckets, by job:
 | `covers` | Profile covers, any persona |
 | `gallery` | Profile and band gallery photos |
 | `listing-media` | Anything listed in Market: gear for sale or rent, any persona |
-| `business-media` | Equipment and facilities of a bookable space, as proof of what it offers; never for sale |
+| `business-media` | Equipment and facilities of a bookable space, as proof of what it offers; never for sale (5 MB) |
 | `verification-documents` | Private, owner-only |
 
 Equipment for sale or rent belongs in `listing-media`; the two buckets are not merged. The

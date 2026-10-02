@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — business-media takes 5 MB; how migrations are applied (3 Oct)
+
+- **`business-media` limit is 5 MB** (owner), was 10: migration
+  `20261003120000_business_media_5mb.sql` (snapshot `2026-10-03-before-business-media-5mb.sql`).
+  The app checks the same 5 MB on the resized photo before uploading. Other buckets are
+  unchanged.
+- `20261003110000_business_media_bucket.sql` was applied directly to the live database by the
+  owner (Lovable out of credits), unchanged and verified: `business-media` and its four rules are
+  live, the `studio-media` rules are gone. The empty `studio-media` bucket stays until removed
+  from the Storage dashboard.
+- **`AGENTS.md`:** while Lovable is out of credits, a committed migration may be applied directly by
+  the owner, unchanged and verified afterwards; `schema_migrations` stopped being updated after
+  `20260918160000` and is not a record of what is applied, and nobody writes to it.
+
 ### Fixed — studio photos could never upload; their bucket is renamed for its job (3 Oct)
 
 - The four `studio-media` storage rules checked the file's folder inside a subquery on `studios`,

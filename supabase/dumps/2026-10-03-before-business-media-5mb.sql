@@ -1,0 +1,9 @@
+-- Snapshot before 20261003120000_business_media_5mb.sql. Definitions only, no user data.
+-- Source: 20261003110000_business_media_bucket.sql as applied live on 2026-10-03 (owner-verified).
+--
+-- storage.buckets
+--   id: business-media · public: true · file_size_limit: 10485760 (10 MB)
+--   allowed_mime_types: {image/jpeg,image/png,image/webp}
+--
+-- Undo:
+--   UPDATE storage.buckets SET file_size_limit = 10485760 WHERE id = 'business-media';
