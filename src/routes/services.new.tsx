@@ -589,7 +589,8 @@ function StudioSetupNote({ what }: { what: "amenities" | "equipment" }) {
         No {what} on your studio yet. Add them with photos, then pick them here.
       </p>
       <BtnLink
-        to="/business/availability"
+        to="/profile/edit"
+        search={{ section: "facilities" }}
         hash={what === "amenities" ? "facilities" : "equipment"}
         variant="outline"
         className="mt-3 w-full"
