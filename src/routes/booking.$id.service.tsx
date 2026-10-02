@@ -10,7 +10,7 @@ import { serviceItem } from "@/lib/service-item";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { requestBooking } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { earliestBookingDate } from "@/lib/studio-slots";
+import { earliestBookingDate } from "@/lib/bookable-slots";
 
 export const Route = createFileRoute("/booking/$id/service")({
   head: () => ({

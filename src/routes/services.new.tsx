@@ -46,8 +46,8 @@ import { haptic } from "@/lib/haptics";
 import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
-import { getMyStudioEquipment } from "@/lib/studio-owner.functions";
-import { useMyStudioPhotos } from "@/components/ml/studio-setup";
+import { getMyBookableEquipment } from "@/lib/bookable-owner.functions";
+import { useMyBookablePhotos } from "@/components/ml/bookable-setup";
 import { sized } from "@/lib/image-url";
 
 /*
@@ -172,14 +172,14 @@ function NewService() {
   // examples (owner, 22 Sep 2026). The studio's own lists, with their photos.
   const [amenitySlugs, setAmenitySlugs] = useState<string[]>([]);
   const [equipmentIds, setEquipmentIds] = useState<string[]>([]);
-  const loadEquipment = useServerFn(getMyStudioEquipment);
+  const loadEquipment = useServerFn(getMyBookableEquipment);
   const studioEquipment = useQuery({
     queryKey: ["studio-equipment", "mine"],
     queryFn: () => loadEquipment(),
     enabled: signedIn,
     retry: false,
   });
-  const studioPhotos = useMyStudioPhotos();
+  const studioPhotos = useMyBookablePhotos();
   const isStudio = studioEquipment.isSuccess;
   const [price, setPrice] = useState("");
   const [turnaround, setTurnaround] = useState<string | null>(null);

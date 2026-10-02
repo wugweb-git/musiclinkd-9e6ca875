@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarClock, XCircle, CalendarDays } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
-import { BookingSkeleton, StudioBookingRecord } from "@/components/ml/booking";
+import { BookingSkeleton, BookingRecord } from "@/components/ml/booking";
 import { BusinessOnlyGate, LoadError, Segmented, EmptyState } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { isoDate } from "@/lib/when";
-import { listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
+import { listBookableBookings, type BookingRequest } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
@@ -60,7 +60,7 @@ function ProviderBookings() {
 function ProviderBookingsContent() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("requests");
   const { signedIn } = useAuth();
-  const load = useServerFn(listStudioBookings);
+  const load = useServerFn(listBookableBookings);
   const q = useQuery({
     queryKey: ["studio-bookings"],
     queryFn: () => load(),
@@ -152,7 +152,7 @@ function List({ items, emptyTitle }: { items: BookingRequest[]; emptyTitle: stri
   return (
     <div className="space-y-3">
       {items.map((b) => (
-        <StudioBookingRecord key={b.id} b={b} side="studio" />
+        <BookingRecord key={b.id} b={b} side="studio" />
       ))}
     </div>
   );

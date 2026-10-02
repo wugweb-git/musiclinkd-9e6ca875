@@ -178,7 +178,7 @@ async function studios(
   limit: number,
 ): Soft<SearchHit> {
   let query = client
-    .from("studios")
+    .from("bookables")
     .select(
       "id, slug, name, description, location, image_url, rating, review_count, verified_gold, owner:profiles!studios_owner_profile_id_fkey(username)",
       { count: "exact" },
