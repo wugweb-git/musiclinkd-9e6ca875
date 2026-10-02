@@ -112,9 +112,13 @@ work modes, amenities — comes from `taxonomy_options`, never from an array in 
 undo.
 Data access is server-side `createServerFn` in `*.functions.ts` with `requireSupabaseAuth`; no
 client-side Supabase writes. The one exception is file uploads (photos, verification documents):
-they go from the browser straight to Supabase Storage (owner, 3 Oct 2026), into the user's own
-folder under storage RLS, after a type and size check and, for photos, a resize in the browser
-(`checkPickedImage`, `downscaleImage`). The row that points at the file is still written server-side. Private user details live in owner-only `profile_private`.
+they go from the browser straight to Supabase Storage (owner, 3 Oct 2026). That is allowed because
+the storage rules enforce ownership: every bucket only accepts files inside the uploader's own
+folder (their user id, or a studio they own), so a server hop would protect nothing more. Files
+are type- and size-checked first and photos resized in the browser (`checkPickedImage`,
+`downscaleImage`); the row that points at a file is still written server-side. A storage rule
+that checks a folder inside a subquery must say `objects.name` — a bare `name` can resolve to the
+subquery's table (20261003100000_fix_studio_media_policies.sql). Private user details live in owner-only `profile_private`.
 
 ## Checks
 

@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — studio photos could never upload (3 Oct)
+
+- The four `studio-media` storage rules checked the file's folder inside a subquery on `studios`,
+  where a bare `name` meant the studio's display name, not the file's path, so the check never
+  passed: owners could not upload, replace or delete studio photos. Migration
+  `20261003100000_fix_studio_media_policies.sql` says `objects.name`. **Not applied yet:** it needs
+  a snapshot in `supabase/dumps/` first, then applying to the live database, then one studio photo
+  upload to confirm.
+- `AGENTS.md` records why browser uploads are allowed (the storage rules enforce ownership) and the
+  `objects.name` rule for storage policies.
+
 ### Changed — uploads stay in the browser, with conditions (3 Oct)
 
 - **Owner decision:** photo and document uploads keep going from the browser straight to Supabase
