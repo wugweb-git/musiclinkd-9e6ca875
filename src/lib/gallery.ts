@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-import { checkImageFile } from "@/lib/profile-images";
+import { checkImageFile, checkPickedImage } from "@/lib/profile-images";
+import { downscale, downscaleImage } from "@/lib/image-downscale";
 import { GALLERY_BUCKET } from "@/lib/gallery.functions";
 
 /*
@@ -14,7 +15,10 @@ import { GALLERY_BUCKET } from "@/lib/gallery.functions";
 const MAX_BYTES = 10 * 1024 * 1024;
 
 export async function uploadGalleryPhoto(file: File): Promise<string> {
-  const ext = checkImageFile(file, MAX_BYTES);
+  // Resized in the browser like every other photo; the bucket's limit applies to the result.
+  checkPickedImage(file);
+  const scaled = await downscaleImage(file, downscale.photo);
+  const ext = checkImageFile(scaled, MAX_BYTES);
 
   const { data: session } = await supabase.auth.getSession();
   const userId = session.session?.user.id;
@@ -23,7 +27,7 @@ export async function uploadGalleryPhoto(file: File): Promise<string> {
   // Several photos can go up in one pick, so the name carries a random part as well as the time.
   const path = `${userId}/gallery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const bucket = supabase.storage.from(GALLERY_BUCKET);
-  const { error } = await bucket.upload(path, file, { contentType: file.type, upsert: false });
+  const { error } = await bucket.upload(path, scaled, { contentType: scaled.type, upsert: false });
   if (error) throw new Error(error.message);
   return bucket.getPublicUrl(path).data.publicUrl;
 }

@@ -122,7 +122,7 @@ export function Brand({
         <LogoMark className={`w-6 text-brand ${animated ? "animate-sound-check" : ""}`} />
         <span className="pointer-events-none absolute -inset-0.5 rounded-sm border border-brand/20" />
       </span>
-      <span className="text-3 font-bold tracking-tight text-foreground">MusicLinkd</span>
+      <span className="text-3 font-bold text-foreground">MusicLinkd</span>
     </div>
   );
 }
@@ -138,7 +138,7 @@ export function AuthHeading({
 }) {
   return (
     <div className={cn("mb-3.5 sm:mb-4", className)}>
-      <h1 className="text-3 font-bold tracking-tight text-foreground leading-tight">{title}</h1>
+      <h1 className="text-3 font-bold text-foreground leading-tight">{title}</h1>
       {sub ? <p className="mt-1 text-1 leading-snug text-muted-foreground">{sub}</p> : null}
     </div>
   );

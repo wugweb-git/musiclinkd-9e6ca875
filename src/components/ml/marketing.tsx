@@ -56,7 +56,7 @@ export function BottomCta({
 }) {
   return (
     <section className={cn("rounded-3xl bg-ink px-6 py-10 text-center text-background", className)}>
-      <h2 className="mx-auto max-w-[18ch] text-4 font-extrabold leading-[1.05]">{title}</h2>
+      <h2 className="mx-auto max-w-[18ch] text-4 font-bold leading-[1.05]">{title}</h2>
       <p className="mx-auto mt-3 max-w-[38ch] text-sm leading-relaxed text-background/70">{body}</p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <CtaAction
@@ -107,9 +107,7 @@ export function DownloadCta({
     // The screenshot's ground is a warm cream; ours is the app's own grey, so the block belongs to
     // this product rather than to a template.
     <section className={cn("bg-subtle px-6 py-14 text-center", className)}>
-      <h2 className="mx-auto max-w-[22ch] text-4 font-extrabold leading-[1.08] tracking-tight">
-        {title}
-      </h2>
+      <h2 className="mx-auto max-w-[22ch] text-4 font-bold leading-[1.08]">{title}</h2>
       <p className="mx-auto mt-5 max-w-[40ch] text-2 leading-relaxed">{body}</p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
         {ios ? (
@@ -214,7 +212,7 @@ export function ArticleCard({ article: a }: { article: Article }) {
           </span>
         ) : null}
       </div>
-      <h3 className="mt-5 text-3 font-extrabold leading-tight tracking-tight">{a.title}</h3>
+      <h3 className="mt-5 text-3 font-bold leading-tight">{a.title}</h3>
       <p className="mt-4 flex flex-wrap items-center gap-3 text-2">
         <span className="text-muted-foreground">{a.date}</span>
         <span className="rounded-full bg-subtle px-3 py-1 text-1 font-semibold">{a.topic}</span>

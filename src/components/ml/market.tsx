@@ -172,8 +172,9 @@ export function PriceBlock({ price, size = "md" }: { price: PriceParts; size?: "
 
 export function TrustPill({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-status-category-bg px-2.5 py-1 text-1 font-semibold text-status-category-text">
-      <ShieldCheck size={iconSize.xs} strokeWidth={2.2} />
+    // A trust signal, not a category: neutral ink on grey. Purple is the category badge's alone.
+    <span className="inline-flex items-center gap-1 rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-foreground">
+      <ShieldCheck size={iconSize.xs} strokeWidth={2.2} aria-hidden />
       {label}
     </span>
   );

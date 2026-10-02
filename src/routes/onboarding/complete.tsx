@@ -102,7 +102,7 @@ function Complete() {
               </span>
             </div>
 
-            <h1 className="mt-4 text-3 font-bold tracking-tight text-foreground leading-tight">
+            <h1 className="mt-4 text-3 font-bold text-foreground leading-tight">
               {first
                 ? `You're officially on MusicLinkd, ${first}!`
                 : "You're officially on MusicLinkd!"}

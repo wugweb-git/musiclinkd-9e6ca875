@@ -126,7 +126,7 @@ export function SpotifyRow() {
                     name="spotify-sharing"
                     checked={sharing === o.value}
                     onChange={() => setSharing(o.value)}
-                    className="h-4 w-4 accent-[var(--brand)]"
+                    className="h-4 w-4 accent-ink"
                   />
                   <span className="text-sm font-semibold">{o.label}</span>
                 </label>

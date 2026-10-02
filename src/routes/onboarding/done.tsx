@@ -68,7 +68,7 @@ function Done() {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs">
             <Sparkles size={26} className="animate-pop" style={beat(2)} />
           </div>
-          <h1 className="mt-4 text-3 font-bold tracking-tight text-foreground leading-tight">
+          <h1 className="mt-4 text-3 font-bold text-foreground leading-tight">
             {first ? `Welcome aboard, ${first}!` : "Welcome aboard!"}
           </h1>
           <p className="mx-auto mt-2 max-w-[320px] text-sm text-muted-foreground leading-relaxed">

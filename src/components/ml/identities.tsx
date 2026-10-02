@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
-import type { UserIdentity } from "@supabase/supabase-js";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { ChevronRight, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, Sheet } from "@/components/ml/ui";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  listMySignInMethods,
+  removeMySignInMethod,
+  type SignInMethod,
+} from "@/lib/identities.functions";
 import { iconSize } from "@/lib/tokens";
 
 /*
  * Sign-in methods: what this account can sign in with, and — once there's more than one — a way
- * to remove one. Supabase refuses to unlink an account's last identity, so nothing here offers
+ * to remove one, read and removed server-side (src/lib/identities.functions.ts). Supabase refuses to unlink an account's last identity, so nothing here offers
  * that either; the account always keeps at least one way in.
  *
  * Google and LinkedIn are sign-in only right now (owner, 18 Sep 2026: they will need this too).
@@ -30,23 +35,22 @@ function labelFor(provider: string) {
 }
 
 export function SignInMethodsRow() {
-  const [identities, setIdentities] = useState<UserIdentity[] | null>(null);
   const [open, setOpen] = useState(false);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const load = useServerFn(listMySignInMethods);
+  const unlink = useServerFn(removeMySignInMethod);
   // A failed read is its own state: it never reads as "no methods" or "your only method".
-  const [failed, setFailed] = useState(false);
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    setFailed(false);
-    void supabase.auth
-      .getUserIdentities()
-      .then(({ data, error }) => {
-        if (error || !data) throw error ?? new Error("No identities");
-        setIdentities(data.identities);
-      })
-      .catch(() => setFailed(true));
-  }, [attempt]);
+  const q = useQuery({ queryKey: ["sign-in-methods"], queryFn: () => load() });
+  const identities = q.data ?? null;
+  const failed = q.isError;
+  const remove = useMutation({
+    mutationFn: (m: SignInMethod) => unlink({ data: { id: m.id } }),
+    onSuccess: async (_r, m) => {
+      toast.success(`${labelFor(m.provider)} removed`);
+      await queryClient.invalidateQueries({ queryKey: ["sign-in-methods"] });
+    },
+    onError: () => toast.error("Couldn't remove that. Try again."),
+  });
 
   const count = identities?.length ?? 0;
   const hint = failed
@@ -54,20 +58,6 @@ export function SignInMethodsRow() {
     : identities === null
       ? "Checking…"
       : identities.map((i) => labelFor(i.provider)).join(", ");
-
-  async function remove(identity: UserIdentity) {
-    setBusyId(identity.identity_id);
-    try {
-      const { error } = await supabase.auth.unlinkIdentity(identity);
-      if (error) throw error;
-      setIdentities((prev) => (prev ?? []).filter((i) => i.identity_id !== identity.identity_id));
-      toast.success(`${labelFor(identity.provider)} removed`);
-    } catch {
-      toast.error("Couldn't remove that. Try again.");
-    } finally {
-      setBusyId(null);
-    }
-  }
 
   return (
     <>
@@ -90,7 +80,7 @@ export function SignInMethodsRow() {
         {failed ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">Your sign-in methods didn't load.</p>
-            <Btn variant="outline" className="w-full" onClick={() => setAttempt((n) => n + 1)}>
+            <Btn variant="outline" className="w-full" onClick={() => void q.refetch()}>
               Try Again
             </Btn>
           </div>
@@ -100,14 +90,14 @@ export function SignInMethodsRow() {
           <div className="space-y-2">
             {(identities ?? []).map((identity) => (
               <div
-                key={identity.identity_id}
+                key={identity.id}
                 className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3"
               >
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold">{labelFor(identity.provider)}</span>
-                  {identity.identity_data?.["email"] ? (
+                  {identity.email ? (
                     <span className="block truncate text-1 text-muted-foreground">
-                      {String(identity.identity_data["email"])}
+                      {identity.email}
                     </span>
                   ) : null}
                 </span>
@@ -115,8 +105,8 @@ export function SignInMethodsRow() {
                   <Btn
                     variant="outline"
                     className="shrink-0"
-                    loading={busyId === identity.identity_id}
-                    onClick={() => void remove(identity)}
+                    loading={remove.isPending && remove.variables?.id === identity.id}
+                    onClick={() => remove.mutate(identity)}
                   >
                     Remove
                   </Btn>

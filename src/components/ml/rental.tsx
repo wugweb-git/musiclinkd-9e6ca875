@@ -67,7 +67,8 @@ export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md
 
 const rentalStatusTone: Record<RentalStatus, Tone> = {
   Requested: "warn",
-  "Offer sent": "category",
+  // Purple is for the category badge only; an offer waiting on the renter is a warning state.
+  "Offer sent": "warn",
   Confirmed: "neutral",
   Active: "good",
   Completed: "neutral",

@@ -5,6 +5,73 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — studio photos could never upload; their bucket is renamed for its job (3 Oct)
+
+- The four `studio-media` storage rules checked the file's folder inside a subquery on `studios`,
+  where a bare `name` meant the studio's display name, not the file's path, so the check never
+  passed: owners could not upload, replace or delete studio photos.
+- Migration `20261003110000_business_media_bucket.sql` creates **`business-media`** (same limits)
+  with the rules saying `objects.name`, and drops the old rules and the empty `studio-media`
+  bucket. The code uploads to and removes from `business-media` (`BUSINESS_MEDIA_BUCKET`). The
+  first fix, `20261003100000_fix_studio_media_policies.sql`, was never applied and is deleted.
+  **Not applied yet:** the policy snapshot is committed first, then Lovable applies it after the
+  merge, then one facility photo upload confirms it.
+- **Location data never leaves the phone in a public photo.** The resize used to hand back the
+  original file when it was already small or when re-encoding came out bigger, with its EXIF and
+  GPS position inside. Every public photo (profile, cover, gallery, listing, facility) is now
+  always re-drawn, which drops all metadata (checked in Chromium: a JPEG with a GPS tag comes out
+  with neither EXIF nor GPS, as WebP or JPEG); a photo that can't be re-drawn is refused with
+  "Couldn't prepare this photo. Try another one." Verification documents upload as picked, to a
+  private, owner-only bucket.
+- **`AGENTS.md`:** why browser uploads are allowed (the storage rules enforce ownership); the
+  `objects.name` rule; storage, tables and files named by the job, never one persona, with the
+  media bucket table; no new table, bucket or rename without owner approval; migrations applied
+  through Lovable, never by hand; snapshots hold definitions and counts, never user data; the
+  route count (27 of 146 in folders). `CLAUDE.local.md` is git-ignored.
+
+### Changed — uploads stay in the browser, with conditions (3 Oct)
+
+- **Owner decision:** photo and document uploads keep going from the browser straight to Supabase
+  Storage, into the user's own folder under storage RLS. `AGENTS.md` records this as the one
+  exception to "no client-side Supabase writes"; the row that points at a file is still written
+  server-side.
+- **Gallery photos are resized** before upload (`downscaleImage`), like profile, cover, listing and
+  studio photos already were; they went up at full camera size.
+- **A big phone photo is no longer turned away.** The size check used to run on the picked file,
+  so a 12 MB original failed a 10 MB limit it would have met once resized. Now a photo up to 25 MB
+  can be picked (`checkPickedImage`: JPEG, PNG or WebP), and the bucket's limit (5 MB avatars,
+  10 MB others) is checked on the resized file that actually uploads. The buckets enforce type
+  and size themselves as well.
+- Verification documents are unchanged: JPEG, PNG, WebP or PDF under 10 MB, uploaded as picked so
+  they stay legible.
+
+### Changed — tokens and brand (P1-14, 3 Oct)
+
+- **Purple is the category badge's alone.** `TrustPill` is neutral ink on grey; a rental's "Offer
+  sent" is a warning tone. Spotify's sharing radios are ink, not a resting pink.
+- **`--primary`, `--ring` and `--selected-bg`** point at `--ink` instead of repeating `#0d0d0d`.
+- **Skeletons pulse at 1.4s** (`--animate-pulse`), not Tailwind's 2s.
+- **Weight 800 is gone:** every `font-extrabold` is `font-bold` (marketing, Gear CTA, a price).
+- **Tracking is normal.** Every `tracking-tight`/`wide`/`widest`/`[-0.02em]` in app code is removed,
+  wordmarks included. The one exception is the splash's all-caps label, with its reason beside it.
+- **10/11px:** every `text-[10px]`/`text-[11px]` in product code is metadata or a compact label
+  (count badges, timestamps, avatar initials, chart and player labels), so all stay.
+- **`AGENTS.md`** says both rules (token decisions 2 and 3): 10/11px only for metadata and compact
+  labels, no other `text-[Npx]`; normal tracking unless a named role and reason sit beside it.
+
+### Changed — data access moves server-side (P1-11, 3 Oct)
+
+- **Sign-in methods** are read and removed through server functions
+  (`src/lib/identities.functions.ts`), not by Supabase Auth calls from the browser. The server
+  refuses to remove an account's last method before asking Supabase, and only removes one of the
+  caller's own. The row uses React Query: loading, an error with retry, per-method pending.
+- **Plays** are recorded through a server function (`recordPortfolioPlay`), not a database call from
+  the browser. The database still decides what counts.
+- **Still direct from the browser, pending a decision:** photo and document uploads to Supabase
+  Storage (`gallery.ts`, `listing-photos.ts`, `studio-photos.ts`, `profile-images.ts`,
+  `verification-documents.ts`). Reads that stay client-side by design: taxonomy options and the
+  username-availability check.
+
 ### Changed — the smaller calls (P1-8 #14, 3 Oct)
 
 - **Saved searches show.** They were stored (`saved_searches`) and could be saved from Market and
