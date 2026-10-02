@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
-import { StateCard as BaseStateCard, StatusPill as BaseStatusPill } from "@/components/ml/kit";
+import { StatusPill as BaseStatusPill } from "@/components/ml/kit";
 import { MediaEmbed } from "./media-embed";
 import { playsCountedFromLabel } from "@/lib/plays-cutoff";
 import { cn } from "@/lib/utils";
@@ -322,20 +322,6 @@ export function PortfolioSkeleton() {
       ))}
     </div>
   );
-}
-
-export function StateCard({
-  title,
-  body,
-  action,
-  tone = "neutral",
-}: {
-  title: string;
-  body: string;
-  action?: ReactNode;
-  tone?: "neutral" | "error";
-}) {
-  return <BaseStateCard title={title} body={body} tone={tone} action={action} />;
 }
 
 export function SelectableChips({

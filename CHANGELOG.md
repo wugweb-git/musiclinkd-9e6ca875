@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one set of state surfaces (P1-8 #12, 3 Oct)
+
+- **`EmptyState`** (kit) is the one empty state, with a semantic `kind`: `default`, `no-results`,
+  `filtered`, `action-required`. Each kind draws a layout screens already used (no new layouts);
+  the old `variant` prop is gone. The six Market empty states that showed an emoji (📭 🎚 🛍️ 🤝 🎸
+  🔍) show Lucide icons. Booking's empty states keep their calendar icon in the default layout.
+- **`LoadError`** is the error state: the bookings list and a studio's availability use it, with
+  Try Again. **`OfflineBanner`** (kit) is the offline state: booking and onboarding pass their own
+  words. **`StateCard`** (kit) replaces the portfolio and QR copies. **`Loading`** is built on
+  shadcn's `Skeleton`.
+- An empty profile section is `EmptyState` with `ProfileCta`, the owner's typed way out (profile
+  edit, or new work of one kind).
+- **Removed:** Market's and booking's `EmptyState` wrappers, booking's `ErrorState`, booking's and
+  onboarding's `OfflineBanner`, `ProfileEmpty`, the portfolio and QR `StateCard` wrappers, QR's
+  `Skeleton`, `RentalSkeleton` and `LoaderSkeleton` (`src/components/skeleton.tsx`, no consumer).
+
 ### Changed — filters and reports (P1-8 #11, 3 Oct)
 
 - **`ReportSheet`** is the one report sheet: any subject (listing, rental, profile, review) with

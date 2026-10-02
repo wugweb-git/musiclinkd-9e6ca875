@@ -1,3 +1,4 @@
+import { StateCard } from "./kit";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { demoPortfolio, mediaStateCopy, workTypes, type PortfolioItem } from "@/data/portfolio";
@@ -8,7 +9,6 @@ import {
   PortfolioHeader,
   PortfolioMediaGrid,
   PortfolioSkeleton,
-  StateCard,
   StatusPill,
   WorkCard,
   WorkTypeIcon,

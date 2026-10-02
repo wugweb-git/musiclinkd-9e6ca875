@@ -1,3 +1,4 @@
+import { StateCard } from "@/components/ml/kit";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { isMyAccountBusiness } from "@/lib/profile-groups.functions";
@@ -6,7 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { TalentProfileExperience } from "@/components/ml/talent-profile";
 import { ProfileSkeleton } from "@/components/ml/profile";
 import { PublicProfileScreen, loadPublicProfile } from "@/components/ml/public-profile";
-import { StateCard } from "@/components/ml/portfolio";
+
 import { ownerProfile } from "@/data/profile";
 import {
   getMyProfile,

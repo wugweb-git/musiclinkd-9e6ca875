@@ -1,3 +1,6 @@
+import { iconSize } from "@/lib/tokens";
+import { CalendarDays } from "lucide-react";
+import { EmptyState, LoadError, OfflineBanner } from "@/components/ml/kit";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -7,9 +10,6 @@ import {
   AvailabilityCalendar,
   CalendarSkeleton,
   DurationPicker,
-  EmptyState,
-  ErrorState,
-  OfflineBanner,
   SlotPicker,
   StepDots,
   StickyBar,
@@ -141,22 +141,33 @@ function Schedule() {
       <main className="px-5 pt-4">
         <StepDots step={2} total={5} />
 
-        {sim === "offline" ? <OfflineBanner onRetry={() => setSim("ok")} /> : null}
+        {sim === "offline" ? (
+          <OfflineBanner
+            body="Availability may have changed. We won't confirm a booking until you're back online."
+            onRetry={() => setSim("ok")}
+          />
+        ) : null}
 
         <div className="mt-4">
           {sim === "loading" || calendar.isLoading ? (
             <CalendarSkeleton />
           ) : sim === "error" || calendar.isError ? (
-            <ErrorState
-              title="Availability didn't load"
-              message="We couldn't reach this provider's calendar just now."
-              onRetry={() => {
-                setSim("ok");
-                void calendar.refetch();
-              }}
+            <LoadError
+              what="this provider's availability"
+              action={
+                <Btn
+                  onClick={() => {
+                    setSim("ok");
+                    void calendar.refetch();
+                  }}
+                >
+                  Try Again
+                </Btn>
+              }
             />
           ) : cal && !hasWeeklyHours(cal.weeklyHours) ? (
             <EmptyState
+              icon={<CalendarDays size={iconSize.lg} aria-hidden />}
               title="Availability not set"
               body="This studio hasn't added its opening hours yet. Message them to ask about a date."
               action={
@@ -191,6 +202,7 @@ function Schedule() {
             {openSlots.length === 0 ? (
               <div className="mt-3">
                 <EmptyState
+                  icon={<CalendarDays size={iconSize.lg} aria-hidden />}
                   title="No availability on this date"
                   body={
                     next

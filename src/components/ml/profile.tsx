@@ -297,31 +297,21 @@ export type ProfileEmptyCta =
   | { label: string; to: "/profile/edit" }
   | { label: string; to: "/portfolio/new/$kind"; kind: WorkKind };
 
-export function ProfileEmpty({
-  title,
-  body,
-  cta,
-}: {
-  title: string;
-  body: string;
-  cta?: ProfileEmptyCta | undefined;
-}) {
+/**
+ * An owner's way out of an empty profile section, typed to where it can go: profile edit, or new
+ * portfolio work of one kind. Nothing when there is no CTA (a visitor's view).
+ */
+export function ProfileCta({ cta }: { cta?: ProfileEmptyCta | undefined }) {
+  if (!cta) return null;
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card p-5 text-center">
-      <h3 className="text-2">{title}</h3>
-      <p className="mx-auto mt-1 max-w-xs text-1 leading-relaxed text-muted-foreground">{body}</p>
-      {cta ? (
-        <BtnLink
-          {...(cta.to === "/portfolio/new/$kind"
-            ? { to: cta.to, params: { kind: cta.kind } }
-            : { to: cta.to })}
-          variant="outline"
-          className="mt-3 min-h-touch text-1"
-        >
-          {cta.label}
-        </BtnLink>
-      ) : null}
-    </div>
+    <BtnLink
+      {...(cta.to === "/portfolio/new/$kind"
+        ? { to: cta.to, params: { kind: cta.kind } }
+        : { to: cta.to })}
+      variant="outline"
+    >
+      {cta.label}
+    </BtnLink>
   );
 }
 

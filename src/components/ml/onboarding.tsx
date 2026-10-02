@@ -1,3 +1,4 @@
+import { OfflineBanner } from "./kit";
 // FLOW-02 — Onboarding UI kit. Extends Gestalt; no new tokens.
 
 import {
@@ -1328,14 +1329,6 @@ export function SelectField({
 /* Feedback                                                            */
 /* ------------------------------------------------------------------ */
 
-export function OfflineBanner() {
-  return (
-    <AuthNotice tone="warn" title="You're offline">
-      Your answers are kept on this phone and saved to your account when you're back online.
-    </AuthNotice>
-  );
-}
-
 export function ErrorBanner({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <AuthNotice
@@ -1360,7 +1353,13 @@ export function SavingBanner({ label = "Saving your answers…" }: { label?: str
 /** Offline and failed saves need attention; saving itself is shown quietly by SyncStatus. */
 export function SyncBanner({ state, onRetry }: { state: SyncState; onRetry: () => void }) {
   if (state === "loading") return <SavingBanner label="Loading your saved answers…" />;
-  if (state === "offline") return <OfflineBanner />;
+  if (state === "offline")
+    return (
+      <OfflineBanner
+        variant="warn"
+        body="Your answers are kept on this phone and saved to your account when you're back online."
+      />
+    );
   if (state === "error") {
     return (
       <ErrorBanner

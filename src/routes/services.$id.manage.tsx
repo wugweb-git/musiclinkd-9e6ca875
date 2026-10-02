@@ -4,8 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { Copy, Eye, EyeOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, Dialog, EmptyState, Loading, Row, StatusPill } from "@/components/ml/kit";
-import { StateCard } from "@/components/ml/portfolio";
+import { Card, Dialog, EmptyState, Loading, Row, StatusPill, StateCard } from "@/components/ml/kit";
+
 import { serviceStatusTone } from "@/data/services";
 import { useRefreshServices, useService } from "@/hooks/use-services";
 import { deleteService, duplicateService, setServiceStatus } from "@/lib/services.functions";

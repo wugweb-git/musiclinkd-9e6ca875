@@ -8,7 +8,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import QRCode from "qrcode";
 import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { StateCard as BaseStateCard } from "@/components/ml/kit";
 import { Btn, BtnLink, Sheet, VerifiedBadge } from "./ui";
 import { useViewer } from "./viewer";
 import { Price, SoonBadge } from "./kit";
@@ -314,22 +313,6 @@ export function DestinationPreviewCard({ preview }: { preview: DestinationPrevie
 /* Shared small pieces                                                  */
 /* ------------------------------------------------------------------ */
 
-export function StateCard({
-  title,
-  body,
-  children,
-}: {
-  title: string;
-  body: string;
-  children?: ReactNode;
-}) {
-  return (
-    <BaseStateCard variant="subtle" title={title} body={body}>
-      {children}
-    </BaseStateCard>
-  );
-}
-
 export function ActionRow({
   icon,
   label,
@@ -539,8 +522,4 @@ export function PrimaryPair({
       {secondary ? wrap(secondary, "outline") : null}
     </div>
   );
-}
-
-export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-lg bg-subtle ${className}`} />;
 }

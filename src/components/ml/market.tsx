@@ -630,23 +630,6 @@ export function SellerCard({
   );
 }
 
-/** Market's own emoji/spacing treatment, preserved via kit.tsx's EmptyState "square-lg" variant. */
-export function EmptyState({
-  emoji,
-  title,
-  body,
-  action,
-}: {
-  emoji: string;
-  title: string;
-  body: string;
-  action?: ReactNode;
-}) {
-  return (
-    <BaseEmptyState variant="square-lg" icon={emoji} title={title} body={body} action={action} />
-  );
-}
-
 export function ListingSkeleton() {
   return (
     <div className="overflow-hidden rounded-lg bg-subtle">

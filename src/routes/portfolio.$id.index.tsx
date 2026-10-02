@@ -9,14 +9,13 @@ import {
   MediaStatePill,
   CreditRow,
   PortfolioSkeleton,
-  StateCard,
   StatusPill,
   WorkAnalytics,
   WorkTypeIcon,
 } from "@/components/ml/portfolio";
 import { mediaStateCopy, workType, type PortfolioItem } from "@/data/portfolio";
 import { MediaEmbed } from "@/components/ml/media-embed";
-import { Dialog } from "@/components/ml/kit";
+import { Dialog, StateCard } from "@/components/ml/kit";
 import {
   deletePortfolioItem,
   getMyPortfolioItem,

@@ -1,10 +1,10 @@
+import { EmptyState } from "@/components/ml/kit";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowUpDown, X } from "lucide-react";
+import { ArrowUpDown, X, SlidersHorizontal } from "lucide-react";
 import { Screen, TopBar, Chip, IconBtn } from "@/components/ml/ui";
 import {
   ActiveFilters,
-  EmptyState,
   FilterButton,
   ListingGrid,
   MarketFilterSheet,
@@ -112,7 +112,8 @@ function CategoryScreen() {
           <ListingGrid items={items} />
         ) : (
           <EmptyState
-            emoji="🎚"
+            icon={<SlidersHorizontal size={iconSize.lg} aria-hidden />}
+            kind="filtered"
             title="Nothing here yet"
             body="No listings in this category yet. Clear a filter to see more."
           />

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarClock, XCircle } from "lucide-react";
+import { CalendarClock, XCircle, CalendarDays } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
-import { BookingSkeleton, EmptyState, StudioBookingRecord } from "@/components/ml/booking";
-import { BusinessOnlyGate, LoadError, Segmented } from "@/components/ml/kit";
+import { BookingSkeleton, StudioBookingRecord } from "@/components/ml/booking";
+import { BusinessOnlyGate, LoadError, Segmented, EmptyState } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { isoDate } from "@/lib/when";
 import { listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
@@ -122,6 +122,7 @@ function ProviderBookingsContent() {
         <div className="mt-4">
           {!signedIn ? (
             <EmptyState
+              icon={<CalendarDays size={iconSize.lg} aria-hidden />}
               title="Sign in to see your bookings"
               body="Requests for a space you run appear here."
             />
@@ -140,7 +141,13 @@ function ProviderBookingsContent() {
 
 function List({ items, emptyTitle }: { items: BookingRequest[]; emptyTitle: string }) {
   if (items.length === 0) {
-    return <EmptyState title={emptyTitle} body="Sessions appear here once they're requested." />;
+    return (
+      <EmptyState
+        icon={<CalendarDays size={iconSize.lg} aria-hidden />}
+        title={emptyTitle}
+        body="Sessions appear here once they're requested."
+      />
+    );
   }
   return (
     <div className="space-y-3">

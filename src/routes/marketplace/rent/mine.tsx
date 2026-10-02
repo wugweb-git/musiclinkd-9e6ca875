@@ -1,10 +1,12 @@
+import { iconSize } from "@/lib/tokens";
+import { Inbox } from "lucide-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
-import { EmptyState } from "@/components/ml/market";
-import { LoadError, Loading, Segmented } from "@/components/ml/kit";
+
+import { LoadError, Loading, Segmented, EmptyState } from "@/components/ml/kit";
 import { BookingCard } from "@/components/ml/rental";
 import { type RentalStatus } from "@/data/rentals";
 import { listMyRentalBookings } from "@/lib/rentals.functions";
@@ -74,7 +76,8 @@ function MyRentals() {
         ) : null}
         {list.length === 0 && !(signedIn && q.isLoading) ? (
           <EmptyState
-            emoji="📭"
+            icon={<Inbox size={iconSize.lg} aria-hidden />}
+            kind="action-required"
             title={`No ${tab.toLowerCase()} rentals`}
             body="When you rent equipment through MusicLinkd, it will appear here with dates, deposits and return reminders."
             action={<BtnLink to="/marketplace/rent">Explore Equipment</BtnLink>}

@@ -14,11 +14,11 @@ import {
   VerifiedBadge,
 } from "@/components/ml/ui";
 import { PersonRow } from "@/components/ml/cards";
-import { Segmented } from "@/components/ml/kit";
+import { Segmented, StateCard } from "@/components/ml/kit";
 import { SectionActionLink } from "@/components/ml/links";
 import { ListingGrid } from "@/components/ml/market";
 import { OpportunityCard } from "@/components/ml/opportunity";
-import { StateCard } from "@/components/ml/portfolio";
+
 import { useAuth } from "@/hooks/use-auth";
 import { searchPeople } from "@/lib/profile-groups.functions";
 import {

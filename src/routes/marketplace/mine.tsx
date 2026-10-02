@@ -13,10 +13,12 @@ import {
   Tag,
   Trash2,
   type LucideIcon,
+  ShoppingBag,
+  Handshake,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
-import { Dialog, LoadError, Price, StatusPill } from "@/components/ml/kit";
-import { EmptyState, MarketCategoryIcon } from "@/components/ml/market";
+import { Dialog, LoadError, Price, StatusPill, EmptyState } from "@/components/ml/kit";
+import { MarketCategoryIcon } from "@/components/ml/market";
 import {
   clearListingDraft,
   readListingDraft,
@@ -268,7 +270,8 @@ function Mine() {
             </div>
           ) : (
             <EmptyState
-              emoji="🛍️"
+              icon={<ShoppingBag size={iconSize.lg} aria-hidden />}
+              kind="action-required"
               title="No listings yet"
               body="Everything you list on the marketplace shows up here."
             />
@@ -391,7 +394,8 @@ function Mine() {
             </div>
           ) : (
             <EmptyState
-              emoji="🤝"
+              icon={<Handshake size={iconSize.lg} aria-hidden />}
+              kind="action-required"
               title="No offers yet"
               body="Offers buyers make on your listings show up here."
             />

@@ -42,12 +42,12 @@ import { cn } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
 import { NotificationsBell } from "./tab-header";
-import { Price } from "./kit";
+import { EmptyState, Price } from "./kit";
 import {
   AudioTrackCard,
   MoreSheet,
   RatingSummary,
-  ProfileEmpty,
+  ProfileCta,
   type ProfileEmptyCta,
   ProfileHero,
   ProfileSection,
@@ -553,10 +553,14 @@ function Overview({
             </div>
           </div>
         ) : (
-          <ProfileEmpty
+          <EmptyState
             title="No summary yet"
             body="This professional has not written a summary yet."
-            cta={owner ? { label: "Write a summary", to: "/profile/edit" } : undefined}
+            action={
+              <ProfileCta
+                cta={owner ? { label: "Write a summary", to: "/profile/edit" } : undefined}
+              />
+            }
           />
         )}
       </ProfileSection>
@@ -586,10 +590,10 @@ function Overview({
         </ProfileSection>
       ) : (
         <ProfileSection title="Audio portfolio">
-          <ProfileEmpty
+          <EmptyState
             title="No audio yet"
             body="This professional has not added audio samples yet."
-            cta={owner ? addWork("Add audio", "track") : undefined}
+            action={<ProfileCta cta={owner ? addWork("Add audio", "track") : undefined} />}
           />
         </ProfileSection>
       )}
@@ -659,10 +663,10 @@ function Portfolio({
               />
             ))
           ) : (
-            <ProfileEmpty
+            <EmptyState
               title="No tracks added"
               body="Audio samples, demos and sessions will appear here."
-              cta={owner ? addWork("Add track", "track") : undefined}
+              action={<ProfileCta cta={owner ? addWork("Add track", "track") : undefined} />}
             />
           )}
         </div>
@@ -675,10 +679,10 @@ function Portfolio({
             ))
           ) : (
             <div className="w-full">
-              <ProfileEmpty
+              <EmptyState
                 title="No videos yet"
                 body="Performance and studio videos will appear here."
-                cta={owner ? addWork("Add video", "video") : undefined}
+                action={<ProfileCta cta={owner ? addWork("Add video", "video") : undefined} />}
               />
             </div>
           )}
@@ -734,7 +738,7 @@ function Services({ p, onHire }: { p: TalentProfile; onHire: () => void }) {
           ))
         ) : (
           // No owner button: the new-service flow does not save a service yet.
-          <ProfileEmpty
+          <EmptyState
             title="No services listed"
             body="This professional has not listed services yet."
           />
@@ -753,7 +757,7 @@ function About({ p }: { p: TalentProfile }) {
             <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
           </div>
         ) : (
-          <ProfileEmpty title="No bio yet" body="This professional has not written a bio yet." />
+          <EmptyState title="No bio yet" body="This professional has not written a bio yet." />
         )}
       </ProfileSection>
       <ProfileSection title="Professional details">
@@ -764,7 +768,7 @@ function About({ p }: { p: TalentProfile }) {
             ))}
           </div>
         ) : (
-          <ProfileEmpty
+          <EmptyState
             title="No details yet"
             body="Setup, tools and working details will appear here."
           />
@@ -774,7 +778,7 @@ function About({ p }: { p: TalentProfile }) {
         {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
           <MusicIdentityBento p={p} />
         ) : (
-          <ProfileEmpty
+          <EmptyState
             title="No music identity yet"
             body="Instruments and languages will appear here."
           />
@@ -784,7 +788,7 @@ function About({ p }: { p: TalentProfile }) {
         {p.links.length ? (
           <SocialLinks links={p.links} />
         ) : (
-          <ProfileEmpty title="No links yet" body="Streaming and social links will appear here." />
+          <EmptyState title="No links yet" body="Streaming and social links will appear here." />
         )}
       </ProfileSection>
       <ProfileSection title="Connections">
@@ -827,7 +831,7 @@ function Reviews({ p, owner }: { p: TalentProfile; owner: boolean }) {
             ))}
           </ReviewRail>
         ) : (
-          <ProfileEmpty
+          <EmptyState
             title="No reviews yet"
             body="Reviews appear here once work booked through MusicLinkd is complete."
           />

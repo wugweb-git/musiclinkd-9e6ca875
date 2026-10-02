@@ -1,3 +1,5 @@
+import { Skeleton } from "@/components/ui/skeleton";
+import { StateCard } from "@/components/ml/kit";
 /**
  * FLOW-23 · QR-08..16 destination results + QR-29..35 invalid / expired / private /
  * deleted / deactivated / offline / error states.
@@ -8,13 +10,7 @@ import { PUBLIC_HOST } from "@/lib/site";
 import { useEffect, useState } from "react";
 import { MessageCircle, ScanLine, Share2, UserPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import {
-  DestinationPreviewCard,
-  StateCard,
-  Skeleton,
-  PrimaryPair,
-  nativeShare,
-} from "@/components/ml/qr";
+import { DestinationPreviewCard, PrimaryPair, nativeShare } from "@/components/ml/qr";
 import { canonicalUrl, previewFor, resolveCode, statusCopy } from "@/data/identity";
 import { iconSize } from "@/lib/tokens";
 
@@ -66,6 +62,7 @@ function QrResult() {
           </div>
         ) : phase === "offline" ? (
           <StateCard
+            variant="subtle"
             title="You're offline"
             body="We can't open this code until you're back online. The code stays valid."
           >
@@ -126,6 +123,7 @@ function QrResult() {
           </>
         ) : (
           <StateCard
+            variant="subtle"
             title={statusCopy[dest.status === "active" ? "invalid" : dest.status].title}
             body={statusCopy[dest.status === "active" ? "invalid" : dest.status].body}
           >

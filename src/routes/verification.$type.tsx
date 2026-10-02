@@ -13,8 +13,8 @@ import {
   Eye,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet, VerifiedBadge } from "@/components/ml/ui";
-import { Card, Dialog, StatusPill, EmptyState, Loading, Row } from "@/components/ml/kit";
-import { StateCard } from "@/components/ml/portfolio";
+import { Card, Dialog, StatusPill, EmptyState, Loading, Row, StateCard } from "@/components/ml/kit";
+
 import { statusLabel, statusTone, verificationSteps } from "@/data/verification";
 import { formatDay, gateFor, useMyVerification } from "@/hooks/use-my-verification";
 import { haptic } from "@/lib/haptics";
