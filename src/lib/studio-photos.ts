@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { checkImageFile } from "@/lib/profile-images";
+import { checkImageFile, checkPickedImage } from "@/lib/profile-images";
 import { downscale, downscaleImage } from "@/lib/image-downscale";
 import { STUDIO_MEDIA_BUCKET } from "@/lib/studio-photos.functions";
 
@@ -14,7 +14,7 @@ import { STUDIO_MEDIA_BUCKET } from "@/lib/studio-photos.functions";
 const MAX_BYTES = 10 * 1024 * 1024;
 
 export async function uploadStudioPhoto(studioId: string, file: File): Promise<string> {
-  checkImageFile(file, MAX_BYTES);
+  checkPickedImage(file);
   const scaled = await downscaleImage(file, downscale.photo);
   const ext = checkImageFile(scaled, MAX_BYTES);
   const path = `${studioId}/photo-${Date.now()}.${ext}`;

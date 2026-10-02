@@ -111,7 +111,10 @@ work modes, amenities — comes from `taxonomy_options`, never from an array in 
 `YYYY-MM-DD-before-<change>.sql`, and reference it from the migration's header — that file is the
 undo.
 Data access is server-side `createServerFn` in `*.functions.ts` with `requireSupabaseAuth`; no
-client-side Supabase writes. Private user details live in owner-only `profile_private`.
+client-side Supabase writes. The one exception is file uploads (photos, verification documents):
+they go from the browser straight to Supabase Storage (owner, 3 Oct 2026), into the user's own
+folder under storage RLS, after a type and size check and, for photos, a resize in the browser
+(`checkPickedImage`, `downscaleImage`). The row that points at the file is still written server-side. Private user details live in owner-only `profile_private`.
 
 ## Checks
 

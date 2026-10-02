@@ -24,6 +24,20 @@ const EXTENSION: Record<string, string> = {
 /** Value for an `<input type="file" accept>` that matches what the buckets take. */
 export const PROFILE_IMAGE_ACCEPT = Object.keys(EXTENSION).join(",");
 
+/**
+ * The largest photo a person can pick. Photos are resized in the browser before upload
+ * (image-downscale.ts), so a phone's 8–15 MB original is fine to pick; what has to fit the
+ * bucket's limit is the resized file, which `checkImageFile` checks after resizing. The buckets
+ * enforce their own type and size limits too.
+ */
+const MAX_PICK_BYTES = 25 * 1024 * 1024;
+
+/** A picked photo's type and size, before resizing. Throws with what to do instead. */
+export function checkPickedImage(file: File): void {
+  if (!EXTENSION[file.type]) throw new Error("Use a JPEG, PNG or WebP image.");
+  if (file.size > MAX_PICK_BYTES) throw new Error("Use a photo under 25 MB.");
+}
+
 /** The file's extension once it is an image the buckets take and under `maxBytes`; throws if not. */
 export function checkImageFile(file: File, maxBytes: number): string {
   const ext = EXTENSION[file.type];
@@ -34,7 +48,7 @@ export function checkImageFile(file: File, maxBytes: number): string {
 
 export async function uploadProfileImage(kind: ProfileImageKind, file: File): Promise<string> {
   // Check what the user picked, then upload a version sized for what it is displayed at.
-  checkImageFile(file, MAX_BYTES[kind]);
+  checkPickedImage(file);
   const scaled = await downscaleImage(file, downscale[kind]);
   const ext = checkImageFile(scaled, MAX_BYTES[kind]);
 

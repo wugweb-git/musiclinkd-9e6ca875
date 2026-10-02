@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { checkImageFile } from "@/lib/profile-images";
+import { checkImageFile, checkPickedImage } from "@/lib/profile-images";
 import { downscale, downscaleImage } from "@/lib/image-downscale";
 
 /*
@@ -14,7 +14,7 @@ const MAX_BYTES = 10 * 1024 * 1024;
 export const MAX_LISTING_PHOTOS = 5;
 
 export async function uploadListingPhoto(file: File): Promise<string> {
-  checkImageFile(file, MAX_BYTES);
+  checkPickedImage(file);
   const scaled = await downscaleImage(file, downscale.photo);
   const ext = checkImageFile(scaled, MAX_BYTES);
   const { data: session } = await supabase.auth.getSession();

@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — uploads stay in the browser, with conditions (3 Oct)
+
+- **Owner decision:** photo and document uploads keep going from the browser straight to Supabase
+  Storage, into the user's own folder under storage RLS. `AGENTS.md` records this as the one
+  exception to "no client-side Supabase writes"; the row that points at a file is still written
+  server-side.
+- **Gallery photos are resized** before upload (`downscaleImage`), like profile, cover, listing and
+  studio photos already were; they went up at full camera size.
+- **A big phone photo is no longer turned away.** The size check used to run on the picked file,
+  so a 12 MB original failed a 10 MB limit it would have met once resized. Now a photo up to 25 MB
+  can be picked (`checkPickedImage`: JPEG, PNG or WebP), and the bucket's limit (5 MB avatars,
+  10 MB others) is checked on the resized file that actually uploads. The buckets enforce type
+  and size themselves as well.
+- Verification documents are unchanged: JPEG, PNG, WebP or PDF under 10 MB, uploaded as picked so
+  they stay legible.
+
 ### Changed — tokens and brand (P1-14, 3 Oct)
 
 - **Purple is the category badge's alone.** `TrustPill` is neutral ink on grey; a rental's "Offer
