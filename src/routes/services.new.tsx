@@ -46,7 +46,7 @@ import { haptic } from "@/lib/haptics";
 import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
-import { getMyStudioEquipment } from "@/lib/studio-owner.functions";
+import { getMyStudioEquipment } from "@/lib/bookable-owner.functions";
 import { useMyStudioPhotos } from "@/components/ml/studio-setup";
 import { sized } from "@/lib/image-url";
 

@@ -1,10 +1,10 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { BookingDraftProvider } from "@/components/ml/booking-context";
 import { getStudio } from "@/lib/catalog.functions";
-import { getStudioCalendar } from "@/lib/studio-calendar.functions";
-import { getStudioPhotos } from "@/lib/studio-photos.functions";
+import { getStudioCalendar } from "@/lib/bookable-calendar.functions";
+import { getStudioPhotos } from "@/lib/bookable-photos.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { bookableFromStudio } from "@/lib/studio-view";
+import { bookableFromStudio } from "@/lib/bookable-view";
 import { listPublicServices } from "@/lib/services.functions";
 
 export const Route = createFileRoute("/booking/$id")({

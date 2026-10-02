@@ -157,7 +157,7 @@ function RequestReviewContent() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar
         title="Request"
-        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.studio_name ?? "Studio"}
+        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.bookable_name ?? "Studio"}
         back="/business/bookings"
       />
       <main className="px-5 pt-4">

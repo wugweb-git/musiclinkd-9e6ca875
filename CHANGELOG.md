@@ -5,6 +5,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — studio tables become bookables (3 Oct) — waits on the migration
+
+- **Migration `20261003130000_bookables_rename.sql`** (not applied): `studios` → `bookables`,
+  `studio_rooms` / `_blocks` / `_equipment` / `_photos` → `bookable_…`, every `studio_id` →
+  `bookable_id`, `reviews.target_studio_id` → `target_bookable_id`, `booking_requests.studio_name`
+  → `bookable_name`, and the four studio-named functions renamed. The 12 functions that name them
+  are rewritten from their live definitions by exact name swaps. Compatibility views (security
+  invoker) and wrapper functions keep the old table and function names working; the two renamed
+  columns on `booking_requests` and `reviews` can't keep an old name, so this and the code below go
+  live together. It rolls back unless the counts are 21 / 25 / 0 / 116 / 57, reviews 43 and
+  bookings 10, and every review, booking, room, equipment and photo link is unchanged. Nothing is
+  deleted: the 57 photo rows and all 43 reviews carry over.
+- **Code:** every query, row type and RPC uses the new table, column and function names, and the
+  generated database types match. `src/lib/studio-*.ts` are `src/lib/bookable-*.ts`. Constraint
+  names in join hints (`studios_owner_profile_id_fkey`), on-screen words, the `/discover/studios`
+  route and stored values (`studio`) are unchanged.
+- **Not yet:** exported names such as `getStudioCalendar`, `DiscoverStudio` and `StudioCard`, and
+  `studio-setup.tsx`; the cleanup migration that drops the compatibility views and functions.
+- `AGENTS.md` names the bookable tables and says the `studio*` shims are temporary.
+
 ### Changed — business-media takes 5 MB; how migrations are applied (3 Oct)
 
 - **`business-media` limit is 5 MB** (owner), was 10: migration

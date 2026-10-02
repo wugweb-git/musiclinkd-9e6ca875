@@ -158,13 +158,13 @@ const SELLER = `${OWNER}, rating, review_count, followers_count`;
 const STUDIO_FIELDS = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
   console_type, services, amenities, cancellation_policy, operating_hours, image_url, images,
   owner:profiles!studios_owner_profile_id_fkey(${SELLER}),
-  equipment:studio_equipment(id, name, category, quantity, included, sort_order)`;
+  equipment:bookable_equipment(id, name, category, quantity, included, sort_order)`;
 const STUDIO = `${STUDIO_FIELDS}, response_time, add_ons,
-  rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order, description, tiers),
+  rooms:bookable_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order, description, tiers),
   reviews(id, author_name, author_org, context, response, rating, body, created_at, tags)`;
 /** The studio read before 20260918240000_missing_data.sql, while its columns are not there yet. */
 const STUDIO_BEFORE = `${STUDIO_FIELDS},
-  rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order),
+  rooms:bookable_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order),
   reviews(id, author_name, rating, body, created_at)`;
 const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note,
   collaboration_type, location, status, applicant_count, created_at,
@@ -225,7 +225,7 @@ export const listStudios = createServerFn({ method: "GET" }).handler(async () =>
   const { data, error } = await withFallback(
     (select) =>
       liveOnly((live) => {
-        const query = client.from("studios").select(select);
+        const query = client.from("bookables").select(select);
         return (live ? query.is("archived_at" as never, null) : query).order("rating", {
           ascending: false,
           // A studio with no reviews yet goes after the rated ones, not before them.
@@ -245,7 +245,7 @@ export const getStudio = createServerFn({ method: "GET" })
     const { data: row, error } = await withFallback(
       (select) =>
         liveOnly((live) => {
-          const query = client.from("studios").select(select).eq("slug", data.slug);
+          const query = client.from("bookables").select(select).eq("slug", data.slug);
           return (live ? query.is("archived_at" as never, null) : query).maybeSingle();
         }),
       [STUDIO, STUDIO_BEFORE],

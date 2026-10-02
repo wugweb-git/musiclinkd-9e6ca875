@@ -3,13 +3,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
-import { myStudioId } from "@/lib/studio-calendar.functions";
+import { myStudioId } from "@/lib/bookable-calendar.functions";
 
 /*
- * Photos as proof for a studio's facilities and equipment (studio_photos): the owner adds and
- * removes them, anyone reads them on the studio page. subject_id is a studio_equipment id for
+ * Photos as proof for a studio's facilities and equipment (bookable_photos): the owner adds and
+ * removes them, anyone reads them on the studio page. subject_id is a bookable_equipment id for
  * equipment and a studio_amenities slug for a facility. The file itself is uploaded from the
- * browser (src/lib/studio-photos.ts); these functions keep the rows and remove the files.
+ * browser (src/lib/bookable-photos.ts); these functions keep the rows and remove the files.
  * Before 20260921150000_studio_proof_photos.sql is applied every read comes back empty.
  */
 
@@ -60,9 +60,9 @@ export const getStudioPhotos = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<StudioPhoto[]> => {
     const client = db(await anonClient());
     const { data: rows, error } = await client
-      .from("studio_photos")
+      .from("bookable_photos")
       .select(COLUMNS)
-      .eq("studio_id", data.studioId)
+      .eq("bookable_id", data.studioId)
       .order("sort_order")
       .order("created_at");
     return error ? [] : ((rows ?? []) as StudioPhoto[]);
@@ -75,12 +75,12 @@ export const listMyStudioPhotos = createServerFn({ method: "GET" })
     const client = db(context.supabase);
     const studioId = await myStudioId(client, context.userId);
     const [studio, labels, photos] = await Promise.all([
-      client.from("studios").select("amenities").eq("id", studioId).single(),
+      client.from("bookables").select("amenities").eq("id", studioId).single(),
       client.from("taxonomy_options").select("slug, label").eq("category_key", "studio_amenities"),
       client
-        .from("studio_photos")
+        .from("bookable_photos")
         .select(COLUMNS)
-        .eq("studio_id", studioId)
+        .eq("bookable_id", studioId)
         .order("sort_order")
         .order("created_at"),
     ]);
@@ -119,15 +119,15 @@ export const addMyStudioPhoto = createServerFn({ method: "POST" })
     // The subject must be this studio's own facility or equipment item.
     if (data.subjectType === "equipment") {
       const { data: item } = await client
-        .from("studio_equipment")
+        .from("bookable_equipment")
         .select("id")
         .eq("id", data.subjectId)
-        .eq("studio_id", studioId)
+        .eq("bookable_id", studioId)
         .maybeSingle();
       if (!item) throw new Error("That equipment isn't on your studio.");
     } else {
       const { data: studio } = await client
-        .from("studios")
+        .from("bookables")
         .select("amenities")
         .eq("id", studioId)
         .single();
@@ -137,9 +137,9 @@ export const addMyStudioPhoto = createServerFn({ method: "POST" })
     }
 
     const { data: existing, error: countError } = await client
-      .from("studio_photos")
+      .from("bookable_photos")
       .select("sort_order")
-      .eq("studio_id", studioId)
+      .eq("bookable_id", studioId)
       .eq("subject_type", data.subjectType)
       .eq("subject_id", data.subjectId)
       .order("sort_order", { ascending: false });
@@ -150,9 +150,9 @@ export const addMyStudioPhoto = createServerFn({ method: "POST" })
     }
 
     const { data: row, error } = await client
-      .from("studio_photos")
+      .from("bookable_photos")
       .insert({
-        studio_id: studioId,
+        bookable_id: studioId,
         subject_type: data.subjectType,
         subject_id: data.subjectId,
         url: data.url,
@@ -171,10 +171,10 @@ export const removeMyStudioPhoto = createServerFn({ method: "POST" })
     const client = db(context.supabase);
     const studioId = await myStudioId(client, context.userId);
     const { data: rows, error } = await client
-      .from("studio_photos")
+      .from("bookable_photos")
       .delete()
       .eq("id", data.id)
-      .eq("studio_id", studioId)
+      .eq("bookable_id", studioId)
       .select("url");
     if (error) throw new Error(error.message);
     await removeFiles(
@@ -196,9 +196,9 @@ export async function removeSubjectPhotos(
   subjectId: string,
 ) {
   const { data: rows, error } = await client
-    .from("studio_photos")
+    .from("bookable_photos")
     .delete()
-    .eq("studio_id", studioId)
+    .eq("bookable_id", studioId)
     .eq("subject_type", subjectType)
     .eq("subject_id", subjectId)
     .select("url");

@@ -13,11 +13,11 @@ import {
   type BlackoutRange,
   type BusyInterval,
   type WeeklyHours,
-} from "@/lib/studio-slots";
+} from "@/lib/bookable-slots";
 
 /*
  * A studio's booking calendar: its weekly hours, and the times taken or closed between two dates
- * (studio_busy(), which never says who booked or why). The owner edits the hours and closes times.
+ * (bookable_busy(), which never says who booked or why). The owner edits the hours and closes times.
  * Before 20260921110000_studio_calendar.sql is applied every read comes back empty, so studios keep
  * the plain request flow.
  */
@@ -37,7 +37,7 @@ export type StudioCalendar = {
 /** The notice and blackout days, or none before 20260922280000_booking_rules.sql is applied. */
 async function readRules(client: SupabaseClient, studioId: string) {
   const { data, error } = await client
-    .from("studios")
+    .from("bookables")
     .select("notice_hours, blackout_dates")
     .eq("id", studioId)
     .maybeSingle();
@@ -85,7 +85,7 @@ export const getStudioCalendar = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<StudioCalendar> => {
     const client = db(await anonClient());
     const { data: row, error } = await client
-      .from("studios")
+      .from("bookables")
       .select("id, weekly_hours")
       .eq("slug", data.slug)
       .maybeSingle();
@@ -97,7 +97,7 @@ export const getStudioCalendar = createServerFn({ method: "GET" })
     const rules = await readRules(client, id);
     if (!data.from || !data.to) return { weeklyHours, busy: [], ...rules };
 
-    const { data: busy, error: busyError } = await client.rpc("studio_busy", {
+    const { data: busy, error: busyError } = await client.rpc("bookable_busy", {
       p_studio: id,
       p_from: data.from,
       p_to: data.to,
@@ -136,7 +136,7 @@ export const updateMyWeeklyHours = createServerFn({ method: "POST" })
     const weekly = parseWeeklyHours(data.weeklyHours);
     const line = hoursLine(weekly);
     const { error } = await db(context.supabase)
-      .from("studios")
+      .from("bookables")
       .update({ weekly_hours: weekly, operating_hours: line } as never)
       .eq("owner_profile_id", context.userId);
     if (error) throw new Error(error.message);
@@ -168,7 +168,7 @@ export const updateMyBookingRules = createServerFn({ method: "POST" })
       ...(data.blackouts === undefined ? {} : { blackout_dates: parseBlackouts(data.blackouts) }),
     };
     const { error } = await db(context.supabase)
-      .from("studios")
+      .from("bookables")
       .update(patch as never)
       .eq("owner_profile_id", context.userId);
     if (error) throw new Error(error.message);
@@ -186,7 +186,7 @@ export type StudioBlock = {
 /** The owner's own studio id, which every block and equipment write is scoped through. */
 export async function myStudioId(client: SupabaseClient, userId: string) {
   const { data, error } = await client
-    .from("studios")
+    .from("bookables")
     .select("id")
     .eq("owner_profile_id", userId)
     .maybeSingle();
@@ -203,9 +203,9 @@ export const listMyStudioBlocks = createServerFn({ method: "GET" })
     const client = db(context.supabase);
     const studioId = await myStudioId(client, context.userId);
     const { data, error } = await client
-      .from("studio_blocks")
+      .from("bookable_blocks")
       .select("id, room_id, starts_at, ends_at, reason")
-      .eq("studio_id", studioId)
+      .eq("bookable_id", studioId)
       .gte("ends_at", new Date().toISOString().slice(0, 10))
       .order("starts_at", { ascending: true });
     if (error) return [];
@@ -233,9 +233,9 @@ export const addMyStudioBlock = createServerFn({ method: "POST" })
     const client = db(context.supabase);
     const studioId = await myStudioId(client, context.userId);
     const { data: row, error } = await client
-      .from("studio_blocks")
+      .from("bookable_blocks")
       .insert({
-        studio_id: studioId,
+        bookable_id: studioId,
         room_id: data.roomId,
         starts_at: data.startsAt,
         ends_at: data.endsAt,
@@ -252,7 +252,7 @@ export const removeMyStudioBlock = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     // RLS keeps this to the owner's own studio.
-    const { error } = await db(context.supabase).from("studio_blocks").delete().eq("id", data.id);
+    const { error } = await db(context.supabase).from("bookable_blocks").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
