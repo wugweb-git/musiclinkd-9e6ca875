@@ -14,8 +14,324 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookable_blocks: {
+        Row: {
+          bookable_id: string
+          created_at: string
+          ends_at: string
+          id: string
+          reason: string | null
+          room_id: string | null
+          starts_at: string
+        }
+        Insert: {
+          bookable_id: string
+          created_at?: string
+          ends_at: string
+          id?: string
+          reason?: string | null
+          room_id?: string | null
+          starts_at: string
+        }
+        Update: {
+          bookable_id?: string
+          created_at?: string
+          ends_at?: string
+          id?: string
+          reason?: string | null
+          room_id?: string | null
+          starts_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_blocks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "bookable_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_blocks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "studio_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_blocks_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_blocks_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookable_equipment: {
+        Row: {
+          bookable_id: string
+          category: string | null
+          id: string
+          included: boolean
+          name: string
+          quantity: number | null
+          sort_order: number
+        }
+        Insert: {
+          bookable_id: string
+          category?: string | null
+          id?: string
+          included?: boolean
+          name: string
+          quantity?: number | null
+          sort_order?: number
+        }
+        Update: {
+          bookable_id?: string
+          category?: string | null
+          id?: string
+          included?: boolean
+          name?: string
+          quantity?: number | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_equipment_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_equipment_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookable_photos: {
+        Row: {
+          bookable_id: string
+          created_at: string
+          id: string
+          sort_order: number
+          subject_id: string
+          subject_type: string
+          url: string
+        }
+        Insert: {
+          bookable_id: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          subject_id: string
+          subject_type: string
+          url: string
+        }
+        Update: {
+          bookable_id?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          subject_id?: string
+          subject_type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_photos_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_photos_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookable_rooms: {
+        Row: {
+          amenities: string[]
+          bookable_id: string
+          capacity: number | null
+          description: string | null
+          gear: string[]
+          hourly_rate_paise: number | null
+          id: string
+          kind: string | null
+          name: string
+          photo_url: string | null
+          sort_order: number
+          tiers: Json
+        }
+        Insert: {
+          amenities?: string[]
+          bookable_id: string
+          capacity?: number | null
+          description?: string | null
+          gear?: string[]
+          hourly_rate_paise?: number | null
+          id?: string
+          kind?: string | null
+          name: string
+          photo_url?: string | null
+          sort_order?: number
+          tiers?: Json
+        }
+        Update: {
+          amenities?: string[]
+          bookable_id?: string
+          capacity?: number | null
+          description?: string | null
+          gear?: string[]
+          hourly_rate_paise?: number | null
+          id?: string
+          kind?: string | null
+          name?: string
+          photo_url?: string | null
+          sort_order?: number
+          tiers?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_rooms_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_rooms_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookables: {
+        Row: {
+          add_ons: Json
+          amenities: string[]
+          archived_at: string | null
+          blackout_dates: Json
+          cancellation_policy: string | null
+          console_type: string | null
+          created_at: string
+          description: string | null
+          geo_lat: number | null
+          geo_lng: number | null
+          hourly_rate_paise: number | null
+          id: string
+          image_url: string | null
+          images: string[]
+          location: string | null
+          name: string
+          notice_hours: number
+          operating_hours: string | null
+          owner_profile_id: string
+          rating: number | null
+          response_time: string | null
+          review_count: number
+          services: string[]
+          slug: string
+          updated_at: string
+          verified_gold: boolean
+          weekly_hours: Json
+        }
+        Insert: {
+          add_ons?: Json
+          amenities?: string[]
+          archived_at?: string | null
+          blackout_dates?: Json
+          cancellation_policy?: string | null
+          console_type?: string | null
+          created_at?: string
+          description?: string | null
+          geo_lat?: number | null
+          geo_lng?: number | null
+          hourly_rate_paise?: number | null
+          id?: string
+          image_url?: string | null
+          images?: string[]
+          location?: string | null
+          name: string
+          notice_hours?: number
+          operating_hours?: string | null
+          owner_profile_id: string
+          rating?: number | null
+          response_time?: string | null
+          review_count?: number
+          services?: string[]
+          slug: string
+          updated_at?: string
+          verified_gold?: boolean
+          weekly_hours?: Json
+        }
+        Update: {
+          add_ons?: Json
+          amenities?: string[]
+          archived_at?: string | null
+          blackout_dates?: Json
+          cancellation_policy?: string | null
+          console_type?: string | null
+          created_at?: string
+          description?: string | null
+          geo_lat?: number | null
+          geo_lng?: number | null
+          hourly_rate_paise?: number | null
+          id?: string
+          image_url?: string | null
+          images?: string[]
+          location?: string | null
+          name?: string
+          notice_hours?: number
+          operating_hours?: string | null
+          owner_profile_id?: string
+          rating?: number | null
+          response_time?: string | null
+          review_count?: number
+          services?: string[]
+          slug?: string
+          updated_at?: string
+          verified_gold?: boolean
+          weekly_hours?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studios_owner_business_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile_business"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "studios_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_requests: {
         Row: {
+          bookable_id: string | null
+          bookable_name: string | null
           created_at: string
           end_time: string | null
           hours: number | null
@@ -30,11 +346,11 @@ export type Database = {
           session_date: string
           start_time: string | null
           status: string
-          studio_id: string | null
-          studio_name: string | null
           updated_at: string
         }
         Insert: {
+          bookable_id?: string | null
+          bookable_name?: string | null
           created_at?: string
           end_time?: string | null
           hours?: number | null
@@ -49,11 +365,11 @@ export type Database = {
           session_date: string
           start_time?: string | null
           status?: string
-          studio_id?: string | null
-          studio_name?: string | null
           updated_at?: string
         }
         Update: {
+          bookable_id?: string | null
+          bookable_name?: string | null
           created_at?: string
           end_time?: string | null
           hours?: number | null
@@ -68,8 +384,6 @@ export type Database = {
           session_date?: string
           start_time?: string | null
           status?: string
-          studio_id?: string | null
-          studio_name?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -84,12 +398,26 @@ export type Database = {
             foreignKeyName: "booking_requests_room_id_fkey"
             columns: ["room_id"]
             isOneToOne: false
+            referencedRelation: "bookable_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_requests_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
             referencedRelation: "studio_rooms"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "booking_requests_studio_id_fkey"
-            columns: ["studio_id"]
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_requests_studio_id_fkey"
+            columns: ["bookable_id"]
             isOneToOne: false
             referencedRelation: "studios"
             referencedColumns: ["id"]
@@ -2570,8 +2898,8 @@ export type Database = {
           rating: number
           response: string | null
           tags: string[]
+          target_bookable_id: string | null
           target_profile_id: string | null
-          target_studio_id: string | null
         }
         Insert: {
           author_name: string
@@ -2584,8 +2912,8 @@ export type Database = {
           rating: number
           response?: string | null
           tags?: string[]
+          target_bookable_id?: string | null
           target_profile_id?: string | null
-          target_studio_id?: string | null
         }
         Update: {
           author_name?: string
@@ -2598,8 +2926,8 @@ export type Database = {
           rating?: number
           response?: string | null
           tags?: string[]
+          target_bookable_id?: string | null
           target_profile_id?: string | null
-          target_studio_id?: string | null
         }
         Relationships: [
           {
@@ -2618,7 +2946,14 @@ export type Database = {
           },
           {
             foreignKeyName: "reviews_target_studio_id_fkey"
-            columns: ["target_studio_id"]
+            columns: ["target_bookable_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_target_studio_id_fkey"
+            columns: ["target_bookable_id"]
             isOneToOne: false
             referencedRelation: "studios"
             referencedColumns: ["id"]
@@ -2834,285 +3169,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      studio_blocks: {
-        Row: {
-          created_at: string
-          ends_at: string
-          id: string
-          reason: string | null
-          room_id: string | null
-          starts_at: string
-          studio_id: string
-        }
-        Insert: {
-          created_at?: string
-          ends_at: string
-          id?: string
-          reason?: string | null
-          room_id?: string | null
-          starts_at: string
-          studio_id: string
-        }
-        Update: {
-          created_at?: string
-          ends_at?: string
-          id?: string
-          reason?: string | null
-          room_id?: string | null
-          starts_at?: string
-          studio_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "studio_blocks_room_id_fkey"
-            columns: ["room_id"]
-            isOneToOne: false
-            referencedRelation: "studio_rooms"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "studio_blocks_studio_id_fkey"
-            columns: ["studio_id"]
-            isOneToOne: false
-            referencedRelation: "studios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      studio_equipment: {
-        Row: {
-          category: string | null
-          id: string
-          included: boolean
-          name: string
-          quantity: number | null
-          sort_order: number
-          studio_id: string
-        }
-        Insert: {
-          category?: string | null
-          id?: string
-          included?: boolean
-          name: string
-          quantity?: number | null
-          sort_order?: number
-          studio_id: string
-        }
-        Update: {
-          category?: string | null
-          id?: string
-          included?: boolean
-          name?: string
-          quantity?: number | null
-          sort_order?: number
-          studio_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "studio_equipment_studio_id_fkey"
-            columns: ["studio_id"]
-            isOneToOne: false
-            referencedRelation: "studios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      studio_photos: {
-        Row: {
-          created_at: string
-          id: string
-          sort_order: number
-          studio_id: string
-          subject_id: string
-          subject_type: string
-          url: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          sort_order?: number
-          studio_id: string
-          subject_id: string
-          subject_type: string
-          url: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          sort_order?: number
-          studio_id?: string
-          subject_id?: string
-          subject_type?: string
-          url?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "studio_photos_studio_id_fkey"
-            columns: ["studio_id"]
-            isOneToOne: false
-            referencedRelation: "studios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      studio_rooms: {
-        Row: {
-          amenities: string[]
-          capacity: number | null
-          description: string | null
-          gear: string[]
-          hourly_rate_paise: number | null
-          id: string
-          kind: string | null
-          name: string
-          photo_url: string | null
-          sort_order: number
-          studio_id: string
-          tiers: Json
-        }
-        Insert: {
-          amenities?: string[]
-          capacity?: number | null
-          description?: string | null
-          gear?: string[]
-          hourly_rate_paise?: number | null
-          id?: string
-          kind?: string | null
-          name: string
-          photo_url?: string | null
-          sort_order?: number
-          studio_id: string
-          tiers?: Json
-        }
-        Update: {
-          amenities?: string[]
-          capacity?: number | null
-          description?: string | null
-          gear?: string[]
-          hourly_rate_paise?: number | null
-          id?: string
-          kind?: string | null
-          name?: string
-          photo_url?: string | null
-          sort_order?: number
-          studio_id?: string
-          tiers?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "studio_rooms_studio_id_fkey"
-            columns: ["studio_id"]
-            isOneToOne: false
-            referencedRelation: "studios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      studios: {
-        Row: {
-          add_ons: Json
-          amenities: string[]
-          archived_at: string | null
-          blackout_dates: Json
-          cancellation_policy: string | null
-          console_type: string | null
-          created_at: string
-          description: string | null
-          geo_lat: number | null
-          geo_lng: number | null
-          hourly_rate_paise: number | null
-          id: string
-          image_url: string | null
-          images: string[]
-          location: string | null
-          name: string
-          notice_hours: number
-          operating_hours: string | null
-          owner_profile_id: string
-          rating: number | null
-          response_time: string | null
-          review_count: number
-          services: string[]
-          slug: string
-          updated_at: string
-          verified_gold: boolean
-          weekly_hours: Json
-        }
-        Insert: {
-          add_ons?: Json
-          amenities?: string[]
-          archived_at?: string | null
-          blackout_dates?: Json
-          cancellation_policy?: string | null
-          console_type?: string | null
-          created_at?: string
-          description?: string | null
-          geo_lat?: number | null
-          geo_lng?: number | null
-          hourly_rate_paise?: number | null
-          id?: string
-          image_url?: string | null
-          images?: string[]
-          location?: string | null
-          name: string
-          notice_hours?: number
-          operating_hours?: string | null
-          owner_profile_id: string
-          rating?: number | null
-          response_time?: string | null
-          review_count?: number
-          services?: string[]
-          slug: string
-          updated_at?: string
-          verified_gold?: boolean
-          weekly_hours?: Json
-        }
-        Update: {
-          add_ons?: Json
-          amenities?: string[]
-          archived_at?: string | null
-          blackout_dates?: Json
-          cancellation_policy?: string | null
-          console_type?: string | null
-          created_at?: string
-          description?: string | null
-          geo_lat?: number | null
-          geo_lng?: number | null
-          hourly_rate_paise?: number | null
-          id?: string
-          image_url?: string | null
-          images?: string[]
-          location?: string | null
-          name?: string
-          notice_hours?: number
-          operating_hours?: string | null
-          owner_profile_id?: string
-          rating?: number | null
-          response_time?: string | null
-          review_count?: number
-          services?: string[]
-          slug?: string
-          updated_at?: string
-          verified_gold?: boolean
-          weekly_hours?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "studios_owner_business_fkey"
-            columns: ["owner_profile_id"]
-            isOneToOne: false
-            referencedRelation: "profile_business"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "studios_owner_profile_id_fkey"
-            columns: ["owner_profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       support_requests: {
         Row: {
@@ -3730,8 +3786,332 @@ export type Database = {
           },
         ]
       }
+      studio_blocks: {
+        Row: {
+          created_at: string | null
+          ends_at: string | null
+          id: string | null
+          reason: string | null
+          room_id: string | null
+          starts_at: string | null
+          studio_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          ends_at?: string | null
+          id?: string | null
+          reason?: string | null
+          room_id?: string | null
+          starts_at?: string | null
+          studio_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          ends_at?: string | null
+          id?: string | null
+          reason?: string | null
+          room_id?: string | null
+          starts_at?: string | null
+          studio_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_blocks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "bookable_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_blocks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "studio_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_blocks_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_blocks_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studio_equipment: {
+        Row: {
+          category: string | null
+          id: string | null
+          included: boolean | null
+          name: string | null
+          quantity: number | null
+          sort_order: number | null
+          studio_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          id?: string | null
+          included?: boolean | null
+          name?: string | null
+          quantity?: number | null
+          sort_order?: number | null
+          studio_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          id?: string | null
+          included?: boolean | null
+          name?: string | null
+          quantity?: number | null
+          sort_order?: number | null
+          studio_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_equipment_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_equipment_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studio_photos: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          sort_order: number | null
+          studio_id: string | null
+          subject_id: string | null
+          subject_type: string | null
+          url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          sort_order?: number | null
+          studio_id?: string | null
+          subject_id?: string | null
+          subject_type?: string | null
+          url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          sort_order?: number | null
+          studio_id?: string | null
+          subject_id?: string | null
+          subject_type?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_photos_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_photos_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studio_rooms: {
+        Row: {
+          amenities: string[] | null
+          capacity: number | null
+          description: string | null
+          gear: string[] | null
+          hourly_rate_paise: number | null
+          id: string | null
+          kind: string | null
+          name: string | null
+          photo_url: string | null
+          sort_order: number | null
+          studio_id: string | null
+          tiers: Json | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          capacity?: number | null
+          description?: string | null
+          gear?: string[] | null
+          hourly_rate_paise?: number | null
+          id?: string | null
+          kind?: string | null
+          name?: string | null
+          photo_url?: string | null
+          sort_order?: number | null
+          studio_id?: string | null
+          tiers?: Json | null
+        }
+        Update: {
+          amenities?: string[] | null
+          capacity?: number | null
+          description?: string | null
+          gear?: string[] | null
+          hourly_rate_paise?: number | null
+          id?: string | null
+          kind?: string | null
+          name?: string | null
+          photo_url?: string | null
+          sort_order?: number | null
+          studio_id?: string | null
+          tiers?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_rooms_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_rooms_studio_id_fkey"
+            columns: ["studio_id"]
+            isOneToOne: false
+            referencedRelation: "studios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studios: {
+        Row: {
+          add_ons: Json | null
+          amenities: string[] | null
+          archived_at: string | null
+          blackout_dates: Json | null
+          cancellation_policy: string | null
+          console_type: string | null
+          created_at: string | null
+          description: string | null
+          geo_lat: number | null
+          geo_lng: number | null
+          hourly_rate_paise: number | null
+          id: string | null
+          image_url: string | null
+          images: string[] | null
+          location: string | null
+          name: string | null
+          notice_hours: number | null
+          operating_hours: string | null
+          owner_profile_id: string | null
+          rating: number | null
+          response_time: string | null
+          review_count: number | null
+          services: string[] | null
+          slug: string | null
+          updated_at: string | null
+          verified_gold: boolean | null
+          weekly_hours: Json | null
+        }
+        Insert: {
+          add_ons?: Json | null
+          amenities?: string[] | null
+          archived_at?: string | null
+          blackout_dates?: Json | null
+          cancellation_policy?: string | null
+          console_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          geo_lat?: number | null
+          geo_lng?: number | null
+          hourly_rate_paise?: number | null
+          id?: string | null
+          image_url?: string | null
+          images?: string[] | null
+          location?: string | null
+          name?: string | null
+          notice_hours?: number | null
+          operating_hours?: string | null
+          owner_profile_id?: string | null
+          rating?: number | null
+          response_time?: string | null
+          review_count?: number | null
+          services?: string[] | null
+          slug?: string | null
+          updated_at?: string | null
+          verified_gold?: boolean | null
+          weekly_hours?: Json | null
+        }
+        Update: {
+          add_ons?: Json | null
+          amenities?: string[] | null
+          archived_at?: string | null
+          blackout_dates?: Json | null
+          cancellation_policy?: string | null
+          console_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          geo_lat?: number | null
+          geo_lng?: number | null
+          hourly_rate_paise?: number | null
+          id?: string | null
+          image_url?: string | null
+          images?: string[] | null
+          location?: string | null
+          name?: string | null
+          notice_hours?: number | null
+          operating_hours?: string | null
+          owner_profile_id?: string | null
+          rating?: number | null
+          response_time?: string | null
+          review_count?: number | null
+          services?: string[] | null
+          slug?: string | null
+          updated_at?: string | null
+          verified_gold?: boolean | null
+          weekly_hours?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studios_owner_business_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile_business"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "studios_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      bookable_busy: {
+        Args: { p_from: string; p_studio: string; p_to: string }
+        Returns: {
+          ends_at: string
+          room_id: string
+          starts_at: string
+        }[]
+      }
+      bookable_is_mine: { Args: { p_studio_id: string }; Returns: boolean }
+      can_review_bookable: { Args: { p_studio_id: string }; Returns: boolean }
       can_review_profile: {
         Args: { p_target_profile_id: string }
         Returns: boolean
