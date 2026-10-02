@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — tokens and brand (P1-14, 3 Oct)
+
+- **Purple is the category badge's alone.** `TrustPill` is neutral ink on grey; a rental's "Offer
+  sent" is a warning tone. Spotify's sharing radios are ink, not a resting pink.
+- **`--primary`, `--ring` and `--selected-bg`** point at `--ink` instead of repeating `#0d0d0d`.
+- **Skeletons pulse at 1.4s** (`--animate-pulse`), not Tailwind's 2s.
+- **Weight 800 is gone:** every `font-extrabold` is `font-bold` (marketing, Gear CTA, a price).
+- **Tracking is normal.** Every `tracking-tight`/`wide`/`widest`/`[-0.02em]` in app code is removed,
+  wordmarks included. The one exception is the splash's all-caps label, with its reason beside it.
+- **10/11px:** every `text-[10px]`/`text-[11px]` in product code is metadata or a compact label
+  (count badges, timestamps, avatar initials, chart and player labels), so all stay.
+- **`AGENTS.md`** says both rules (token decisions 2 and 3): 10/11px only for metadata and compact
+  labels, no other `text-[Npx]`; normal tracking unless a named role and reason sit beside it.
+
 ### Changed — data access moves server-side (P1-11, 3 Oct)
 
 - **Sign-in methods** are read and removed through server functions

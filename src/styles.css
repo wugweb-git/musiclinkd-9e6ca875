@@ -530,6 +530,10 @@
     }
   }
 
+  /* Skeletons pulse at 1.4s, not Tailwind's 2s (token decision 10, 29 Sep): quicker reads as
+     working rather than waiting. Tailwind's own pulse keyframes are kept. */
+  --animate-pulse: pulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
   --animate-pulse-glow: pulse-glow 3s ease-in-out infinite alternate;
   @keyframes pulse-glow {
     0% {
@@ -604,7 +608,7 @@
   --popover: oklch(1 0 89.88);
   --popover-foreground: var(--ink);
   /* Primary is ink (owner, 14 Sep): buttons, selection, progress, focus. Pink is --brand. */
-  --primary: #0d0d0d;
+  --primary: var(--ink);
   --primary-foreground: oklch(1 0 89.88);
   --secondary: #f8f8fb;
   --secondary-foreground: var(--ink);
@@ -634,7 +638,7 @@
    * and the thumb, which is what a control's boundary needs. */
   --switch-off: #8a8a93;
   --input: #d5d5de;
-  --ring: #0d0d0d;
+  --ring: var(--ink);
 
   --ink: #0d0d0d; /* tokens.json color.ink */
   /* Brand pink, rare and always a signal: the active tab underline, press feedback while a finger
@@ -679,7 +683,7 @@
   --status-category-text: color-mix(in srgb, var(--purple) 72%, black);
 
   /* Selected pair: ink with white, the same as a primary button. */
-  --selected-bg: #0d0d0d;
+  --selected-bg: var(--ink);
   --selected-text: #ffffff;
 
   /* Elevation, verbatim from the generated ml-tokens.css. */

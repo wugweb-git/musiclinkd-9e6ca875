@@ -224,10 +224,7 @@ function Welcome() {
           {kind === "Talent" ? `Quick setup · ${total} short questions (~2 mins)` : info.estimate}
         </div>
 
-        <h1
-          className={cn("mt-4 text-4 font-bold tracking-tight text-foreground", rise)}
-          style={beat(1)}
-        >
+        <h1 className={cn("mt-4 text-4 font-bold text-foreground", rise)} style={beat(1)}>
           Build your industry presence
         </h1>
         <p

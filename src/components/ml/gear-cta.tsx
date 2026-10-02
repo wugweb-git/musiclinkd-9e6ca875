@@ -109,9 +109,7 @@ export function GearCta() {
       />
 
       <div className="px-5 pb-5 pt-5">
-        <h2 className="text-3 font-extrabold leading-tight tracking-[-0.02em]">
-          Gear gathering dust?
-        </h2>
+        <h2 className="text-3 font-bold leading-tight">Gear gathering dust?</h2>
         <p className="mt-1 text-sm text-white/80">List it free on MusicLinkd.</p>
 
         <svg

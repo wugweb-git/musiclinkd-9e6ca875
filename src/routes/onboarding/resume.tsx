@@ -50,9 +50,7 @@ function Resume() {
           <Clock size={24} />
         </div>
 
-        <h1 className="mt-4 text-3 font-bold tracking-tight text-foreground leading-tight">
-          Welcome back
-        </h1>
+        <h1 className="mt-4 text-3 font-bold text-foreground leading-tight">Welcome back</h1>
         <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
           You have completed {done} of {list.length} questions. Your progress is saved.
         </p>

@@ -597,10 +597,7 @@ export function StepShell({
       >
         {banner}
         <div className="flex items-start justify-between gap-3">
-          <h1
-            ref={titleRef}
-            className="text-3 font-bold tracking-tight text-foreground leading-tight"
-          >
+          <h1 ref={titleRef} className="text-3 font-bold text-foreground leading-tight">
             {title}
           </h1>
           {optional ? (

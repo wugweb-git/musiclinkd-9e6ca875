@@ -146,9 +146,9 @@ function SessionCheck() {
           <LogoMark className="vt-brand relative z-10 w-36 max-w-[220px] animate-waveform text-brand [filter:drop-shadow(0_10px_30px_color-mix(in_oklab,var(--brand)_60%,transparent))]" />
         </div>
 
-        <h1 className="mt-5 text-4 font-bold tracking-tight text-white">MusicLinkd</h1>
+        <h1 className="mt-5 text-4 font-bold text-white">MusicLinkd</h1>
 
-        <p className="mt-2 text-sm font-medium tracking-wide text-white/75">
+        <p className="mt-2 text-sm font-medium text-white/75">
           Connect. Collaborate. <span className="text-brand">Create.</span>
         </p>
       </div>
@@ -158,6 +158,8 @@ function SessionCheck() {
         <span aria-hidden className="h-1 w-32 overflow-hidden rounded-full bg-white/15">
           <span className="block h-full w-1/3 rounded-full bg-brand animate-loadbar" />
         </span>
+        {/* The one tracking exception (token decision 2): an all-caps label, letter-spaced so the
+            capitals stay legible at this size. Everything else sets at normal tracking. */}
         <p className="text-1 font-semibold uppercase tracking-[0.22em] text-white/45">
           A network for music people
         </p>

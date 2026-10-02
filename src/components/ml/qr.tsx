@@ -159,7 +159,7 @@ export function QrIdentityCard({
       className="overflow-hidden rounded-lg border border-border p-5 text-center"
       style={{ background: s.light, color: s.dark }}
     >
-      <p className="pill bg-background/10 tracking-widest">MusicLinkd</p>
+      <p className="pill bg-background/10">MusicLinkd</p>
 
       <div className="mt-4 flex flex-col items-center gap-2">
         <img

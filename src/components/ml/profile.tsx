@@ -1343,12 +1343,7 @@ export function ServiceCard({
         />
         <div className="min-w-0 flex-1">
           {s.from ? (
-            <Price
-              from
-              inline
-              price={s.from}
-              amountClassName="text-3 font-extrabold text-foreground"
-            />
+            <Price from inline price={s.from} amountClassName="text-3 font-bold text-foreground" />
           ) : (
             <span className="text-sm font-bold text-foreground">On enquiry</span>
           )}

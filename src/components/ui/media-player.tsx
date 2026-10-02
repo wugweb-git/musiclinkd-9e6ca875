@@ -1011,7 +1011,7 @@ function MediaPlayerError(props: MediaPlayerErrorProps) {
         <div className="flex max-w-md flex-col items-center gap-4 px-6 py-8 text-center">
           <AlertTriangleIcon className="size-12 text-destructive" />
           <div className="flex flex-col gap-px text-center">
-            <h3 className="text-xl font-semibold tracking-tight">{errorLabel}</h3>
+            <h3 className="text-xl font-semibold">{errorLabel}</h3>
             <p className="text-sm leading-relaxed text-balance text-muted-foreground">
               {errorDescription}
             </p>

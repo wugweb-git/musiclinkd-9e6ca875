@@ -308,7 +308,7 @@ function WelcomeScreen() {
               </div>
 
               <div
-                className="text-1 font-bold tracking-tight text-foreground"
+                className="text-1 font-bold text-foreground"
                 aria-label="Tagline: Connect, collaborate, create"
               >
                 <span className={cn("inline-block", rise)} style={beat(2)}>
