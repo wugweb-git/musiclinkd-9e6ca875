@@ -5,7 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Changed — studio tables become bookables (3 Oct) — waits on the migration
+### Changed — studio tables become bookables (3 Oct)
+
+- **Applied live** (owner, 3 Oct): the migration ran unchanged from `161ee4e` and every built-in
+  check passed. Snapshot: `supabase/dumps/2026-10-03-before-bookables.sql` (definitions and counts,
+  no user data).
 
 - **Migration `20261003130000_bookables_rename.sql`** (not applied): `studios` → `bookables`,
   `studio_rooms` / `_blocks` / `_equipment` / `_photos` → `bookable_…`, every `studio_id` →
