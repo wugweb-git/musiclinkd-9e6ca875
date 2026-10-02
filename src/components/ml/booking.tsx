@@ -39,7 +39,7 @@ import type { BookingRequest, BookingStatus as DbBookingStatus } from "@/lib/boo
 import { inr } from "@/lib/price";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
-import { earliestBookingDate } from "@/lib/studio-slots";
+import { earliestBookingDate } from "@/lib/bookable-slots";
 import { todayInIndia } from "@/lib/when";
 import { sized } from "@/lib/image-url";
 
@@ -253,7 +253,7 @@ const dayStyle: Record<DayState, string> = {
 
 type CalendarProps =
   | {
-      /** One day, from a studio's real hours (src/lib/studio-slots.ts). There is no fallback. */
+      /** One day, from a studio's real hours (src/lib/bookable-slots.ts). There is no fallback. */
       mode?: "single" | undefined;
       selected?: string | undefined;
       onSelect: (date: string) => void;
@@ -772,7 +772,7 @@ export function shownBookingStatus(
  * the screen's own actions below; the person who booked sees the studio and the studio's reply,
  * and the whole record opens their booking. No price: nothing is paid in the app.
  */
-export function StudioBookingRecord({
+export function BookingRecord({
   b,
   side,
   actions,
@@ -790,7 +790,7 @@ export function StudioBookingRecord({
     side === "studio" && b.people ? `${b.people} people` : "",
   );
   const studioName =
-    b.studio?.name ?? b.studio_name ?? (side === "studio" ? "Your space" : "Studio");
+    b.studio?.name ?? b.bookable_name ?? (side === "studio" ? "Your space" : "Studio");
   const pill = <StatusPill label={status.label} tone={status.tone} className="shrink-0" />;
 
   if (side === "requester") {

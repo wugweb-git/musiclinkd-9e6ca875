@@ -10,23 +10,23 @@ import { useRequireBusiness } from "@/hooks/use-require-business";
 import { formatDate, formatTime } from "@/lib/when";
 import { iconSize } from "@/lib/tokens";
 import {
-  addMyStudioBlock,
-  getStudioCalendar,
-  listMyStudioBlocks,
-  removeMyStudioBlock,
+  addMyBookableBlock,
+  getBookableCalendar,
+  listMyBookableBlocks,
+  removeMyBookableBlock,
   updateMyBookingRules,
   updateMyWeeklyHours,
-} from "@/lib/studio-calendar.functions";
-import { type MyStudio, getMyStudio } from "@/lib/studio-owner.functions";
+} from "@/lib/bookable-calendar.functions";
+import { type MyBookable, getMyBookable } from "@/lib/bookable-owner.functions";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import {
   earliestBookingDate,
   type BlackoutRange,
   type Weekday,
   type WeeklyHours,
-} from "@/lib/studio-slots";
+} from "@/lib/bookable-slots";
 import { Field, inputClass } from "@/components/ml/listing-form";
-import { AmenitiesEditor, EquipmentEditor } from "@/components/ml/studio-setup";
+import { AmenitiesEditor, EquipmentEditor } from "@/components/ml/bookable-setup";
 
 export const Route = createFileRoute("/business/availability")({
   head: () => ({
@@ -59,7 +59,7 @@ function Availability() {
 
 function AvailabilityContent() {
   const queryClient = useQueryClient();
-  const load = useServerFn(getMyStudio);
+  const load = useServerFn(getMyBookable);
   const q = useQuery({ queryKey: ["business", "studio", "mine"], queryFn: () => load() });
   // A business without a studio (a label, an agency) has only the hours line on its profile.
   const loadBusiness = useServerFn(getMyBusiness);
@@ -152,9 +152,9 @@ const inputCls =
   "min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary";
 
 /** The hours customers can pick from on the booking calendar, day by day. */
-function WeeklyHoursEditor({ studio }: { studio: MyStudio }) {
+function WeeklyHoursEditor({ studio }: { studio: MyBookable }) {
   const queryClient = useQueryClient();
-  const load = useServerFn(getStudioCalendar);
+  const load = useServerFn(getBookableCalendar);
   const save = useServerFn(updateMyWeeklyHours);
   const q = useQuery({
     queryKey: ["studio-calendar", studio.slug, "hours"],
@@ -255,9 +255,9 @@ const noticeOption = (hours: number): NoticeLabel =>
     .label;
 
 /** How much notice a session needs, and whole days the studio is closed. Both save at once. */
-function NoticeAndBlackouts({ studio }: { studio: MyStudio }) {
+function NoticeAndBlackouts({ studio }: { studio: MyBookable }) {
   const queryClient = useQueryClient();
-  const load = useServerFn(getStudioCalendar);
+  const load = useServerFn(getBookableCalendar);
   const save = useServerFn(updateMyBookingRules);
   const q = useQuery({
     queryKey: ["studio-calendar", studio.slug, "rules"],
@@ -396,11 +396,11 @@ function NoticeAndBlackouts({ studio }: { studio: MyStudio }) {
 }
 
 /** Times the owner closes on top of the weekly hours, for one room or the whole studio. */
-function ClosedTimes({ studio }: { studio: MyStudio }) {
+function ClosedTimes({ studio }: { studio: MyBookable }) {
   const queryClient = useQueryClient();
-  const load = useServerFn(listMyStudioBlocks);
-  const add = useServerFn(addMyStudioBlock);
-  const remove = useServerFn(removeMyStudioBlock);
+  const load = useServerFn(listMyBookableBlocks);
+  const add = useServerFn(addMyBookableBlock);
+  const remove = useServerFn(removeMyBookableBlock);
   const q = useQuery({ queryKey: ["studio-blocks", "mine"], queryFn: () => load() });
   const [open, setOpen] = useState(false);
   const [roomId, setRoomId] = useState("");

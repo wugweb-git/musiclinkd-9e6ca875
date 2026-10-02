@@ -69,7 +69,7 @@ export type BusinessRecord = {
     categories?: string[] | null;
     deliverables?: string[] | null;
     turnaround?: string | null;
-    /** A studio's service: what it uses (studio_amenities slugs, studio_equipment ids). */
+    /** A studio's service: what it uses (studio_amenities slugs, bookable_equipment ids). */
     amenity_slugs?: string[] | null;
     equipment_ids?: string[] | null;
     status: "active" | "paused" | "draft";
@@ -149,7 +149,7 @@ const BUSINESS =
 const REVIEW = "id, author_name, author_org, context, rating, body, response, created_at";
 const REVIEW_FULL = `${REVIEW}, tags`;
 const STUDIO = (review: string) =>
-  `id, slug, rating, review_count, amenities, rooms:studio_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), equipment:studio_equipment(id, name, category, quantity, included, sort_order), photos:studio_photos(subject_type, subject_id, url, sort_order), reviews(${review})`;
+  `id, slug, rating, review_count, amenities, rooms:bookable_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), equipment:bookable_equipment(id, name, category, quantity, included, sort_order), photos:bookable_photos(subject_type, subject_id, url, sort_order), reviews(${review})`;
 
 async function businessRecord(
   client: SupabaseClient,
@@ -195,7 +195,7 @@ async function businessRecord(
     softSelect(
       (columns) =>
         client
-          .from("studios")
+          .from("bookables")
           .select(columns)
           .eq("owner_profile_id", profile.id)
           .order("created_at")
@@ -748,7 +748,7 @@ export const createMyBusiness = createServerFn({ method: "POST" })
           .select("profile_id")
           .eq("profile_id", context.userId)
           .maybeSingle(),
-        client.from("studios").select("id").eq("owner_profile_id", context.userId).limit(1),
+        client.from("bookables").select("id").eq("owner_profile_id", context.userId).limit(1),
       ]);
     if (ownedError) throw new Error(ownedError.message);
     if (existingError) throw new Error(existingError.message);
@@ -833,10 +833,10 @@ async function setUpBusiness(
           .replace(/(^-|-$)/g, "")
           .slice(0, 60) ||
         "studio";
-      const { data: taken } = await client.from("studios").select("id").eq("slug", base).limit(1);
+      const { data: taken } = await client.from("bookables").select("id").eq("slug", base).limit(1);
       const slug = taken?.length ? `${base}-${Math.random().toString(36).slice(2, 7)}` : base;
       const { data: studio, error: studioError } = await client
-        .from("studios")
+        .from("bookables")
         .insert({
           owner_profile_id: profileId,
           slug,
@@ -859,11 +859,11 @@ async function setUpBusiness(
         const byslug = new Map(
           ((labels ?? []) as { slug: string; label: string }[]).map((l) => [l.slug, l.label]),
         );
-        const { error: equipmentError } = await client.from("studio_equipment").insert(
+        const { error: equipmentError } = await client.from("bookable_equipment").insert(
           data.equipment
             .filter((e) => byslug.has(e))
             .map((e, i) => ({
-              studio_id: studioId,
+              bookable_id: studioId,
               name: byslug.get(e)!,
               category: e,
               sort_order: i,

@@ -31,12 +31,12 @@ export type SellerOwnerSummary = OwnerSummary & {
 };
 
 /** A studio's extra, priced per unit when it has a price ("Engineer", ₹800, "hour"). */
-export type StudioAddOn = { name: string; price_paise: number | null; unit: string | null };
+export type BookableAddOn = { name: string; price_paise: number | null; unit: string | null };
 
 /** A room's package rate beside its hourly one ("Half day", 4 hours, ₹8,000). */
 export type RoomTier = { label: string; hours: number | null; price_paise: number | null };
 
-export type StudioRow = {
+export type BookableRow = {
   id: string;
   slug: string;
   name: string;
@@ -55,7 +55,7 @@ export type StudioRow = {
   images: string[];
   /** How soon the studio usually replies ("within 2 hours"); null before the column exists. */
   response_time?: string | null;
-  add_ons?: StudioAddOn[];
+  add_ons?: BookableAddOn[];
   owner: SellerOwnerSummary | null;
   rooms: {
     id: string;
@@ -158,13 +158,13 @@ const SELLER = `${OWNER}, rating, review_count, followers_count`;
 const STUDIO_FIELDS = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
   console_type, services, amenities, cancellation_policy, operating_hours, image_url, images,
   owner:profiles!studios_owner_profile_id_fkey(${SELLER}),
-  equipment:studio_equipment(id, name, category, quantity, included, sort_order)`;
+  equipment:bookable_equipment(id, name, category, quantity, included, sort_order)`;
 const STUDIO = `${STUDIO_FIELDS}, response_time, add_ons,
-  rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order, description, tiers),
+  rooms:bookable_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order, description, tiers),
   reviews(id, author_name, author_org, context, response, rating, body, created_at, tags)`;
 /** The studio read before 20260918240000_missing_data.sql, while its columns are not there yet. */
 const STUDIO_BEFORE = `${STUDIO_FIELDS},
-  rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order),
+  rooms:bookable_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order),
   reviews(id, author_name, rating, body, created_at)`;
 const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note,
   collaboration_type, location, status, applicant_count, created_at,
@@ -205,7 +205,7 @@ async function liveOnly(run: (live: boolean) => PromiseLike<Result>) {
 type Sorted = { sort_order?: number };
 const bySort = (a: Sorted, b: Sorted) => (a.sort_order ?? 0) - (b.sort_order ?? 0);
 
-function shapeStudio(raw: StudioRow): StudioRow {
+function shapeStudio(raw: BookableRow): BookableRow {
   return {
     ...raw,
     rating: raw.rating == null ? null : Number(raw.rating),
@@ -220,12 +220,12 @@ function shapeStudio(raw: StudioRow): StudioRow {
   };
 }
 
-export const listStudios = createServerFn({ method: "GET" }).handler(async () => {
+export const listBookables = createServerFn({ method: "GET" }).handler(async () => {
   const client = await anonClient();
   const { data, error } = await withFallback(
     (select) =>
       liveOnly((live) => {
-        const query = client.from("studios").select(select);
+        const query = client.from("bookables").select(select);
         return (live ? query.is("archived_at" as never, null) : query).order("rating", {
           ascending: false,
           // A studio with no reviews yet goes after the rated ones, not before them.
@@ -235,23 +235,23 @@ export const listStudios = createServerFn({ method: "GET" }).handler(async () =>
     [STUDIO, STUDIO_BEFORE],
   );
   if (error) throw new Error(error.message);
-  return ((data ?? []) as unknown as StudioRow[]).map(shapeStudio);
+  return ((data ?? []) as unknown as BookableRow[]).map(shapeStudio);
 });
 
-export const getStudio = createServerFn({ method: "GET" })
+export const getBookableBySlug = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
     const { data: row, error } = await withFallback(
       (select) =>
         liveOnly((live) => {
-          const query = client.from("studios").select(select).eq("slug", data.slug);
+          const query = client.from("bookables").select(select).eq("slug", data.slug);
           return (live ? query.is("archived_at" as never, null) : query).maybeSingle();
         }),
       [STUDIO, STUDIO_BEFORE],
     );
     if (error) throw new Error(error.message);
-    return row ? shapeStudio(row as unknown as StudioRow) : null;
+    return row ? shapeStudio(row as unknown as BookableRow) : null;
   });
 
 export const listOpportunities = createServerFn({ method: "GET" }).handler(async () => {
