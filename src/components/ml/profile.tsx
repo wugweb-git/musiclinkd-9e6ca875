@@ -59,7 +59,7 @@ import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
 import { SavedToggle } from "./saved-toggle";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fileReport } from "@/lib/reports.functions";
+import { ReportSheet } from "./market";
 import { saveTarget } from "@/lib/saved.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { haptic } from "@/lib/haptics";
@@ -1748,14 +1748,6 @@ export function ShareSheet({
 
 /* ── More / safety ─────────────────────────────────────────── */
 
-const PROFILE_REPORT_REASONS = {
-  impersonation: "Pretending to be someone",
-  spam: "Spam or scam",
-  offensive: "Offensive content",
-  stolen_work: "Someone else's work",
-} as const;
-type ProfileReportReason = keyof typeof PROFILE_REPORT_REASONS;
-
 /**
  * The profile's More menu. Only actions that do something: copy the link, save to the shortlist
  * (saved_items) and report (reports). Blocking and restricting have no backend yet, so they show
@@ -1776,21 +1768,6 @@ export function MoreSheet({
 }) {
   const { signedIn } = useAuth();
   const [reporting, setReporting] = useState(false);
-  const [reason, setReason] = useState<ProfileReportReason | null>(null);
-  const report = useServerFn(fileReport);
-  const send = useMutation({
-    mutationFn: (r: ProfileReportReason) =>
-      report({
-        data: { subjectType: "profile", subjectId: profileId!, reason: PROFILE_REPORT_REASONS[r] },
-      }),
-    onSuccess: () => {
-      toast.success("Report sent");
-      setReporting(false);
-      setReason(null);
-      onClose();
-    },
-    onError: () => toast.error("That didn't send. Try again."),
-  });
   const saveProfile = useServerFn(saveTarget);
   const queryClient = useQueryClient();
   const save = useMutation({
@@ -1807,40 +1784,17 @@ export function MoreSheet({
     "flex min-h-12 w-full items-center justify-between px-4 py-4 text-left text-sm font-medium disabled:text-muted-foreground";
   const close = () => {
     setReporting(false);
-    setReason(null);
     onClose();
   };
 
-  if (reporting) {
+  if (reporting && profileId) {
     return (
-      <Sheet open={open} onClose={close} title={`Report ${name}`}>
-        <div
-          className="mb-5 divide-y divide-border rounded-lg border border-border"
-          role="radiogroup"
-        >
-          {(Object.keys(PROFILE_REPORT_REASONS) as ProfileReportReason[]).map((r) => (
-            <button
-              key={r}
-              type="button"
-              role="radio"
-              aria-checked={reason === r}
-              onClick={() => setReason(r)}
-              className={row}
-            >
-              {PROFILE_REPORT_REASONS[r]}
-              {reason === r ? <Check size={iconSize.md} aria-hidden /> : null}
-            </button>
-          ))}
-        </div>
-        <Btn
-          className="w-full"
-          disabled={!reason}
-          loading={send.isPending}
-          onClick={() => reason && send.mutate(reason)}
-        >
-          Send Report
-        </Btn>
-      </Sheet>
+      <ReportSheet
+        open={open}
+        onClose={close}
+        title={`Report ${name}`}
+        subject={{ type: "profile", id: profileId }}
+      />
     );
   }
 

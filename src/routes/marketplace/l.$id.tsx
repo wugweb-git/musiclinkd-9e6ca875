@@ -498,7 +498,11 @@ function ListingDetail() {
       </ActionBar>
 
       <OfferSheet open={offer} onClose={() => setOffer(false)} listing={l} />
-      <ReportSheet open={report} onClose={() => setReport(false)} subjectId={l.id} />
+      <ReportSheet
+        open={report}
+        onClose={() => setReport(false)}
+        subject={{ type: l.type === "rental" ? "rental" : "listing", id: l.dbId ?? l.id }}
+      />
     </Screen>
   );
 }

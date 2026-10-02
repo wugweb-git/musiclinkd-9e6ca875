@@ -1,10 +1,10 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Package, Truck } from "lucide-react";
-import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
-import { Followers, Rating, useFileReport } from "./market";
+import { VerifiedBadge } from "./ui";
+import { Followers, Rating } from "./market";
 import { Price, StatusPill, type Tone } from "./kit";
 import { rupeeParts } from "@/lib/price";
 import { type Equipment, type RentalItem, type RentalStatus } from "@/data/rentals";
@@ -17,7 +17,6 @@ import { listMySavedIds } from "@/lib/saved.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
-import { SheetSectionHeading } from "./drawer-list";
 import { PersonAvatar } from "./person-avatar";
 import { sized } from "@/lib/image-url";
 
@@ -320,101 +319,6 @@ const moreFilterGroups: { label: string; options: string[] }[] = [
   { label: "Security deposit", options: ["Under ₹10k", "₹10k–30k", "Above ₹30k"] },
 ];
 
-export function RentalFilterSheet({
-  open,
-  onClose,
-  results,
-}: {
-  open: boolean;
-  onClose: () => void;
-  results: number;
-}) {
-  const [selected, setSelected] = useState<string[]>(["Mumbai"]);
-  const [more, setMore] = useState(false);
-  const [dates, setDates] = useState("Any dates");
-  const [switches, setSwitches] = useState({
-    available: true,
-    delivery: false,
-    pickup: false,
-    verified: true,
-  });
-  const toggle = (v: string) =>
-    setSelected((s) => (s.includes(v) ? s.filter((x) => x !== v) : [...s, v]));
-
-  const groups = more ? [...rentalFilterGroups, ...moreFilterGroups] : rentalFilterGroups;
-
-  return (
-    <Sheet
-      open={open}
-      onClose={onClose}
-      title="Filters"
-      titleAction={
-        <button
-          onClick={() => setSelected([])}
-          className="shrink-0 text-1 font-semibold text-foreground"
-        >
-          Clear all
-        </button>
-      }
-    >
-      <SheetSectionHeading>Rental dates</SheetSectionHeading>
-      <div className="mb-5 flex flex-wrap gap-2">
-        {["Any dates", "This weekend", "Next week", "Pick dates"].map((d) => (
-          <Chip key={d} active={dates === d} onClick={() => setDates(d)}>
-            {d}
-          </Chip>
-        ))}
-      </div>
-
-      {groups.map((g) => (
-        <div key={g.label} className="mb-5">
-          <SheetSectionHeading>{g.label}</SheetSectionHeading>
-          <div className="flex flex-wrap gap-2">
-            {g.options.map((o) => (
-              <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>
-                {o}
-              </Chip>
-            ))}
-          </div>
-        </div>
-      ))}
-
-      {!more ? (
-        <button onClick={() => setMore(true)} className="mb-5 text-1 font-semibold text-foreground">
-          More filters
-        </button>
-      ) : null}
-
-      <div className="mb-6 divide-y divide-border rounded-lg border border-border">
-        <RentalSwitch
-          label="Available on my dates"
-          value={switches.available}
-          onChange={(v) => setSwitches((s) => ({ ...s, available: v }))}
-        />
-        <RentalSwitch
-          label="Delivery available"
-          value={switches.delivery}
-          onChange={(v) => setSwitches((s) => ({ ...s, delivery: v }))}
-        />
-        <RentalSwitch
-          label="Pickup available"
-          value={switches.pickup}
-          onChange={(v) => setSwitches((s) => ({ ...s, pickup: v }))}
-        />
-        <RentalSwitch
-          label="Verified providers only"
-          value={switches.verified}
-          onChange={(v) => setSwitches((s) => ({ ...s, verified: v }))}
-        />
-      </div>
-
-      <Btn className="w-full" onClick={onClose}>
-        Show {results} results
-      </Btn>
-    </Sheet>
-  );
-}
-
 function RentalSwitch({
   label,
   value,
@@ -454,39 +358,3 @@ export const rentalSortOptions = [
   "Best rated",
   "Newest",
 ];
-
-export function RentalReportSheet({
-  open,
-  onClose,
-  subject,
-}: {
-  open: boolean;
-  onClose: () => void;
-  /** The rental listing, or — on a provider's page — the provider. */
-  subject: { type: "rental" | "profile"; id: string };
-}) {
-  const send = useFileReport(onClose);
-  const reasons = ["Report equipment", "Report provider", "Report a scam", "Incorrect information"];
-  return (
-    <Sheet open={open} onClose={onClose} title="Report">
-      <div className="divide-y divide-border rounded-lg border border-border">
-        {reasons.map((r) => (
-          <button
-            key={r}
-            type="button"
-            onClick={() =>
-              send.mutate({ subjectType: subject.type, subjectId: subject.id, reason: r })
-            }
-            disabled={send.isPending}
-            className="w-full px-4 py-4 text-left text-sm font-medium"
-          >
-            {r}
-          </button>
-        ))}
-      </div>
-      <p className="mt-3 text-1 text-muted-foreground">
-        Reports go to MusicLinkd moderation. Nobody is told who reported a listing.
-      </p>
-    </Sheet>
-  );
-}

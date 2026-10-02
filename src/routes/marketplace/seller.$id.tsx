@@ -4,10 +4,16 @@ import { toast } from "sonner";
 import { reviewItemFrom } from "@/lib/review-item";
 import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { useQuery } from "@tanstack/react-query";
-import { RentalReportSheet } from "@/components/ml/rental";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Followers, ListingGrid, Rating, ReviewTags, TrustPill } from "@/components/ml/market";
+import {
+  Followers,
+  ListingGrid,
+  Rating,
+  ReportSheet,
+  ReviewTags,
+  TrustPill,
+} from "@/components/ml/market";
 import { EmptyState, LoadError, Loading } from "@/components/ml/kit";
 import { getRentalProvider } from "@/lib/rentals.functions";
 import { getSellerListings } from "@/lib/catalog.functions";
@@ -157,7 +163,7 @@ function SellerProfile() {
         </button>
       </div>
 
-      <RentalReportSheet
+      <ReportSheet
         open={report}
         onClose={() => setReport(false)}
         subject={{ type: "profile", id }}

@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — filters and reports (P1-8 #11, 3 Oct)
+
+- **`ReportSheet`** is the one report sheet: any subject (listing, rental, profile, review) with
+  reasons for that subject, keyed by value and stored as their label. Reasons are radios with a
+  checked state, nothing is preselected, and Send stays off until one is picked. Listing pages
+  report the listing (or rental) by its row id; the seller page and the profile More menu use it.
+  "Nobody is told who reported this" stays; nothing claims a moderation team.
+- **Removed:** `RentalReportSheet`, `RentalFilterSheet` (no consumer) and `filter-sheet.tsx`'s
+  `FilterSheet` (no consumer). `MarketFilterSheet` is the filter sheet.
+- **Filters key off values.** Market's type, condition, fulfilment and price filters store keys
+  (`sale`, `like_new`, `pickup`, `under_10k`…) with their wording beside them
+  (`src/lib/market-filter.ts`); a category's sort does too (`SortSheet` takes `labels`).
+
 ### Changed — one calendar, one price breakdown (P1-8 #10, 3 Oct)
 
 - **`AvailabilityCalendar`** is the one calendar. A studio picks a day from its real hours

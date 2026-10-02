@@ -43,14 +43,21 @@ export const Route = createFileRoute("/marketplace/c/$slug")({
   component: CategoryScreen,
 });
 
-const sorts = ["Recommended", "Newest", "Price: Low to High", "Price: High to Low"];
+const sorts = ["recommended", "newest", "price_asc", "price_desc"] as const;
+type Sort = (typeof sorts)[number];
+const sortLabels: Record<Sort, string> = {
+  recommended: "Recommended",
+  newest: "Newest",
+  price_asc: "Price: Low to High",
+  price_desc: "Price: High to Low",
+};
 
 const rupees = (l: Listing) => Number((l.price.amount ?? "").replace(/[^0-9]/g, "")) || 0;
 
 /** The catalog comes newest first, which is also Recommended's order here. */
-function sorted(items: Listing[], sort: string) {
-  if (sort === "Price: Low to High") return [...items].sort((a, b) => rupees(a) - rupees(b));
-  if (sort === "Price: High to Low") return [...items].sort((a, b) => rupees(b) - rupees(a));
+function sorted(items: Listing[], sort: Sort) {
+  if (sort === "price_asc") return [...items].sort((a, b) => rupees(a) - rupees(b));
+  if (sort === "price_desc") return [...items].sort((a, b) => rupees(b) - rupees(a));
   return items;
 }
 
@@ -60,7 +67,7 @@ function CategoryScreen() {
   const cat = gear.categories.find((m) => m.slug === slug);
   const [filters, setFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
-  const [sort, setSort] = useState(sorts[0]!);
+  const [sort, setSort] = useState<Sort>("recommended");
   const [filter, setFilter] = useState<MarketFilter>(emptyMarketFilter);
 
   const inCategory = catalog.filter((l) => l.gear === slug);
@@ -73,7 +80,7 @@ function CategoryScreen() {
         back="/marketplace"
         right={
           <div className="flex items-center gap-2">
-            <IconBtn label={`Sort: ${sort}`} onClick={() => setSortOpen(true)}>
+            <IconBtn label={`Sort: ${sortLabels[sort]}`} onClick={() => setSortOpen(true)}>
               <ArrowUpDown size={iconSize.sm} aria-hidden />
             </IconBtn>
             <FilterButton count={filterCount(filter)} onClick={() => setFilters(true)} />
@@ -91,9 +98,9 @@ function CategoryScreen() {
             </span>
           }
           after={
-            sort !== sorts[0] ? (
-              <Chip active onClick={() => setSort(sorts[0]!)}>
-                {sort}
+            sort !== "recommended" ? (
+              <Chip active onClick={() => setSort("recommended")}>
+                {sortLabels[sort]}
                 <X size={iconSize.xs} aria-label="Remove" />
               </Chip>
             ) : null
@@ -122,8 +129,9 @@ function CategoryScreen() {
         open={sortOpen}
         onClose={() => setSortOpen(false)}
         value={sort}
-        onChange={setSort}
+        onChange={(v) => setSort(sorts.find((s) => s === v) ?? "recommended")}
         options={sorts}
+        labels={sortLabels}
       />
     </Screen>
   );
