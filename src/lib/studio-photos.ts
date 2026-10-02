@@ -11,7 +11,8 @@ import { BUSINESS_MEDIA_BUCKET } from "@/lib/studio-photos.functions";
  * Bucket and limits: supabase/migrations/20260921150000_studio_proof_photos.sql.
  */
 
-const MAX_BYTES = 10 * 1024 * 1024;
+/** business-media's own limit (20261003120000_business_media_5mb.sql), checked on the resized photo. */
+const MAX_BYTES = 5 * 1024 * 1024;
 
 export async function uploadStudioPhoto(studioId: string, file: File): Promise<string> {
   checkPickedImage(file);
