@@ -7,7 +7,8 @@ import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportun
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { X } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
-import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
+import { SavedSearchList } from "@/components/ml/saved-market";
 import {
   listMySaved,
   unsaveTarget,
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/saved")({
   component: Saved,
 });
 
-type BookmarkTab = SavedTargetType | "opportunity";
+type BookmarkTab = SavedTargetType | "opportunity" | "search";
 
 const tabs: { label: string; type: BookmarkTab }[] = [
   { label: "Talent", type: "talent" },
@@ -46,12 +47,17 @@ const tabs: { label: string; type: BookmarkTab }[] = [
   { label: "Listings", type: "listing" },
   { label: "Works", type: "portfolio" },
   { label: "Opportunities", type: "opportunity" },
+  { label: "Searches", type: "search" },
 ];
+const tabLabels = Object.fromEntries(tabs.map((t) => [t.type, t.label])) as Record<
+  BookmarkTab,
+  string
+>;
 
 function Saved() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<BookmarkTab>("talent");
-  // Opportunities are bookmarked on the device, not in saved_items — one screen, two sources.
+  // Opportunities and searches have their own stores (saved_items by slug, saved_searches).
   const savedOpportunities = useSavedOpportunities();
   const load = useServerFn(listMySaved);
   const remove = useServerFn(unsaveTarget);
@@ -67,29 +73,29 @@ function Saved() {
     }
   }
 
-  const cards = tab === "opportunity" ? [] : (q.data?.[tab] ?? []);
+  const cards = tab === "opportunity" || tab === "search" ? [] : (q.data?.[tab] ?? []);
 
   return (
     <Screen>
       <TopBar title="Bookmarked" back="/discover" />
       <div className="px-5 pb-4">
         <Segmented
-          value={tabs.find((t) => t.type === tab)?.label ?? tabs[0]!.label}
-          options={tabs.map((t) => t.label)}
-          onChange={(label) => setTab(tabs.find((t) => t.label === label)?.type ?? "talent")}
+          value={tab}
+          options={tabs.map((t) => t.type)}
+          labels={tabLabels}
+          onChange={setTab}
         />
       </div>
 
       <div className="space-y-3 px-5 pb-8">
         {tab === "opportunity" ? (
           <SavedOpportunityList saved={savedOpportunities} />
+        ) : tab === "search" ? (
+          <SavedSearchList />
         ) : q.isLoading ? (
           <Loading />
         ) : q.isError ? (
-          <EmptyState
-            title="We couldn't load your saved items"
-            body="Check your connection, then try again."
-          />
+          <LoadError what="your saved items" />
         ) : !cards.length ? (
           <EmptyState
             title="Nothing saved here yet"

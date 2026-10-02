@@ -98,7 +98,8 @@ export function DownloadCta({
 }: {
   title: string;
   body: string;
-  ios: CtaLink;
+  /** MusicLinkd ships on Android only; an iOS button shows only once there is an App Store app. */
+  ios?: CtaLink | undefined;
   android: CtaLink;
   className?: string | undefined;
 }) {
@@ -111,10 +112,12 @@ export function DownloadCta({
       </h2>
       <p className="mx-auto mt-5 max-w-[40ch] text-2 leading-relaxed">{body}</p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-        <CtaAction
-          action={ios}
-          className="state-layer inline-flex min-h-control items-center justify-center rounded-full bg-ink px-8 text-2 font-bold text-background transition-transform duration-200 ease-standard active:scale-97"
-        />
+        {ios ? (
+          <CtaAction
+            action={ios}
+            className="state-layer inline-flex min-h-control items-center justify-center rounded-full bg-ink px-8 text-2 font-bold text-background transition-transform duration-200 ease-standard active:scale-97"
+          />
+        ) : null}
         <CtaAction
           action={android}
           className="state-layer inline-flex min-h-control items-center justify-center rounded-full bg-ink px-8 text-2 font-bold text-background transition-transform duration-200 ease-standard active:scale-97"

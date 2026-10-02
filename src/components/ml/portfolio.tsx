@@ -24,7 +24,7 @@ import {
   Pause,
   Smartphone,
 } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
 import { StatusPill as BaseStatusPill } from "@/components/ml/kit";
 import { MediaEmbed } from "./media-embed";
@@ -396,103 +396,6 @@ export function MediaStatePill({ state }: { state: MediaState }) {
   // mediaStateCopy's tone names ("good"/"warn"/"bad", else neutral) are StatusPill's Tone names.
   const tone = c.tone === "good" || c.tone === "warn" || c.tone === "bad" ? c.tone : "neutral";
   return <BaseStatusPill label={c.label} tone={tone} />;
-}
-
-/**
- * MediaUploader — designed state machine over a local preview.
- * No storage infrastructure: it simulates transfer so every state is reviewable.
- */
-export function MediaUploader({
-  type,
-  url,
-  onUrl,
-}: {
-  type: "audio" | "video" | "image" | "link";
-  url: string;
-  onUrl: (v: string) => void;
-}) {
-  const [state, setState] = useState<MediaState>(url ? "ready" : "not-uploaded");
-  const [progress, setProgress] = useState(0);
-  const copy = mediaStateCopy[state];
-
-  function simulate(fail = false) {
-    setState("uploading");
-    setProgress(0);
-    let p = 0;
-    const timer = setInterval(() => {
-      p += 20;
-      setProgress(p);
-      if (p >= 100) {
-        clearInterval(timer);
-        if (fail) setState("failed");
-        else {
-          setState("processing");
-          setTimeout(() => setState("ready"), 900);
-        }
-      }
-    }, 260);
-  }
-
-  return (
-    <div className="rounded-lg bg-subtle p-4">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium text-muted-foreground">
-          {type === "link" ? "Link" : `${type[0]!.toUpperCase()}${type.slice(1)}`}
-        </p>
-        <MediaStatePill state={state} />
-      </div>
-      <p className="mt-2 text-1 text-muted-foreground">{copy.hint}</p>
-
-      {state === "uploading" ? (
-        <div
-          className="mt-3 h-2 overflow-hidden rounded-full bg-background"
-          role="progressbar"
-          aria-valuenow={progress}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Upload progress"
-        >
-          <div className="h-full rounded-full bg-primary" style={{ width: `${progress}%` }} />
-        </div>
-      ) : null}
-
-      <input
-        value={url}
-        onChange={(e) => {
-          onUrl(e.target.value);
-          setState(e.target.value ? "ready" : "not-uploaded");
-        }}
-        placeholder="https:// link to the file, YouTube, Spotify…"
-        aria-label={`${type} link`}
-        inputMode="url"
-        autoCapitalize="none"
-        spellCheck={false}
-        className={`mt-3 ${fieldBox}`}
-      />
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Btn variant="outline" onClick={() => simulate(false)}>
-          {state === "failed" ? "Retry upload" : "Upload file"}
-        </Btn>
-        {url || state === "ready" ? (
-          <Btn
-            variant="ghost"
-            onClick={() => {
-              onUrl("");
-              setState("not-uploaded");
-            }}
-          >
-            Replace
-          </Btn>
-        ) : null}
-        {showDemoControls ? (
-          <Btn variant="ghost" onClick={() => simulate(true)}>
-            Preview failure state
-          </Btn>
-        ) : null}
-      </div>
-    </div>
-  );
 }
 
 /* ---------------- Players ----------------------------------------------- */

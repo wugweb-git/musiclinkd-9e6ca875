@@ -24,9 +24,7 @@ import {
   MapPin,
   type LucideIcon,
   AudioLines,
-  CalendarClock,
   Globe,
-  Hourglass,
   Instagram,
   Youtube,
   MessageSquareQuote,
@@ -1146,28 +1144,6 @@ export function ProjectCard({ p }: { p: ProjectItem }) {
         <p className="mt-1 text-1 font-semibold text-foreground">{joinParts(p.genre, p.year)}</p>
       </div>
     </article>
-  );
-}
-
-/**
- * Services provided: each service's name as a small tag (LinkedIn's pattern). A tag opens the
- * service, where its price, terms and Enquire live.
- */
-export function ServicesProvided({ services }: { services: ServiceItem[] }) {
-  return (
-    <ul className="flex flex-wrap gap-2">
-      {services.map((s) => (
-        <li key={s.id}>
-          <Link
-            to="/services/$id"
-            params={{ id: s.id }}
-            className="state-layer inline-flex rounded-sm bg-background px-3 py-1.5 text-sm font-medium text-foreground"
-          >
-            {s.name}
-          </Link>
-        </li>
-      ))}
-    </ul>
   );
 }
 

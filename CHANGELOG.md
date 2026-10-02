@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — the smaller calls (P1-8 #14, 3 Oct)
+
+- **Saved searches show.** They were stored (`saved_searches`) and could be saved from Market and
+  Search, but no screen listed them. Bookmarked has a Searches tab (`SavedSearchList`), with
+  loading, empty and error states. **`SavedSearchRow`** is one link that runs the search again,
+  with a separate 48px remove that deletes the stored record. It refreshed the wrong cache key
+  (`saved-searches`); it now uses the one the search screens save into. Its date is the stored
+  date, not "3 days ago".
+- Bookmarked's tabs key off values (`Segmented` labels), and a failed load is `LoadError`, not an
+  empty state.
+- **`DownloadCta`** no longer requires an iOS link: MusicLinkd ships on Android only.
+- **Removed:** `ServicesProvided`, `PhotoPicker` and `MediaUploader` (no consumer).
+- **Kept as canonical:** `ExperienceCard` (no screen draws it yet), `ServiceCard`,
+  `ImagePickButton`, `GalleryEditor`, `PhotoSlots`, `BottomCta`, `DownloadCta`.
+
 ### Changed — one profile completion (P1-8 #13, 3 Oct)
 
 - **`ProfileCompletion`** draws completion from `profileGaps` everywhere: profile edit's "Finish your

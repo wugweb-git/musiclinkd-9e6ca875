@@ -17,15 +17,12 @@ import {
   ArrowLeft,
   Check,
   ChevronDown,
-  ChevronLeft,
   CircleAlert,
   CircleCheck,
   Info,
   LoaderCircle,
-  Camera,
   Image as ImageIcon,
   Trash2,
-  WifiOff,
   MapPin,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -933,136 +930,6 @@ export function InlineField({
           </p>
         ) : null}
       </div>
-    </div>
-  );
-}
-
-export function PhotoPicker({
-  photo,
-  onChange,
-  label = "Profile photo",
-}: {
-  photo: string | null;
-  onChange: (v: string | null) => void;
-  label?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const camera = useRef<HTMLInputElement>(null);
-  const gallery = useRef<HTMLInputElement>(null);
-
-  // Uploads to the avatars bucket under the signed-in user's folder; the draft stores the public URL.
-  const upload = async (file: File | undefined) => {
-    setOpen(false);
-    if (!file) return;
-    setError(null);
-    setUploading(true);
-    const previous = photo;
-    try {
-      const url = await uploadProfileImage("avatar", file);
-      onChange(url);
-      haptic("confirm");
-      void deleteProfileImage("avatar", previous);
-    } catch (err) {
-      haptic("error");
-      setError(err instanceof Error ? err.message : "The photo did not upload. Try again.");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const fileInput = (ref: typeof camera, capture: boolean) => (
-    <input
-      ref={ref}
-      type="file"
-      accept={PROFILE_IMAGE_ACCEPT}
-      {...(capture ? { capture: "user" as const } : {})}
-      className="sr-only"
-      tabIndex={-1}
-      aria-hidden
-      onChange={(e) => {
-        void upload(e.target.files?.[0]);
-        e.target.value = "";
-      }}
-    />
-  );
-
-  return (
-    <div>
-      {fileInput(camera, true)}
-      {fileInput(gallery, false)}
-      <div className="flex items-center gap-4">
-        <div
-          className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-subtle"
-          aria-live="polite"
-        >
-          {uploading ? (
-            <span className="text-1 font-semibold text-muted-foreground">Uploading…</span>
-          ) : photo ? (
-            <img
-              src={sized(photo, { width: 412 })}
-              alt={`${label} preview`}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <Camera size={iconSize.lg} className="text-muted-foreground" />
-          )}
-        </div>
-        <div className="flex-1 space-y-2">
-          <Btn
-            variant="outline"
-            className="w-full"
-            disabled={uploading}
-            onClick={() => setOpen(true)}
-          >
-            {photo ? "Replace photo" : "Add photo"}
-          </Btn>
-          {photo && !uploading ? (
-            <button
-              type="button"
-              onClick={() => {
-                const previous = photo;
-                onChange(null);
-                void deleteProfileImage("avatar", previous);
-              }}
-              className="flex min-h-touch w-full items-center justify-center gap-2 text-1 font-semibold text-muted-foreground"
-            >
-              <Trash2 size={iconSize.sm} /> Remove
-            </button>
-          ) : null}
-        </div>
-      </div>
-      {error ? (
-        <p role="alert" className="mt-3 text-1 text-destructive">
-          {error}
-        </p>
-      ) : null}
-
-      <Sheet open={open} onClose={() => setOpen(false)} title={label}>
-        <ul className="space-y-2">
-          {[
-            { icon: <Camera size={iconSize.md} />, label: "Take photo", input: camera },
-            {
-              icon: <ImageIcon size={iconSize.md} />,
-              label: "Choose from gallery",
-              input: gallery,
-            },
-          ].map((o) => (
-            <li key={o.label}>
-              <button
-                type="button"
-                onClick={() => o.input.current?.click()}
-                className="flex min-h-control-lg w-full items-center gap-3 rounded-lg bg-subtle px-4 text-sm font-semibold"
-              >
-                {o.icon}
-                {o.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 text-1 text-muted-foreground">JPEG, PNG or WebP, up to 5 MB.</p>
-      </Sheet>
     </div>
   );
 }
