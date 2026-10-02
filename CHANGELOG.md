@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — data access moves server-side (P1-11, 3 Oct)
+
+- **Sign-in methods** are read and removed through server functions
+  (`src/lib/identities.functions.ts`), not by Supabase Auth calls from the browser. The server
+  refuses to remove an account's last method before asking Supabase, and only removes one of the
+  caller's own. The row uses React Query: loading, an error with retry, per-method pending.
+- **Plays** are recorded through a server function (`recordPortfolioPlay`), not a database call from
+  the browser. The database still decides what counts.
+- **Still direct from the browser, pending a decision:** photo and document uploads to Supabase
+  Storage (`gallery.ts`, `listing-photos.ts`, `studio-photos.ts`, `profile-images.ts`,
+  `verification-documents.ts`). Reads that stay client-side by design: taxonomy options and the
+  username-availability check.
+
 ### Changed — the smaller calls (P1-8 #14, 3 Oct)
 
 - **Saved searches show.** They were stored (`saved_searches`) and could be saved from Market and
