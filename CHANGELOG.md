@@ -22,8 +22,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - `requestBooking` takes a service with or without a bookable; `answerBooking` checks the asker
   owns the bookable or the service; `listBookableBookings` includes requests for the account's
   services.
-- `20261004110000_service_owner_notice_link.sql` (not applied; apply after this is published): a
-  talent's booking notice opens the request too.
+- `20261004110000_service_owner_notice_link.sql`: a talent's booking notice opens the request too.
+  Applied to the live database by the owner's Claude on 4 Oct, unchanged from `main` (SHA-256
+  `ee3349c6…` checked), guard passed. New live `notify_booking` fingerprint
+  `83bedd07a14b51f0204a7cc60d26f37b`.
 
 ### Added — bookings can point at a service (M1 of booking by service, 4 Oct) — applied 4 Oct
 
