@@ -3,7 +3,7 @@
 ## 3 Oct 2026 — authentication entry redesign
 
 - [x] Redesign `/welcome`, phone sign-in and verification, and onboarding Select.
-- [ ] Verify at 412px and desktop widths; run TypeScript and preview diagnostics.
+- [x] Verify at 412px and desktop widths; run TypeScript and preview diagnostics.
 
 ## 3 Oct 2026 — P1 convergence (one publish)
 
