@@ -97,8 +97,8 @@ function PhoneAuth() {
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col">
-        <div className="flex flex-1 flex-col justify-center py-6">
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col sm:justify-center sm:py-8">
+        <div className="flex flex-1 flex-col justify-center py-6 sm:flex-none">
           <div className="rounded-lg border border-border bg-card p-4 sm:p-5">
             <form
               noValidate
@@ -150,7 +150,7 @@ function PhoneAuth() {
           </p>
         </div>
 
-        <div className="shrink-0 pb-1 text-center">
+        <div className="shrink-0 pb-1 text-center sm:mt-2">
           <LegalNote className="mt-0" />
           <div className="mt-0.5">
             <MadeByWugweb />

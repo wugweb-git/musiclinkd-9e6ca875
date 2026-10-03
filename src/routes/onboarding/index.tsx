@@ -70,7 +70,7 @@ function SelectScreen() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-[max(24px,env(safe-area-inset-top))]">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-[max(24px,env(safe-area-inset-top))] sm:max-w-[520px] sm:justify-center sm:py-8">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
         <p className="truncate text-1 font-semibold text-muted-foreground">Profile setup</p>
         <p className="shrink-0 text-1 font-semibold text-foreground">1 of {total + 1}</p>
@@ -79,7 +79,7 @@ function SelectScreen() {
         <div className="h-full w-[8%] rounded-full bg-brand" />
       </div>
 
-      <main className="flex flex-1 flex-col py-6">
+      <main className="flex flex-1 flex-col py-6 sm:flex-none">
         <h1 className={cn("text-4 font-bold text-foreground", rise)} style={beat(1)}>
           What brings you to MusicLinkd?
         </h1>
@@ -129,7 +129,7 @@ function SelectScreen() {
         </section>
       </main>
 
-      <div className="sticky bottom-0 -mx-5 border-t border-border bg-background/95 px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="sticky bottom-0 -mx-5 border-t border-border bg-background/95 px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:static sm:mt-2 sm:border-t-0 sm:bg-transparent sm:pb-0 sm:backdrop-blur-none">
         <Btn
           className="h-12 w-full text-sm font-semibold"
           disabled={!kind}

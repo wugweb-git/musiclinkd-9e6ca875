@@ -209,7 +209,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
 
   return (
     <AuthScreen brand={false} className="bg-background">
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col">
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col sm:justify-center sm:py-8">
         <header className={cn("pt-1", rise)} style={beat(1)}>
           <Brand compact className="vt-brand mb-4" />
           <p className="max-w-[360px] text-2 font-semibold leading-snug text-foreground">
@@ -220,7 +220,10 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
           </p>
         </header>
 
-        <main className={cn("flex flex-1 flex-col justify-center py-6", rise)} style={beat(2)}>
+        <main
+          className={cn("flex flex-1 flex-col justify-center py-6 sm:flex-none", rise)}
+          style={beat(2)}
+        >
           {saved.length > 0 && !signup ? (
             <section className="mb-3">
               <p className="mb-1.5 text-1 font-semibold text-muted-foreground">Continue as</p>
@@ -389,7 +392,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
         </main>
 
         {/* Footer */}
-        <footer className="shrink-0 pb-1 text-center">
+        <footer className="shrink-0 pb-1 text-center sm:mt-2">
           <LegalNote className="mt-0" />
           <div className="mt-0.5">
             <MadeByWugweb />
