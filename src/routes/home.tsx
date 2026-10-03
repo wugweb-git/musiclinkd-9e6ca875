@@ -267,9 +267,10 @@ function Body({ home }: { home: Home }) {
             available={user.available}
             onChange={async (next) => {
               try {
-                await saveProfile({ data: { availability: next ? "available_now" : "" } });
-              } catch {
+                await saveProfile({ data: { availability: next ? "available_now" : null } });
+              } catch (e) {
                 toast.error("Couldn't save that — try again");
+                throw e;
               }
             }}
           />
@@ -421,8 +422,9 @@ function AvailabilityToggle({
       label={on ? "Taking work" : "Not taking work"}
       value={on}
       onChange={(v) => {
+        // Shows the change at once and puts it back if the save fails.
         setOn(v);
-        void onChange(v);
+        onChange(v).catch(() => setOn(!v));
       }}
     />
   );
