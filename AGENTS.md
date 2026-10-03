@@ -28,7 +28,7 @@ Component, route and database rules live in `src/components/`, `src/routes/` and
 - Radius `sm` 8 / `lg` 16 / `3xl` 32 / `full`; no others. Type `text-1`, `text-sm`, `text-2`, `text-3`, `text-4`;
   `text-[10px]`/`text-[11px]` only for metadata; `text-0/2.5/5/xs/base/lg` don't exist. Tracking normal.
 - Colour: `ink` is the only dark token (no `primary`); greys and white. Brand pink is a signal only — read the
-  `--brand` comment in `src/styles.css`. One `--background` ground on every screen, auth included.
+  `--brand` comment in `src/styles.css`. Three grounds: `--auth-ground` (sign-in), `--background` (content), `--card` (raised).
 - Motion lives in `src/styles.css` (`screen-enter`, press scale, `lift`, `reveal`), behind reduced-motion.
 
 ## Data
