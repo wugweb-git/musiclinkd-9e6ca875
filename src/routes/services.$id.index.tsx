@@ -8,7 +8,12 @@ import {
   Music,
   UserRound,
 } from "lucide-react";
-import { PhotoSheet, ProofPill } from "@/components/ml/booking";
+import {
+  PhotoSheet,
+  ProofPill,
+  ServiceRequestSheet,
+  useServiceRequest,
+} from "@/components/ml/booking";
 import { ChipGroup, ChipGroupList } from "@/components/ml/profile";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { useState } from "react";
@@ -71,6 +76,8 @@ function ServiceDetail() {
   const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
+  // Book on a service with no place to book is a dated request (owner, 3 Oct 2026).
+  const serviceRequest = useServiceRequest();
   const [removed, setRemoved] = useState(false);
 
   if (pending || error || (!s && !removed)) {
@@ -383,11 +390,31 @@ function ServiceDetail() {
                 </Btn>
               )}
             </div>
-          ) : s.ownerAvailability ? (
-            // A visitor books from here: the same enquiry the owner previews.
-            <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
-              Enquire
-            </BtnLink>
+          ) : s.bookableSlug || s.ownerAvailability ? (
+            <div className="space-y-2">
+              {/* Every service is bookable: a place's own booking flow (its calendar says when),
+                  or a dated request to someone open for work. */}
+              {s.bookableSlug ? (
+                <BtnLink
+                  to="/booking/$id/service"
+                  params={{ id: s.bookableSlug }}
+                  search={{ service: s.id }}
+                  className="w-full"
+                >
+                  Book
+                </BtnLink>
+              ) : (
+                <Btn className="w-full" onClick={() => serviceRequest.book(s)}>
+                  Book
+                </Btn>
+              )}
+              {/* The enquiry, as before. */}
+              {s.ownerAvailability ? (
+                <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
+                  Enquire
+                </BtnLink>
+              ) : null}
+            </div>
           ) : (
             <Btn className="w-full" disabled>
               Not taking bookings right now
@@ -464,6 +491,11 @@ function ServiceDetail() {
         title={viewing?.title ?? ""}
         photos={viewing?.photos ?? []}
         onClose={() => setViewing(null)}
+      />
+      <ServiceRequestSheet
+        service={serviceRequest.service}
+        who={s?.provider?.name || "The provider"}
+        onClose={serviceRequest.close}
       />
     </Screen>
   );
