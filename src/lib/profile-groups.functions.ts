@@ -114,16 +114,6 @@ export type BusinessRecord = {
     }[];
     /** Proof photos, by amenity slug or equipment id. */
     photos: { subject_type: "amenity" | "equipment"; subject_id: string; url: string }[];
-    rooms: {
-      id: string;
-      name: string;
-      kind: string | null;
-      capacity: number | null;
-      hourly_rate_paise: number | null;
-      gear: string[];
-      photo_url: string | null;
-      sort_order: number;
-    }[];
   } | null;
 };
 
@@ -149,7 +139,7 @@ const BUSINESS =
 const REVIEW = "id, author_name, author_org, context, rating, body, response, created_at";
 const REVIEW_FULL = `${REVIEW}, tags`;
 const STUDIO = (review: string) =>
-  `id, slug, rating, review_count, amenities, rooms:bookable_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), equipment:bookable_equipment(id, name, category, quantity, included, sort_order), photos:bookable_photos(subject_type, subject_id, url, sort_order), reviews(${review})`;
+  `id, slug, rating, review_count, amenities, equipment:bookable_equipment(id, name, category, quantity, included, sort_order), photos:bookable_photos(subject_type, subject_id, url, sort_order), reviews(${review})`;
 
 async function businessRecord(
   client: SupabaseClient,
@@ -218,8 +208,7 @@ async function businessRecord(
     created_at: string;
   };
   const studio = (studios.data?.[0] ?? null) as
-    | (Omit<NonNullable<BusinessRecord["studio"]>, "rooms" | "equipment" | "photos"> & {
-        rooms: NonNullable<BusinessRecord["studio"]>["rooms"] | null;
+    | (Omit<NonNullable<BusinessRecord["studio"]>, "equipment" | "photos"> & {
         equipment:
           | (NonNullable<BusinessRecord["studio"]>["equipment"][number] & {
               sort_order: number;
@@ -267,9 +256,6 @@ async function businessRecord(
           photos: [...(studio.photos ?? [])]
             .sort((a, b) => a.sort_order - b.sort_order)
             .map(({ sort_order: _s, ...ph }) => ph),
-          rooms: [...(studio.rooms ?? [])]
-            .sort((a, b) => a.sort_order - b.sort_order)
-            .map((room) => ({ ...room, gear: room.gear ?? [] })),
         }
       : null,
   };

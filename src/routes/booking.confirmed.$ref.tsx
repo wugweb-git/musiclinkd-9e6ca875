@@ -154,7 +154,6 @@ function Confirmed() {
               <BookingStatusPill status={b.status === "declined" ? "rejected" : b.status} />
             </div>
             <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
-              {b.room?.name ? <Detail label="Room" value={b.room.name} /> : null}
               <Detail label="Date" value={formatDate(b.session_date)} />
               {b.start_time ? (
                 <Detail
@@ -189,10 +188,7 @@ function Confirmed() {
               onClick={() =>
                 addToCalendar({
                   uid: b.id,
-                  title: joinParts(
-                    askedName(b) ?? "Session",
-                    b.service?.name ?? b.room?.name ?? "",
-                  ),
+                  title: joinParts(askedName(b) ?? "Session", b.service?.name ?? ""),
                   date: b.session_date,
                   start: (b.start_time ?? "10:00").slice(0, 5),
                   end: (b.end_time ?? "14:00").slice(0, 5),

@@ -61,17 +61,15 @@ function ScheduleStep() {
 }
 
 function Schedule() {
-  const { bookable: b, resource: r, service, draft, set, price, endTime } = useBookingDraft();
+  const { bookable: b, service, draft, set, price, endTime } = useBookingDraft();
   const navigate = useNavigate();
   const [sim, setSim] = useState<Sim>("ok");
   // The start time that was taken while it was being chosen.
   const [conflict, setConflict] = useState<string | null>(null);
   const [customHours, setCustomHours] = useState(4);
 
-  // The service's own price where it has one; the room's rate until rooms go (C2).
-  const fromPrice = service?.price_paise
-    ? service.price_paise / 100
-    : Math.min(...r.tiers.map((t) => t.price));
+  // The service's own price, where it has one.
+  const fromPrice = service?.price_paise ? service.price_paise / 100 : undefined;
   // The studio's weekly hours and its taken and closed times, read again every minute so a slot
   // someone else books meanwhile stops being offered.
   const range = useMemo(() => calendarWindow(), []);
@@ -84,9 +82,8 @@ function Schedule() {
   const cal = calendar.data;
   const dayOf = useCallback(
     // The studio's notice and blackout days (cal) close slots and days on top of its hours.
-    (date: string) =>
-      bookableDay(cal?.weeklyHours ?? {}, cal?.busy ?? [], r.id, date, fromPrice, cal),
-    [cal, r.id, fromPrice],
+    (date: string) => bookableDay(cal?.weeklyHours ?? {}, cal?.busy ?? [], date, fromPrice, cal),
+    [cal, fromPrice],
   );
   const day = useMemo(
     () => (draft.date && cal ? dayOf(draft.date) : undefined),
@@ -115,12 +112,8 @@ function Schedule() {
   // Database studios keep their own wall clock and store no zone name.
   const timezone = b.timezone || "studio time";
 
-  const allowed = durationOptions.filter(
-    (o) =>
-      r.durations.includes(o.unit) ||
-      (o.unit === "hour" && r.durations.includes("hour")) ||
-      o.unit === "custom",
-  );
+  // Any length: a booking is for a service, not a room with its own packages.
+  const allowed = durationOptions;
 
   return (
     <Screen className="pb-nav-clear">
@@ -210,7 +203,7 @@ function Schedule() {
                   body={
                     next
                       ? `The next open date is ${formatDate(next.date)}.`
-                      : "This room has no open dates in the next month."
+                      : "No open dates in the next month."
                   }
                   action={
                     <div className="flex flex-col gap-2">
@@ -250,9 +243,6 @@ function Schedule() {
         {sim === "ok" && draft.start ? (
           <section className="mt-6">
             <h2 className="text-2">How long do you need?</h2>
-            <p className="mt-1 text-1 text-muted-foreground">
-              Only durations this room supports are shown.
-            </p>
             <div className="mt-3">
               <DurationPicker
                 options={allowed.map((o) => ({ label: o.label, hours: o.hours }))}

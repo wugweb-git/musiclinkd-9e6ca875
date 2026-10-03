@@ -12,7 +12,7 @@ import {
   Loading,
   SegmentedField,
 } from "@/components/ml/kit";
-import { Field, SheetSelect, inputClass } from "@/components/ml/listing-form";
+import { Field, inputClass } from "@/components/ml/listing-form";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { StickyBar } from "@/components/ml/booking";
 import { unitLabel } from "@/lib/price";
@@ -21,9 +21,6 @@ import {
   getMyBookable,
   updateMyBookable,
   updateMyBookableAddOns,
-  updateBookableRoomRate,
-  updateBookableRoomTiers,
-  type RoomTierRow,
   type BookableAddOnRow,
 } from "@/lib/bookable-owner.functions";
 
@@ -33,8 +30,7 @@ export const Route = createFileRoute("/business/pricing")({
       { title: "Pricing — MusicLinkd provider" },
       {
         name: "description",
-        content:
-          "Set hourly, half-day, full-day and session rates for each room and add-on prices.",
+        content: "Set the hourly rate and add-on prices.",
       },
       { property: "og:title", content: "Pricing — MusicLinkd provider" },
       { property: "og:description", content: "Rates and add-ons for your space." },
@@ -61,49 +57,24 @@ function rupees(paise: number | null | undefined) {
 /** Typed rupees as paise; empty is no price. */
 const paise = (v: string) => (v.trim() ? Math.round(Number(v) * 100) : null);
 
-/** A package tier as it is edited: the stored row plus the typed amount. */
-type TierDraft = { row: RoomTierRow; price: string };
 /** An add-on as it is edited: the stored row plus the typed amount. */
 type AddOnDraft = { row: BookableAddOnRow; price: string };
-
-const TIER_KINDS = [
-  { value: "halfDay", label: "Half day" },
-  { value: "fullDay", label: "Full day" },
-  { value: "session", label: "Session" },
-] as const;
-type TierKind = (typeof TIER_KINDS)[number]["value"];
-
-const isHourTier = (t: RoomTierRow) => t.unit === "hour";
 
 function PricingContent() {
   const queryClient = useQueryClient();
   const load = useServerFn(getMyBookable);
   const saveStudio = useServerFn(updateMyBookable);
-  const saveRoom = useServerFn(updateBookableRoomRate);
-  const saveTiers = useServerFn(updateBookableRoomTiers);
   const saveAddOns = useServerFn(updateMyBookableAddOns);
   const q = useQuery({ queryKey: ["business", "studio", "mine"], queryFn: () => load() });
 
   const [baseRate, setBaseRate] = useState("");
-  const [roomRates, setRoomRates] = useState<Record<string, string>>({});
-  const [tiers, setTiers] = useState<Record<string, TierDraft[]>>({});
   const [addOns, setAddOns] = useState<AddOnDraft[]>([]);
   const [saving, setSaving] = useState(false);
-  // The room a new tier is being added to, and whether the new add-on sheet is open.
-  const [tierRoom, setTierRoom] = useState<string | null>(null);
+  // Whether the new add-on sheet is open.
   const [addingAddOn, setAddingAddOn] = useState(false);
   useEffect(() => {
     if (!q.data) return;
     setBaseRate(rupees(q.data.hourly_rate_paise));
-    setRoomRates(Object.fromEntries(q.data.rooms.map((r) => [r.id, rupees(r.hourly_rate_paise)])));
-    setTiers(
-      Object.fromEntries(
-        q.data.rooms.map((r) => [
-          r.id,
-          r.tiers.map((row) => ({ row, price: rupees(row.price_paise) })),
-        ]),
-      ),
-    );
     setAddOns(q.data.add_ons.map((row) => ({ row, price: rupees(row.price_paise) })));
   }, [q.data]);
 
@@ -112,22 +83,6 @@ function PricingContent() {
     setSaving(true);
     try {
       await saveStudio({ data: { hourly_rate_paise: paise(baseRate) } });
-      await Promise.all(
-        q.data.rooms.map(async (r) => {
-          const v = roomRates[r.id];
-          const rate = v === undefined ? r.hourly_rate_paise : (paise(v) ?? 0);
-          if (v !== undefined && v !== rupees(r.hourly_rate_paise)) {
-            await saveRoom({ data: { roomId: r.id, hourly_rate_paise: rate ?? 0 } });
-          }
-          // A stored "Hourly" tier follows the room's hourly rate, so the two never disagree.
-          const next = (tiers[r.id] ?? []).map(({ row, price }) =>
-            isHourTier(row) ? { ...row, price_paise: rate } : { ...row, price_paise: paise(price) },
-          );
-          if (JSON.stringify(next) !== JSON.stringify(r.tiers)) {
-            await saveTiers({ data: { roomId: r.id, tiers: next } });
-          }
-        }),
-      );
       const nextAddOns = addOns.map(({ row, price }) => ({ ...row, price_paise: paise(price) }));
       if (JSON.stringify(nextAddOns) !== JSON.stringify(q.data.add_ons)) {
         await saveAddOns({ data: { addOns: nextAddOns } });
@@ -172,8 +127,6 @@ function PricingContent() {
     );
   }
 
-  const rooms = q.data.rooms;
-
   return (
     <Screen bottomNav={false}>
       <TopBar title="Pricing" subtitle={q.data.name} back="/business/bookings" />
@@ -190,80 +143,6 @@ function PricingContent() {
           value={baseRate}
           onChange={setBaseRate}
         />
-
-        {rooms.length ? (
-          <section className="min-w-0">
-            <h2 className="text-2">Rooms</h2>
-            <div className="mt-3 space-y-2">
-              {rooms.map((r) => (
-                <MoneyRow
-                  key={r.id}
-                  id={`rate-room-${r.id}`}
-                  label={r.name}
-                  hint="per hour"
-                  value={roomRates[r.id] ?? ""}
-                  onChange={(v) => setRoomRates((s) => ({ ...s, [r.id]: v }))}
-                />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {rooms.length ? (
-          <section className="min-w-0">
-            <h2 className="text-2">Price tiers</h2>
-            <p className="mt-0.5 text-1 text-muted-foreground">
-              Half-day, full-day and session rates beside each room's hourly rate.
-            </p>
-            {rooms.map((r) => {
-              const shown = (tiers[r.id] ?? [])
-                .map((t, i) => ({ t, i }))
-                .filter(({ t }) => !isHourTier(t.row));
-              return (
-                <div key={r.id} className="mt-4 min-w-0">
-                  <h3 className="truncate text-sm font-semibold">{r.name}</h3>
-                  <div className="mt-2 space-y-2">
-                    {shown.map(({ t, i }) => (
-                      <div key={`${r.id}-${i}`} className="flex min-w-0 items-center gap-2">
-                        <div className="min-w-0 flex-1">
-                          <MoneyRow
-                            id={`tier-${r.id}-${i}`}
-                            label={t.row.label}
-                            hint={t.row.hours ? `${t.row.hours} hours` : ""}
-                            value={t.price}
-                            onChange={(v) =>
-                              setTiers((s) => ({
-                                ...s,
-                                [r.id]: (s[r.id] ?? []).map((x, j) =>
-                                  j === i ? { ...x, price: v } : x,
-                                ),
-                              }))
-                            }
-                          />
-                        </div>
-                        <IconBtn
-                          label={`Remove ${t.row.label}`}
-                          variant="ghost"
-                          onClick={() =>
-                            setTiers((s) => ({
-                              ...s,
-                              [r.id]: (s[r.id] ?? []).filter((_, j) => j !== i),
-                            }))
-                          }
-                        >
-                          <Trash2 size={iconSize.sm} aria-hidden />
-                        </IconBtn>
-                      </div>
-                    ))}
-                    <Btn variant="outline" className="w-full" onClick={() => setTierRoom(r.id)}>
-                      Add Price Tier
-                    </Btn>
-                  </div>
-                </div>
-              );
-            })}
-          </section>
-        ) : null}
 
         <section className="min-w-0">
           <h2 className="text-2">Add-ons</h2>
@@ -307,18 +186,6 @@ function PricingContent() {
         onPrimary={() => void save()}
       />
 
-      <NewTierSheet
-        open={tierRoom !== null}
-        onClose={() => setTierRoom(null)}
-        onAdd={(row) => {
-          if (!tierRoom) return;
-          setTiers((s) => ({
-            ...s,
-            [tierRoom]: [...(s[tierRoom] ?? []), { row, price: rupees(row.price_paise) }],
-          }));
-          setTierRoom(null);
-        }}
-      />
       <NewAddOnSheet
         open={addingAddOn}
         onClose={() => setAddingAddOn(false)}
@@ -328,116 +195,6 @@ function PricingContent() {
         }}
       />
     </Screen>
-  );
-}
-
-/** A new package rate for one room: half day, full day, or a named session. */
-function NewTierSheet({
-  open,
-  onClose,
-  onAdd,
-}: {
-  open: boolean;
-  onClose: () => void;
-  onAdd: (row: RoomTierRow) => void;
-}) {
-  const [kind, setKind] = useState<TierKind>("halfDay");
-  const [name, setName] = useState("");
-  const [hours, setHours] = useState("4");
-  const [price, setPrice] = useState("");
-  const kindLabel = TIER_KINDS.find((k) => k.value === kind)?.label ?? "";
-  const h = Number(hours);
-  const ready =
-    Number.isInteger(h) &&
-    h >= 1 &&
-    h <= 24 &&
-    !!price.trim() &&
-    (kind !== "session" || !!name.trim());
-
-  function reset() {
-    setKind("halfDay");
-    setName("");
-    setHours("4");
-    setPrice("");
-  }
-
-  return (
-    <Sheet
-      open={open}
-      onClose={() => {
-        reset();
-        onClose();
-      }}
-      title="Add price tier"
-    >
-      <form
-        className="space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!ready) return;
-          onAdd({
-            // The booking page reads a package's kind from its label ("Half day", "Full day").
-            label: kind === "session" ? name.trim() : `${kindLabel} · ${h} hrs`,
-            hours: h,
-            price_paise: paise(price),
-            unit: kind,
-          });
-          reset();
-        }}
-      >
-        <Field label="Kind" id="tier-kind">
-          <SheetSelect
-            title="Kind"
-            value={kind}
-            options={TIER_KINDS}
-            onChange={(v) => {
-              setKind(v as TierKind);
-              if (v === "halfDay") setHours("4");
-              if (v === "fullDay") setHours("8");
-            }}
-            placeholder="Pick a kind"
-          />
-        </Field>
-        {kind === "session" ? (
-          <Field label="Name" id="tier-name">
-            <input
-              aria-labelledby="tier-name"
-              value={name}
-              maxLength={60}
-              placeholder="e.g. Episode package"
-              onChange={(e) => setName(e.target.value)}
-              className={inputClass}
-            />
-          </Field>
-        ) : null}
-        <Field label="Hours" id="tier-hours">
-          <input
-            aria-labelledby="tier-hours"
-            type="number"
-            inputMode="numeric"
-            min={1}
-            max={24}
-            value={hours}
-            onChange={(e) => setHours(e.target.value)}
-            className={inputClass}
-          />
-        </Field>
-        <Field label="Price (₹)" id="tier-price">
-          <input
-            aria-labelledby="tier-price"
-            type="number"
-            inputMode="numeric"
-            min={0}
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className={inputClass}
-          />
-        </Field>
-        <Btn type="submit" className="w-full" disabled={!ready}>
-          Add Tier
-        </Btn>
-      </form>
-    </Sheet>
   );
 }
 
@@ -529,7 +286,7 @@ function MoneyRow({
   value,
   onChange,
 }: {
-  /** Needed where two rows can share a label (tiers of different rooms). */
+  /** Needed where two rows can share a label. */
   id?: string;
   label: string;
   hint: string;

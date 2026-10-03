@@ -705,7 +705,6 @@ export function AcknowledgeRow({
 
 export function BookingSummaryCard({
   b,
-  r,
   date,
   start,
   end,
@@ -713,26 +712,25 @@ export function BookingSummaryCard({
   service,
 }: {
   b: Bookable;
-  r: Resource;
   date: string;
   start: string;
   end: string;
   people: number;
-  /** The service booked; the room's name stands in for older flows without one. */
+  /** The service booked. */
   service?: string | undefined;
 }) {
   return (
     <div className="rounded-lg bg-subtle p-4">
       <div className="flex gap-3">
         <img
-          src={sized(r.photo, { width: 64 })}
+          src={sized(b.hero, { width: 64 })}
           alt=""
           className="h-16 w-16 shrink-0 rounded-lg object-cover"
           loading="lazy"
         />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{b.name}</p>
-          <p className="truncate text-1 text-muted-foreground">{service || r.name}</p>
+          <p className="truncate text-1 text-muted-foreground">{service ?? ""}</p>
           <p className="mt-1 truncate text-1 text-muted-foreground">{b.city}</p>
         </div>
       </div>
@@ -780,7 +778,7 @@ export function shownBookingStatus(
 
 /**
  * One studio booking request, from the database (booking_requests), for either side. The studio
- * sees who asked (their name opens their profile), the space and room, when, and their notes, with
+ * sees who asked (their name opens their profile), the place and service, when, and their notes, with
  * the screen's own actions below; the person who booked sees the studio and the studio's reply,
  * and the whole record opens their booking. No price: nothing is paid in the app.
  */
@@ -802,8 +800,8 @@ export function BookingRecord({
     side === "studio" && b.people ? `${b.people} people` : "",
   );
   const studioName = askedName(b) ?? (side === "studio" ? "Your space" : "Studio");
-  // What was booked: the service, or the room on older bookings.
-  const what = b.service?.name ?? b.room?.name ?? "";
+  // What was booked: the service, or what was asked for on older bookings.
+  const what = b.service?.name ?? b.purpose ?? "";
   const pill = <StatusPill label={status.label} tone={status.tone} className="shrink-0" />;
 
   if (side === "requester") {

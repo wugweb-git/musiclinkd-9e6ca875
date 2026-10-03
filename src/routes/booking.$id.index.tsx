@@ -11,7 +11,6 @@ import {
   StickyBar,
 } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
-import { lowestRate } from "@/data/booking";
 import { inr } from "@/lib/price";
 import { rupeeParts } from "@/lib/price";
 import { Price } from "@/components/ml/kit";
@@ -32,12 +31,12 @@ export const Route = createFileRoute("/booking/$id/")({
       {
         name: "description",
         content:
-          "See rooms, rates, amenities and live availability, then check dates and request your session.",
+          "See rates, amenities and live availability, then check dates and request your session.",
       },
       { property: "og:title", content: "Book a studio session — MusicLinkd" },
       {
         property: "og:description",
-        content: "Rooms, rates, amenities and live availability for MusicLinkd bookable spaces.",
+        content: "Rates, amenities and live availability for MusicLinkd bookable spaces.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -52,16 +51,12 @@ function BookingEntry() {
   const message = useMessagePerson();
   // The amenity or equipment item whose photos are open.
   const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
-  // "From" is the lowest service price; a studio without priced services falls back to its rates.
+  // "From" is the lowest service price; with no priced service there is no "from".
   const servicePrices = (b.services ?? [])
     .map((sv) => (sv.price_paise ? sv.price_paise / 100 : 0))
     .filter((p) => p > 0);
-  const from = servicePrices.length
-    ? Math.min(...servicePrices)
-    : Math.min(...b.resources.flatMap((r) => r.tiers.map((t) => t.price)));
-  const equipment = [
-    ...new Set([...(b.equipment ?? []), ...b.resources.flatMap((r) => r.equipment)]),
-  ];
+  const from = servicePrices.length ? Math.min(...servicePrices) : null;
+  const equipment = [...new Set(b.equipment ?? [])];
 
   return (
     <Screen className="pb-nav-clear">
@@ -252,7 +247,7 @@ function BookingEntry() {
       />
 
       <StickyBar
-        price={`From ${inr(from)}`}
+        price={from === null ? undefined : `From ${inr(from)}`}
         hint={[b.timezone, b.responseTime].filter(Boolean).join(" · ") || undefined}
         primaryLabel="Book"
         onPrimary={() => navigate({ to: "/booking/$id/service", params: { id: b.id } })}

@@ -24,12 +24,12 @@ export const Route = createFileRoute("/business/bookings/$ref")({
       { title: "Session detail — MusicLinkd provider" },
       {
         name: "description",
-        content: "Everything you need to run the session: customer, room and timing.",
+        content: "Everything you need to run the session: customer and timing.",
       },
       { property: "og:title", content: "Session detail — MusicLinkd provider" },
       {
         property: "og:description",
-        content: "Customer, room and timing for a confirmed session.",
+        content: "Customer and timing for a confirmed session.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -134,7 +134,7 @@ function ProviderBookingDetailContent() {
     <Screen>
       <TopBar
         title="Session"
-        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.bookable_name ?? "Studio"}
+        subtitle={bk.service?.name ?? bk.studio?.name ?? bk.bookable_name ?? "Studio"}
         back="/business/bookings"
       />
       <main className="px-5 pt-4">
@@ -175,7 +175,6 @@ function ProviderBookingDetailContent() {
             />
             {bk.hours ? <Detail label="Duration" value={`${bk.hours} hrs`} /> : null}
             {bk.purpose ? <Detail label="Purpose" value={bk.purpose} /> : null}
-            {bk.room ? <Detail label="Room" value={bk.room.name} /> : null}
           </dl>
           {bk.notes ? (
             <p className="mt-3 border-t border-border pt-3 text-1 text-muted-foreground">
@@ -203,7 +202,7 @@ function ProviderBookingDetailContent() {
             </Btn>
           ) : null}
           <BtnLink to="/business/availability" variant="ghost" className="w-full">
-            Block or Adjust This Room's Calendar
+            Block or Adjust the Calendar
           </BtnLink>
         </div>
       </main>

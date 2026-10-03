@@ -1,5 +1,5 @@
-import type { AddOn, Bookable, DurationUnit, PricingTier, Resource } from "@/data/booking";
-import { taxonomyLabel, type RoomTier, type BookableRow } from "@/lib/catalog.functions";
+import type { AddOn, Bookable } from "@/data/booking";
+import { taxonomyLabel, type BookableRow } from "@/lib/catalog.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
 import { hasWeeklyHours, type WeeklyHours } from "@/lib/bookable-slots";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
@@ -62,53 +62,6 @@ const unitIsHour = (unit: string) => ["hour", "hr", "hourly"].includes(unit.trim
 /** Bookable prices are whole rupees; the database stores paise. */
 const rupees = (paise: number) => paise / 100;
 
-/** A stored package ("Half day", 4 hours) as a pricing tier; the label says which duration it is. */
-function packageTier(tier: RoomTier): PricingTier | null {
-  if (tier.price_paise == null || !tier.label) return null;
-  const label = tier.label.toLowerCase();
-  const unit: DurationUnit = label.includes("half")
-    ? "halfDay"
-    : label.includes("full") || label.includes("day")
-      ? "fullDay"
-      : "session";
-  return { unit, label: tier.label, hours: tier.hours ?? 0, price: rupees(tier.price_paise) };
-}
-
-function hourlyResource(
-  id: string,
-  name: string,
-  capacity: number | null,
-  paise: number | null,
-  photo: string,
-  gear: string[] = [],
-  description = "",
-  packages: RoomTier[] = [],
-): Resource | null {
-  const tiers: PricingTier[] = [
-    ...(paise == null
-      ? []
-      : [{ unit: "hour" as const, label: "Hourly", hours: 1, price: rupees(paise) }]),
-    // A stored "Hourly" package repeats the room's own hourly rate; keep one of each unit and price.
-    ...packages
-      .map(packageTier)
-      .filter((t): t is PricingTier => t !== null)
-      .filter((t) => !(paise != null && t.unit === "hour" && t.price === rupees(paise))),
-  ];
-  if (!tiers.length) return null;
-  return {
-    id,
-    name,
-    description,
-    capacity: capacity ?? 0,
-    equipment: gear,
-    tiers,
-    durations: [...new Set(tiers.map((t) => t.unit))],
-    model: "request",
-    availabilityNote: "",
-    photo,
-  };
-}
-
 /** Photo URLs per subject id, in order. */
 function photosBy(photos: BookablePhoto[], type: BookablePhoto["subject_type"]) {
   const by = new Map<string, string[]>();
@@ -123,24 +76,9 @@ export function bookableFromRow(
   labels: TaxonomyLabels,
   weeklyHours: WeeklyHours = {},
   photos: BookablePhoto[] = [],
-): Bookable | null {
-  const resources = row.rooms.length
-    ? row.rooms.map((room) =>
-        hourlyResource(
-          room.id,
-          room.name,
-          room.capacity,
-          room.hourly_rate_paise,
-          room.photo_url ?? "",
-          room.gear ?? [],
-          room.description ?? "",
-          room.tiers ?? [],
-        ),
-      )
-    : [hourlyResource(row.id, row.name, null, row.hourly_rate_paise, row.image_url ?? "")];
-  const priced = resources.filter((r): r is Resource => r !== null);
-  // Without a rate there is nothing honest to price, so the space stays unavailable.
-  if (!priced.length) return null;
+): Bookable {
+  // No rooms (owner, 3 Oct 2026): a place is booked through its services, which the booking
+  // flow adds, and priced from them; one calendar for the whole place.
 
   // Proof photos are keyed by what the page shows: the amenity's label, the equipment's name.
   const amenityPhotos = photosBy(photos, "amenity");
@@ -167,7 +105,7 @@ export function bookableFromRow(
     gallery: row.images,
     about: row.description ?? "",
     amenities: row.amenities.map((a) => taxonomyLabel(labels, "amenities", a)),
-    resources: priced,
+    resources: [],
     equipment: row.equipment.map((e) => e.name),
     amenityLabelSlugs: Object.fromEntries(
       row.amenities.map((a) => [taxonomyLabel(labels, "amenities", a), a]),
