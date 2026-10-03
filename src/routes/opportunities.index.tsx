@@ -122,19 +122,57 @@ function OpportunitiesHome() {
 
       <div className="space-y-5 px-5 pt-4">
         <div className="grid grid-cols-[minmax(0,1fr)_48px] gap-2">
-        <Link to="/opportunities/search" className="block min-w-0">
-          <div className="flex h-12 items-center gap-3 rounded-full border border-input bg-card px-4">
-            <Search size={iconSize.sm} className="text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Singer, mixing engineer, studio…</span>
-          </div>
-        </Link>
-        <Link to="/opportunities/search" aria-label="Filter opportunities" className="hit-area flex h-12 w-12 items-center justify-center rounded-full border border-input bg-card"><SlidersHorizontal size={iconSize.md} aria-hidden /></Link>
+          <Link to="/opportunities/search" className="block min-w-0">
+            <div className="flex h-12 items-center gap-3 rounded-full border border-input bg-card px-4">
+              <Search size={iconSize.sm} className="text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                Singer, mixing engineer, studio…
+              </span>
+            </div>
+          </Link>
+          <Link
+            to="/opportunities/search"
+            aria-label="Filter opportunities"
+            className="hit-area flex h-12 w-12 items-center justify-center rounded-full border border-input bg-card"
+          >
+            <SlidersHorizontal size={iconSize.md} aria-hidden />
+          </Link>
         </div>
 
         <div className="grid grid-cols-3 overflow-hidden rounded-lg border border-border bg-card">
-          <Link to="/opportunities/applications" className="state-layer flex min-h-[88px] flex-col justify-between border-r border-border p-3"><Briefcase size={iconSize.md} aria-hidden /><span><span className="block text-sm font-semibold">Applications</span><span className="text-1 text-muted-foreground">{applications.data ? `${active} active` : "View yours"}</span></span></Link>
-          <Link to="/saved" className="state-layer flex min-h-[88px] flex-col justify-between border-r border-border p-3"><Bookmark size={iconSize.md} aria-hidden /><span><span className="block text-sm font-semibold">Saved</span><span className="text-1 text-muted-foreground">Your shortlist</span></span></Link>
-          <Link to="/discover/$slug" params={{ slug: "projects" }} className="state-layer flex min-h-[88px] flex-col justify-between p-3"><Users size={iconSize.md} aria-hidden /><span><span className="block text-sm font-semibold">Projects</span><span className="text-1 text-muted-foreground">Join a team</span></span></Link>
+          <Link
+            to="/opportunities/applications"
+            className="state-layer flex min-h-[88px] flex-col justify-between border-r border-border p-3"
+          >
+            <Briefcase size={iconSize.md} aria-hidden />
+            <span>
+              <span className="block text-sm font-semibold">Applications</span>
+              <span className="text-1 text-muted-foreground">
+                {applications.data ? `${active} active` : "View yours"}
+              </span>
+            </span>
+          </Link>
+          <Link
+            to="/saved"
+            className="state-layer flex min-h-[88px] flex-col justify-between border-r border-border p-3"
+          >
+            <Bookmark size={iconSize.md} aria-hidden />
+            <span>
+              <span className="block text-sm font-semibold">Saved</span>
+              <span className="text-1 text-muted-foreground">Your shortlist</span>
+            </span>
+          </Link>
+          <Link
+            to="/discover/$slug"
+            params={{ slug: "projects" }}
+            className="state-layer flex min-h-[88px] flex-col justify-between p-3"
+          >
+            <Users size={iconSize.md} aria-hidden />
+            <span>
+              <span className="block text-sm font-semibold">Projects</span>
+              <span className="text-1 text-muted-foreground">Join a team</span>
+            </span>
+          </Link>
         </div>
 
         <section>
@@ -147,7 +185,7 @@ function OpportunitiesHome() {
                   key={c.key}
                   to="/opportunities/search"
                   search={{ q: c.label }}
-                   className="w-[124px] shrink-0 rounded-sm border border-border bg-card p-3"
+                  className="w-[124px] shrink-0 rounded-sm border border-border bg-card p-3"
                 >
                   <Icon size={20} aria-hidden />
                   <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>
@@ -210,12 +248,11 @@ function OpportunitiesHome() {
                 o={o}
                 saved={has(o.id) || o.saved}
                 onSave={() => toggle(o.id)}
-                 applicationLabel={applicationBySlug.get(o.id)}
+                applicationLabel={applicationBySlug.get(o.id)}
               />
             ))}
           </div>
         )}
-
       </div>
 
       <Sheet open={sheet} onClose={() => setSheet(false)} title="Post an opportunity">

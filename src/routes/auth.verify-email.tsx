@@ -41,7 +41,10 @@ export const Route = createFileRoute("/auth/verify-email")({
         content: "Open the link we emailed you to continue to MusicLinkd.",
       },
       { property: "og:title", content: "Verify your email — MusicLinkd" },
-      { property: "og:description", content: "Confirm your email to finish creating your account." },
+      {
+        property: "og:description",
+        content: "Confirm your email to finish creating your account.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -82,46 +85,46 @@ function VerifyEmail() {
   return (
     <AuthScreen back={{ to: "/welcome" }}>
       <AuthComposition footer={<AuthFooter />}>
-          <AuthSurface>
-            <AuthHeading
-              title="Verify your email"
-              sub={
-                email
-                  ? `Open the link we sent to ${email} to continue.`
-                  : "Open the link we emailed you to continue."
-              }
-            />
+        <AuthSurface>
+          <AuthHeading
+            title="Verify your email"
+            sub={
+              email
+                ? `Open the link we sent to ${email} to continue.`
+                : "Open the link we emailed you to continue."
+            }
+          />
 
-            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+          {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-            <p className="mt-1 flex justify-center text-1 text-muted-foreground">
-              {countdown.seconds > 0 ? (
-                <span aria-live="polite" className="min-h-touch inline-flex items-center font-medium">
-                   Send again in 0:{String(countdown.seconds).padStart(2, "0")}
-                </span>
-              ) : (
-                <AuthTextButton
-                  icon={<RotateCw size={iconSize.sm} />}
-                  onClick={() => void resend()}
-                  className="font-medium hover:text-foreground"
-                >
-                   Resend verification email
-                </AuthTextButton>
-              )}
-            </p>
-
-            <TrustNote>Not there? Check spam and promotions.</TrustNote>
-          </AuthSurface>
-
-          <p className="mt-3.5 flex justify-center text-1">
-            <AuthLink
-              to="/signup"
-              icon={<Pencil size={iconSize.sm} />}
-              className="font-medium text-muted-foreground hover:text-foreground"
-            >
-                Change email
-            </AuthLink>
+          <p className="mt-1 flex justify-center text-1 text-muted-foreground">
+            {countdown.seconds > 0 ? (
+              <span aria-live="polite" className="min-h-touch inline-flex items-center font-medium">
+                Send again in 0:{String(countdown.seconds).padStart(2, "0")}
+              </span>
+            ) : (
+              <AuthTextButton
+                icon={<RotateCw size={iconSize.sm} />}
+                onClick={() => void resend()}
+                className="font-medium hover:text-foreground"
+              >
+                Resend verification email
+              </AuthTextButton>
+            )}
           </p>
+
+          <TrustNote>Not there? Check spam and promotions.</TrustNote>
+        </AuthSurface>
+
+        <p className="mt-3.5 flex justify-center text-1">
+          <AuthLink
+            to="/signup"
+            icon={<Pencil size={iconSize.sm} />}
+            className="font-medium text-muted-foreground hover:text-foreground"
+          >
+            Change email
+          </AuthLink>
+        </p>
       </AuthComposition>
     </AuthScreen>
   );

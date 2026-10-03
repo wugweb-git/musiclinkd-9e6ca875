@@ -66,11 +66,11 @@ export function PhoneCodeStep({
               body: "Send a new code, then enter the latest one we send.",
             }
           : m.includes("invalid")
-          ? {
-              title: "That code is not valid",
-              body: "Check all six digits and try again, or send a new code.",
-            }
-          : classifyAuthError(err.message),
+            ? {
+                title: "That code is not valid",
+                body: "Check all six digits and try again, or send a new code.",
+              }
+            : classifyAuthError(err.message),
       );
       return;
     }
@@ -95,64 +95,64 @@ export function PhoneCodeStep({
   return (
     <AuthScreen back={{ to: "/welcome" }}>
       <AuthComposition footer={<AuthFooter />}>
-          <AuthSurface>
-            <AuthHeading
-               title="Enter verification code"
-              sub={
-                phone
-                  ? `We sent a 6-digit one-time code to ${ISD_CODE} ${formatIndianMobile(phone)}`
-                  : "Enter the 6-digit code we sent you."
-              }
-            />
+        <AuthSurface>
+          <AuthHeading
+            title="Enter verification code"
+            sub={
+              phone
+                ? `We sent a 6-digit one-time code to ${ISD_CODE} ${formatIndianMobile(phone)}`
+                : "Enter the 6-digit code we sent you."
+            }
+          />
 
-            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+          {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-            <CodeInput
-              value={code}
-              onChange={(v) => {
-                setError(null);
-                setCode(v);
-              }}
-              onComplete={(v) => void verify(v)}
-              invalid={Boolean(error)}
-              shakeKey={misses}
-            />
+          <CodeInput
+            value={code}
+            onChange={(v) => {
+              setError(null);
+              setCode(v);
+            }}
+            onComplete={(v) => void verify(v)}
+            invalid={Boolean(error)}
+            shakeKey={misses}
+          />
 
-            <Btn
-              className="h-12 w-full text-sm font-semibold"
-              loading={busy}
-              disabled={code.length !== 6 || !phone}
-              onClick={() => void verify(code)}
-            >
-              Verify code
-            </Btn>
+          <Btn
+            className="h-12 w-full text-sm font-semibold"
+            loading={busy}
+            disabled={code.length !== 6 || !phone}
+            onClick={() => void verify(code)}
+          >
+            Verify code
+          </Btn>
 
-            <p className="mt-4 flex justify-center text-1 text-muted-foreground">
-              {countdown.seconds > 0 ? (
-                <span aria-live="polite" className="min-h-touch inline-flex items-center font-medium">
-                  Send again in 0:{String(countdown.seconds).padStart(2, "0")}
-                </span>
-              ) : (
-                <AuthTextButton
-                  icon={<RotateCw size={iconSize.sm} />}
-                  onClick={() => void resend()}
-                  className="font-medium hover:text-foreground"
-                >
-                  Resend code
-                </AuthTextButton>
-              )}
-            </p>
-          </AuthSurface>
-
-          <p className="mt-4 flex items-center justify-center gap-6 text-sm">
-            <AuthTextButton
-              icon={<Pencil size={iconSize.sm} />}
-              onClick={onChangeNumber}
-              className="text-muted-foreground hover:text-foreground font-medium"
-            >
-               Change number
-            </AuthTextButton>
+          <p className="mt-4 flex justify-center text-1 text-muted-foreground">
+            {countdown.seconds > 0 ? (
+              <span aria-live="polite" className="min-h-touch inline-flex items-center font-medium">
+                Send again in 0:{String(countdown.seconds).padStart(2, "0")}
+              </span>
+            ) : (
+              <AuthTextButton
+                icon={<RotateCw size={iconSize.sm} />}
+                onClick={() => void resend()}
+                className="font-medium hover:text-foreground"
+              >
+                Resend code
+              </AuthTextButton>
+            )}
           </p>
+        </AuthSurface>
+
+        <p className="mt-4 flex items-center justify-center gap-6 text-sm">
+          <AuthTextButton
+            icon={<Pencil size={iconSize.sm} />}
+            onClick={onChangeNumber}
+            className="text-muted-foreground hover:text-foreground font-medium"
+          >
+            Change number
+          </AuthTextButton>
+        </p>
       </AuthComposition>
     </AuthScreen>
   );

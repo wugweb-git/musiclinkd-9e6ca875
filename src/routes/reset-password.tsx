@@ -85,7 +85,13 @@ function ResetPassword() {
   if (!ready) {
     return (
       <AuthScreen>
-        <AuthComposition footer={<AuthFooter />}><div role="status" aria-label="Loading password reset" className="space-y-4 pt-8"><div className="h-4 w-28 animate-pulse rounded-full bg-subtle" /><div className="h-9 w-56 animate-pulse rounded-full bg-subtle" /><div className="h-13 w-full animate-pulse rounded-sm bg-subtle" /></div></AuthComposition>
+        <AuthComposition footer={<AuthFooter />}>
+          <div role="status" aria-label="Loading password reset" className="space-y-4 pt-8">
+            <div className="h-4 w-28 animate-pulse rounded-full bg-subtle" />
+            <div className="h-9 w-56 animate-pulse rounded-full bg-subtle" />
+            <div className="h-13 w-full animate-pulse rounded-sm bg-subtle" />
+          </div>
+        </AuthComposition>
       </AuthScreen>
     );
   }
@@ -94,18 +100,15 @@ function ResetPassword() {
     return (
       <AuthScreen>
         <AuthComposition footer={<AuthFooter />}>
-            <AuthSurface>
-              <AuthHeading
-                title="Password updated"
-                sub="You can now sign in with your new password."
-              />
-              <Btn
-                className="w-full h-12"
-                onClick={() => void navigate({ to: "/", replace: true })}
-              >
-                Continue to MusicLinkd
-              </Btn>
-            </AuthSurface>
+          <AuthSurface>
+            <AuthHeading
+              title="Password updated"
+              sub="You can now sign in with your new password."
+            />
+            <Btn className="w-full h-12" onClick={() => void navigate({ to: "/", replace: true })}>
+              Continue to MusicLinkd
+            </Btn>
+          </AuthSurface>
         </AuthComposition>
       </AuthScreen>
     );
@@ -115,18 +118,18 @@ function ResetPassword() {
     return (
       <AuthScreen>
         <AuthComposition footer={<AuthFooter />}>
-            <AuthSurface>
-              <AuthHeading
-                title="This reset link has expired"
-                sub="Reset links work once and expire after 60 minutes."
-              />
-              <Btn className="w-full h-12" onClick={() => void navigate({ to: "/auth/forgot" })}>
-                 Send a new link
-              </Btn>
-              <p className="mt-4 text-center text-1 text-muted-foreground">
-                <TextLink to="/welcome">Back to sign in</TextLink>
-              </p>
-            </AuthSurface>
+          <AuthSurface>
+            <AuthHeading
+              title="This reset link has expired"
+              sub="Reset links work once and expire after 60 minutes."
+            />
+            <Btn className="w-full h-12" onClick={() => void navigate({ to: "/auth/forgot" })}>
+              Send a new link
+            </Btn>
+            <p className="mt-4 text-center text-1 text-muted-foreground">
+              <TextLink to="/welcome">Back to sign in</TextLink>
+            </p>
+          </AuthSurface>
         </AuthComposition>
       </AuthScreen>
     );
@@ -135,52 +138,52 @@ function ResetPassword() {
   return (
     <AuthScreen>
       <AuthComposition footer={<AuthFooter />}>
-          <AuthSurface>
-            <AuthHeading
-              title="Set a new password"
-              sub="Choose something you have not used on MusicLinkd before."
+        <AuthSurface>
+          <AuthHeading
+            title="Set a new password"
+            sub="Choose something you have not used on MusicLinkd before."
+          />
+          {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+          <form
+            noValidate
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!busy) void save();
+            }}
+          >
+            <PasswordInput
+              label="New password"
+              value={password}
+              onChange={setPassword}
+              onBlur={() => fields.touch("password")}
+              error={fields.errorFor("password", passwordProblem)}
+              placeholder="At least 8 characters"
+              autoComplete="new-password"
+              className="mb-2"
+              below={<PasswordRequirements value={password} />}
             />
-            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-            <form
-              noValidate
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!busy) void save();
-              }}
+            <PasswordInput
+              label="Confirm password"
+              value={confirm}
+              onChange={setConfirm}
+              onBlur={() => fields.touch("confirm")}
+              error={fields.errorFor("confirm", confirmProblem)}
+              placeholder="Same password again"
+              autoComplete="new-password"
+              className="mb-2.5"
+            />
+            <Btn
+              type="submit"
+              className="mt-1 w-full h-12 text-sm font-semibold shadow-xs"
+              loading={busy}
             >
-              <PasswordInput
-                label="New password"
-                value={password}
-                onChange={setPassword}
-                onBlur={() => fields.touch("password")}
-                error={fields.errorFor("password", passwordProblem)}
-                placeholder="At least 8 characters"
-                autoComplete="new-password"
-                className="mb-2"
-                below={<PasswordRequirements value={password} />}
-              />
-              <PasswordInput
-                label="Confirm password"
-                value={confirm}
-                onChange={setConfirm}
-                onBlur={() => fields.touch("confirm")}
-                error={fields.errorFor("confirm", confirmProblem)}
-                placeholder="Same password again"
-                autoComplete="new-password"
-                className="mb-2.5"
-              />
-              <Btn
-                type="submit"
-                className="mt-1 w-full h-12 text-sm font-semibold shadow-xs"
-                loading={busy}
-              >
-                Save new password
-              </Btn>
-            </form>
-          </AuthSurface>
-          <p className="mt-3.5 text-center text-1 text-muted-foreground">
-            <TextLink to="/welcome">Back to sign in</TextLink>
-          </p>
+              Save new password
+            </Btn>
+          </form>
+        </AuthSurface>
+        <p className="mt-3.5 text-center text-1 text-muted-foreground">
+          <TextLink to="/welcome">Back to sign in</TextLink>
+        </p>
       </AuthComposition>
     </AuthScreen>
   );

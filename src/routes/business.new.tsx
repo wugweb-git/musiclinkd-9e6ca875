@@ -319,7 +319,11 @@ function NewBusiness() {
             pending={!valid[step]}
             className={`w-full ${nudge ? "animate-shake" : ""}`}
           >
-            {step === "review" ? "Create Business Profile" : step === "equipment" ? "Finish" : "Continue"}
+            {step === "review"
+              ? "Create Business Profile"
+              : step === "equipment"
+                ? "Finish"
+                : "Continue"}
           </Btn>
         }
       >
@@ -511,21 +515,86 @@ function NewBusiness() {
           <div className="space-y-3">
             <section className="rounded-lg bg-ink p-4 text-ink-foreground">
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0"><p className="text-1 text-ink-foreground/70">{typeLabel}</p><h2 className="mt-1 truncate text-2 font-semibold">{name}</h2><p className="mt-0.5 truncate text-sm text-ink-foreground/70">@{username}</p></div>
+                <div className="min-w-0">
+                  <p className="text-1 text-ink-foreground/70">{typeLabel}</p>
+                  <h2 className="mt-1 truncate text-2 font-semibold">{name}</h2>
+                  <p className="mt-0.5 truncate text-sm text-ink-foreground/70">@{username}</p>
+                </div>
                 <span className="pill shrink-0 bg-card text-foreground">Preview</span>
               </div>
-              {tagline.trim() ? <p className="mt-3 line-clamp-2 text-sm text-ink-foreground/80">{tagline}</p> : null}
-              <p className="mt-3 flex items-center gap-1.5 text-1 text-ink-foreground/70"><MapPin size={iconSize.sm} aria-hidden />{[city, state].filter(Boolean).join(", ")}</p>
+              {tagline.trim() ? (
+                <p className="mt-3 line-clamp-2 text-sm text-ink-foreground/80">{tagline}</p>
+              ) : null}
+              <p className="mt-3 flex items-center gap-1.5 text-1 text-ink-foreground/70">
+                <MapPin size={iconSize.sm} aria-hidden />
+                {[city, state].filter(Boolean).join(", ")}
+              </p>
             </section>
-            {([
-              { title: "Profile", to: "basics" as const, rows: [["Business type", typeLabel], ["Name", name], ["Username", `@${username}`], ["Tagline", tagline.trim() || "Not added"]] },
-              { title: "Location", to: "location" as const, rows: [["Place", [city, state].filter(Boolean).join(", ")], ["Google Maps", link ? "Connected" : "Not connected"]] },
-              { title: "What you offer", to: "offer" as const, rows: [["Genres", labelsOf(tx.genres, genres)], ["Languages", labelsOf(tx.languages, languages)]] },
-              { title: "Policies", to: "policies" as const, rows: [["Customer policies", policies.filter((p) => p.trim()).length ? policies.filter((p) => p.trim()).join(" · ") : "Not added"]] },
-            ]).map((group) => (
-              <section key={group.title} className="overflow-hidden rounded-lg border border-border bg-card">
-                <button type="button" onClick={() => go(group.to)} className="state-layer grid min-h-touch w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3 text-left"><h2 className="text-sm font-semibold">{group.title}</h2><span className="flex items-center gap-1 text-1 font-semibold text-muted-foreground">Edit <ChevronRight size={iconSize.sm} aria-hidden /></span></button>
-                <dl className="divide-y divide-border">{group.rows.map(([label, value]) => <div key={label} className="grid grid-cols-[104px_minmax(0,1fr)] gap-3 px-4 py-2.5"><dt className="text-1 text-muted-foreground">{label}</dt><dd className="line-clamp-2 text-sm font-medium text-foreground">{value}</dd></div>)}</dl>
+            {[
+              {
+                title: "Profile",
+                to: "basics" as const,
+                rows: [
+                  ["Business type", typeLabel],
+                  ["Name", name],
+                  ["Username", `@${username}`],
+                  ["Tagline", tagline.trim() || "Not added"],
+                ],
+              },
+              {
+                title: "Location",
+                to: "location" as const,
+                rows: [
+                  ["Place", [city, state].filter(Boolean).join(", ")],
+                  ["Google Maps", link ? "Connected" : "Not connected"],
+                ],
+              },
+              {
+                title: "What you offer",
+                to: "offer" as const,
+                rows: [
+                  ["Genres", labelsOf(tx.genres, genres)],
+                  ["Languages", labelsOf(tx.languages, languages)],
+                ],
+              },
+              {
+                title: "Policies",
+                to: "policies" as const,
+                rows: [
+                  [
+                    "Customer policies",
+                    policies.filter((p) => p.trim()).length
+                      ? policies.filter((p) => p.trim()).join(" · ")
+                      : "Not added",
+                  ],
+                ],
+              },
+            ].map((group) => (
+              <section
+                key={group.title}
+                className="overflow-hidden rounded-lg border border-border bg-card"
+              >
+                <button
+                  type="button"
+                  onClick={() => go(group.to)}
+                  className="state-layer grid min-h-touch w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3 text-left"
+                >
+                  <h2 className="text-sm font-semibold">{group.title}</h2>
+                  <span className="flex items-center gap-1 text-1 font-semibold text-muted-foreground">
+                    Edit <ChevronRight size={iconSize.sm} aria-hidden />
+                  </span>
+                </button>
+                <dl className="divide-y divide-border">
+                  {group.rows.map(([label, value]) => (
+                    <div
+                      key={label}
+                      className="grid grid-cols-[104px_minmax(0,1fr)] gap-3 px-4 py-2.5"
+                    >
+                      <dt className="text-1 text-muted-foreground">{label}</dt>
+                      <dd className="line-clamp-2 text-sm font-medium text-foreground">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
               </section>
             ))}
           </div>

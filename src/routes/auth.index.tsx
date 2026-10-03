@@ -18,5 +18,7 @@ export const Route = createFileRoute("/auth/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  beforeLoad: () => { throw redirect({ to: "/welcome", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/welcome", replace: true });
+  },
 });

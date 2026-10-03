@@ -51,9 +51,7 @@ export function AuthScreen({
           <BrandMark />
           <div />
         </header>
-        <div className="flex flex-1 flex-col">
-          {children}
-        </div>
+        <div className="flex flex-1 flex-col">{children}</div>
       </div>
     </div>
   );

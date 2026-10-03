@@ -133,109 +133,109 @@ function ForgotPassword() {
   return (
     <AuthScreen back={{ to: "/welcome" }}>
       <AuthComposition footer={<AuthFooter />}>
-          <AuthSurface>
-            <AuthHeading
-              title={sent ? "Check your email" : "Reset your password"}
-              sub={
-                sent
-                  ? `If an account exists for ${email.trim()}, a password reset link has been sent.`
-                  : method === "email"
-                     ? "Enter your email address and we'll send a secure reset link if it can be used."
-                     : "Enter your mobile number and we'll send a 6-digit code if it can be used."
-              }
-            />
+        <AuthSurface>
+          <AuthHeading
+            title={sent ? "Check your email" : "Reset your password"}
+            sub={
+              sent
+                ? `If an account exists for ${email.trim()}, a password reset link has been sent.`
+                : method === "email"
+                  ? "Enter your email address and we'll send a secure reset link if it can be used."
+                  : "Enter your mobile number and we'll send a 6-digit code if it can be used."
+            }
+          />
 
-            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+          {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-            {sent ? (
-              <div className="space-y-3">
-                 <AuthNotice tone="success" title="Check your inbox">
-                   If this address is linked to an account, the reset link will arrive shortly. It
-                   expires in 60 minutes and can be used once.
-                </AuthNotice>
-                <div className="space-y-2 pt-1">
-                  <Btn
-                    className="w-full h-12 text-sm font-semibold shadow-xs"
-                    onClick={() => void navigate({ to: "/welcome" })}
-                  >
-                    Back to sign in
-                  </Btn>
-                  <Btn
-                    variant="outline"
-                    className="w-full h-12 text-sm font-medium"
-                    onClick={() => setSent(false)}
-                  >
-                     Change email
-                  </Btn>
-                </div>
-              </div>
-            ) : (
-              <form
-                noValidate
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!busy) void send();
-                }}
-              >
-                <div className="mb-2">
-                  <SegmentedField
-                    value={method}
-                    options={METHODS}
-                    onChange={(m) => {
-                      setMethod(m);
-                      setError(null);
-                    }}
-                    label="Reset by"
-                    labels={{ email: "Email", mobile: "Mobile" }}
-                    icons={{ email: Mail, mobile: Smartphone }}
-                  />
-                </div>
-                {method === "email" ? (
-                  <LabeledInput
-                     label="Email address"
-                    value={email}
-                    onChange={setEmail}
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    enterKeyHint="go"
-                    placeholder="name@example.com"
-                    onBlur={() => fields.touch("email")}
-                    error={fields.errorFor("email", emailProblem)}
-                  />
-                ) : (
-                  <PhoneField
-                    value={digits}
-                    onChange={setDigits}
-                    onBlur={() => fields.touch("phone")}
-                    error={fields.errorFor("phone", phoneProblem)}
-                  />
-                )}
+          {sent ? (
+            <div className="space-y-3">
+              <AuthNotice tone="success" title="Check your inbox">
+                If this address is linked to an account, the reset link will arrive shortly. It
+                expires in 60 minutes and can be used once.
+              </AuthNotice>
+              <div className="space-y-2 pt-1">
                 <Btn
-                  type="submit"
-                  className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
-                  loading={busy}
+                  className="w-full h-12 text-sm font-semibold shadow-xs"
+                  onClick={() => void navigate({ to: "/welcome" })}
                 >
-                  {method === "email" ? "Send reset link" : "Send verification code"}
+                  Back to sign in
                 </Btn>
-                {method === "email" ? (
-                  <TrustNote>
-                    For your safety, we confirm receipt regardless of whether an account exists.
-                  </TrustNote>
-                ) : null}
-              </form>
-            )}
-          </AuthSurface>
-
-          <p className="mt-4 text-center text-1 text-muted-foreground">
-            Remember your password?{" "}
-            <AuthLink
-              to="/welcome"
-              className="font-semibold text-foreground underline underline-offset-4"
+                <Btn
+                  variant="outline"
+                  className="w-full h-12 text-sm font-medium"
+                  onClick={() => setSent(false)}
+                >
+                  Change email
+                </Btn>
+              </div>
+            </div>
+          ) : (
+            <form
+              noValidate
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!busy) void send();
+              }}
             >
-                 Sign in
-            </AuthLink>
-          </p>
+              <div className="mb-2">
+                <SegmentedField
+                  value={method}
+                  options={METHODS}
+                  onChange={(m) => {
+                    setMethod(m);
+                    setError(null);
+                  }}
+                  label="Reset by"
+                  labels={{ email: "Email", mobile: "Mobile" }}
+                  icons={{ email: Mail, mobile: Smartphone }}
+                />
+              </div>
+              {method === "email" ? (
+                <LabeledInput
+                  label="Email address"
+                  value={email}
+                  onChange={setEmail}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  enterKeyHint="go"
+                  placeholder="name@example.com"
+                  onBlur={() => fields.touch("email")}
+                  error={fields.errorFor("email", emailProblem)}
+                />
+              ) : (
+                <PhoneField
+                  value={digits}
+                  onChange={setDigits}
+                  onBlur={() => fields.touch("phone")}
+                  error={fields.errorFor("phone", phoneProblem)}
+                />
+              )}
+              <Btn
+                type="submit"
+                className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
+                loading={busy}
+              >
+                {method === "email" ? "Send reset link" : "Send verification code"}
+              </Btn>
+              {method === "email" ? (
+                <TrustNote>
+                  For your safety, we confirm receipt regardless of whether an account exists.
+                </TrustNote>
+              ) : null}
+            </form>
+          )}
+        </AuthSurface>
+
+        <p className="mt-4 text-center text-1 text-muted-foreground">
+          Remember your password?{" "}
+          <AuthLink
+            to="/welcome"
+            className="font-semibold text-foreground underline underline-offset-4"
+          >
+            Sign in
+          </AuthLink>
+        </p>
       </AuthComposition>
     </AuthScreen>
   );

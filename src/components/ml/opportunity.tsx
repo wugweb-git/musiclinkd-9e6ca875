@@ -224,30 +224,36 @@ export function OpportunityCard({
         </div>
 
         <div className="p-4">
-        <div className="flex items-start justify-between gap-3"><h3 className="line-clamp-2 min-w-0 text-2 font-semibold leading-snug">{o.title}</h3>{applicationLabel ? <StatusPill label={applicationLabel} tone="neutral" className="shrink-0" /> : null}</div>
-        {terms ? <p className="mt-1.5 text-1 text-muted-foreground">{terms}</p> : null}
-        {/* Why it is here, on the For you tab: what matched the viewer's profile. */}
-        {o.matchReasons.length ? (
-          <p className="mt-1 truncate text-1 text-muted-foreground">
-            {fitLine({ reasons: o.matchReasons })}
-          </p>
-        ) : null}
-
-        <div className="mt-3 flex items-end justify-between gap-3 border-t border-border pt-3">
-          {pay ? (
-            <Price price={pay} amountClassName="text-sm font-semibold" />
-          ) : (
-            <span className="text-1 text-muted-foreground">Pay on enquiry</span>
-          )}
-          <p className="shrink-0 text-right text-1 text-muted-foreground">
-            {o.matchScore ? (
-              <span className="block text-sm font-semibold text-foreground">
-                {o.matchScore}% match
-              </span>
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="line-clamp-2 min-w-0 text-2 font-semibold leading-snug">{o.title}</h3>
+            {applicationLabel ? (
+              <StatusPill label={applicationLabel} tone="neutral" className="shrink-0" />
             ) : null}
-            {o.applicants} applied
-          </p>
-        </div></div>
+          </div>
+          {terms ? <p className="mt-1.5 text-1 text-muted-foreground">{terms}</p> : null}
+          {/* Why it is here, on the For you tab: what matched the viewer's profile. */}
+          {o.matchReasons.length ? (
+            <p className="mt-1 truncate text-1 text-muted-foreground">
+              {fitLine({ reasons: o.matchReasons })}
+            </p>
+          ) : null}
+
+          <div className="mt-3 flex items-end justify-between gap-3 border-t border-border pt-3">
+            {pay ? (
+              <Price price={pay} amountClassName="text-sm font-semibold" />
+            ) : (
+              <span className="text-1 text-muted-foreground">Pay on enquiry</span>
+            )}
+            <p className="shrink-0 text-right text-1 text-muted-foreground">
+              {o.matchScore ? (
+                <span className="block text-sm font-semibold text-foreground">
+                  {o.matchScore}% match
+                </span>
+              ) : null}
+              {o.applicants} applied
+            </p>
+          </div>
+        </div>
       </Link>
       {onSave ? (
         <IconBtn

@@ -208,14 +208,19 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
   return (
     <AuthScreen back={signup ? { to: "/welcome" } : undefined}>
       <AuthComposition footer={<AuthFooter />}>
-        <main
-          className={cn("flex flex-col justify-center", rise)}
-          style={beat(2)}
-        >
+        <main className={cn("flex flex-col justify-center", rise)} style={beat(2)}>
           <div className="mb-5">
-            <p className="text-1 font-semibold text-muted-foreground">{signup ? "Join MusicLinkd" : "Your music career, connected"}</p>
-            <h1 className="mt-1 text-3 font-bold leading-tight text-foreground">{signup ? "Create account" : "Sign in"}</h1>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{signup ? "Build your professional identity and find your next opportunity." : "Continue to your profile, work and connections."}</p>
+            <p className="text-1 font-semibold text-muted-foreground">
+              {signup ? "Join MusicLinkd" : "Your music career, connected"}
+            </p>
+            <h1 className="mt-1 text-3 font-bold leading-tight text-foreground">
+              {signup ? "Create account" : "Sign in"}
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {signup
+                ? "Build your professional identity and find your next opportunity."
+                : "Continue to your profile, work and connections."}
+            </p>
           </div>
           {saved.length > 0 && !signup ? (
             <section className="mb-3">
@@ -235,84 +240,86 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             </section>
           ) : null}
 
-          <AuthSurface><form
-            noValidate
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!busy) void submit();
-            }}
-          >
-            {/* A toggle between the two screens, not two states of one (owner, 4 Oct 2026): each
-                side is its own address, so the route, Back and a shared link all stay right. */}
-            <div className="mb-5">
-              <SegmentedField
-                value={mode}
-                options={MODES}
-                onChange={(next) => {
-                  if (next !== mode)
-                    void navigate({ to: next === "signup" ? "/signup" : "/welcome" });
-                }}
-                label="Sign in or create an account"
-                labels={{ signin: "Sign in", signup: "Create account" }}
-              />
-            </div>
-            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-
-            <TextField
-              label="Email"
-              value={email}
-              className="mb-3"
-              onChange={(v) => {
-                setEmail(v);
-                carryEmail(v);
+          <AuthSurface>
+            <form
+              noValidate
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!busy) void submit();
               }}
-              onBlur={() => fields.touch("email")}
-              error={fields.errorFor("email", emailProblem)}
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              enterKeyHint="next"
-              placeholder="name@example.com"
-            />
-            <PasswordInput
-              className="mb-2"
-              value={password}
-              onChange={setPassword}
-              onBlur={() => fields.touch("password")}
-              error={fields.errorFor("password", passwordProblem)}
-              placeholder={signup ? "Create a strong password" : "Your password"}
-              autoComplete={signup ? "new-password" : "current-password"}
-              below={signup ? <PasswordRequirements value={password} /> : null}
-            />
-
-            {signup ? null : (
-              <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-                <label className="hit-area relative flex items-center gap-1 text-1 font-medium text-muted-foreground">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(e) => setRemember(e.target.checked)}
-                    className="h-5 w-5 shrink-0 accent-[var(--ink)]"
-                  />
-                  Remember me
-                </label>
-                <AuthLink
-                  to="/auth/forgot"
-                  className="text-muted-foreground hover:text-foreground font-medium text-1"
-                >
-                  Forgot password?
-                </AuthLink>
-              </div>
-            )}
-
-            <Btn
-              type="submit"
-              className="h-12 w-full text-sm font-semibold"
-              loading={busy === "email"}
             >
-              {signup ? "Create account" : "Sign in"}
-            </Btn>
-          </form></AuthSurface>
+              {/* A toggle between the two screens, not two states of one (owner, 4 Oct 2026): each
+                side is its own address, so the route, Back and a shared link all stay right. */}
+              <div className="mb-5">
+                <SegmentedField
+                  value={mode}
+                  options={MODES}
+                  onChange={(next) => {
+                    if (next !== mode)
+                      void navigate({ to: next === "signup" ? "/signup" : "/welcome" });
+                  }}
+                  label="Sign in or create an account"
+                  labels={{ signin: "Sign in", signup: "Create account" }}
+                />
+              </div>
+              {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+
+              <TextField
+                label="Email"
+                value={email}
+                className="mb-3"
+                onChange={(v) => {
+                  setEmail(v);
+                  carryEmail(v);
+                }}
+                onBlur={() => fields.touch("email")}
+                error={fields.errorFor("email", emailProblem)}
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                enterKeyHint="next"
+                placeholder="name@example.com"
+              />
+              <PasswordInput
+                className="mb-2"
+                value={password}
+                onChange={setPassword}
+                onBlur={() => fields.touch("password")}
+                error={fields.errorFor("password", passwordProblem)}
+                placeholder={signup ? "Create a strong password" : "Your password"}
+                autoComplete={signup ? "new-password" : "current-password"}
+                below={signup ? <PasswordRequirements value={password} /> : null}
+              />
+
+              {signup ? null : (
+                <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                  <label className="hit-area relative flex items-center gap-1 text-1 font-medium text-muted-foreground">
+                    <input
+                      type="checkbox"
+                      checked={remember}
+                      onChange={(e) => setRemember(e.target.checked)}
+                      className="h-5 w-5 shrink-0 accent-[var(--ink)]"
+                    />
+                    Remember me
+                  </label>
+                  <AuthLink
+                    to="/auth/forgot"
+                    className="text-muted-foreground hover:text-foreground font-medium text-1"
+                  >
+                    Forgot password?
+                  </AuthLink>
+                </div>
+              )}
+
+              <Btn
+                type="submit"
+                className="h-12 w-full text-sm font-semibold"
+                loading={busy === "email"}
+              >
+                {signup ? "Create account" : "Sign in"}
+              </Btn>
+            </form>
+          </AuthSurface>
 
           <Divider label="or continue with" className="my-4" />
 
@@ -355,7 +362,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                   to="/welcome"
                   className="hit-area font-semibold text-foreground underline underline-offset-4"
                 >
-                   Sign in
+                  Sign in
                 </AuthLink>
               </>
             ) : (
@@ -365,7 +372,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                   to="/signup"
                   className="hit-area font-semibold text-foreground underline underline-offset-4"
                 >
-                   Create account
+                  Create account
                 </AuthLink>
               </>
             )}

@@ -89,45 +89,45 @@ function PhoneAuth() {
   return (
     <AuthScreen back={{ to: "/welcome" }}>
       <AuthComposition footer={<AuthFooter />}>
-          <AuthSurface>
-            <form
-              noValidate
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!busy && provider !== "off") void send();
-              }}
+        <AuthSurface>
+          <form
+            noValidate
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!busy && provider !== "off") void send();
+            }}
+          >
+            <AuthHeading
+              title="Sign in with mobile"
+              sub="Enter your number to receive a secure 6-digit verification code."
+            />
+
+            {provider === "off" ? (
+              <AuthNotice tone="info" title="Mobile sign-in isn't switched on yet">
+                Sign in with email or Google for now.
+              </AuthNotice>
+            ) : null}
+            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+
+            <PhoneField
+              value={digits}
+              onChange={setDigits}
+              onBlur={() => fields.touch("phone")}
+              error={fields.errorFor("phone", phoneProblem)}
+            />
+
+            <Btn
+              type="submit"
+              className="mt-3 h-12 w-full text-sm font-semibold"
+              loading={busy}
+              disabled={provider === "off"}
             >
-              <AuthHeading
-                title="Sign in with mobile"
-                sub="Enter your number to receive a secure 6-digit verification code."
-              />
+              Continue
+            </Btn>
+          </form>
 
-              {provider === "off" ? (
-                <AuthNotice tone="info" title="Mobile sign-in isn't switched on yet">
-                  Sign in with email or Google for now.
-                </AuthNotice>
-              ) : null}
-              {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-
-              <PhoneField
-                value={digits}
-                onChange={setDigits}
-                onBlur={() => fields.touch("phone")}
-                error={fields.errorFor("phone", phoneProblem)}
-              />
-
-              <Btn
-                type="submit"
-                className="mt-3 h-12 w-full text-sm font-semibold"
-                loading={busy}
-                disabled={provider === "off"}
-              >
-                 Continue
-              </Btn>
-            </form>
-
-            <TrustNote>Your number is never shown on your public profile.</TrustNote>
-          </AuthSurface>
+          <TrustNote>Your number is never shown on your public profile.</TrustNote>
+        </AuthSurface>
       </AuthComposition>
     </AuthScreen>
   );

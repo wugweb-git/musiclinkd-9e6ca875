@@ -89,7 +89,14 @@ function Complete() {
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
-        {saveFailed ? <AuthNotice title="Your profile is not published yet" action={<AuthTextButton onClick={saveProfile}>Try Again</AuthTextButton>}>Check your connection, then try saving again.</AuthNotice> : null}
+        {saveFailed ? (
+          <AuthNotice
+            title="Your profile is not published yet"
+            action={<AuthTextButton onClick={saveProfile}>Try Again</AuthTextButton>}
+          >
+            Check your connection, then try saving again.
+          </AuthNotice>
+        ) : null}
         <section
           className={cn(
             "rounded-lg bg-card p-6 border border-border/80 shadow-xs relative overflow-hidden",

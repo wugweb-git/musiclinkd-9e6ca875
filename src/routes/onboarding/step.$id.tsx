@@ -539,7 +539,9 @@ function StepBody({
           <section className="space-y-4 p-4">
             <div>
               <h2 className="text-sm font-semibold text-foreground">Public identity</h2>
-              <p className="mt-0.5 text-1 text-muted-foreground">The name and link people will find.</p>
+              <p className="mt-0.5 text-1 text-muted-foreground">
+                The name and link people will find.
+              </p>
             </div>
             <InlineField
               inputId="displayName"
@@ -562,17 +564,39 @@ function StepBody({
           <section className="space-y-4 border-t border-border p-4">
             <div>
               <h2 className="text-sm font-semibold text-foreground">Location</h2>
-              <p className="mt-0.5 text-1 text-muted-foreground">Used for relevant work and people nearby.</p>
+              <p className="mt-0.5 text-1 text-muted-foreground">
+                Used for relevant work and people nearby.
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <DrawerField label="State">
-                <SheetSelect title="State" value={d.state || null} options={choicesFor(tx?.indian_states)} placeholder="Choose" searchable onChange={(v) => set({ state: v, city: "" })} />
+                <SheetSelect
+                  title="State"
+                  value={d.state || null}
+                  options={choicesFor(tx?.indian_states)}
+                  placeholder="Choose"
+                  searchable
+                  onChange={(v) => set({ state: v, city: "" })}
+                />
               </DrawerField>
               <DrawerField label="City">
                 {d.state ? (
-                  <SheetSelect title="City" value={d.city || null} options={choicesFor(tx?.cities.filter((c) => c.metadata?.state === d.state))} placeholder="Choose" searchable onChange={(v) => set({ city: v })} />
+                  <SheetSelect
+                    title="City"
+                    value={d.city || null}
+                    options={choicesFor(tx?.cities.filter((c) => c.metadata?.state === d.state))}
+                    placeholder="Choose"
+                    searchable
+                    onChange={(v) => set({ city: v })}
+                  />
                 ) : (
-                  <button type="button" disabled className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60">State first</button>
+                  <button
+                    type="button"
+                    disabled
+                    className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
+                  >
+                    State first
+                  </button>
                 )}
               </DrawerField>
             </div>
@@ -602,7 +626,16 @@ function StepBody({
             <PrivateDetailsFields />
           </section>
           <section className="border-t border-border p-4">
-            <InlineField inputId="bio" label="Short bio (optional)" value={d.bio} onChange={(v) => set({ bio: v })} placeholder="What you do, who you've worked with, what you're looking for." multiline maxLength={BIO_LIMIT} hint="Two lines is plenty. You can rewrite it any time." />
+            <InlineField
+              inputId="bio"
+              label="Short bio (optional)"
+              value={d.bio}
+              onChange={(v) => set({ bio: v })}
+              placeholder="What you do, who you've worked with, what you're looking for."
+              multiline
+              maxLength={BIO_LIMIT}
+              hint="Two lines is plenty. You can rewrite it any time."
+            />
           </section>
         </div>
       );
@@ -623,8 +656,27 @@ function StepBody({
                     {options.map((option) => {
                       const selected = d.primaryRole === option.slug;
                       return (
-                        <button key={option.slug} type="button" aria-pressed={selected} onClick={() => { haptic("select"); set({ primaryRole: option.slug, secondaryRoles: d.secondaryRoles.filter((s) => s !== option.slug) }); }} className={cn("state-layer grid min-h-touch grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-sm border px-3 py-2.5 text-left text-sm font-semibold", selected ? "border-foreground bg-ink text-ink-foreground" : "border-border bg-card")}>
-                          <span className="shrink-0">{typeIcon(option)}</span><span className="truncate">{option.label}</span>{selected ? <Check size={iconSize.sm} aria-hidden /> : null}
+                        <button
+                          key={option.slug}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => {
+                            haptic("select");
+                            set({
+                              primaryRole: option.slug,
+                              secondaryRoles: d.secondaryRoles.filter((s) => s !== option.slug),
+                            });
+                          }}
+                          className={cn(
+                            "state-layer grid min-h-touch grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-sm border px-3 py-2.5 text-left text-sm font-semibold",
+                            selected
+                              ? "border-foreground bg-ink text-ink-foreground"
+                              : "border-border bg-card",
+                          )}
+                        >
+                          <span className="shrink-0">{typeIcon(option)}</span>
+                          <span className="truncate">{option.label}</span>
+                          {selected ? <Check size={iconSize.sm} aria-hidden /> : null}
                         </button>
                       );
                     })}
