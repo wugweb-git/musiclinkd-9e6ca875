@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — bookings can point at a service (M1 of booking by service, 4 Oct) — not applied
+
+- `20261004100000_bookings_point_at_services.sql`: `booking_requests.service_id` (→ `profile_services`,
+  cleared if the service is deleted). Existing bookings are linked only where `purpose` is exactly
+  the name of one service of the business asked. The service's owner can read and answer a booking
+  of it (two new rules; the answer guard and the booking notification know the service's owner),
+  so a talent can accept or decline. The guard and notification are replaced only if the live
+  bodies match the repo's (md5), otherwise it stops. Nothing dropped; `room_id` untouched.
+
 ### Changed — one name for amenities; the picker offers 12; studio services fold into service categories (owner, 3 Oct)
 
 - `20261003150000` and `20261003160000` applied to the live database by the owner's Claude on 3 Oct,
