@@ -105,7 +105,7 @@ function ResetPassword() {
               title="Password updated"
               sub="You can now sign in with your new password."
             />
-            <Btn className="w-full h-12" onClick={() => void navigate({ to: "/", replace: true })}>
+            <Btn className="w-full h-12 text-2 font-medium" onClick={() => void navigate({ to: "/", replace: true })}>
               Continue to MusicLinkd
             </Btn>
           </AuthSurface>
@@ -123,7 +123,7 @@ function ResetPassword() {
               title="This reset link has expired"
               sub="Reset links work once and expire after 60 minutes."
             />
-            <Btn className="w-full h-12" onClick={() => void navigate({ to: "/auth/forgot" })}>
+            <Btn className="w-full h-12 text-2 font-medium" onClick={() => void navigate({ to: "/auth/forgot" })}>
               Send a new link
             </Btn>
             <p className="mt-4 text-center text-1 text-muted-foreground">
@@ -174,7 +174,7 @@ function ResetPassword() {
             />
             <Btn
               type="submit"
-              className="mt-1 w-full h-12 text-sm font-semibold shadow-xs"
+              className="mt-1 w-full h-12 text-2 font-medium"
               loading={busy}
             >
               Save new password

@@ -119,7 +119,7 @@ export function PhoneCodeStep({
           />
 
           <Btn
-            className="h-12 w-full text-sm font-semibold"
+            className="h-12 w-full text-2 font-medium"
             loading={busy}
             disabled={code.length !== 6 || !phone}
             onClick={() => void verify(code)}

@@ -14,6 +14,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { LogoMark } from "./logo";
+import logoIcon from "@/assets/musiclinkd-icon.svg.asset.json";
 import { IconBtn } from "./ui";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
@@ -40,24 +41,23 @@ export function AuthScreen({
   /** Override the ground. Defaults to the page grey; /welcome sits on white. */
   className?: string | undefined;
 }) {
+  // A phone-app entry screen, after lovable.dev/login (owner, 3 Oct 2026): grey ground, one
+  // phone-width column, the logo mark alone above a quiet title. `wide` is kept for call sites.
+  void wide;
   return (
     <div
-      className={cn(
-        "flex min-h-[100dvh] w-full flex-col bg-card select-none",
-        className,
-      )}
+      className={cn("flex min-h-[100dvh] w-full flex-col bg-auth-ground text-foreground select-none", className)}
     >
-      <div
-        className={cn(
-          "mx-auto flex w-full flex-1 flex-col px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-8",
-          wide ? "max-w-[560px]" : "max-w-[520px]",
-        )}
-      >
-        <header className="grid min-h-12 grid-cols-[48px_minmax(0,1fr)] items-center">
-          <div>{back ? <AuthBackButton back={back} /> : null}</div>
-          <BrandMark />
+      {/* Measured from lovable.dev/login at 412px: 32px side margins, a 350px column, the whole
+          block centred vertically. */}
+      <div className="mx-auto flex w-full max-w-[414px] flex-1 flex-col px-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <header className="-ml-3 flex min-h-12 items-center">
+          {back ? <AuthBackButton back={back} /> : null}
         </header>
-        <div className="flex flex-1 flex-col">{children}</div>
+        <div className="flex flex-1 flex-col justify-center pb-12">
+          <BrandMark />
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -65,12 +65,8 @@ export function AuthScreen({
 
 function BrandMark() {
   return (
-    <div className="flex min-w-0 items-center gap-2" aria-label="MusicLinkd">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-brand">
-        <LogoMark className="h-5 w-5 object-cover" />
-      </span>
-      <span className="truncate text-sm font-bold text-foreground">MusicLinkd</span>
-    </div>
+    // The owner-supplied icon (4 Oct 2026), drawn bare like the mark on lovable.dev/login.
+    <img src={logoIcon.url} alt="MusicLinkd" width={538} height={311} className="h-9 w-auto self-start" />
   );
 }
 
@@ -151,7 +147,7 @@ export function AuthHeading({
 }) {
   return (
     <div className={cn("mb-5", className)}>
-      <h1 className="text-3 font-bold text-foreground leading-tight">{title}</h1>
+      <h1 className="text-3 font-medium leading-normal text-foreground">{title}</h1>
       {sub ? <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{sub}</p> : null}
     </div>
   );
@@ -168,9 +164,11 @@ export function AuthComposition({
   className?: string | undefined;
 }) {
   return (
-    <div className={cn("flex w-full flex-1 flex-col py-8 sm:justify-center sm:py-12", className)}>
+    <div className={cn("flex w-full flex-col pt-6", className)}>
       <div className="flex flex-col">{children}</div>
-      {footer ? <footer className="mt-auto shrink-0 pt-10 text-center">{footer}</footer> : null}
+      {footer ? (
+        <footer className="mt-6 shrink-0 border-t border-border pt-5 text-center">{footer}</footer>
+      ) : null}
     </div>
   );
 }
@@ -182,11 +180,7 @@ export function AuthSurface({
   children: ReactNode;
   className?: string | undefined;
 }) {
-  return (
-    <div className={cn("bg-card", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn(className)}>{children}</div>;
 }
 
 export function AuthFooter() {
@@ -195,10 +189,10 @@ export function AuthFooter() {
 
 export function Divider({ label, className }: { label: string; className?: string | undefined }) {
   return (
-    <div className={cn("my-4 flex items-center gap-3 text-1 text-muted-foreground", className)}>
-      <span className="h-px flex-1 bg-border/80" />
-      <span className="px-1 text-1 font-medium">{label}</span>
-      <span className="h-px flex-1 bg-border/80" />
+    <div className={cn("my-4 flex items-center gap-4 text-muted-foreground", className)}>
+      <span className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
+      <span className="text-1 uppercase">{label}</span>
+      <span className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
     </div>
   );
 }
@@ -307,18 +301,20 @@ export function TextField({
       <label
         htmlFor={id}
         className={cn(
-          "mb-1 block text-sm font-medium transition-colors duration-125 ease-standard",
-          invalid ? "text-destructive" : "text-muted-foreground group-focus-within:text-foreground",
+          "mb-1 block text-2 font-medium transition-colors duration-125 ease-standard",
+          invalid ? "text-destructive" : "text-foreground",
         )}
       >
         {label}
       </label>
+      {/* lovable.dev/login's field: a pill, transparent on the grey ground, a hairline and a soft
+          inset shadow; 16px of side padding. */}
       <div
         className={cn(
-          "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 transition-all duration-150 ease-standard",
+          "flex h-12 items-center gap-2 rounded-full border bg-gradient-to-b from-foreground/[0.03] to-transparent px-4 shadow-[inset_0_2px_2px_-1px_rgb(0_0_0/0.05)] transition-all duration-150 ease-standard",
           invalid
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
-            : "border-input focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
+            : "border-input focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
           disabled && "bg-background opacity-60",
         )}
       >
@@ -534,7 +530,7 @@ export function PhoneField({
       enterKeyHint="go"
       placeholder="98765 43210"
       leading={
-        <span className="-ml-0.5 flex shrink-0 items-center gap-2 border-r border-border/80 pr-3 text-2 font-semibold text-foreground">
+        <span className="-ml-0.5 flex shrink-0 items-center gap-2 border-r border-border/80 pr-3 text-2 font-medium text-foreground">
           <IndiaFlag className="shadow-xs" />
           <span>{ISD_CODE}</span>
         </span>
@@ -609,7 +605,7 @@ export function CodeInput({
               style={complete ? { animationDelay: `${i * 45}ms` } : undefined}
               className={cn(
                 complete && "animate-meter",
-                "flex h-12 sm:h-13 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-bold transition-all duration-150 ease-standard",
+                "flex h-12 sm:h-13 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-medium transition-all duration-150 ease-standard",
                 invalid
                   ? "border-destructive bg-danger-container/20 text-destructive"
                   : active

@@ -155,14 +155,14 @@ function ForgotPassword() {
               </AuthNotice>
               <div className="space-y-2 pt-1">
                 <Btn
-                  className="w-full h-12 text-sm font-semibold shadow-xs"
+                  className="w-full h-12 text-2 font-medium"
                   onClick={() => void navigate({ to: "/welcome" })}
                 >
                   Back to sign in
                 </Btn>
                 <Btn
                   variant="outline"
-                  className="w-full h-12 text-sm font-medium"
+                  className="w-full h-12 text-2 font-medium"
                   onClick={() => setSent(false)}
                 >
                   Change email
@@ -213,7 +213,7 @@ function ForgotPassword() {
               )}
               <Btn
                 type="submit"
-                className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
+                className="mt-2 w-full h-12 text-2 font-medium"
                 loading={busy}
               >
                 {method === "email" ? "Send reset link" : "Send verification code"}
@@ -231,7 +231,7 @@ function ForgotPassword() {
           Remember your password?{" "}
           <AuthLink
             to="/welcome"
-            className="font-semibold text-foreground underline underline-offset-4"
+            className="text-foreground underline underline-offset-2"
           >
             Sign in
           </AuthLink>
