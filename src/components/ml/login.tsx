@@ -1,6 +1,6 @@
 // The login and sign-up screens: two routes, one shared layout.
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Linkedin, Smartphone } from "lucide-react";
@@ -33,73 +33,10 @@ import { emailLinkTarget, useAuthProvider } from "@/lib/post-auth";
 import { setRememberMe } from "@/lib/remember-me";
 import { isNativeApp, signInWithGoogleNative } from "@/lib/native-auth";
 import { beat, useArrival } from "@/lib/flow-motion";
-import { roleIcon } from "@/lib/role-icons";
-import { useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import { MadeByWugweb, SegmentedField } from "@/components/ml/kit";
 import { AccountRow } from "@/components/ml/accounts";
 import { forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
-
-/**
- * What is on the platform, not how much of it.
- *
- * The comp carried "12,000+ Musicians / 3,500+ Studios / 800+ Labels & Agencies".
- * Those figures were transcribed from a design mockup and nothing in the database
- * supports them, so they are not shipped: they would be an unsubstantiated claim
- * made to real users on the first screen they see.
- *
- * If real counts land, this is where they go — add a `value` and the render can
- * put it back in a bold span ahead of the label.
- */
-const audience = [
-  "Singers, session musicians and producers",
-  "Recording studios and rehearsal rooms",
-  "Labels, agencies and venues",
-];
-
-/**
- * Who is on MusicLinkd, as it moves: every published role from the taxonomy as a pill with its
- * icon, in three rows (performers, makers, businesses) drifting at different speeds; the edges fade. The roles come from the
- * database, so the ticker is never a claim the product can't back. Until they load, the two rows
- * hold their height; if they fail to load, the rows stay empty and the headline carries the screen.
- */
-function RoleTicker({
-  className,
-  style,
-}: {
-  className?: string | undefined;
-  style?: CSSProperties | undefined;
-}) {
-  const { options } = useTaxonomy();
-  const roles = (options?.person_types ?? []).filter((o) => o.slug !== "other");
-  if (!roles.length) return null;
-
-  return (
-    <div
-      aria-hidden
-      className={cn(
-        "h-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [@media(max-height:639px)]:hidden",
-        className,
-      )}
-      style={style}
-    >
-      <div className="flex w-max animate-marquee gap-1.5" style={{ animationDuration: "50s" }}>
-        {[...roles, ...roles].map((o, i) => {
-          const Icon = roleIcon(o);
-          return (
-            <span
-              key={`${o.slug}-${i}`}
-              className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-subtle pl-2 pr-2.5 text-1 font-medium text-foreground border border-border/40"
-            >
-              <Icon size={12} className="text-muted-foreground" />
-              {o.label}
-            </span>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 export type LoginMode = "signup" | "signin";
 const MODES = ["signin", "signup"] as const;
@@ -272,69 +209,22 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
 
   return (
     <AuthScreen brand={false} className="bg-background">
-      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-        {/* Top Header */}
-        <div className="shrink-0">
-          <div className="flex items-center justify-between pt-0.5">
-            <Brand compact className="vt-brand mb-0" />
-            <div aria-hidden className="flex items-center gap-1 text-pink-strong">
-              <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-1" />
-              <span className="h-3.5 w-0.5 rounded-full bg-pink-strong animate-eq-2" />
-              <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-3" />
-            </div>
-          </div>
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col">
+        <header className={cn("pt-1", rise)} style={beat(1)}>
+          <Brand compact className="vt-brand mb-4" />
+          <p className="max-w-[360px] text-2 font-semibold leading-snug text-foreground">
+            Your professional identity in music.
+          </p>
+          <p className="mt-1 max-w-[420px] text-sm leading-relaxed text-muted-foreground">
+            Find people, share your work, and build what comes next.
+          </p>
+        </header>
 
-          <div className="pt-0.5 pb-0.5">
-            {/* What the site is, for screen readers; the page's heading is the form's own title
-                below (one visible h1). Search engines read the meta description. */}
-            <p className="sr-only">
-              MusicLinkd — India&apos;s professional network for musicians, producers and studios
-            </p>
-            <div className="flex items-center justify-between gap-2">
-              <div
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full bg-pink-container px-2 py-0.5 text-1 font-semibold text-pink-strong",
-                  rise,
-                )}
-                style={beat(1)}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-pink-strong animate-pulse" />
-                India&apos;s music network
-              </div>
-
-              <div
-                className="text-1 font-bold text-foreground"
-                aria-label="Tagline: Connect, collaborate, create"
-              >
-                <span className={cn("inline-block", rise)} style={beat(2)}>
-                  Connect.{" "}
-                </span>
-                <span className={cn("inline-block", rise)} style={beat(3)}>
-                  Collab.{" "}
-                </span>
-                <span className={cn("inline-block text-pink-strong", rise)} style={beat(4)}>
-                  Create.
-                </span>
-              </div>
-            </div>
-
-            {/* Screen readers get the three lines */}
-            <ul className="sr-only">
-              {audience.map((a) => (
-                <li key={a}>{a}</li>
-              ))}
-            </ul>
-
-            <RoleTicker className={cn("-mx-4 sm:-mx-5 mt-1", rise)} style={beat(5)} />
-          </div>
-        </div>
-
-        {/* Interactive mode switcher + Form */}
-        <div className={cn("my-auto", rise)} style={beat(6)}>
+        <main className={cn("flex flex-1 flex-col justify-center py-6", rise)} style={beat(2)}>
           {saved.length > 0 && !signup ? (
-            <section className="mb-1.5">
-              <p className="mb-0.5 text-1 font-semibold text-muted-foreground">Continue as</p>
-              <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card border border-border shadow-xs">
+            <section className="mb-3">
+              <p className="mb-1.5 text-1 font-semibold text-muted-foreground">Continue as</p>
+              <ul className="overflow-hidden rounded-lg border border-border bg-card">
                 {saved.slice(0, 1).map((a) => (
                   <AccountRow
                     key={a.userId}
@@ -355,11 +245,11 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               e.preventDefault();
               if (!busy) void submit();
             }}
-            className="rounded-lg bg-card p-2.5 sm:p-3.5 border border-border/80 shadow-xs"
+            className="rounded-lg border border-border bg-card p-4 sm:p-5"
           >
             {/* A toggle between the two screens, not two states of one (owner, 4 Oct 2026): each
                 side is its own address, so the route, Back and a shared link all stay right. */}
-            <div className="mb-1.5">
+            <div className="mb-5">
               <SegmentedField
                 value={mode}
                 options={MODES}
@@ -371,11 +261,11 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                 labels={{ signin: "Sign In", signup: "Sign Up" }}
               />
             </div>
-            <div className="mb-1.5">
+            <div className="mb-5">
               <h1 className="text-3 font-bold leading-tight text-foreground">
                 {signup ? "Create your account" : "Welcome back"}
               </h1>
-              <p className="text-1 text-muted-foreground">
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                 {signup
                   ? "Join musicians, producers and studios across India."
                   : "Sign in with your email and password."}
@@ -387,7 +277,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             <TextField
               label="Email"
               value={email}
-              className="mb-1.5"
+              className="mb-3"
               onChange={(v) => {
                 setEmail(v);
                 carryEmail(v);
@@ -401,7 +291,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               placeholder="name@example.com"
             />
             <PasswordInput
-              className="mb-1"
+              className="mb-2"
               value={password}
               onChange={setPassword}
               onBlur={() => fields.touch("password")}
@@ -412,7 +302,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             />
 
             {signup ? null : (
-              <div className="mb-1 flex items-center justify-between gap-2">
+              <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
                 <label className="hit-area relative flex items-center gap-1 text-1 font-medium text-muted-foreground">
                   <input
                     type="checkbox"
@@ -433,19 +323,19 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
 
             <Btn
               type="submit"
-              className="w-full h-10 sm:h-11 text-1 font-semibold shadow-xs"
+              className="h-12 w-full text-sm font-semibold"
               loading={busy === "email"}
             >
               {signup ? "Create Account" : "Sign In"}
             </Btn>
           </form>
 
-          <Divider label="or" className="my-1" />
+          <Divider label="or continue with" className="my-4" />
 
-          <div className={`grid gap-1.5 ${showLinkedIn ? "grid-cols-3" : "grid-cols-2"}`}>
+          <div className={`grid gap-2 ${showLinkedIn ? "grid-cols-3" : "grid-cols-2"}`}>
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-1 font-medium shadow-xs px-1.5"
+              className="h-12 w-full bg-card px-2 text-1 font-semibold"
               icon={<GoogleIcon />}
               loading={busy === "google"}
               onClick={() => void google()}
@@ -455,7 +345,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             {showLinkedIn ? (
               <Btn
                 variant="outline"
-                className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-1 font-medium shadow-xs px-1.5"
+                className="h-12 w-full bg-card px-2 text-1 font-semibold"
                 icon={<Linkedin size={iconSize.sm} aria-hidden />}
                 loading={busy === "linkedin"}
                 onClick={() => void linkedin()}
@@ -465,7 +355,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             ) : null}
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-1 font-medium shadow-xs px-1.5"
+              className="h-12 w-full bg-card px-2 text-1 font-semibold"
               icon={<Smartphone size={iconSize.sm} aria-hidden />}
               onClick={() => void navigate({ to: "/auth/phone" })}
             >
@@ -473,7 +363,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             </Btn>
           </div>
 
-          <p className="mt-1.5 text-center text-1 text-muted-foreground">
+          <p className="mt-4 text-center text-sm text-muted-foreground">
             {signup ? (
               <>
                 Already have an account?{" "}
@@ -496,10 +386,10 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               </>
             )}
           </p>
-        </div>
+        </main>
 
         {/* Footer */}
-        <div className="shrink-0 pt-0.5 text-center">
+        <footer className="shrink-0 pb-1 text-center">
           <LegalNote className="mt-0" />
           <div className="mt-0.5">
             <MadeByWugweb />
@@ -512,7 +402,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               </AuthLink>
             </p>
           ) : null}
-        </div>
+        </footer>
       </div>
     </AuthScreen>
   );
