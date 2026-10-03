@@ -48,7 +48,7 @@ export const Route = createFileRoute("/discover/")({
       listBookables().catch(() => []),
       listOpportunities().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-      searchPeople({ data: { limit: 20 } })
+      searchPeople({ data: { limit: 20, withTotal: false } })
         .then((result) => result.people)
         .catch((): DirectoryPerson[] => []),
     ]);
@@ -58,6 +58,8 @@ export const Route = createFileRoute("/discover/")({
       people,
     };
   },
+  // Coming back to Discover within a minute reuses what was read instead of waiting again.
+  staleTime: 60_000,
   component: DiscoverScreen,
 });
 

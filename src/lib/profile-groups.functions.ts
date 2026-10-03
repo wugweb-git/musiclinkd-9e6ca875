@@ -544,6 +544,8 @@ export const searchPeople = createServerFn({ method: "GET" })
         genre: z.string().max(60).optional(),
         verifiedOnly: z.boolean().optional(),
         limit: z.number().int().min(1).max(60).optional(),
+        /** Skip the exact count when the screen never shows it; the count is the slow part. */
+        withTotal: z.boolean().optional(),
       })
       .parse(d),
   )
@@ -554,7 +556,7 @@ export const searchPeople = createServerFn({ method: "GET" })
     const search = (columns: string) => {
       let query = client
         .from("profiles")
-        .select(columns, { count: "exact" })
+        .select(columns, data.withTotal === false ? {} : { count: "exact" })
         .eq("visibility", "public")
         .or(APPEARS_IN_DISCOVER);
       // Every word has to appear somewhere, so "tabla mumbai" finds a tabla player in Mumbai.
@@ -574,7 +576,7 @@ export const searchPeople = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return {
       people: ((rows ?? []) as unknown as ProfileBase[]).map(directoryPerson),
-      total: count ?? 0,
+      total: count ?? rows?.length ?? 0,
     };
   });
 
