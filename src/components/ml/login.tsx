@@ -29,15 +29,14 @@ import { Btn } from "@/components/ml/ui";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { showDemoControls } from "@/lib/dev";
-import { useAuthProvider } from "@/lib/post-auth";
+import { emailLinkTarget, useAuthProvider } from "@/lib/post-auth";
+import { setRememberMe } from "@/lib/remember-me";
 import { isNativeApp, signInWithGoogleNative } from "@/lib/native-auth";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import { MadeByWugweb } from "@/components/ml/kit";
-import { useServerFn } from "@tanstack/react-start";
-import { signUpWithPassword } from "@/lib/sign-up.functions";
 import { AccountRow } from "@/components/ml/accounts";
 import { forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
 
@@ -113,10 +112,11 @@ export type LoginMode = "signup" | "signin";
 export function LoginScreen({ mode }: { mode: LoginMode }) {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
-  const signUp = useServerFn(signUpWithPassword);
   // The app opens on the login screen (owner, 21 Sep 2026); sign-up is one tap away, at /signup.
   const [email, setEmail] = useState(carriedEmail);
   const [password, setPassword] = useState("");
+  // Login only (owner, 4 Oct 2026): sign-up has neither Remember me nor Forgot Password.
+  const [remember, setRemember] = useState(true);
   const [busy, setBusy] = useState<"email" | "google" | "linkedin" | null>(null);
   // Only offer a way in that the server will actually accept. LinkedIn is offered the moment the
   // provider is switched on for the project, and hidden until then, so the button never fails —
@@ -152,26 +152,39 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
     }
     setBusy("email");
     if (mode === "signup") {
-      // No email code: the account is created confirmed, then signed in below with the same password.
-      try {
-        const created = await signUp({ data: { email: email.trim(), password } });
-        if (created.status === "exists") {
-          setBusy(null);
-          haptic("error");
-          setError(classifyAuthError("already registered"));
-          return;
-        }
-      } catch (e) {
-        setBusy(null);
+      /*
+       * Email is verified by link before anything else (owner, 4 Oct 2026, asked for repeatedly).
+       * The project requires confirmation, so sign-up returns no session and sends the link; the
+       * next screen is Check your email, and the link lands on `/`, which goes on to onboarding.
+       * An address that already has an account comes back with no identities and no email sent.
+       */
+      const { data, error: err } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: { emailRedirectTo: emailLinkTarget() },
+      });
+      setBusy(null);
+      if (err) {
         haptic("error");
-        setError(classifyAuthError(e instanceof Error ? e.message : "network"));
+        setError(classifyAuthError(err.message));
         return;
       }
+      if (data.user && data.user.identities?.length === 0) {
+        haptic("error");
+        setError(classifyAuthError("already registered"));
+        return;
+      }
+      haptic("confirm");
+      void navigate({ to: "/auth/verify-email", search: { email: email.trim() } });
+      return;
     }
-    const { error: err } = await supabase.auth.signInWithPassword({
+    // Marked before signing in, so the session's first save already knows whether to keep it.
+    setRememberMe(remember);
+    const { data: signedIn, error: err } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     });
+    if (!remember && signedIn.user) forgetAccount(signedIn.user.id);
     setBusy(null);
     if (err) {
       haptic("error");
@@ -384,7 +397,16 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             />
 
             {signup ? null : (
-              <div className="mb-1 flex items-center justify-end">
+              <div className="mb-1 flex items-center justify-between gap-2">
+                <label className="hit-area relative flex items-center gap-1 text-1 font-medium text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={(e) => setRemember(e.target.checked)}
+                    className="h-5 w-5 shrink-0 accent-[var(--ink)]"
+                  />
+                  Remember me
+                </label>
                 <AuthLink
                   to="/auth/forgot"
                   className="text-muted-foreground hover:text-foreground font-medium text-1"

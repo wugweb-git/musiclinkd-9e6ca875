@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { forgetsOnClose } from "@/lib/remember-me";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -67,6 +68,8 @@ export function rememberSession(
   session: Session,
   details?: Partial<Pick<SavedAccount, "username" | "name" | "avatarUrl" | "kind">>,
 ) {
+  // Signed in without "Remember me": not kept on this device's account list.
+  if (forgetsOnClose()) return;
   const list = readAccounts();
   const before = list.find((a) => a.userId === session.user.id);
   const next: SavedAccount = {

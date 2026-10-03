@@ -19,13 +19,15 @@ import {
 } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { emailLinkTarget } from "@/lib/post-auth";
 import { MadeByWugweb } from "@/components/ml/kit";
 import { iconSize } from "@/lib/tokens";
 
 /*
- * Sign in with email: the alternative on the mobile sign-in screen. One field and a 6-digit code,
- * no password. The same screen serves a new email (the account is created when the code is
- * verified) and a returning one, so there is no separate sign-up.
+ * Sign in with email: the alternative on the mobile sign-in screen. One field and a sign-in link,
+ * no password (owner, 4 Oct 2026: email verifies by link, mobile by code). The same screen serves a
+ * new email (the account is created when the link is opened) and a returning one. The link returns
+ * to `/`, where the session is picked up and the splash routes a new account to onboarding.
  */
 export const Route = createFileRoute("/auth/")({
   head: () => ({
@@ -33,7 +35,7 @@ export const Route = createFileRoute("/auth/")({
       { title: "Sign in with email — MusicLinkd" },
       {
         name: "description",
-        content: "Sign in to MusicLinkd with your email address and a one-time code.",
+        content: "Sign in to MusicLinkd with your email address and a sign-in link.",
       },
       { property: "og:title", content: "Sign in with email — MusicLinkd" },
       { property: "og:description", content: "Password-free sign in for MusicLinkd." },
@@ -72,7 +74,7 @@ function EmailSignIn() {
     setBusy(true);
     const { error: err } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { shouldCreateUser: true },
+      options: { shouldCreateUser: true, emailRedirectTo: emailLinkTarget() },
     });
     setBusy(false);
     if (err) {
@@ -98,7 +100,7 @@ function EmailSignIn() {
             >
               <AuthHeading
                 title="Sign in with Email"
-                sub="We'll email you a 6-digit one-time code. No password required."
+                sub="We'll email you a link that signs you in. No password required."
               />
 
               {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
@@ -124,7 +126,7 @@ function EmailSignIn() {
                 className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
                 loading={busy}
               >
-                Send 6-Digit Code
+                Email Me a Link
               </Btn>
             </form>
 

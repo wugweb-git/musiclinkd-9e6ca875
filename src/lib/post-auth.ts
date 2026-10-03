@@ -46,6 +46,14 @@ export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
   return "/discover";
 }
 
+/**
+ * Where an emailed link (sign-up confirmation, sign-in link) returns to: the splash, which picks up
+ * the session from the URL and routes it — a new account to onboarding.
+ */
+export function emailLinkTarget(): string {
+  return `${window.location.origin}/`;
+}
+
 export type ProviderState = "checking" | "on" | "off";
 
 /**

@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { Mail, Pencil, RotateCw } from "lucide-react";
+import { toast } from "sonner";
 import { Btn } from "@/components/ml/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
@@ -10,16 +11,28 @@ import {
   AuthLink,
   AuthNotice,
   AuthScreen,
+  AuthTextButton,
+  CodeInput,
   LegalNote,
   PhoneField,
   TrustNote,
   classifyAuthError,
+  formatIndianMobile,
+  useCountdown,
   useFieldErrors,
 } from "@/components/ml/auth";
+import { ISD_CODE } from "@/lib/validation";
 import { iconSize } from "@/lib/tokens";
 
 import { MadeByWugweb } from "@/components/ml/kit";
+import { PhoneCodeStep } from "@/components/ml/phone-code";
 
+/*
+ * Mobile sign-in and sign-up: one screen, two steps (owner, 4 Oct 2026: phone and code are states of
+ * the same screen). Step one takes the number and texts a 6-digit code; step two takes the code,
+ * with its own error ("That code did not match"), resend and Change Number. A new number creates the
+ * account, and the splash then sends it to onboarding. /auth/otp only redirects here.
+ */
 export const Route = createFileRoute("/auth/phone")({
   head: () => ({
     meta: [
@@ -40,6 +53,8 @@ export const Route = createFileRoute("/auth/phone")({
 function PhoneAuth() {
   const navigate = useNavigate();
   const [digits, setDigits] = useState("");
+  // The number the code was sent to; set, the screen shows its code step.
+  const [sentTo, setSentTo] = useState<string | null>(null);
   const provider = usePhoneSignIn();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
@@ -67,8 +82,18 @@ function PhoneAuth() {
       setError(classifyAuthError(err.message));
       return;
     }
-    void navigate({ to: "/auth/otp", search: { phone: digits } });
+    setSentTo(digits);
   }
+
+  if (sentTo)
+    return (
+      <PhoneCodeStep
+        phone={sentTo}
+        onChangeNumber={() => setSentTo(null)}
+        // The splash sends a new account to onboarding and a finished one to Discover.
+        onVerified={() => void navigate({ to: "/", replace: true })}
+      />
+    );
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
