@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — a service's own page has Book (4 Oct)
+
+- The talent request test saved nothing. The profile cards' Book path is correct end to end (it
+  needs no place, sends the request, shows the server's error if it fails), but the service's own
+  page — where search results, the Services list and a card's title lead — had no Book at all,
+  only Enquire, so a request could not be sent from there. It now has Book above Enquire: a
+  business with a place opens its booking flow with the service picked (its calendar decides
+  when, so Book shows whether or not the owner set "Available for"); anyone else gets the same
+  dated request as the profile cards, when they are open for work. Enquire is unchanged.
+- `getService` returns the provider's place (`bookableSlug`) for that choice.
+
 ### Changed — C2 and C3: one calendar per place; rooms and the services tags no longer read (4 Oct)
 
 - C2: the booking draft has no room; every busy time and closure takes the whole place

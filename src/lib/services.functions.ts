@@ -71,6 +71,11 @@ export type ServiceDetail = ServiceRow & {
   examples: ServiceExample[];
   /** Who offers it: name and their music identity (taxonomy slugs), for the service page. */
   provider: ServiceProvider | null;
+  /**
+   * The provider's place, when they have one: Book opens its booking flow with this service
+   * picked. Null for a talent or a business without a place, whose Book is a dated request.
+   */
+  bookableSlug: string | null;
   /** A studio's service: what it uses, each with its photos — the business's "examples". */
   uses: {
     amenities: { slug: string; label: string; photos: string[] }[];
@@ -220,7 +225,7 @@ async function serviceDetail(
   if (!row) return null;
 
   const serviceRow = row as { profile_id: string } & Record<string, unknown>;
-  const [packages, addons, owner] = await Promise.all([
+  const [packages, addons, owner, place] = await Promise.all([
     client
       .from("profile_service_packages")
       .select(PACKAGE)
@@ -233,6 +238,13 @@ async function serviceDetail(
         "availability, display_name, username, avatar_url, roles, genres, instruments, languages",
       )
       .eq("id", serviceRow.profile_id)
+      .maybeSingle(),
+    client
+      .from("bookables")
+      .select("slug")
+      .eq("owner_profile_id", serviceRow.profile_id)
+      .is("archived_at", null)
+      .limit(1)
       .maybeSingle(),
   ]);
   const exampleIds = ((serviceRow["example_ids"] as string[] | null) ?? []).filter(Boolean);
@@ -271,6 +283,8 @@ async function serviceDetail(
     })),
     ownerAvailability: (owner.data as { availability: string | null } | null)?.availability ?? null,
     provider: providerFrom(owner.data as Record<string, unknown> | null),
+    // A failed read leaves Book on the dated request, which needs no place.
+    bookableSlug: place.error ? null : ((place.data as { slug: string } | null)?.slug ?? null),
     examples: exampleIds.map((i) => byId.get(i)).filter((e): e is ServiceExample => Boolean(e)),
   };
 }
@@ -552,6 +566,7 @@ export const duplicateService = createServerFn({ method: "POST" })
       ownerAvailability: _availability,
       examples: _examples,
       provider: _provider,
+      bookableSlug: _bookableSlug,
       ...fields
     } = source;
     const { data: row, error } = await client
