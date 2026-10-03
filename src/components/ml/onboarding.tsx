@@ -25,6 +25,7 @@ import {
   Image as ImageIcon,
   Trash2,
   MapPin,
+  type LucideIcon,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -1413,5 +1414,80 @@ export function PrivateDetailsFields() {
         />
       </DrawerField>
     </div>
+  );
+}
+
+/*
+ * One account-type choice on the Select screen, drawn after the owner's reference (4 Oct 2026): a
+ * large card with the name top-left, a loose cluster of role icons top-right and the description
+ * along the bottom. Tapping it is the choice and the next step. `hollow` is the outlined variant.
+ * The cluster is icons only, never people or counts: nothing on a sign-up screen claims who is here.
+ */
+export function AccountTypeCard({
+  title,
+  description,
+  icon: Icon,
+  cluster,
+  onSelect,
+  hollow = false,
+}: {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  /** Up to four role icons for the top-right cluster. */
+  cluster: LucideIcon[];
+  /** Absent on an upcoming type: the card is shown, disabled, and says so. */
+  onSelect?: (() => void) | undefined;
+  hollow?: boolean | undefined;
+}) {
+  // Fixed spots for the cluster, largest first, so the cards read as one family.
+  const spots = [
+    "right-4 top-4 h-11 w-11",
+    "right-16 top-10 h-9 w-9",
+    "right-28 top-3 h-8 w-8",
+    "right-8 top-16 h-7 w-7",
+  ];
+  const Root = onSelect ? "button" : "div";
+  return (
+    <Root
+      {...(onSelect ? { type: "button" as const, onClick: onSelect } : { "aria-disabled": true })}
+      className={cn(
+        "relative flex min-h-36 w-full flex-col justify-between overflow-hidden rounded-lg p-4 text-left transition-transform duration-150 ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        onSelect ? "active:scale-98" : "",
+        hollow
+          ? "border border-dashed border-input bg-transparent"
+          : "border border-border bg-card shadow-xs",
+      )}
+    >
+      <span className="text-3 font-bold text-foreground">{title}</span>
+      <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
+        {cluster.slice(0, spots.length).map((C, i) => (
+          <span
+            key={i}
+            className={cn(
+              "absolute flex items-center justify-center rounded-full text-muted-foreground",
+              // --subtle is white, the card's own colour: the tiles take the page grey.
+              hollow ? "border border-dashed border-input" : "bg-background",
+              spots[i],
+            )}
+          >
+            <C size={i === 0 ? iconSize.md : iconSize.sm} />
+          </span>
+        ))}
+      </span>
+      <span className="mt-6 flex items-center gap-3">
+        <span
+          className={cn(
+            "flex h-12 w-12 shrink-0 items-center justify-center rounded-full",
+            hollow
+              ? "border border-dashed border-input text-muted-foreground"
+              : "bg-ink text-ink-foreground",
+          )}
+        >
+          <Icon size={iconSize.md} aria-hidden />
+        </span>
+        <span className="min-w-0 text-sm font-semibold text-foreground">{description}</span>
+      </span>
+    </Root>
   );
 }

@@ -9,9 +9,23 @@ import {
   Users,
   Music2,
   Eye,
+  Mic2,
+  Guitar,
+  Headphones,
+  Music,
+  Disc3,
+  Ticket,
+  SlidersVertical,
+  Clock,
+  Plus,
 } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
-import { OnboardingProvider, useOnboarding, resumeTarget } from "@/components/ml/onboarding";
+import {
+  AccountTypeCard,
+  OnboardingProvider,
+  useOnboarding,
+  resumeTarget,
+} from "@/components/ml/onboarding";
 import { visibleSteps } from "@/data/onboarding";
 import { AuthLink } from "@/components/ml/auth";
 import { beat, useArrival } from "@/lib/flow-motion";
@@ -25,13 +39,13 @@ import type { DiscoverBookable } from "@/lib/bookable-view";
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({
     meta: [
-      { title: "Set up your MusicLinkd profile" },
+      { title: "Select — MusicLinkd" },
       {
         name: "description",
         content:
           "Tell MusicLinkd what you do in music — role, genres, languages, city and availability — so the right work finds you.",
       },
-      { property: "og:title", content: "Set up your MusicLinkd profile" },
+      { property: "og:title", content: "Select — MusicLinkd" },
       {
         property: "og:description",
         content: "A short, role-adaptive setup that makes MusicLinkd useful for you.",
@@ -42,7 +56,7 @@ export const Route = createFileRoute("/onboarding/")({
   }),
   component: () => (
     <OnboardingProvider>
-      <Welcome />
+      <SelectScreen />
     </OnboardingProvider>
   ),
 });
@@ -86,93 +100,21 @@ const demoStudio: DiscoverBookable = {
 const kindInfo: Record<
   AccountKind,
   {
-    pitch: ReactNode;
-    cta: string;
     estimate: string;
     goTo?: { to: "/business/new"; search: { step: "type" } };
-    skippable: boolean;
   }
 > = {
   Talent: {
     estimate: "~2 mins · 8 quick questions",
-    pitch: (
-      <ul className="space-y-4">
-        {[
-          {
-            icon: <Compass size={iconSize.md} />,
-            title: "Get found for the right gigs",
-            body: "Your craft, genres, city and rates power smart artist discovery.",
-          },
-          {
-            icon: <Sparkles size={iconSize.md} />,
-            title: "Interactive audio portfolio",
-            body: "Showcase original audio tracks and video credits in one link.",
-          },
-          {
-            icon: <ShieldCheck size={iconSize.md} />,
-            title: "Private contact details",
-            body: "Your phone number stays strictly protected until you share it.",
-          },
-        ].map((f) => (
-          <li key={f.title} className="flex items-start gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-subtle text-foreground">
-              {f.icon}
-            </span>
-            <span>
-              <span className="block text-sm font-semibold text-foreground">{f.title}</span>
-              <span className="mt-0.5 block text-1 text-muted-foreground leading-snug">
-                {f.body}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    ),
-    cta: "Let's Start",
-    skippable: true,
   },
   Business: {
     estimate: "~3 mins · Studio registration",
-    pitch: (
-      <ul className="space-y-4">
-        {[
-          {
-            icon: <Building2 size={iconSize.md} />,
-            title: "Studio & gear showcase",
-            body: "Highlight your live recording rooms, acoustics, and microphone locker.",
-          },
-          {
-            icon: <CalendarCheck size={iconSize.md} />,
-            title: "Direct client bookings",
-            body: "Accept session enquiries, manage hourly slots, and set deposit terms.",
-          },
-          {
-            icon: <Users size={iconSize.md} />,
-            title: "Multi-engineer team page",
-            body: "Operate under your studio brand with its own verified URL and team.",
-          },
-        ].map((f) => (
-          <li key={f.title} className="flex items-start gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-subtle text-foreground">
-              {f.icon}
-            </span>
-            <span>
-              <span className="block text-sm font-semibold text-foreground">{f.title}</span>
-              <span className="mt-0.5 block text-1 text-muted-foreground leading-snug">
-                {f.body}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    ),
-    cta: "Set Up Your Business",
     goTo: { to: "/business/new", search: { step: "type" } },
-    skippable: false,
   },
 };
 
-function Welcome() {
+/** The Select screen: talent or business, and a tap continues (owner, 4 Oct 2026). */
+function SelectScreen() {
   const { draft, hydrated, bucket } = useOnboarding();
   const navigate = useNavigate();
   const total = visibleSteps(draft, bucket).length;
@@ -186,6 +128,26 @@ function Welcome() {
   const [touched, setTouched] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const info = kindInfo[kind];
+
+  /*
+   * Tapping an account type is the choice and the next step at once (owner, 4 Oct 2026): this
+   * screen has no Let's Start and no Skip for Now. Talent goes to its next question (or the resume
+   * screen once started); Business goes to business setup.
+   */
+  const continueAs = (next: AccountKind) => {
+    setKind(next);
+    setTouched(true);
+    if (next === "Business") {
+      const goTo = kindInfo.Business.goTo;
+      if (goTo) void navigate({ to: goTo.to, search: goTo.search });
+      return;
+    }
+    if (hydrated && started) {
+      void navigate({ to: "/onboarding/resume" });
+      return;
+    }
+    void navigate({ to: "/onboarding/step/$id", params: { id: resumeTarget(draft, bucket) } });
+  };
 
   // Touch gesture support: swipe left/right to toggle between Talent and Business
   const touchStart = useRef<number | null>(null);
@@ -216,7 +178,7 @@ function Welcome() {
       <div>
         <div
           className={cn(
-            "inline-flex items-center gap-2 rounded-full border border-border/60 bg-subtle px-3 py-1 text-1 font-semibold text-muted-foreground",
+            "inline-flex items-center gap-2 text-1 font-semibold text-muted-foreground",
             rise,
           )}
         >
@@ -251,70 +213,39 @@ function Welcome() {
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => {
+          <div className="flex flex-col gap-3">
+            <AccountTypeCard
+              title="Music Talent"
+              description="Musician, singer, producer, writer"
+              icon={Compass}
+              cluster={[Mic2, Guitar, Headphones, Music]}
+              onSelect={() => {
                 haptic("select");
-                setKind("Talent");
-                setTouched(true);
+                continueAs("Talent");
               }}
-              className={cn(
-                "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-97",
-                touched && kind === "Talent"
-                  ? "border-foreground bg-card shadow-sm ring-2 ring-foreground/10"
-                  : "border-border/80 bg-subtle/50 hover:bg-card hover:border-muted-foreground/40",
-              )}
-            >
-              <span
-                className={cn(
-                  "mb-3 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors",
-                  touched && kind === "Talent"
-                    ? "bg-foreground text-background"
-                    : "border border-border bg-card text-foreground",
-                )}
-              >
-                <Compass size={18} />
-              </span>
-              <span className="text-sm font-bold text-foreground">Music Talent</span>
-              <span className="mt-0.5 text-1 text-muted-foreground leading-snug">
-                Musician, singer, producer, writer
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
+            />
+            <AccountTypeCard
+              title="Business"
+              description="Studio, label, agency, venue"
+              icon={Sparkles}
+              cluster={[Building2, Disc3, Ticket, SlidersVertical]}
+              onSelect={() => {
                 haptic("select");
-                setKind("Business");
-                setTouched(true);
+                continueAs("Business");
               }}
-              className={cn(
-                "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-97",
-                touched && kind === "Business"
-                  ? "border-foreground bg-card shadow-sm ring-2 ring-foreground/10"
-                  : "border-border/80 bg-subtle/50 hover:bg-card hover:border-muted-foreground/40",
-              )}
-            >
-              <span
-                className={cn(
-                  "mb-3 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors",
-                  touched && kind === "Business"
-                    ? "bg-foreground text-background"
-                    : "border border-border bg-card text-foreground",
-                )}
-              >
-                <Sparkles size={18} />
-              </span>
-              <span className="text-sm font-bold text-foreground">Business / Studio</span>
-              <span className="mt-0.5 text-1 text-muted-foreground leading-snug">
-                Studio, label, agency, venue
-              </span>
-            </button>
+            />
+            {/* A third account type is on the way (owner, 4 Oct 2026): shown, hollow, not tappable. */}
+            <AccountTypeCard
+              title="Upcoming"
+              description="A new account type is on the way"
+              icon={Clock}
+              cluster={[Plus, Sparkles, Plus]}
+              hollow
+            />
           </div>
         </div>
 
-        {/* Live Interactive Card Preview or Feature Pitch */}
+        {/* Live card preview, on request. The feature pitch box under the cards is gone (owner, 4 Oct 2026). */}
         {showPreview ? (
           <div className={cn("mt-6", rise)} style={beat(3)}>
             <p className="eyebrow mb-2 text-muted-foreground">
@@ -326,54 +257,6 @@ function Welcome() {
               <BookableCard studio={demoStudio} disabled />
             )}
           </div>
-        ) : (
-          <div
-            className={cn("mt-6 rounded-lg border border-border/80 bg-card p-4 shadow-xs", rise)}
-            style={beat(3)}
-          >
-            {info.pitch}
-          </div>
-        )}
-      </div>
-
-      <div className={cn("mt-8 space-y-2.5", rise)} style={beat(6)}>
-        {kind === "Talent" && hydrated && started ? (
-          <BtnLink
-            to="/onboarding/resume"
-            className="h-12 w-full text-sm font-semibold shadow-xs active:scale-98"
-          >
-            Continue Setup
-          </BtnLink>
-        ) : kind === "Talent" ? (
-          <Btn
-            className="h-12 w-full text-sm font-semibold shadow-xs active:scale-98"
-            onClick={() =>
-              navigate({
-                to: "/onboarding/step/$id",
-                params: { id: resumeTarget(draft, bucket) },
-              })
-            }
-          >
-            {info.cta}
-          </Btn>
-        ) : info.goTo ? (
-          <BtnLink
-            to={info.goTo.to}
-            search={info.goTo.search}
-            className="h-12 w-full text-sm font-semibold shadow-xs active:scale-98"
-          >
-            {info.cta}
-          </BtnLink>
-        ) : null}
-        {info.skippable ? (
-          <p className="flex justify-center pt-2 text-sm">
-            <AuthLink
-              to="/onboarding/skip"
-              className="font-medium text-muted-foreground hover:text-foreground"
-            >
-              Skip for Now
-            </AuthLink>
-          </p>
         ) : null}
       </div>
     </div>
