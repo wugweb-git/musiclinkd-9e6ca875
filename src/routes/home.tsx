@@ -71,6 +71,7 @@ export const Route = createFileRoute("/home")({
       labels,
     };
   },
+  staleTime: 60_000,
   component: HomeScreen,
 });
 
@@ -133,8 +134,9 @@ function useHomeData() {
 
   const query = useQuery({
     queryKey: ["home", "workspace"],
-    enabled: !offline,
+    enabled: !authLoading && signedIn && !offline,
     placeholderData: EMPTY_HOME,
+    staleTime: 30_000,
     queryFn: async (): Promise<HomeData> => {
       const [profileRow, work, businessRow] = await Promise.all([
         readOr(profile() as Promise<ProfileRow | null>, null),
@@ -175,9 +177,12 @@ function useHomeData() {
 
 function HomeScreen() {
   const { offline, query } = useHomeData();
+  const { loading: authLoading, signedIn } = useAuth();
   return (
     <Screen className="pb-nav-clear">
-      {offline ? (
+      {authLoading || !signedIn ? (
+        <HomeSkeleton />
+      ) : offline ? (
         <HomeState
           icon={<WifiOff size={iconSize.lg} />}
           title="You’re offline"

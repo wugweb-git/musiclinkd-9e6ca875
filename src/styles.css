@@ -110,6 +110,12 @@
    * max-w-[280px] across kit.tsx's EmptyState/StateCard variants (22 Sep audit). */
   --spacing-prose-sm: 280px;
 
+  /* Media framing shared by portfolio, directory and market imagery. Use a real photo or
+   * video in these frames; the ratios never imply content that is not there. */
+  --aspect-media-square: 1;
+  --aspect-media-wide: 16 / 9;
+  --aspect-media-card: 4 / 3;
+
   --color-background: var(--background);
   --color-auth-ground: var(--auth-ground);
   --color-foreground: var(--foreground);

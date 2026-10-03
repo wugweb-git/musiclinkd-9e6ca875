@@ -2,11 +2,20 @@
 
 ## 4 Oct 2026 — mobile reference pass
 
+- [x] Audit startup performance and shared CSS: avoid signed-out Home reads, cache public Home data briefly, and add the three media-ratio tokens.
 - [x] Redesign the bottom drawer with live account identity and grouped navigation.
 - [x] Refine the mobile Home/dashboard, portfolio/projects, profile sections, and Settings.
 - [x] Align Help, Connections inbox, and conversations with the same mobile language.
 - [x] Carry the flatter account-drawer rows into shared option, sort, create and profile-more drawers.
 - [ ] Verify interactive signed-in navigation and the drawer: local preview cancels client script requests, leaving server-rendered screens non-interactive in the automated browser.
+
+## Additional pending requests (moved from the separate pending note)
+
+- [ ] Hardcoded-content audit for talent flow — scope needs owner confirmation (profile, Discover, onboarding, or all three).
+- [ ] Design sync — requires an interactive design-tool login outside this session.
+- [ ] Discover bands and events — scope not yet defined.
+- [ ] Four Full Extraction Catalog mockups — source images/screens not present; need to be provided again.
+- [x] Port shared square, wide and card media aspect tokens into live CSS.
 
 ## 3 Oct 2026 — product-wide visual rebuild
 
