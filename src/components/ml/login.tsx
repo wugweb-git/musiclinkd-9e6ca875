@@ -209,7 +209,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
 
   return (
     <AuthScreen brand={false} className="bg-background">
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col sm:justify-center sm:py-8">
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col sm:py-12">
         <header className={cn("pt-1", rise)} style={beat(1)}>
           <Brand compact className="vt-brand mb-4" />
           <p className="max-w-[360px] text-2 font-semibold leading-snug text-foreground">
@@ -221,7 +221,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
         </header>
 
         <main
-          className={cn("flex flex-1 flex-col justify-center py-6 sm:flex-none", rise)}
+          className={cn("flex flex-1 flex-col justify-center py-6 sm:flex-none sm:pt-10", rise)}
           style={beat(2)}
         >
           {saved.length > 0 && !signup ? (

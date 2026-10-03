@@ -93,8 +93,8 @@ export function PhoneCodeStep({
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col sm:justify-center sm:py-8">
-        <div className="flex flex-1 flex-col justify-center py-6 sm:flex-none">
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col py-8 sm:py-12">
+        <div className="flex flex-col pt-8 sm:pt-10">
           <div className="rounded-lg border border-border bg-card p-4 sm:p-5">
             <AuthHeading
               title="Verify your number"
@@ -164,7 +164,7 @@ export function PhoneCodeStep({
           </p>
         </div>
 
-        <div className="shrink-0 pb-1 text-center sm:mt-2">
+        <div className="mt-auto shrink-0 pb-1 pt-8 text-center">
           <LegalNote className="mt-0" />
           <div className="mt-0.5">
             <MadeByWugweb />

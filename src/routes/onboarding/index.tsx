@@ -70,7 +70,7 @@ function SelectScreen() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-[max(24px,env(safe-area-inset-top))] sm:max-w-[520px] sm:justify-center sm:py-8">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-[max(24px,env(safe-area-inset-top))] sm:max-w-[520px] sm:py-12">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
         <p className="truncate text-1 font-semibold text-muted-foreground">Profile setup</p>
         <p className="shrink-0 text-1 font-semibold text-foreground">1 of {total + 1}</p>
