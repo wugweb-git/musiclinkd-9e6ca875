@@ -87,16 +87,6 @@ type HomeData = {
 };
 
 const HOME_READ_TIMEOUT = 6_000;
-const EMPTY_HOME: HomeData = {
-  profile: null,
-  portfolioCount: 0,
-  business: null,
-  connections: { connected: [], received: [], sent: [] },
-  applications: [],
-  bookings: [],
-  leads: [],
-  services: [],
-};
 function readOr<T>(read: Promise<T>, fallback: T): Promise<T> {
   return Promise.race([
     read.catch(() => fallback),
@@ -135,7 +125,6 @@ function useHomeData() {
   const query = useQuery({
     queryKey: ["home", "workspace"],
     enabled: !authLoading && signedIn && !offline,
-    placeholderData: EMPTY_HOME,
     staleTime: 30_000,
     queryFn: async (): Promise<HomeData> => {
       const [profileRow, work, businessRow] = await Promise.all([

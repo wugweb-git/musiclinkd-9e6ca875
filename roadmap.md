@@ -2,7 +2,7 @@
 
 ## 4 Oct 2026 — mobile reference pass
 
-- [x] Audit startup performance and shared CSS: avoid signed-out Home reads, cache public Home data briefly, and add the three media-ratio tokens.
+- [x] Audit startup performance and shared CSS: avoid signed-out Home reads, stop showing empty placeholder counts while real records load, cache public Home data briefly, and add the three media-ratio tokens.
 - [x] Redesign the bottom drawer with live account identity and grouped navigation.
 - [x] Refine the mobile Home/dashboard, portfolio/projects, profile sections, and Settings.
 - [x] Align Help, Connections inbox, and conversations with the same mobile language.
