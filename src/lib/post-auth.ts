@@ -9,6 +9,17 @@ type OnboardingState = {
   onboarding_draft?: unknown;
 } | null;
 
+/*
+ * `onboarding_draft` is NOT NULL with a default of `{}`, so every row has one from the moment the
+ * signup trigger writes it. Only a draft with something in it means onboarding was started; the
+ * bare `{}` read as "started" sent every new signup to Discover (owner, 4 Oct 2026).
+ */
+function hasAnswers(draft: unknown): boolean {
+  if (draft == null) return false;
+  if (typeof draft === "object") return Object.keys(draft).length > 0;
+  return Boolean(draft);
+}
+
 export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
   // No row at all: the first sign-in, before the signup trigger has created a profile.
   if (!profile) return "/onboarding";
@@ -22,7 +33,7 @@ export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
    * false at the moment of it: the trigger writes the row *during* signup, so every new account
    * was routed straight past onboarding into Discover and never saw it.
    */
-  const started = Boolean(profile.onboarding_step) || Boolean(profile.onboarding_draft);
+  const started = Boolean(profile.onboarding_step) || hasAnswers(profile.onboarding_draft);
   if (!profile.onboarding_complete && !started) return "/onboarding";
 
   /*
@@ -33,6 +44,14 @@ export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
    * inside the app, via a CTA to /onboarding/resume.
    */
   return "/discover";
+}
+
+/**
+ * Where an emailed link (sign-up confirmation, sign-in link) returns to: the splash, which picks up
+ * the session from the URL and routes it — a new account to onboarding.
+ */
+export function emailLinkTarget(): string {
+  return `${window.location.origin}/`;
 }
 
 export type ProviderState = "checking" | "on" | "off";

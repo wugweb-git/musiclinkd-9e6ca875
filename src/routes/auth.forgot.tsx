@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Mail, Smartphone } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import {
   AuthHeading,
@@ -9,6 +10,7 @@ import {
   EMAIL_PATTERN,
   LabeledInput,
   LegalNote,
+  PhoneField,
   useFieldErrors,
   TrustNote,
   carriedEmail,
@@ -17,7 +19,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 
-import { MadeByWugweb } from "@/components/ml/kit";
+import { MadeByWugweb, SegmentedField } from "@/components/ml/kit";
+import { PhoneCodeStep } from "@/components/ml/phone-code";
 
 export const Route = createFileRoute("/auth/forgot")({
   head: () => ({
@@ -25,7 +28,7 @@ export const Route = createFileRoute("/auth/forgot")({
       { title: "Reset your password — MusicLinkd" },
       {
         name: "description",
-        content: "Send yourself a secure link to set a new MusicLinkd password.",
+        content: "Reset your MusicLinkd password with a link by email or a code by text.",
       },
       { property: "og:title", content: "Reset your password — MusicLinkd" },
       {
@@ -39,6 +42,15 @@ export const Route = createFileRoute("/auth/forgot")({
   component: ForgotPassword,
 });
 
+/*
+ * Forgot password, from the login screen only. Two ways back in (owner, 4 Oct 2026): by email, a
+ * reset link that opens /reset-password; by mobile, a 6-digit code by text that signs in and then
+ * opens /reset-password. Mobile only works for an account that already has that number — it never
+ * creates one.
+ */
+type Method = "email" | "mobile";
+const METHODS = ["email", "mobile"] as const;
+
 function ForgotPassword() {
   const navigate = useNavigate();
   // Opens with the email typed on Sign in, if any.
@@ -46,14 +58,55 @@ function ForgotPassword() {
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
-  const fields = useFieldErrors<"email">();
+  const fields = useFieldErrors<"email" | "phone">();
+  const [method, setMethod] = useState<Method>("email");
+  const [digits, setDigits] = useState("");
+  // The number a code was sent to; set, the screen shows its code step.
+  const [codeSentTo, setCodeSentTo] = useState<string | null>(null);
+  const phoneProblem = !digits
+    ? "Enter your mobile number."
+    : !/^[6-9]\d{9}$/.test(digits)
+      ? "Enter a 10-digit mobile number."
+      : null;
   const emailProblem = !email.trim()
     ? "Enter your email address."
     : !EMAIL_PATTERN.test(email.trim())
       ? "Enter an email like name@example.com."
       : null;
 
+  async function sendCode() {
+    setError(null);
+    fields.submitted();
+    if (phoneProblem) {
+      haptic("error");
+      return;
+    }
+    setBusy(true);
+    const { error: err } = await supabase.auth.signInWithOtp({
+      phone: `+91${digits}`,
+      options: { shouldCreateUser: false },
+    });
+    setBusy(false);
+    if (err) {
+      haptic("error");
+      const m = err.message.toLowerCase();
+      setError(
+        m.includes("signup") || m.includes("not found") || m.includes("not allowed")
+          ? {
+              ...classifyAuthError(err.message),
+              title: "No account uses this number",
+              body: "Reset by email instead, or check the number.",
+            }
+          : classifyAuthError(err.message),
+      );
+      return;
+    }
+    haptic("confirm");
+    setCodeSentTo(digits);
+  }
+
   async function send() {
+    if (method === "mobile") return sendCode();
     setError(null);
     fields.submitted();
     if (emailProblem) {
@@ -74,8 +127,19 @@ function ForgotPassword() {
     setSent(true);
   }
 
+  if (codeSentTo)
+    return (
+      <PhoneCodeStep
+        phone={codeSentTo}
+        onChangeNumber={() => setCodeSentTo(null)}
+        onVerified={() => void navigate({ to: "/reset-password", replace: true })}
+        createUser={false}
+        useEmailLink={false}
+      />
+    );
+
   return (
-    <AuthScreen back={{ to: "/auth/phone" }}>
+    <AuthScreen back={{ to: "/welcome" }}>
       <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
         <div className="my-auto py-1">
           <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
@@ -84,7 +148,9 @@ function ForgotPassword() {
               sub={
                 sent
                   ? `If an account exists for ${email.trim()}, a password reset link has been sent.`
-                  : "Enter your registered email address and we'll send a secure reset link."
+                  : method === "email"
+                    ? "Enter your registered email address and we'll send a secure reset link."
+                    : "Enter your registered mobile number and we'll text you a 6-digit code."
               }
             />
 
@@ -120,28 +186,52 @@ function ForgotPassword() {
                   if (!busy) void send();
                 }}
               >
-                <LabeledInput
-                  label="Registered email"
-                  value={email}
-                  onChange={setEmail}
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  enterKeyHint="go"
-                  placeholder="name@example.com"
-                  onBlur={() => fields.touch("email")}
-                  error={fields.errorFor("email", emailProblem)}
-                />
+                <div className="mb-2">
+                  <SegmentedField
+                    value={method}
+                    options={METHODS}
+                    onChange={(m) => {
+                      setMethod(m);
+                      setError(null);
+                    }}
+                    label="Reset by"
+                    labels={{ email: "Email", mobile: "Mobile" }}
+                    icons={{ email: Mail, mobile: Smartphone }}
+                  />
+                </div>
+                {method === "email" ? (
+                  <LabeledInput
+                    label="Registered email"
+                    value={email}
+                    onChange={setEmail}
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    enterKeyHint="go"
+                    placeholder="name@example.com"
+                    onBlur={() => fields.touch("email")}
+                    error={fields.errorFor("email", emailProblem)}
+                  />
+                ) : (
+                  <PhoneField
+                    value={digits}
+                    onChange={setDigits}
+                    onBlur={() => fields.touch("phone")}
+                    error={fields.errorFor("phone", phoneProblem)}
+                  />
+                )}
                 <Btn
                   type="submit"
                   className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
                   loading={busy}
                 >
-                  Send Reset Link
+                  {method === "email" ? "Send Reset Link" : "Send Code"}
                 </Btn>
-                <TrustNote>
-                  For your safety, we confirm receipt regardless of whether an account exists.
-                </TrustNote>
+                {method === "email" ? (
+                  <TrustNote>
+                    For your safety, we confirm receipt regardless of whether an account exists.
+                  </TrustNote>
+                ) : null}
               </form>
             )}
           </div>

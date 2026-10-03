@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { endSessionIfClosed } from "@/lib/remember-me";
 
 /*
  * One session, shared by every caller.
@@ -83,8 +84,9 @@ function subscribe(listener: () => void) {
     const fallback = window.setTimeout(() => {
       if (snapshot.loading) publish(storedSession(), true);
     }, SESSION_WAIT_MS);
-    void supabase.auth
-      .getSession()
+    // A "don't remember me" sign-in from before the browser or app was closed ends first.
+    void endSessionIfClosed()
+      .then(() => supabase.auth.getSession())
       .then(({ data }) => publish(data.session))
       // A failed read is not a hang: fall back to what the browser kept.
       .catch(() => {
