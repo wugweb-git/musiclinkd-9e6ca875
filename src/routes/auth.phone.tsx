@@ -97,9 +97,9 @@ function PhoneAuth() {
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
-      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-        <div className="my-auto py-1">
-          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col py-8 sm:py-12">
+        <div className="flex flex-col pt-8 sm:pt-10">
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-5">
             <form
               noValidate
               onSubmit={(e) => {
@@ -108,8 +108,8 @@ function PhoneAuth() {
               }}
             >
               <AuthHeading
-                title="Sign in with Mobile"
-                sub="Enter your 10-digit mobile number and we'll text you a 6-digit code."
+                title="Continue with mobile"
+                sub="Enter your number and we’ll send a secure 6-digit verification code."
               />
 
               {provider === "off" ? (
@@ -128,7 +128,7 @@ function PhoneAuth() {
 
               <Btn
                 type="submit"
-                className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
+                className="mt-3 h-12 w-full text-sm font-semibold"
                 loading={busy}
                 disabled={provider === "off"}
               >
@@ -139,7 +139,7 @@ function PhoneAuth() {
             <TrustNote>Your number is never shown on your public profile.</TrustNote>
           </div>
 
-          <p className="mt-4 flex justify-center text-1">
+          <p className="mt-4 flex justify-center text-sm">
             <AuthLink
               to="/auth"
               icon={<Mail size={iconSize.sm} />}
@@ -150,7 +150,7 @@ function PhoneAuth() {
           </p>
         </div>
 
-        <div className="shrink-0 pt-1 text-center">
+        <div className="mt-auto shrink-0 pb-1 pt-8 text-center">
           <LegalNote className="mt-0" />
           <div className="mt-0.5">
             <MadeByWugweb />

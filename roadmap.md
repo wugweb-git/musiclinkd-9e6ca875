@@ -1,5 +1,10 @@
 # MusicLinkd roadmap
 
+## 3 Oct 2026 — authentication entry redesign
+
+- [x] Redesign `/welcome`, phone sign-in and verification, and onboarding Select.
+- [x] Verify at 412px and desktop widths; run TypeScript and preview diagnostics.
+
 ## 3 Oct 2026 — P1 convergence (one publish)
 
 - Bookable tables renamed from `studio*` (`20261003130000`); old-name shims dropped (`20261003140000`).

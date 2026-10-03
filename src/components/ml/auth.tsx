@@ -41,19 +41,19 @@ export function AuthScreen({
   return (
     <div
       className={cn(
-        "mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-app flex-col bg-background overflow-hidden select-none",
+        "mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background select-none",
         className,
       )}
     >
-      <div className="flex flex-1 min-h-0 flex-col justify-between px-4 sm:px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] overflow-hidden">
+      <div className="flex flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6">
         {back ? (
-          <div className="-ml-2 mb-1.5 flex h-9 shrink-0 items-center">
+          <div className="-ml-2 mb-2 flex h-10 shrink-0 items-center">
             <AuthBackButton back={back} />
           </div>
         ) : brand ? (
           <Brand compact className="mb-1.5 shrink-0" />
         ) : null}
-        <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+        <div className="flex flex-1 flex-col">
           {children}
         </div>
       </div>
@@ -118,7 +118,7 @@ export function Brand({
         className,
       )}
     >
-      <span className="relative flex h-10 w-10 items-center justify-center rounded-sm bg-pink-container shadow-sm">
+      <span className="relative flex h-10 w-10 items-center justify-center rounded-sm bg-pink-container">
         <LogoMark className={`w-6 text-brand ${animated ? "animate-sound-check" : ""}`} />
         <span className="pointer-events-none absolute -inset-0.5 rounded-sm border border-brand/20" />
       </span>
@@ -137,9 +137,9 @@ export function AuthHeading({
   className?: string | undefined;
 }) {
   return (
-    <div className={cn("mb-3.5 sm:mb-4", className)}>
+    <div className={cn("mb-5", className)}>
       <h1 className="text-3 font-bold text-foreground leading-tight">{title}</h1>
-      {sub ? <p className="mt-1 text-1 leading-snug text-muted-foreground">{sub}</p> : null}
+      {sub ? <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{sub}</p> : null}
     </div>
   );
 }
@@ -148,7 +148,7 @@ export function Divider({ label, className }: { label: string; className?: strin
   return (
     <div className={cn("my-4 flex items-center gap-3 text-1 text-muted-foreground", className)}>
       <span className="h-px flex-1 bg-border/80" />
-      <span className="rounded-full bg-subtle px-2.5 py-0.5 text-1 font-medium">{label}</span>
+      <span className="px-1 text-1 font-medium">{label}</span>
       <span className="h-px flex-1 bg-border/80" />
     </div>
   );
@@ -266,7 +266,7 @@ export function TextField({
       </label>
       <div
         className={cn(
-          "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
+          "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 transition-all duration-150 ease-standard",
           invalid
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
             : "border-input focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
@@ -541,7 +541,7 @@ export function CodeInput({
         key={shakeKey}
         onClick={() => ref.current?.focus()}
         className={cn(
-          "mb-4 sm:mb-5 flex w-full justify-between gap-2 sm:gap-2.5",
+          "mb-5 flex w-full justify-between gap-2 sm:gap-2.5",
           shakeKey ? "animate-shake" : "",
         )}
         aria-label={label}
@@ -555,7 +555,7 @@ export function CodeInput({
               style={complete ? { animationDelay: `${i * 45}ms` } : undefined}
               className={cn(
                 complete && "animate-meter",
-                "flex h-12 sm:h-13 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-bold transition-all duration-150 ease-standard shadow-xs",
+                "flex h-12 sm:h-13 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-bold transition-all duration-150 ease-standard",
                 invalid
                   ? "border-destructive bg-danger-container/20 text-destructive"
                   : active

@@ -93,9 +93,9 @@ export function PhoneCodeStep({
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
-      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-        <div className="my-auto py-1">
-          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col py-8 sm:py-12">
+        <div className="flex flex-col pt-8 sm:pt-10">
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-5">
             <AuthHeading
               title="Verify your number"
               sub={
@@ -119,7 +119,7 @@ export function PhoneCodeStep({
             />
 
             <Btn
-              className="w-full h-12 text-sm font-semibold shadow-xs"
+              className="h-12 w-full text-sm font-semibold"
               loading={busy}
               disabled={code.length !== 6 || !phone}
               onClick={() => void verify(code)}
@@ -127,7 +127,7 @@ export function PhoneCodeStep({
               Verify & Continue
             </Btn>
 
-            <p className="mt-3.5 flex justify-center text-1 text-muted-foreground">
+            <p className="mt-4 flex justify-center text-1 text-muted-foreground">
               {countdown.seconds > 0 ? (
                 <span aria-live="polite" className="rounded-full bg-subtle px-3 py-1 font-medium">
                   Resend code in 0:{String(countdown.seconds).padStart(2, "0")}
@@ -144,7 +144,7 @@ export function PhoneCodeStep({
             </p>
           </div>
 
-          <p className="mt-3.5 flex items-center justify-center gap-6 text-1">
+          <p className="mt-4 flex items-center justify-center gap-6 text-sm">
             <AuthTextButton
               icon={<Pencil size={iconSize.sm} />}
               onClick={onChangeNumber}
@@ -164,7 +164,7 @@ export function PhoneCodeStep({
           </p>
         </div>
 
-        <div className="shrink-0 pt-1 text-center">
+        <div className="mt-auto shrink-0 pb-1 pt-8 text-center">
           <LegalNote className="mt-0" />
           <div className="mt-0.5">
             <MadeByWugweb />
