@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — the welcome screen's heading is its visible title (4 Oct)
+
+- "Welcome back" / "Create your account" is the page's `h1` at a heading size (`text-3`), not a
+  12px `h2` under a screen-reader-only `h1`. The site description stays for screen readers as a
+  paragraph; search engines read the meta description.
+
 ### Changed — brief §7: stale repo docs (4 Oct)
 
 - `docs/component-inventory-2026-09-16.md`, `docs/db-map-2026-09-17.md` and
