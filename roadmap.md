@@ -5,6 +5,7 @@
 - [x] Redesign the bottom drawer with live account identity and grouped navigation.
 - [x] Refine the mobile Home/dashboard, portfolio/projects, profile sections, and Settings.
 - [x] Align Help, Connections inbox, and conversations with the same mobile language.
+- [x] Carry the flatter account-drawer rows into shared option, sort, create and profile-more drawers.
 - [ ] Verify interactive signed-in navigation and the drawer: local preview cancels client script requests, leaving server-rendered screens non-interactive in the automated browser.
 
 ## 3 Oct 2026 — product-wide visual rebuild
