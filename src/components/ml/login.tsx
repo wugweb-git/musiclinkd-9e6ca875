@@ -34,11 +34,8 @@ import { emailLinkTarget, useAuthProvider } from "@/lib/post-auth";
 import { setRememberMe } from "@/lib/remember-me";
 import { isNativeApp, signInWithGoogleNative } from "@/lib/native-auth";
 import { beat, useArrival } from "@/lib/flow-motion";
-import { cn } from "@/lib/utils";
-import { SegmentedField } from "@/components/ml/kit";
 import { AccountRow } from "@/components/ml/accounts";
 import { forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
-import authMusicCollage from "@/assets/auth-music-collage.jpg";
 
 export type LoginMode = "signup" | "signin";
 const MODES = ["signin", "signup"] as const;
@@ -65,8 +62,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
   const showLinkedIn = linkedInState !== "off";
   const [error, setError] = useState<{ title: string; body: string } | null>(null);
   const fields = useFieldErrors<"email" | "password">();
-  const arrive = useArrival("welcome");
-  const rise = arrive ? "animate-rise" : "";
+  useArrival("welcome");
 
   useEffect(() => {
     if (!loading && signedIn) void navigate({ to: "/", replace: true });
@@ -208,46 +204,18 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
 
   return (
     <AuthScreen back={signup ? { to: "/welcome" } : undefined} wide>
-      <AuthComposition footer={<AuthFooter />} className="py-0 lg:py-6">
-        <main
-          className={cn(
-            "flex flex-col justify-center lg:grid lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] lg:items-stretch lg:gap-6",
-            rise,
-          )}
-          style={beat(2)}
-        >
-          <div className="relative -mx-4 mb-5 min-h-44 overflow-hidden rounded-b-3xl lg:mx-0 lg:mb-0 lg:min-h-[640px] lg:rounded-3xl">
-            <img
-              src={authMusicCollage}
-              alt="Indian artists recording and performing music"
-              width={1200}
-              height={1000}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="media-scrim" />
-            <div className="absolute inset-x-6 bottom-6 hidden text-ink-foreground lg:block">
-              <p className="text-1 font-semibold text-ink-foreground/70">MusicLinkd</p>
-              <p className="mt-1 max-w-sm text-3 font-bold leading-tight">
-                India’s music industry, in one professional network.
-              </p>
-            </div>
-          </div>
-          <div className="lg:flex lg:flex-col lg:justify-center lg:rounded-3xl lg:bg-card lg:p-6 lg:shadow-elevation-2">
-            <div className="mb-5">
-              <p className="text-1 font-semibold text-muted-foreground">
-                {signup ? "Join MusicLinkd" : "Your music career, connected"}
-              </p>
-              <h1 className="mt-1 text-3 font-bold leading-tight text-foreground">
-                {signup ? "Create account" : "Sign in"}
+      <AuthComposition footer={<AuthFooter />}>
+        <main className="flex flex-col" style={beat(2)}>
+            <div className="mb-8 mt-6 sm:mt-0">
+              <h1 className="text-4 font-bold leading-tight text-foreground">
+                {signup ? "Create your account" : "Sign in to MusicLinkd"}
               </h1>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {signup
-                  ? "Build your professional identity and find your next opportunity."
-                  : "Continue to your profile, work and connections."}
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {signup ? "Join India’s professional music community." : "Welcome back."}
               </p>
             </div>
             {saved.length > 0 && !signup ? (
-              <section className="mb-3">
+              <section className="mb-5">
                 <p className="mb-1.5 text-1 font-semibold text-muted-foreground">Continue as</p>
                 <ul className="overflow-hidden rounded-lg border border-border bg-card">
                   {saved.slice(0, 1).map((a) => (
@@ -264,7 +232,29 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               </section>
             ) : null}
 
-            <AuthSurface className="p-0 shadow-none">
+            <div className="grid gap-3">
+              <Btn
+                variant="outline"
+                className="h-12 w-full bg-card text-sm font-semibold"
+                icon={<GoogleIcon />}
+                loading={busy === "google"}
+                onClick={() => void google()}
+              >
+                Continue with Google
+              </Btn>
+              {showLinkedIn ? (
+                <Btn variant="outline" className="h-12 w-full bg-card text-sm font-semibold" icon={<Linkedin size={iconSize.sm} aria-hidden />} loading={busy === "linkedin"} onClick={() => void linkedin()}>
+                  Continue with LinkedIn
+                </Btn>
+              ) : null}
+              <Btn variant="outline" className="h-12 w-full bg-card text-sm font-semibold" icon={<Smartphone size={iconSize.sm} aria-hidden />} onClick={() => void navigate({ to: "/auth/phone" })}>
+                Continue with phone
+              </Btn>
+            </div>
+
+            <Divider label="or" className="my-6" />
+
+            <AuthSurface>
               <form
                 noValidate
                 onSubmit={(e) => {
@@ -272,20 +262,6 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                   if (!busy) void submit();
                 }}
               >
-                {/* A toggle between the two screens, not two states of one (owner, 4 Oct 2026): each
-                side is its own address, so the route, Back and a shared link all stay right. */}
-                <div className="mb-5">
-                  <SegmentedField
-                    value={mode}
-                    options={MODES}
-                    onChange={(next) => {
-                      if (next !== mode)
-                        void navigate({ to: next === "signup" ? "/signup" : "/welcome" });
-                    }}
-                    label="Sign in or create an account"
-                    labels={{ signin: "Sign in", signup: "Create account" }}
-                  />
-                </div>
                 {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
                 <TextField
@@ -345,40 +321,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               </form>
             </AuthSurface>
 
-            <Divider label="or continue with" className="my-4" />
-
-            <div className={`grid gap-2 ${showLinkedIn ? "grid-cols-3" : "grid-cols-2"}`}>
-              <Btn
-                variant="outline"
-                className="h-12 w-full bg-card px-2 text-1 font-semibold"
-                icon={<GoogleIcon />}
-                loading={busy === "google"}
-                onClick={() => void google()}
-              >
-                Google
-              </Btn>
-              {showLinkedIn ? (
-                <Btn
-                  variant="outline"
-                  className="h-12 w-full bg-card px-2 text-1 font-semibold"
-                  icon={<Linkedin size={iconSize.sm} aria-hidden />}
-                  loading={busy === "linkedin"}
-                  onClick={() => void linkedin()}
-                >
-                  LinkedIn
-                </Btn>
-              ) : null}
-              <Btn
-                variant="outline"
-                className="h-12 w-full bg-card px-2 text-1 font-semibold"
-                icon={<Smartphone size={iconSize.sm} aria-hidden />}
-                onClick={() => void navigate({ to: "/auth/phone" })}
-              >
-                Phone
-              </Btn>
-            </div>
-
-            <p className="mt-4 text-center text-sm text-muted-foreground">
+            <p className="mt-6 text-center text-sm text-muted-foreground">
               {signup ? (
                 <>
                   Already have an account?{" "}
@@ -401,7 +344,6 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                 </>
               )}
             </p>
-          </div>
         </main>
 
         <div className="mt-4 text-center">
