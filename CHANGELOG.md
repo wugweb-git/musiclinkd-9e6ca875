@@ -73,6 +73,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   before, `/` and `/discover` returned 500 with that error; after, `/`, `/discover`, a booking page,
   Market, Welcome, Help and a profile return 200.
 
+### Added — cleanup migration for the bookable rename (3 Oct) — not applied
+
+- `20261003140000_bookables_drop_compat.sql` drops the old-name views (`studios`, `studio_rooms`,
+  `studio_blocks`, `studio_equipment`, `studio_photos`) and wrapper functions (`studio_is_mine`,
+  `can_review_studio`, `studio_busy`). No `CASCADE`: it first checks that no view, function or rule
+  still uses an old name, and rolls back if one does. It touches no data. Apply only once the code
+  on the new names (`main` at `161ca9c` or later) is published and confirmed live.
+
+
 ### Changed — code names follow the bookable rename (3 Oct)
 
 - Exported names that meant the bookable space say so: `getStudioCalendar` → `getBookableCalendar`,
