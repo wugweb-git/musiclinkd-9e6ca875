@@ -102,7 +102,7 @@ export const Pills: BtnStory = {
       <span className="pill bg-subtle text-muted-foreground">Optional</span>
       <span className="pill bg-success-container text-success-strong">Available</span>
       <span className="pill bg-warn-container text-warn-strong">Pending</span>
-      <span className="pill bg-primary text-primary-foreground">New</span>
+      <span className="pill bg-ink text-ink-foreground">New</span>
       <span className="pill border border-border text-muted-foreground">Draft</span>
     </div>
   ),

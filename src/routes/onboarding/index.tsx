@@ -220,7 +220,7 @@ function Welcome() {
             rise,
           )}
         >
-          <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+          <span className="h-2 w-2 rounded-full bg-ink animate-pulse" />
           {kind === "Talent" ? `Quick setup · ${total} short questions (~2 mins)` : info.estimate}
         </div>
 

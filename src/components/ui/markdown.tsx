@@ -33,7 +33,7 @@ const INITIAL_COMPONENTS: Partial<Components> = {
     if (isInline) {
       return (
         <span
-          className={cn("bg-primary-foreground rounded-sm px-1 font-mono text-sm", className)}
+          className={cn("bg-ink-foreground rounded-sm px-1 font-mono text-sm", className)}
           {...props}
         >
           {children}

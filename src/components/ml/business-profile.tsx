@@ -245,7 +245,7 @@ export function BusinessProfileExperience({
                             className="h-12 w-12 shrink-0 rounded-sm object-cover"
                           />
                         ) : (
-                          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-icon-chip text-primary-foreground">
+                          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-icon-chip text-ink-foreground">
                             <SlidersVertical size={iconSize.md} aria-hidden />
                           </span>
                         )}

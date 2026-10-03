@@ -95,9 +95,8 @@ export function SaveButton({
     >
       <Heart
         size={size * 0.45}
-        className={saved ? "text-primary" : "text-foreground"}
+        className={saved ? "text-ink" : "text-foreground"}
         fill={saved ? "currentColor" : "none"}
-        strokeWidth={2}
       />
     </button>
   );
@@ -117,6 +116,7 @@ export function Rating({
   if (!value) return null;
   return (
     <span className="inline-flex items-center gap-1 text-1 font-semibold text-warn-strong">
+      {/* Filled: a solid star with no outline, so no stroke (the one stroke exception). */}
       <Star size={iconSize.xs} fill="currentColor" strokeWidth={0} />
       {value.toFixed(1)}
       {count ? <span className="text-muted-foreground">({count})</span> : null}
@@ -151,7 +151,7 @@ export function ReviewTags({ tags }: { tags?: string[] | undefined }) {
 export function LocationRow({ text }: { text: string }) {
   return (
     <span className="inline-flex items-center gap-1 text-1 text-muted-foreground">
-      <MapPin size={iconSize.xs} strokeWidth={1.8} />
+      <MapPin size={iconSize.xs} />
       <span className="truncate">{text}</span>
     </span>
   );
@@ -174,7 +174,7 @@ export function TrustPill({ label }: { label: string }) {
   return (
     // A trust signal, not a category: neutral ink on grey. Purple is the category badge's alone.
     <span className="inline-flex items-center gap-1 rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-foreground">
-      <ShieldCheck size={iconSize.xs} strokeWidth={2.2} aria-hidden />
+      <ShieldCheck size={iconSize.xs} aria-hidden />
       {label}
     </span>
   );
@@ -223,7 +223,7 @@ export function MarketCategoryIcon({
   className?: string;
 }) {
   const Icon = categoryIcons[slug] ?? Package;
-  return <Icon size={size} strokeWidth={1.75} className={className} aria-hidden />;
+  return <Icon size={size} className={className} aria-hidden />;
 }
 
 /** A category tile: opens the full category drawer. */
@@ -414,7 +414,7 @@ export function ProductCard({
             aria-hidden
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-background transition-transform duration-300 ease-spring group-hover:translate-x-0.5 group-active:scale-90"
           >
-            <ArrowUpRight size={iconSize.sm} strokeWidth={2} />
+            <ArrowUpRight size={iconSize.sm} />
           </span>
         </div>
       </div>
@@ -438,14 +438,7 @@ export function ProductCard({
         tapped ? "animate-tab-tap" : ""
       }`}
     >
-      <StateIcon
-        outline={Heart}
-        solid="heart"
-        active={isSaved}
-        size={iconSize.sm}
-        move="beat"
-        strokeWidth={2}
-      />
+      <StateIcon outline={Heart} solid="heart" active={isSaved} size={iconSize.sm} move="beat" />
     </button>
   ) : null;
 
@@ -843,7 +836,7 @@ export function CategorySheet({
       value: c.slug,
       label: c.label,
       iconNode: (
-        <MarketCategoryIcon slug={c.slug} size={iconSize.md} className="text-primary-foreground" />
+        <MarketCategoryIcon slug={c.slug} size={iconSize.md} className="text-ink-foreground" />
       ),
     })),
     query,
@@ -1117,7 +1110,7 @@ export function SwitchRow({
     >
       <span className="text-sm font-medium text-foreground">{label}</span>
       <span
-        className={`relative h-7 w-12 rounded-full transition-colors ${value ? "bg-primary" : "bg-border"}`}
+        className={`relative h-7 w-12 rounded-full transition-colors ${value ? "bg-ink" : "bg-border"}`}
       >
         <span
           className={`absolute top-1 h-5 w-5 rounded-full bg-card transition-all ${value ? "left-6" : "left-1"}`}
@@ -1251,7 +1244,7 @@ export function OfferSheet({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="₹1,70,000"
-            className="mb-4 h-14 w-full rounded-full border border-border bg-card px-5 text-2 font-semibold outline-none focus:border-primary"
+            className="mb-4 h-14 w-full rounded-full border border-input bg-card px-5 text-2 font-semibold outline-none focus:border-ink"
           />
 
           <label
@@ -1266,7 +1259,7 @@ export function OfferSheet({
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
             placeholder="I can collect this weekend."
-            className="mb-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+            className="mb-3 w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
           />
           <p className="mb-5 text-1 text-muted-foreground">
             Payment is arranged directly with the seller.

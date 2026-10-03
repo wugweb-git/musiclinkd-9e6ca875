@@ -69,7 +69,7 @@ export function SignInMethodsRow() {
         className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
       >
         <span className="flex h-10 w-7 shrink-0 items-center justify-center">
-          <KeyRound size={24} strokeWidth={1.75} aria-hidden />
+          <KeyRound size={24} aria-hidden />
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-2 font-semibold">Sign-in methods</span>

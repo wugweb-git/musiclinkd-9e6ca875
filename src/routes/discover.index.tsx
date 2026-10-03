@@ -94,7 +94,7 @@ function categoryIcon(label: string) {
     Communities: Users,
   };
   const Icon = icons[label] ?? Mic2;
-  return <Icon size={20} strokeWidth={1.75} className="text-muted-foreground" aria-hidden />;
+  return <Icon size={20} className="text-muted-foreground" aria-hidden />;
 }
 
 function Discover() {

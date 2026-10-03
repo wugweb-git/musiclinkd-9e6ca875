@@ -295,7 +295,7 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
  * page whenever it focuses an input smaller than 16px — every one of these fields did that.
  */
 export const inputClass =
-  "h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-2 outline-none focus:border-primary";
+  "h-13 w-full rounded-full border border-input bg-card px-5 py-3.5 text-2 outline-none focus:border-ink";
 
 /**
  * What a `Field` knows that its control needs: the id to answer to, what describes it, and whether
@@ -441,7 +441,7 @@ export function SheetMultiSelect({
         type="button"
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
-        className="flex min-h-13 w-full items-center justify-between gap-2 rounded-full border border-border bg-card px-5 py-3 text-left text-sm"
+        className="flex min-h-13 w-full items-center justify-between gap-2 rounded-full border border-input bg-card px-5 py-3 text-left text-sm"
       >
         <span className="min-w-0 truncate text-foreground">
           {picked.length ? picked.map((o) => o.label).join(", ") : placeholder}
@@ -545,7 +545,7 @@ export function SheetSelect({
         onClick={() => setOpen(true)}
         // The trigger is the field's control: it takes the label, the hint and the error.
         {...field}
-        className={`flex h-13 w-full items-center justify-between gap-2 rounded-full border border-border bg-card px-5 text-left text-sm ${className}`}
+        className={`flex h-13 w-full items-center justify-between gap-2 rounded-full border border-input bg-card px-5 text-left text-sm ${className}`}
       >
         {/*
          * A stored value the options don't contain — a city typed before this was a picker, one
@@ -649,11 +649,7 @@ function productTypeOptions(taxonomy: GearTaxonomy) {
       ? { icon: instrumentIcon(t.slug) }
       : {
           iconNode: (
-            <MarketCategoryIcon
-              slug={t.slug}
-              size={iconSize.md}
-              className="text-primary-foreground"
-            />
+            <MarketCategoryIcon slug={t.slug} size={iconSize.md} className="text-ink-foreground" />
           ),
         }),
   }));
@@ -860,7 +856,7 @@ export function ListingMediaStep({ value, onChange }: StepProps) {
           value={value.description}
           onChange={(e) => onChange({ description: e.target.value })}
           placeholder="Condition, history, what's included..."
-          className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+          className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
         />
       </Field>
       <TagListField

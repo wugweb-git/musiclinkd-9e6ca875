@@ -232,7 +232,7 @@ export function PersonCard({
         className="h-14 w-14 border border-border/60 text-sm"
       />
       <span className="mt-3 flex min-w-0 items-center gap-1">
-        <span className="truncate text-2 font-semibold text-foreground transition-colors group-hover:text-primary">
+        <span className="truncate text-2 font-semibold text-foreground transition-colors group-hover:text-ink">
           {person.name}
         </span>
         {person.verified ? <VerifiedBadge size={14} /> : null}
@@ -328,7 +328,7 @@ export function BookableCard({
         />
       ) : (
         <span className="flex h-full w-full items-center justify-center bg-subtle text-muted-foreground">
-          <Building2 size={28} strokeWidth={1.5} aria-hidden />
+          <Building2 size={28} aria-hidden />
         </span>
       )}
       <div className="media-scrim" />
@@ -370,12 +370,12 @@ export function BookableCard({
           className="flex h-28 w-full items-center justify-center bg-subtle text-muted-foreground"
           aria-hidden
         >
-          <Building2 size={28} strokeWidth={1.5} />
+          <Building2 size={28} />
         </span>
       )}
       <span className="block p-3">
         <span className="flex min-w-0 items-center gap-1">
-          <span className="truncate text-2 font-semibold text-foreground transition-colors group-hover:text-primary">
+          <span className="truncate text-2 font-semibold text-foreground transition-colors group-hover:text-ink">
             {studio.name}
           </span>
           {studio.verified ? <VerifiedBadge size={14} /> : null}
@@ -451,7 +451,7 @@ export function BookableRow({ studio }: { studio: DiscoverBookable }) {
         />
       ) : (
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-subtle text-muted-foreground">
-          <Building2 size={20} strokeWidth={1.5} aria-hidden />
+          <Building2 size={20} aria-hidden />
         </span>
       )}
       <span className="min-w-0 flex-1">

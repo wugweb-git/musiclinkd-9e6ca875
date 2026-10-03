@@ -117,7 +117,7 @@ function InviteMembers() {
                 <span className="flex shrink-0 items-center gap-2">
                   {t.verified ? <VerifiedBadge size={16} /> : null}
                   <span
-                    className={`rounded-full px-3 py-1.5 text-1 font-bold ${invited.includes(t.id) ? "bg-background text-muted-foreground" : "bg-primary text-primary-foreground"}`}
+                    className={`rounded-full px-3 py-1.5 text-1 font-bold ${invited.includes(t.id) ? "bg-background text-muted-foreground" : "bg-ink text-ink-foreground"}`}
                   >
                     {invited.includes(t.id) ? "Invited" : "Invite"}
                   </span>

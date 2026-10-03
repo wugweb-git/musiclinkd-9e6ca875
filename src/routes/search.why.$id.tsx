@@ -142,7 +142,7 @@ function WhyThisResult() {
           <>
             <Card className="space-y-2">
               <div className="flex items-center gap-2">
-                <Info size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
+                <Info size={iconSize.sm} className="shrink-0 text-ink" aria-hidden />
                 <h2 className="min-w-0 text-2 leading-tight">
                   {q
                     ? `Matched “${q}”${where ? ` in the ${where}` : ""}`
@@ -171,7 +171,7 @@ function WhyThisResult() {
 
             <Card className="space-y-2">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
+                <ShieldCheck size={iconSize.sm} className="shrink-0 text-ink" aria-hidden />
                 <h2 className="text-2">What is never used</h2>
               </div>
               <ul className="space-y-1.5">

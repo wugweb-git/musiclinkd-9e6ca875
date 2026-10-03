@@ -19,7 +19,7 @@ const toneStyle: Record<Tone, { pill: string; dot: string }> = {
   good: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
   warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
   bad: { pill: "bg-danger-container text-destructive", dot: "bg-destructive" },
-  brand: { pill: "bg-ink text-primary-foreground", dot: "bg-primary-foreground" },
+  brand: { pill: "bg-ink text-ink-foreground", dot: "bg-ink-foreground" },
   // The purple "Offer sent"/category tag (rental.tsx, profile.tsx) — one more tone rather than a
   // fourth hand-typed color map.
   category: { pill: "bg-status-category-bg text-status-category-text", dot: "bg-purple" },
@@ -223,7 +223,7 @@ export function SegmentedField<T extends string>({
           {icons?.[o]
             ? (() => {
                 const Icon: LucideIcon = icons[o]!;
-                return <Icon size={iconSize.sm} strokeWidth={2} aria-hidden />;
+                return <Icon size={iconSize.sm} aria-hidden />;
               })()
             : null}
           {labels?.[o] ?? o}
@@ -411,7 +411,7 @@ export function StepProgress({
       {Array.from({ length: total }, (_, i) => (
         <span
           key={i}
-          className={`h-1 flex-1 rounded-full ${i <= current ? "bg-primary" : "bg-border"}`}
+          className={`h-1 flex-1 rounded-full ${i <= current ? "bg-ink" : "bg-border"}`}
         />
       ))}
     </div>
@@ -439,7 +439,7 @@ export function Switch({
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${checked ? "bg-primary" : "bg-switch-off"}`}
+      className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${checked ? "bg-ink" : "bg-switch-off"}`}
     >
       <span
         className={`block h-5 w-5 rounded-full bg-card transition-transform ${checked ? "translate-x-5" : ""}`}
@@ -507,7 +507,7 @@ export function EmptyState({
     return (
       <div className="flex flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-12 text-center">
         {icon ? (
-          <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-primary">
+          <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-ink">
             {icon}
           </span>
         ) : null}
@@ -708,7 +708,7 @@ export function BusinessOnlyGate({
       >
         <Link
           to="/welcome"
-          className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+          className="inline-flex w-full items-center justify-center rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-ink-foreground"
         >
           {signedIn ? "Switch account" : "Sign in"}
         </Link>
@@ -725,7 +725,7 @@ export function Stars({ value, size = 14 }: { value: number; size?: number }) {
         <Star
           key={i}
           size={size}
-          className={i <= Math.round(value) ? "text-primary" : "text-border"}
+          className={i <= Math.round(value) ? "text-ink" : "text-border"}
           fill={i <= Math.round(value) ? "currentColor" : "none"}
           aria-hidden
         />
@@ -753,7 +753,7 @@ export function Meter({
         <span className="text-muted-foreground">{hint ?? value}</span>
       </div>
       <div className="mt-1 h-2 rounded-full bg-subtle">
-        <div className="h-2 rounded-full bg-primary" style={{ width: `${pct}%` }} />
+        <div className="h-2 rounded-full bg-ink" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

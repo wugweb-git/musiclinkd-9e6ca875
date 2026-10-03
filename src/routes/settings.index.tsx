@@ -52,7 +52,7 @@ function ProfileLinkRow() {
   if (!username || !url) {
     return (
       <Row
-        icon={<AtSign size={iconSize.lg} strokeWidth={1.75} aria-hidden />}
+        icon={<AtSign size={iconSize.lg} aria-hidden />}
         title="Claim your profile link"
         subtitle="Your public address, once you pick a username"
         to="/profile/edit"
@@ -63,7 +63,7 @@ function ProfileLinkRow() {
   const shown = url.replace(/^https?:\/\//, "");
   return (
     <Row
-      icon={<AtSign size={iconSize.lg} strokeWidth={1.75} aria-hidden />}
+      icon={<AtSign size={iconSize.lg} aria-hidden />}
       title={shown}
       subtitle="Your public profile. Tap to copy."
       right={<Copy size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />}
@@ -182,7 +182,7 @@ function SettingsScreen() {
                   <li key={r.key}>
                     <Row
                       grouped
-                      icon={<Icon size={iconSize.lg} strokeWidth={1.75} aria-hidden />}
+                      icon={<Icon size={iconSize.lg} aria-hidden />}
                       title={r.label}
                       subtitle={r.hint}
                       {...(r.soon

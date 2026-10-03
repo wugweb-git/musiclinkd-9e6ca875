@@ -350,7 +350,7 @@ function NewBusiness() {
                 <p className="text-sm font-bold text-foreground">Google Maps Profile (Optional)</p>
                 {reading ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-2.5 py-0.5 text-1 font-semibold text-muted-foreground animate-pulse">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-ink animate-ping" />
                     Locating...
                   </span>
                 ) : null}
@@ -456,7 +456,7 @@ function NewBusiness() {
                   <button
                     type="button"
                     disabled
-                    className="flex h-13 w-full items-center rounded-full border border-border bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
+                    className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
                   >
                     State first
                   </button>

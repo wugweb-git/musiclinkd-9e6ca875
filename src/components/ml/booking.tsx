@@ -78,15 +78,15 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
               <span
                 className={`flex h-5 w-5 items-center justify-center rounded-full text-1 ${
                   done
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-ink text-ink-foreground"
                     : "border border-border bg-subtle text-muted-foreground"
                 }`}
                 aria-hidden
               >
-                {done ? <Check size={iconSize.xs} strokeWidth={3} /> : null}
+                {done ? <Check size={iconSize.xs} /> : null}
               </span>
               {i < bookingTimeline.length - 1 ? (
-                <span className={`min-h-4.5 w-px flex-1 ${done ? "bg-primary" : "bg-border"}`} />
+                <span className={`min-h-4.5 w-px flex-1 ${done ? "bg-ink" : "bg-border"}`} />
               ) : null}
             </div>
             <p
@@ -159,7 +159,7 @@ export function EntityMetaRow({ b }: { b: Bookable }) {
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
       {b.rating ? (
         <span className="inline-flex items-center gap-1">
-          <Star size={iconSize.xs} className="text-primary" /> {b.rating.toFixed(1)} ({b.reviews})
+          <Star size={iconSize.xs} className="text-ink" /> {b.rating.toFixed(1)} ({b.reviews})
         </span>
       ) : null}
       {where ? (
@@ -279,7 +279,7 @@ export function AvailabilityCalendar(props: CalendarProps) {
                 aria-pressed={edge || inRange}
                 className={`flex h-12 items-center justify-center rounded-sm text-sm ${
                   edge
-                    ? "bg-primary font-bold text-primary-foreground"
+                    ? "bg-ink font-bold text-ink-foreground"
                     : inRange
                       ? "bg-background font-semibold text-foreground"
                       : isBlocked
@@ -303,18 +303,14 @@ export function AvailabilityCalendar(props: CalendarProps) {
               aria-label={`${formatDate(iso)} — ${a.state}`}
               aria-pressed={isSel}
               className={`flex h-12 flex-col items-center justify-center rounded-sm text-sm ${
-                isSel
-                  ? "bg-primary text-primary-foreground"
-                  : disabled
-                    ? "bg-transparent"
-                    : "bg-background"
+                isSel ? "bg-ink text-ink-foreground" : disabled ? "bg-transparent" : "bg-background"
               } ${inMonth ? "" : "opacity-35"} ${isSel ? "" : dayStyle[a.state]}`}
             >
               <span className={isSel ? "font-bold" : ""}>{d.getDate()}</span>
               <span
                 className={`mt-0.5 h-1 w-1 rounded-full ${
                   isSel
-                    ? "bg-primary-foreground"
+                    ? "bg-ink-foreground"
                     : a.state === "available"
                       ? "bg-success"
                       : a.state === "limited"
@@ -331,7 +327,7 @@ export function AvailabilityCalendar(props: CalendarProps) {
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-1 text-muted-foreground">
         {range ? (
           <>
-            <Legend dot="bg-primary" label="Selected" />
+            <Legend dot="bg-ink" label="Selected" />
             <Legend dot="bg-border" label="Unavailable" />
             <span>
               Min {props.minDays} day{props.minDays > 1 ? "s" : ""}, notice {props.noticePeriod}
@@ -391,7 +387,7 @@ export function SlotPicker({
               aria-label={`${formatTime(s.start)} to ${formatTime(s.end)} — ${open ? "available" : s.state}`}
               className={`min-h-control rounded-lg border px-2 text-1 font-semibold ${
                 active
-                  ? "border-transparent bg-primary text-primary-foreground"
+                  ? "border-transparent bg-ink text-ink-foreground"
                   : open
                     ? "border-border bg-card text-foreground"
                     : "border-transparent bg-background text-muted-foreground line-through"
@@ -598,7 +594,7 @@ export function PolicyCard({
     <div className="rounded-lg bg-subtle p-4">
       <p className="flex items-center gap-2 text-sm font-semibold">
         {critical ? (
-          <AlertTriangle size={iconSize.sm} className="text-primary" />
+          <AlertTriangle size={iconSize.sm} className="text-ink" />
         ) : (
           <Info size={iconSize.sm} className="text-muted-foreground" />
         )}
@@ -624,7 +620,7 @@ export function AcknowledgeRow({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--primary)]"
+        className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--ink)]"
       />
       <span className="text-1 leading-relaxed text-muted-foreground">{label}</span>
     </label>
@@ -867,7 +863,7 @@ export function StepDots({ step, total }: { step: number; total: number }) {
       {Array.from({ length: total }, (_, i) => (
         <span
           key={i}
-          className={`h-1.5 rounded-full transition-all ${i < step ? "w-6 bg-primary" : "w-1.5 bg-border"}`}
+          className={`h-1.5 rounded-full transition-all ${i < step ? "w-6 bg-ink" : "w-1.5 bg-border"}`}
         />
       ))}
     </div>
@@ -1024,7 +1020,7 @@ export function RequestSessionSheet({
           required
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="min-h-control w-full rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         <div className="flex gap-3">
           <span className="flex-1">
@@ -1036,7 +1032,7 @@ export function RequestSessionSheet({
               type="time"
               value={start}
               onChange={(e) => setStart(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </span>
           <span className="w-24">
@@ -1050,7 +1046,7 @@ export function RequestSessionSheet({
               max={24}
               value={hours}
               onChange={(e) => setHours(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </span>
           <span className="w-24">
@@ -1064,7 +1060,7 @@ export function RequestSessionSheet({
               max={200}
               value={people}
               onChange={(e) => setPeople(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </span>
         </div>
@@ -1077,7 +1073,7 @@ export function RequestSessionSheet({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="What you are recording, gear you need, who is coming."
-          className="w-full resize-none rounded-lg border border-border bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="w-full resize-none rounded-lg border border-input bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         {error ? (
           <p role="alert" className="text-1 text-destructive">

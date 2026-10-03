@@ -19,13 +19,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
         unstyled: true,
         classNames: {
           toast:
-            "flex w-full items-center gap-3 rounded-sm bg-ink px-4 py-3 text-sm text-primary-foreground shadow-elevation-3",
+            "flex w-full items-center gap-3 rounded-sm bg-ink px-4 py-3 text-sm text-ink-foreground shadow-elevation-3",
           title: "font-medium leading-snug",
-          description: "mt-0.5 text-1 text-primary-foreground/70",
+          description: "mt-0.5 text-1 text-ink-foreground/70",
           success: "[&_[data-icon]]:text-success",
           error: "[&_[data-icon]]:text-destructive",
-          actionButton: "link-action ml-auto shrink-0 font-semibold text-primary-foreground",
-          cancelButton: "shrink-0 text-primary-foreground/70",
+          actionButton: "link-action ml-auto shrink-0 font-semibold text-ink-foreground",
+          cancelButton: "shrink-0 text-ink-foreground/70",
         },
       }}
       {...props}

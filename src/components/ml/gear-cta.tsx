@@ -144,7 +144,6 @@ export function GearCta() {
           >
             <Plus
               size={iconSize.sm}
-              strokeWidth={2.4}
               aria-hidden
               className="transition-transform duration-300 ease-spring group-hover/cta:rotate-90 group-focus-visible/cta:rotate-90"
             />
@@ -156,7 +155,6 @@ export function GearCta() {
           >
             <LayoutGrid
               size={iconSize.sm}
-              strokeWidth={2.2}
               aria-hidden
               className="transition-transform duration-300 ease-spring group-hover/cta:-rotate-12 group-hover/cta:scale-115 group-focus-visible/cta:-rotate-12 group-focus-visible/cta:scale-115"
             />

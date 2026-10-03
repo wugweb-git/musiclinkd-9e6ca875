@@ -18,7 +18,7 @@ export interface WavePlayerProps {
   defaultVolume?: number;
   /** Audio bar color. Accepts any CSS value including var(--*) tokens @default "var(--muted-foreground)" */
   waveColor?: string;
-  /** Progress bar color. Accepts any CSS value including var(--*) tokens @default "var(--primary)" */
+  /** Progress bar color. Accepts any CSS value including var(--*) tokens @default "var(--ink)" */
   progressColor?: string;
   /** Waveform bar width in px @default 3 */
   barWidth?: number;

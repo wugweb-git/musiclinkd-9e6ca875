@@ -198,7 +198,7 @@ function VerificationRequestScreen() {
         <div className="space-y-4 px-5 pt-4 pb-6">
           <Card className="space-y-3 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-background">
-              <ShieldCheck size={iconSize.lg} className="text-primary" aria-hidden />
+              <ShieldCheck size={iconSize.lg} className="text-ink" aria-hidden />
             </div>
             <h2 className="text-2 leading-tight">Verified</h2>
             <p className="text-1 text-muted-foreground">
@@ -251,7 +251,7 @@ function VerificationRequestScreen() {
             <h3 className="text-sm">What you sent</h3>
             {sent.map((name) => (
               <div key={name} className="flex items-center gap-2 text-1 text-muted-foreground">
-                <Check size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
+                <Check size={iconSize.sm} className="shrink-0 text-ink" aria-hidden />
                 <span className="min-w-0 break-words">{name}</span>
               </div>
             ))}
@@ -542,7 +542,7 @@ function Wizard({
           {verificationSteps.map((s, i) => (
             <span
               key={s}
-              className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-background"}`}
+              className={`h-1 flex-1 rounded-full ${i <= step ? "bg-ink" : "bg-background"}`}
             />
           ))}
         </div>
@@ -568,7 +568,7 @@ function Wizard({
               </div>
             </section>
             <Card className="flex gap-3 py-3">
-              <Lock size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <Lock size={iconSize.sm} className="mt-0.5 shrink-0 text-ink" aria-hidden />
               <p className="text-1 text-muted-foreground">
                 Review time: {def.turnaround.toLowerCase()}.
               </p>
@@ -605,7 +605,7 @@ function Wizard({
                   <span className="text-1 font-semibold">{r.label}</span>
                   <span className="mt-0.5 block text-1 text-muted-foreground">{r.why}</span>
                   {r.privateField === "phone" ? (
-                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-lg bg-subtle px-4 focus-within:border-primary has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-lg bg-subtle px-4 focus-within:border-ink has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
                       <span className="text-sm text-muted-foreground">+91</span>
                       <input
                         value={values[r.id] ?? ""}
@@ -622,7 +622,7 @@ function Wizard({
                       value={values[r.id] ?? ""}
                       onChange={(e) => setValues((v) => ({ ...v, [r.id]: e.target.value }))}
                       maxLength={140}
-                      className="mt-2 h-12 w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+                      className="mt-2 h-12 w-full rounded-lg border border-input bg-card px-4 text-sm outline-none focus:border-ink"
                       placeholder="Type here"
                     />
                   )}
@@ -666,11 +666,7 @@ function Wizard({
               return (
                 <Card key={r.id} className="space-y-2 py-3">
                   <div className="flex items-start gap-3">
-                    <FileText
-                      size={iconSize.sm}
-                      className="mt-0.5 shrink-0 text-primary"
-                      aria-hidden
-                    />
+                    <FileText size={iconSize.sm} className="mt-0.5 shrink-0 text-ink" aria-hidden />
                     <div className="min-w-0 flex-1">
                       <p className="text-1 font-semibold break-words">{r.label}</p>
                       <p className="mt-0.5 text-1 text-muted-foreground">{r.why}</p>
@@ -723,7 +719,7 @@ function Wizard({
               );
             })}
             <Card className="flex gap-3 py-3">
-              <Lock size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <Lock size={iconSize.sm} className="mt-0.5 shrink-0 text-ink" aria-hidden />
               <p className="text-1 text-muted-foreground">
                 Documents are private. Only the Trust team can open them, and they are never shown
                 on your profile.
@@ -775,7 +771,7 @@ function Wizard({
               <h3 className="text-sm">Documents</h3>
               {docs.map((r) => (
                 <div key={r.id} className="flex items-center gap-2 text-1 text-muted-foreground">
-                  <Check size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
+                  <Check size={iconSize.sm} className="shrink-0 text-ink" aria-hidden />
                   <span className="min-w-0 break-words">{files[r.id]?.name ?? "Missing"}</span>
                 </div>
               ))}
@@ -785,7 +781,7 @@ function Wizard({
                 type="checkbox"
                 checked={consent}
                 onChange={(e) => setConsent(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-ink"
               />
               <span className="text-1 text-muted-foreground">
                 I confirm these documents are mine and accurate, and I allow the MusicLinkd Trust
@@ -816,7 +812,7 @@ function Wizard({
           <>
             <Card className="space-y-3 text-center">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-background">
-                <Check size={iconSize.lg} className="text-primary" aria-hidden />
+                <Check size={iconSize.lg} className="text-ink" aria-hidden />
               </div>
               <h2 className="text-2 leading-tight">Submitted for review</h2>
               <StatusPill label={statusLabel.in_review} tone={statusTone.in_review} />

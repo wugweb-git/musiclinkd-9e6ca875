@@ -859,7 +859,7 @@ function EditProfile() {
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-foreground text-background" : "bg-subtle text-foreground border border-border"}`}
                   >
                     {section.done ? (
-                      <Check size={iconSize.sm} strokeWidth={2.5} aria-hidden />
+                      <Check size={iconSize.sm} aria-hidden />
                     ) : (
                       <span aria-hidden className="text-1 font-bold">
                         •

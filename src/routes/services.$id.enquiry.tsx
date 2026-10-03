@@ -96,7 +96,7 @@ function ServiceEnquiry() {
         <TopBar title="Sent" back={`/services/${s.id}`} />
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
-            <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
+            <CheckCircle2 size={40} className="mx-auto text-ink" aria-hidden />
             <h2 className="mt-3 text-3 leading-tight">
               {mode === "Custom quote" ? "Quote request sent" : "Question sent"}
             </h2>
@@ -148,7 +148,7 @@ function ServiceEnquiry() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Turnaround, revisions, whether stems are included…"
               aria-labelledby="q"
-              className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+              className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
             />
           </Field>
         ) : (
@@ -160,7 +160,7 @@ function ServiceEnquiry() {
                 onChange={(e) => setScope(e.target.value)}
                 placeholder="Number of songs, current state of the material, deadline."
                 aria-labelledby="scope"
-                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
               />
             </Field>
             <Field

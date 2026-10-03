@@ -344,7 +344,6 @@ function ViewerActions({
       active={connectOn}
       size={iconSize.sm}
       move="stamp"
-      strokeWidth={2}
     />
   );
 

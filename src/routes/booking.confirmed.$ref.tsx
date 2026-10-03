@@ -114,11 +114,11 @@ function Confirmed() {
     <Screen className="flex flex-col justify-between px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-14">
       <div>
         {confirmed ? (
-          <CheckCircle2 size={44} className="text-primary" />
+          <CheckCircle2 size={44} className="text-ink" />
         ) : settled ? (
           <XCircle size={44} className="text-muted-foreground" />
         ) : (
-          <Clock size={44} className="text-primary" />
+          <Clock size={44} className="text-ink" />
         )}
         <h1 className="mt-4 text-3 leading-tight">
           {confirmed
@@ -256,7 +256,7 @@ function Confirmed() {
               min={earliestBookingDate()}
               value={moveDate}
               onChange={(e) => setMoveDate(e.target.value)}
-              className="mt-2 h-12 w-full rounded-sm border border-border bg-background px-4 text-sm outline-none focus:border-primary"
+              className="mt-2 h-12 w-full rounded-sm border border-input bg-background px-4 text-sm outline-none focus:border-ink"
             />
           </label>
           <label className="block">
@@ -265,7 +265,7 @@ function Confirmed() {
               type="time"
               value={moveStart}
               onChange={(e) => setMoveStart(e.target.value)}
-              className="mt-2 h-12 w-full rounded-sm border border-border bg-background px-4 text-sm outline-none focus:border-primary"
+              className="mt-2 h-12 w-full rounded-sm border border-input bg-background px-4 text-sm outline-none focus:border-ink"
             />
           </label>
           <Btn

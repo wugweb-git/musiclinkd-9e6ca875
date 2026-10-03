@@ -184,7 +184,7 @@ function BlockRow({ b }: { b: BookingRequest }) {
           {formatTime(b.end_time)}
         </span>
       </span>
-      <span className="mt-1 h-10 w-1 shrink-0 rounded-full bg-primary" aria-hidden />
+      <span className="mt-1 h-10 w-1 shrink-0 rounded-full bg-ink" aria-hidden />
       <div className="min-w-0 flex-1">
         <p className="truncate text-1 font-semibold">
           {b.service?.name ?? b.purpose ?? "Session"} ·{" "}
@@ -317,7 +317,7 @@ function MonthView({
             >
               {d.getDate()}
               <span
-                className={`mt-0.5 h-1.5 w-1.5 rounded-full ${count ? "bg-primary" : ""}`}
+                className={`mt-0.5 h-1.5 w-1.5 rounded-full ${count ? "bg-ink" : ""}`}
                 aria-hidden
               />
             </button>

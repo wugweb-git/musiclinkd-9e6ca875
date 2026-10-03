@@ -177,7 +177,7 @@ function OpportunityDetail() {
             {o.requirements.map((r) => (
               <div key={r.label} className="flex items-start gap-2">
                 {r.must ? (
-                  <CheckCircle2 size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
+                  <CheckCircle2 size={iconSize.sm} className="mt-0.5 shrink-0 text-ink" />
                 ) : (
                   <Circle size={iconSize.sm} className="mt-0.5 shrink-0 text-muted-foreground" />
                 )}
@@ -239,7 +239,7 @@ function OpportunityDetail() {
           >
             <Bookmark
               size={iconSize.md}
-              className={saved ? "text-primary" : "text-muted-foreground"}
+              className={saved ? "text-ink" : "text-muted-foreground"}
               fill={saved ? "currentColor" : "none"}
             />
           </button>

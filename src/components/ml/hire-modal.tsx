@@ -295,7 +295,7 @@ export function HireModal({
                   aria-invalid={Boolean(err("message"))}
                   maxLength={1500}
                   placeholder="What you need, and anything they should know"
-                  className="w-full rounded-lg border border-border bg-card p-4 text-2 outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full rounded-lg border border-input bg-card p-4 text-2 outline-none focus:border-ink focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </Field>
               {request.isError ? (

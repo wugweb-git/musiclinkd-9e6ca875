@@ -96,7 +96,7 @@ function BusinessLeads() {
           >
             <Link
               to="/welcome"
-              className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+              className="inline-flex w-full items-center justify-center rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-ink-foreground"
             >
               Sign in
             </Link>

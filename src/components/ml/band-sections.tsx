@@ -396,7 +396,7 @@ export function BandStagePlotSheet({
             onChange={(e) => setNote(e.target.value)}
             placeholder="Drum riser size, where the keys go"
             aria-labelledby="band-stage-plot-note"
-            className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+            className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
           />
         </Field>
         <Btn

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Archive,
-  ChevronRight,
-  CircleCheck,
-  CircleDashed,
-  Ellipsis,
-  Mail,
-} from "lucide-react";
+import { Archive, ChevronRight, CircleCheck, CircleDashed, Ellipsis, Mail } from "lucide-react";
 import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
@@ -95,7 +88,7 @@ function CircularProgress({ completed, total }: { completed: number; total: numb
         strokeWidth="2"
       />
       <circle
-        className="stroke-primary"
+        className="stroke-ink"
         cx="7"
         cy="7"
         fill="none"
@@ -112,9 +105,7 @@ function CircularProgress({ completed, total }: { completed: number; total: numb
 
 function StepIndicator({ completed }: { completed: boolean }) {
   if (completed) {
-    return (
-      <CircleCheck aria-hidden="true" className="mt-1 size-4.5 shrink-0 text-primary" />
-    );
+    return <CircleCheck aria-hidden="true" className="mt-1 size-4.5 shrink-0 text-ink" />;
   }
   return (
     <CircleDashed
@@ -152,10 +143,7 @@ export function Onboarding01() {
       <div className="flex min-h-dvh items-center justify-center bg-background p-4">
         <div className="text-center">
           <p className="text-pretty text-muted-foreground">Checklist dismissed</p>
-          <button
-            className="mt-2 text-primary text-sm underline"
-            onClick={() => setDismissed(false)}
-          >
+          <button className="mt-2 text-ink text-sm underline" onClick={() => setDismissed(false)}>
             Show again
           </button>
         </div>
@@ -249,7 +237,7 @@ export function Onboarding01() {
                             <h4
                               className={cn(
                                 "font-semibold",
-                                step.completed ? "text-primary" : "text-foreground",
+                                step.completed ? "text-ink" : "text-foreground",
                               )}
                             >
                               {step.title}

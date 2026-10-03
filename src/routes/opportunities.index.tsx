@@ -155,7 +155,7 @@ function OpportunitiesHome() {
                   search={{ q: c.label }}
                   className="w-[116px] shrink-0 rounded-lg bg-subtle p-3"
                 >
-                  <Icon size={20} strokeWidth={1.75} aria-hidden />
+                  <Icon size={20} aria-hidden />
                   <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>
                   <p className="text-1 text-muted-foreground">{openCount(c.key)} open</p>
                 </Link>

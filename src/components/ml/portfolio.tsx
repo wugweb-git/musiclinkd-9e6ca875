@@ -94,7 +94,7 @@ export function WorkTypeIcon({
         size === "lg" ? "h-16 w-16 rounded-lg" : "h-12 w-12 rounded-sm",
       )}
     >
-      <Icon size={size === "lg" ? 24 : 20} strokeWidth={1.75} />
+      <Icon size={size === "lg" ? 24 : 20} />
     </span>
   );
 }
@@ -461,7 +461,7 @@ export function ContributorPicker({
               key={n}
               type="button"
               onClick={() => onChange(value.filter((v) => v !== n))}
-              className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-1 font-semibold text-primary-foreground"
+              className="inline-flex items-center gap-1 rounded-full bg-ink px-3 py-1.5 text-1 font-semibold text-ink-foreground"
               aria-label={`Remove ${n}`}
             >
               {n} <X size={iconSize.xs} aria-hidden />

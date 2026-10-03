@@ -64,7 +64,7 @@ export const Chat: S = {
     <div className="space-y-4">
       <p className="pill bg-subtle text-muted-foreground">No chat thread screen exists today</p>
       <Message className="justify-end">
-        <MessageContent className="bg-primary text-primary-foreground">
+        <MessageContent className="bg-ink text-ink-foreground">
           Can you send the stems by Friday?
         </MessageContent>
       </Message>
