@@ -71,6 +71,7 @@ export const Route = createFileRoute("/home")({
       labels,
     };
   },
+  staleTime: 60_000,
   component: HomeScreen,
 });
 
@@ -86,16 +87,6 @@ type HomeData = {
 };
 
 const HOME_READ_TIMEOUT = 6_000;
-const EMPTY_HOME: HomeData = {
-  profile: null,
-  portfolioCount: 0,
-  business: null,
-  connections: { connected: [], received: [], sent: [] },
-  applications: [],
-  bookings: [],
-  leads: [],
-  services: [],
-};
 function readOr<T>(read: Promise<T>, fallback: T): Promise<T> {
   return Promise.race([
     read.catch(() => fallback),
@@ -133,8 +124,8 @@ function useHomeData() {
 
   const query = useQuery({
     queryKey: ["home", "workspace"],
-    enabled: !offline,
-    placeholderData: EMPTY_HOME,
+    enabled: !authLoading && signedIn && !offline,
+    staleTime: 30_000,
     queryFn: async (): Promise<HomeData> => {
       const [profileRow, work, businessRow] = await Promise.all([
         readOr(profile() as Promise<ProfileRow | null>, null),
@@ -175,9 +166,12 @@ function useHomeData() {
 
 function HomeScreen() {
   const { offline, query } = useHomeData();
+  const { loading: authLoading, signedIn } = useAuth();
   return (
     <Screen className="pb-nav-clear">
-      {offline ? (
+      {authLoading || !signedIn ? (
+        <HomeSkeleton />
+      ) : offline ? (
         <HomeState
           icon={<WifiOff size={iconSize.lg} />}
           title="You’re offline"
@@ -218,7 +212,9 @@ function HomeHeader({ business = false }: { business?: boolean }) {
           <p className="text-1 font-semibold text-muted-foreground">
             {business ? "Business workspace" : hello}
           </p>
-          <h1 className="mt-1 truncate text-3 font-semibold">{firstNameOf(displayName) || "MusicLinkd"}</h1>
+          <h1 className="mt-1 truncate text-3 font-semibold">
+            {firstNameOf(displayName) || "MusicLinkd"}
+          </h1>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <NotificationsBell />
@@ -411,7 +407,7 @@ function BusinessHome({ data }: { data: HomeData }) {
 
         <section>
           <SectionHeader title="Run your business" />
-             <div className="mx-5 grid grid-cols-2 gap-2">
+          <div className="mx-5 grid grid-cols-2 gap-2">
             <WorkspaceLink
               to="/business/bookings/requests"
               icon={<CalendarDays size={iconSize.lg} />}
@@ -546,12 +542,15 @@ function WorkspaceLink({
   detail: string;
 }) {
   return (
-     <Link to={to} className="state-layer flex min-h-32 min-w-0 flex-col rounded-lg border border-border bg-card p-4 shadow-elevation-2">
+    <Link
+      to={to}
+      className="state-layer flex min-h-32 min-w-0 flex-col rounded-lg border border-border bg-card p-4 shadow-elevation-2"
+    >
       <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
         {icon}
       </span>
-       <span className="mt-3 block break-words text-sm font-semibold">{label}</span>
-       <span className="mt-1 block break-words text-1 text-muted-foreground">{detail}</span>
+      <span className="mt-3 block break-words text-sm font-semibold">{label}</span>
+      <span className="mt-1 block break-words text-1 text-muted-foreground">{detail}</span>
     </Link>
   );
 }

@@ -2,11 +2,20 @@
 
 ## 4 Oct 2026 — mobile reference pass
 
+- [x] Audit startup performance and shared CSS: avoid signed-out Home reads, stop showing empty placeholder counts while real records load, cache public Home data briefly, and add the three media-ratio tokens.
 - [x] Redesign the bottom drawer with live account identity and grouped navigation.
 - [x] Refine the mobile Home/dashboard, portfolio/projects, profile sections, and Settings.
 - [x] Align Help, Connections inbox, and conversations with the same mobile language.
 - [x] Carry the flatter account-drawer rows into shared option, sort, create and profile-more drawers.
-- [ ] Verify interactive signed-in navigation and the drawer: local preview cancels client script requests, leaving server-rendered screens non-interactive in the automated browser.
+- [ ] Verify interactive signed-in navigation and the drawer: browser testing still sees cancelled client scripts after navigation to Home; server-rendered controls remain non-interactive in that run.
+
+## Additional pending requests (moved from the separate pending note)
+
+- [ ] Hardcoded-content audit for talent flow — scope needs owner confirmation (profile, Discover, onboarding, or all three).
+- [ ] Design sync — requires an interactive design-tool login outside this session.
+- [ ] Discover bands and events — scope not yet defined.
+- [ ] Four Full Extraction Catalog mockups — source images/screens not present; need to be provided again.
+- [x] Port shared square, wide and card media aspect tokens into live CSS.
 
 ## 3 Oct 2026 — product-wide visual rebuild
 
@@ -28,7 +37,7 @@
 ## 3 Oct 2026 — authentication entry redesign
 
 - [x] Sign-in screens rebuilt on lovable.dev/login: its grey ground, bare logo icon, pill fields, email-first then password, measured spacing; shared by every sign-in screen.
-- [ ] Owner to review the password step and forgot-password screen on a phone (automated capture of those two was not completed).
+- [ ] Review the password step and forgot-password screen on a phone: the automated click waited indefinitely for a navigation after submit, so this flow is still unverified.
 
 - [x] Replace the rejected legacy-looking auth presentation with a clean Lovable-inspired flow across every auth route, preserving MusicLinkd branding and behavior.
 - [x] Redesign `/welcome`, phone sign-in and verification, and onboarding Select.

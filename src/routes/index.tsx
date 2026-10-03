@@ -20,6 +20,13 @@ export const Route = createFileRoute("/")({
         name: "description",
         content: "India's professional network for the music industry.",
       },
+      { property: "og:title", content: "MusicLinkd — Music industry network" },
+      {
+        property: "og:description",
+        content: "Connect with music people and discover work across India.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: SessionCheck,
