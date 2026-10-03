@@ -1,4 +1,4 @@
-import { StateCard } from "@/components/ml/kit";
+import { LoadError, StateCard } from "@/components/ml/kit";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { isMyAccountBusiness } from "@/lib/profile-groups.functions";
@@ -66,6 +66,26 @@ function MyProfile() {
     queryFn: () => loadPublicProfile(business.data as string),
     enabled: Boolean(business.data),
   });
+  // A failed check is an error, not "this is a talent profile": a business would see the wrong one.
+  if (business.isError || page.isError) {
+    return (
+      <Screen>
+        <div className="px-5 pt-6">
+          <LoadError
+            what="your profile"
+            action={
+              <Btn
+                variant="outline"
+                onClick={() => void (business.isError ? business.refetch() : page.refetch())}
+              >
+                Try again
+              </Btn>
+            }
+          />
+        </div>
+      </Screen>
+    );
+  }
   if (signedIn && (business.isPending || (business.data && page.isPending))) {
     return (
       <Screen>

@@ -159,20 +159,33 @@ export function useSavedRentals(enabled = true) {
   });
 }
 
+/** How a rental changes hands, as the value rental_bookings.fulfilment stores. */
+export type Fulfilment = "pickup" | "provider_delivery";
+// eslint-disable-next-line react-refresh/only-export-components -- labels belong with their picker
+export const fulfilmentLabels: Record<Fulfilment, string> = {
+  pickup: "Pickup",
+  provider_delivery: "Provider delivery",
+};
+
 export function FulfilmentPicker({
   e,
   value,
   onChange,
 }: {
   e: Equipment;
-  value: string;
-  onChange: (v: string) => void;
+  value: Fulfilment;
+  onChange: (v: Fulfilment) => void;
 }) {
-  const options = [
+  const options: {
+    id: Fulfilment;
+    icon: typeof Package;
+    line: string;
+    note: string;
+  }[] = [
     ...(e.pickup
       ? [
           {
-            id: "Pickup",
+            id: "pickup" as const,
             icon: Package,
             line: `${shownPlace(e.location)} · free`,
             note: "Collect from the provider",
@@ -182,7 +195,7 @@ export function FulfilmentPicker({
     ...(e.delivery
       ? [
           {
-            id: "Provider delivery",
+            id: "provider_delivery" as const,
             icon: Truck,
             line: `${inr(e.deliveryFee ?? 0)} · ${e.deliveryNote ?? "Within city"}`,
             note: "Provider drops off and collects",
@@ -200,7 +213,11 @@ export function FulfilmentPicker({
   }
 
   return (
-    <div className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+    <div
+      role="radiogroup"
+      aria-label="Fulfilment"
+      className="divide-y divide-border overflow-hidden rounded-lg bg-subtle"
+    >
       {options.map((o) => {
         const Icon = o.icon;
         const active = value === o.id;
@@ -208,17 +225,20 @@ export function FulfilmentPicker({
           <button
             key={o.id}
             type="button"
+            role="radio"
+            aria-checked={active}
             onClick={() => onChange(o.id)}
             className="flex w-full items-center gap-3 px-4 py-4 text-left"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip">
               <Icon
-                size={16}
+                size={iconSize.sm}
+                aria-hidden
                 className={active ? "text-primary-foreground" : "text-primary-foreground/60"}
               />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-1 font-semibold">{o.id}</span>
+              <span className="block text-1 font-semibold">{fulfilmentLabels[o.id]}</span>
               <span className="block truncate text-1 text-muted-foreground">{o.line}</span>
             </span>
             <span

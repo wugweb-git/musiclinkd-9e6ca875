@@ -141,7 +141,8 @@ export type TalentProfile = {
   stats: { connections: string; followers: string; plays: string; credits: number };
   rating: number;
   reviewCount: number;
-  links: { label: string; handle: string }[];
+  /** `platform` is the stored key (spotify, youtube…): icons key off it, never off the label. */
+  links: { platform?: string | undefined; label: string; handle: string }[];
   audio: AudioTrack[];
   video: VideoItem[];
   gallery: string[];

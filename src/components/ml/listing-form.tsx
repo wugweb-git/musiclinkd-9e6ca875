@@ -88,8 +88,11 @@ export const fulfilmentOptions = [
   { label: "Pickup or delivery", value: "both", icon: ArrowLeftRight },
 ] as const;
 
-export const listingModes = ["Sell", "Rent out"] as const;
+/** Sell or rent out, as keys; logic compares these, never the words shown. */
+export const listingModes = ["sell", "rent"] as const;
 export type ListingMode = (typeof listingModes)[number];
+// eslint-disable-next-line react-refresh/only-export-components -- labels belong with their picker
+export const listingModeLabels: Record<ListingMode, string> = { sell: "Sell", rent: "Rent out" };
 
 export type ListingDraft = {
   mode: ListingMode;
@@ -114,7 +117,7 @@ export type ListingDraft = {
 };
 
 export const emptyListingDraft: ListingDraft = {
-  mode: "Sell",
+  mode: "sell",
   name: "",
   brand: "",
   model: "",
@@ -143,7 +146,17 @@ const DRAFT_KEY = "ml.listing-draft";
 export function readListingDraft(): Partial<ListingDraft> | null {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
-    return raw ? (JSON.parse(raw) as Partial<ListingDraft>) : null;
+    if (!raw) return null;
+    const saved = JSON.parse(raw) as Omit<Partial<ListingDraft>, "mode"> & { mode?: string };
+    // Drafts saved before the mode became a key hold the words ("Sell", "Rent out").
+    const mode: ListingMode | undefined =
+      saved.mode === "Rent out" || saved.mode === "rent"
+        ? "rent"
+        : saved.mode === "Sell" || saved.mode === "sell"
+          ? "sell"
+          : undefined;
+    const { mode: _old, ...rest } = saved;
+    return { ...rest, ...(mode ? { mode } : {}) };
   } catch {
     return null;
   }
@@ -204,7 +217,7 @@ export function draftFromListing(row: MyListing): ListingDraft {
   const place = parsePlace(row.pickup_location);
   const unit = rateUnits.find((u) => u.value === row.price_unit)?.value ?? "day";
   return {
-    mode: row.category === "gear_rental" ? "Rent out" : "Sell",
+    mode: row.category === "gear_rental" ? "rent" : "sell",
     name: row.title,
     brand: row.brand ?? "",
     model: row.model ?? "",
@@ -250,7 +263,7 @@ export function videoProblem(value: string) {
 /** What createListing gets from the draft. */
 export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
   const type = gearTypeOf(d.sub, taxonomy);
-  const rental = d.mode === "Rent out";
+  const rental = d.mode === "rent";
   return {
     category: rental ? ("gear_rental" as const) : ("gear_sale" as const),
     title: d.name.trim() || "Untitled listing",
@@ -651,14 +664,15 @@ type StepProps = { value: ListingDraft; onChange: (patch: Partial<ListingDraft>)
 /** Step 1 — what it is and what it costs. */
 export function ListingWhatStep({ value, onChange }: StepProps) {
   const taxonomy = useGearTaxonomy();
-  const rental = value.mode === "Rent out";
+  const rental = value.mode === "rent";
   return (
     <div className="space-y-4">
       <SegmentedField
         label="Listing for"
         value={value.mode}
         options={listingModes}
-        icons={{ Sell: Tag, "Rent out": CalendarClock }}
+        icons={{ sell: Tag, rent: CalendarClock }}
+        labels={listingModeLabels}
         onChange={(mode) => onChange({ mode })}
       />
       <Field label="Product type" id="listing-type">
@@ -1021,7 +1035,7 @@ export function ListingWhereStep({ value, onChange }: StepProps) {
 /** The draft drawn as the Market product card, at rail width, not linked anywhere. */
 export function ListingCardPreview({ value }: { value: ListingDraft }) {
   const taxonomy = useGearTaxonomy();
-  const rental = value.mode === "Rent out";
+  const rental = value.mode === "rent";
   return (
     <ProductCard
       preview

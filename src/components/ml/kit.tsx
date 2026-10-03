@@ -191,6 +191,7 @@ export function SegmentedField<T extends string>({
   onChange,
   label,
   icons,
+  labels,
 }: {
   value: T;
   options: readonly T[];
@@ -199,6 +200,8 @@ export function SegmentedField<T extends string>({
   label?: string;
   /** An icon before an option's label. */
   icons?: Partial<Record<T, LucideIcon>>;
+  /** What each option says, when its value is a key rather than display copy. */
+  labels?: Partial<Record<T, string>> | undefined;
 }) {
   return (
     <div
@@ -223,7 +226,7 @@ export function SegmentedField<T extends string>({
                 return <Icon size={iconSize.sm} strokeWidth={2} aria-hidden />;
               })()
             : null}
-          {o}
+          {labels?.[o] ?? o}
         </button>
       ))}
     </div>

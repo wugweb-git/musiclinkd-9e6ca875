@@ -37,6 +37,7 @@ import type {
   ProjectItem,
   ReviewItem,
   ServiceItem,
+  VerificationTier,
   VideoItem,
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
@@ -279,7 +280,13 @@ export function ProfileSkeleton() {
 
 /* ── Badges & pills ────────────────────────────────────────── */
 
-export function VerificationBadge({ tier, compact }: { tier: string; compact?: boolean }) {
+export function VerificationBadge({
+  tier,
+  compact,
+}: {
+  tier: VerificationTier;
+  compact?: boolean;
+}) {
   const industry = tier === "Industry Verified" || tier === "Professional";
   return (
     <span
@@ -1559,18 +1566,22 @@ const linkIcons: Record<string, typeof Globe> = {
   instagram: Instagram,
   spotify: AudioLines,
   soundcloud: AudioLines,
-  "apple music": AudioLines,
+  apple_music: AudioLines,
 };
 
 /**
  * Streaming and social links, everywhere they appear: one divided list, a platform icon, the
  * platform, the handle. Links store a handle and no address yet, so the rows are not tappable.
  */
-export function SocialLinks({ links }: { links: { label: string; handle: string }[] }) {
+export function SocialLinks({
+  links,
+}: {
+  links: { platform?: string | undefined; label: string; handle: string }[];
+}) {
   return (
     <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
       {links.map((l) => {
-        const Icon = linkIcons[l.label.toLowerCase()] ?? Globe;
+        const Icon = (l.platform ? linkIcons[l.platform] : undefined) ?? Globe;
         return (
           <li key={l.label} className="flex items-center gap-3 px-4 py-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-background text-foreground">

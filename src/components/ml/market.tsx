@@ -1089,7 +1089,7 @@ export function FilterButton({ count, onClick }: { count: number; onClick: () =>
     >
       <SlidersHorizontal size={iconSize.sm} aria-hidden />
       {count ? (
-        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-button px-1 text-[11px] font-bold text-white">
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[11px] font-bold text-background ring-2 ring-background">
           {count}
         </span>
       ) : null}

@@ -4,7 +4,7 @@ import { ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Btn, Chip, IconBtn, Sheet, useConfirm } from "@/components/ml/ui";
-import { Card, EmptyState, LoadError, Loading, SegmentedField } from "@/components/ml/kit";
+import { Card, LoadError, Loading, SegmentedField } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
 import { ImagePickButton } from "@/components/ml/profile";
 import { ChipPicker, DrawerField } from "@/components/ml/onboarding";
@@ -137,7 +137,12 @@ type EquipmentDraft = {
   included: boolean;
 };
 const blankDraft: EquipmentDraft = { name: "", category: "", quantity: "", included: true };
-const INCLUSION = ["Included", "Extra cost"] as const;
+/** Included or at extra cost, as keys; the words are only what the control shows. */
+const INCLUSION = ["included", "extra"] as const;
+const INCLUSION_LABELS: Record<(typeof INCLUSION)[number], string> = {
+  included: "Included",
+  extra: "Extra cost",
+};
 
 /** Add, change or remove the studio's equipment, each with its photos. */
 export function EquipmentEditor() {
@@ -344,9 +349,10 @@ export function EquipmentEditor() {
             </div>
             <SegmentedField
               label="Included or extra cost"
-              value={draft.included ? INCLUSION[0] : INCLUSION[1]}
+              value={draft.included ? "included" : "extra"}
               options={INCLUSION}
-              onChange={(v) => setDraft({ ...draft, included: v === INCLUSION[0] })}
+              labels={INCLUSION_LABELS}
+              onChange={(v) => setDraft({ ...draft, included: v === "included" })}
             />
             <Btn type="submit" className="w-full" disabled={!valid} loading={saveItem.isPending}>
               {draft.id ? "Save" : "Add"}

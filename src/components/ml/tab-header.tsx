@@ -39,7 +39,7 @@ export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }
       {unread ? (
         <span
           aria-hidden
-          className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-button px-1 text-[10px] font-bold text-background"
+          className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-bold text-background ring-2 ring-background"
         >
           {unread > 9 ? "9+" : unread}
         </span>

@@ -2,14 +2,12 @@ import { CoverHero } from "./profile";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import {
-  Calendar,
   Check,
   ChevronLeft,
   ChevronRight,
   Clock,
   MapPin,
   Star,
-  Users,
   AlertTriangle,
   Info,
   RefreshCw,
@@ -22,7 +20,6 @@ import { toast } from "sonner";
 import { ActionBar, Btn, IconBtn, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { Price, StatusPill, type Tone } from "@/components/ml/kit";
 import {
-  lowestRate,
   monthGrid,
   statusMeta,
   bookingTimeline,
@@ -33,7 +30,6 @@ import {
   type DayAvailability,
   type DayState,
   type PriceLines,
-  type Resource,
   type Slot,
 } from "@/data/booking";
 import { formatDate, formatTime, isoDate } from "@/lib/when";
@@ -987,12 +983,15 @@ export function RequestSessionSheet({
   onSend,
   pending,
   who,
+  error,
 }: {
   open: boolean;
   onClose: () => void;
   onSend: (request: SessionRequest) => void;
   pending: boolean;
   who: string;
+  /** Why the last send failed, shown in the sheet itself as well as the toast. */
+  error?: string | null | undefined;
 }) {
   const [date, setDate] = useState("");
   const [start, setStart] = useState("");
@@ -1080,6 +1079,11 @@ export function RequestSessionSheet({
           placeholder="What you are recording, gear you need, who is coming."
           className="w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none"
         />
+        {error ? (
+          <p role="alert" className="text-1 text-destructive">
+            {error}
+          </p>
+        ) : null}
         <Btn type="submit" className="w-full" disabled={!date} loading={pending}>
           Send request
         </Btn>
@@ -1134,6 +1138,7 @@ export function ServiceRequestSheet({
       onSend={(r) => request.mutate(r)}
       pending={request.isPending}
       who={who}
+      error={request.error instanceof Error ? request.error.message : null}
     />
   );
 }
