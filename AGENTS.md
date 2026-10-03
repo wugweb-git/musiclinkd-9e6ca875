@@ -79,11 +79,11 @@ canonical directories are now the Blocks and Components pages under Design Syste
   headings, and never as `text-10`/`text-11` tokens. Any other `text-[Npx]` is a bug.
 - Tracking: normal. An exception needs a named role and a written reason beside it in the code
   (today: the splash's all-caps label). Wordmarks and headings set at normal tracking.
-  `text-0`, `text-2.5` and `text-5` do not exist (retired 16 Sep 2026). `cn()` (`src/lib/utils.ts`)
-  tells tailwind-merge that `text-1`…`text-4` are sizes; a new size step must be added there too,
-  or `cn()` drops it whenever a text colour follows and the element renders at 16px.
-- Eyebrow text (the small label above a heading) has no background, border or pill around it
-  (owner, 4 Oct 2026).
+  **`text-0`, `text-2.5` and `text-5` do not exist** — they were retired into their neighbours on
+  16 Sep 2026 (see the comment on the type scale in `src/styles.css`). This file advertised
+  `text-0` for another week, which is why 30 elements were still asking for it and rendering at
+  the inherited 16px — larger than body copy, when they were meant to be the smallest label on
+  the screen.
 - Spacing: Tailwind numeric scale. Secondary text: `text-muted-foreground`.
 - Colour: one dark token, `ink` `#0D0D0D` (`bg-ink`, `text-ink-foreground` on it); there is no
   `primary` (merged into `ink`, owner 4 Oct 2026). Palette is black, greys, white. Field borders use
@@ -97,7 +97,7 @@ canonical directories are now the Blocks and Components pages under Design Syste
   `--spacing-touch` is 48px. A control may be drawn 40–44px only inside a 48px `hit-area`.
 
 **Routing.** Mostly flat dot-named files in `src/routes/`; `marketplace/`, `marketplace/rent/` and
-`onboarding/` are real directories (27 of 144 route files). `routeTree.gen.ts` is generated, never edit it.
+`onboarding/` are real directories. `routeTree.gen.ts` is generated, never edit it.
 Every route has `head()`. A route with children must render `<Outlet />` or be an `x.index.tsx`
 leaf — check whether `x.tsx` exists before adding `x.y.tsx`. Never move or rename route files to
 group screens.
@@ -116,9 +116,7 @@ work modes, amenities — comes from `taxonomy_options`, never from an array in 
 **Database.** Every schema change is a file in `supabase/migrations/`, applied through Lovable's
 own tooling, never pasted into the live database by hand. While Lovable is out of credits, the
 owner may have a migration applied directly from the committed file on `main` — unchanged, and
-verified against the live database afterwards. It is always a committed file first. Committing
-or deploying never applies a migration (checked 4 Oct 2026): the code that needs one ships after it
-is live, or tolerates its absence.
+verified against the live database afterwards. It is always a committed file first.
 `supabase_migrations.schema_migrations` stopped being updated after `20260918160000`: later
 migrations are live without being recorded there, so it is not a record of what is applied.
 Nobody writes to it by hand. No new table, bucket, or rename of
@@ -127,19 +125,6 @@ either without owner approval; propose the plan first.
 `YYYY-MM-DD-before-<change>.sql`, and reference it from the migration's header — that file is the
 undo. A snapshot holds only what the change touches (definitions, row counts), never user data:
 the repo syncs to Lovable.
-
-**Sign-in and sign-up (owner, 4 Oct 2026).** Login (`/welcome`, `LoginScreen`) and sign-up
-(`/signup`) are two screens sharing `ml/login.tsx`; the Sign In | Sign Up toggle navigates between
-the two routes, never flips one form in place. Both ask for email and password only. Email is
-verified by **link** before onboarding (Sign up → Check your email → link → `/`); mobile is
-verified by a 6-digit **code** on one screen (`/auth/phone`). Never create an account already
-confirmed. Remember me and Forgot password (by email link or mobile code) are on login only. A new
-signup lands on onboarding (`postAuthTarget`; `onboarding_draft` defaults to `{}`, so an empty
-draft is not a started one).
-
-**Collaboration and bands (owner, 4 Oct 2026).** Collaboration stays: projects at `/collab`, as they
-work today. Bands are separate from it: their own screens under `/bands`, and their own tables
-planned (they still sit on the `collab*` tables, `type = 'band'`). Don't remove `/collab`.
 
 **Naming (owner, 3 Oct 2026).** Storage, tables, files, routes and functions are named by the job,
 never by one persona type: a studio is one business type, and a singer's cover and a studio's cover
@@ -160,9 +145,8 @@ bookable space's tables are `bookables`, `bookable_blocks`, `bookable_equipment`
 type stays on the owner's profile, and `studios_one_per_owner` keeps one per owner. The old
 `studio*` views and functions were dropped (20261003140000). **There are no rooms** (owner,
 3 Oct 2026): people book a service (`booking_requests.service_id`), one calendar per place; no code
-reads `bookable_rooms` or `bookables.services`, which 20261004120000/20261004140000 retired by
-renaming (`bookable_rooms_retired`, `services_retired`); 20261004150000 drops both (owner yes,
-4 Oct 2026; committed, apply pending). What a business offers is `profile_services`.
+reads `bookable_rooms` or `bookables.services`, which 20261004120000/20261004140000 retire by
+renaming (`bookable_rooms_retired`, `services_retired`) and P2 drops.
 Data access is server-side `createServerFn` in `*.functions.ts` with `requireSupabaseAuth`; no
 client-side Supabase writes. The one exception is file uploads (photos, verification documents):
 they go from the browser straight to Supabase Storage (owner, 3 Oct 2026). That is allowed because
@@ -180,12 +164,5 @@ all of it (`.github/workflows/ci.yml`): `bunx tsc --noEmit`, `bun run lint`, `bu
 (the accessibility gate — there are no `*.test.*` files, the stories are the test suite),
 `bun run check-token-drift` and `bun run build`. 412px screenshots, `CHANGELOG.md` and `roadmap.md`
 updates happen only when asked. Say plainly what was not run.
-
-Checking a screen locally: the live SSR runtime is Cloudflare workerd, so verify on `bun run build`
-served with `wrangler dev` on `.output/server` (a `.dev.vars` from `.env`, deleted after). The Vite
-dev server can stall before hydrating; a page that never hydrated ignores taps, so don't read that
-as a bug. Local runs have no service-role key: server functions using `supabaseAdmin` fail there and
-fall back to empty. Onboarding needs an account; on the dev server `/onboarding?preview` runs it
-without one and writes nothing. Never create accounts on the live database to test.
 
 If a link, file or attachment can't be read, say so. If two sources disagree, surface it.
