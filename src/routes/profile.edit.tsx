@@ -17,7 +17,7 @@ import {
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { ProfileCompletion } from "@/components/ml/profile";
 import { useAuth } from "@/hooks/use-auth";
-import { linkPlatforms, workModes as workModeOptions } from "@/data/onboarding";
+import { linkPlatforms } from "@/data/onboarding";
 import {
   businessTypes,
   choicesFor,
@@ -26,8 +26,8 @@ import {
   useTaxonomy,
   type TaxonomyOption,
 } from "@/lib/taxonomy";
-import { SheetSelect } from "@/components/ml/listing-form";
-import { DrawerField, PersonTypePicker } from "@/components/ml/onboarding";
+import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
+import { DrawerField, PersonTypePicker, PrivateDetailsFields } from "@/components/ml/onboarding";
 import { roleIcon } from "@/lib/role-icons";
 
 const BUSINESS_GROUPS = [{ key: "business", label: "Business" }] as const;
@@ -54,13 +54,6 @@ import {
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
 import { sized } from "@/lib/image-url";
-
-// Work modes are stored as their key ("in-person"), never as the whole option object: Chips takes a
-// list of keys and looks each label up, so the stored value and the shown label stay separate.
-const workModeKeys = workModeOptions.map((o) => o.key);
-const workModeLabels: Record<string, string> = Object.fromEntries(
-  workModeOptions.map((o) => [o.key, o.label]),
-);
 
 export const Route = createFileRoute("/profile/edit")({
   // ?section= opens that section (a profile section's edit pencil links straight to it).
@@ -540,6 +533,8 @@ function EditProfile() {
           </div>
           <Field label="Headline" value={form.headline} onChange={(v) => update({ headline: v })} />
           <Field label="Bio" value={form.bio} onChange={(v) => update({ bio: v })} multiline />
+          {/* Asked in onboarding; owner-only (profile_private), saved as they change. */}
+          {isBusiness ? null : <PrivateDetailsFields />}
         </div>
       ),
     },
@@ -612,13 +607,17 @@ function EditProfile() {
       done: Boolean(form.experience_level || form.work_modes.length),
       body: (
         <div className="space-y-4">
-          <Chips
-            label="Work modes"
-            options={workModeKeys}
-            labels={workModeLabels}
-            selected={form.work_modes}
-            onToggle={(v) => toggle("work_modes", v)}
-          />
+          {/* Onboarding's own question and list (step "work-mode"), from taxonomy work_modes. */}
+          <DrawerField label="Where you work">
+            <SheetMultiSelect
+              title="Where you work"
+              value={form.work_modes}
+              options={choicesFor(taxonomy?.work_modes)}
+              max={taxonomy?.work_modes.length ?? 4}
+              placeholder="Choose"
+              onChange={(v) => update({ work_modes: v })}
+            />
+          </DrawerField>
           {/* Onboarding's own questions and lists (step "work-mode"), not free text. */}
           <DrawerField label="How long have you worked in music?">
             <SheetSelect
@@ -764,12 +763,25 @@ function EditProfile() {
               </div>
             </div>
           ) : null}
-          <Field
-            label="Availability"
-            value={form.availability}
-            onChange={(v) => update({ availability: v })}
-            hint="e.g. Open for studio work"
-          />
+          {isBusiness ? (
+            <Field
+              label="Availability"
+              value={form.availability}
+              onChange={(v) => update({ availability: v })}
+              hint="e.g. Open for studio work"
+            />
+          ) : (
+            // Onboarding's own question and list (step "work-mode"), from taxonomy available_for.
+            <DrawerField label="Available for">
+              <SheetSelect
+                title="Available for"
+                value={form.availability || null}
+                options={choicesFor(taxonomy?.available_for)}
+                placeholder="Choose"
+                onChange={(v) => update({ availability: v })}
+              />
+            </DrawerField>
+          )}
         </div>
       ),
     },

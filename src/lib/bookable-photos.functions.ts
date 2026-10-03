@@ -12,7 +12,7 @@ import {
 /*
  * Photos as proof for a studio's amenities and equipment (bookable_photos): the owner adds and
  * removes them, anyone reads them on the studio page. subject_id is a bookable_equipment id for
- * equipment and a studio_amenities slug for an amenity. The file itself is uploaded from the
+ * equipment and a amenities slug for an amenity. The file itself is uploaded from the
  * browser (src/lib/bookable-photos.ts); these functions keep the rows and remove the files.
  * Before 20260921150000_studio_proof_photos.sql is applied every read comes back empty.
  */
@@ -82,7 +82,7 @@ export const listMyBookablePhotos = createServerFn({ method: "GET" })
     if (!studioId) return { studioId: null, amenities: [], photos: [], ready: true };
     const [studio, labels, photos] = await Promise.all([
       client.from("bookables").select("amenities").eq("id", studioId).single(),
-      client.from("taxonomy_options").select("slug, label").eq("category_key", "studio_amenities"),
+      client.from("taxonomy_options").select("slug, label").eq("category_key", "amenities"),
       client
         .from("bookable_photos")
         .select(COLUMNS)

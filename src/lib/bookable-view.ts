@@ -47,7 +47,7 @@ export function discoverBookableFromRow(
     photo: row.image_url ?? "",
     gear: row.equipment.length
       ? row.equipment.map((e) => e.name)
-      : row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),
+      : row.amenities.map((a) => taxonomyLabel(labels, "amenities", a)),
   };
 }
 
@@ -166,17 +166,14 @@ export function bookableFromRow(
     ...(row.owner?.followers_count ? { followers: row.owner.followers_count } : {}),
     gallery: row.images,
     about: row.description ?? "",
-    amenities: row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),
+    amenities: row.amenities.map((a) => taxonomyLabel(labels, "amenities", a)),
     resources: priced,
     equipment: row.equipment.map((e) => e.name),
     amenityLabelSlugs: Object.fromEntries(
-      row.amenities.map((a) => [taxonomyLabel(labels, "studio_amenities", a), a]),
+      row.amenities.map((a) => [taxonomyLabel(labels, "amenities", a), a]),
     ),
     amenityPhotos: proof(
-      row.amenities.map((a) => [
-        taxonomyLabel(labels, "studio_amenities", a),
-        amenityPhotos.get(a),
-      ]),
+      row.amenities.map((a) => [taxonomyLabel(labels, "amenities", a), amenityPhotos.get(a)]),
     ),
     equipmentPhotos: proof(row.equipment.map((e) => [e.name, equipmentPhotos.get(e.id)])),
     addOns: (row.add_ons ?? []).map((a, i): AddOn => ({

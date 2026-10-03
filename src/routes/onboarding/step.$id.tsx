@@ -14,12 +14,6 @@ import {
 } from "@/lib/taxonomy";
 import { haptic } from "@/lib/haptics";
 import { roleIcon } from "@/lib/role-icons";
-import {
-  GENDERS,
-  getMyPrivateDetails,
-  readDeviceContext,
-  saveMyPrivateDetails,
-} from "@/lib/profile-private.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { usePinFill } from "@/hooks/use-pin-fill";
 import { cityFromDistrict } from "@/lib/place";
@@ -36,6 +30,7 @@ import {
   PersonTypePicker,
   InlineField,
   OnboardingProvider,
+  PrivateDetailsFields,
   UsernameField,
   StepShell,
   StepSkeleton,
@@ -875,71 +870,6 @@ function ContactStep({
           )
         ) : null}
       </section>
-    </div>
-  );
-}
-
-/* ---------------------------------------------------------- private details */
-
-/**
- * Date of birth and gender. Saved to the owner-only profile_private table as they change, never
- * into the draft, and hidden from everyone else by default. In dev preview (no account) they stay on
- * the screen only.
- */
-function PrivateDetailsFields() {
-  const { signedIn } = useAuth();
-  const load = useServerFn(getMyPrivateDetails);
-  const save = useServerFn(saveMyPrivateDetails);
-  const [dob, setDob] = useState("");
-  const [gender, setGender] = useState<string | null>(null);
-  const genders = useTaxonomy();
-  const loaded = useRef(false);
-  const today = new Date().toISOString().slice(0, 10);
-  const dobError =
-    dob && (dob > today || dob < "1900-01-01") ? "Enter your real date of birth." : undefined;
-
-  useEffect(() => {
-    if (!signedIn) return;
-    load()
-      .then((p) => {
-        setDob(p.dateOfBirth ?? "");
-        setGender(p.gender);
-      })
-      .catch(() => {})
-      .finally(() => {
-        loaded.current = true;
-      });
-  }, [signedIn, load]);
-
-  useEffect(() => {
-    if (!signedIn || !loaded.current || dobError) return;
-    const t = window.setTimeout(() => {
-      void save({
-        data: {
-          dateOfBirth: dob || null,
-          gender: (gender as (typeof GENDERS)[number]["value"] | null) ?? null,
-          // Time zone and device come from the browser, with no permission prompt.
-          ...readDeviceContext(),
-        },
-      }).catch(() => {});
-    }, 600);
-    return () => window.clearTimeout(t);
-  }, [dob, gender, signedIn, save, dobError]);
-
-  return (
-    <div className="space-y-5">
-      <DrawerField label="Date of birth" hint={dobError ?? "Only you can see this."}>
-        <DateDrawerField title="Date of birth" value={dob} onChange={setDob} />
-      </DrawerField>
-      <DrawerField label="Gender" hint="Only you can see this.">
-        <SheetSelect
-          title="Gender"
-          value={gender}
-          options={choicesFor(genders.options?.genders)}
-          placeholder="Choose"
-          onChange={setGender}
-        />
-      </DrawerField>
     </div>
   );
 }

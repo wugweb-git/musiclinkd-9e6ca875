@@ -34,7 +34,7 @@ import { sized } from "@/lib/image-url";
 /*
  * A studio's amenities, equipment and policies, each with photos where it has them (owner, 22 Sep
  * 2026). One set of editors for Create business and for Edit profile → Amenities & equipment:
- *   amenities — what the place has (studios.amenities, from studio_amenities);
+ *   amenities — what the place has (studios.amenities, from amenities);
  *   equipment — gear with a type (an instrument or an equipment category, the list Market uses),
  *     quantity and included-or-extra (bookable_equipment);
  *   policies — the business's rules (profile_business.policies), with suggestions from the
@@ -97,7 +97,10 @@ export function AmenitiesEditor() {
       */}
       <DrawerField label="Amenities" hint="What the place has. Add a photo of each.">
         <ChipPicker
-          options={choicesFor(tx?.studio_amenities).map((o) => {
+          options={choicesFor(
+            // The options still offered, and any the place already has so it can remove them.
+            tx?.amenities.filter((o) => o.metadata?.picker !== false || picked.includes(o.slug)),
+          ).map((o) => {
             const Icon = amenityIcon(o.value);
             return {
               value: o.value,

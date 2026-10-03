@@ -156,7 +156,7 @@ export const updateMyBookable = createServerFn({ method: "POST" })
         hourly_rate_paise: z.number().int().min(0).optional().nullable(),
         operating_hours: z.string().max(500).optional().nullable(),
         cancellation_policy: z.string().max(2000).optional().nullable(),
-        /** studio_amenities slugs: what the place has (Live Room, Parking, Wi-Fi). */
+        /** amenities slugs: what the place has (Live Room, Parking, Wi-Fi). */
         amenities: z
           .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
           .max(40)
