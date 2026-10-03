@@ -19,6 +19,7 @@
 
 ## 3 Oct 2026 — authentication entry redesign
 
+- [ ] Replace the rejected legacy-looking auth presentation with a clean Lovable-inspired flow across every auth route, preserving MusicLinkd branding and behavior.
 - [x] Redesign `/welcome`, phone sign-in and verification, and onboarding Select.
 - [x] Verify at 412px and desktop widths; run TypeScript and preview diagnostics.
 - [x] Audit and standardize every reachable authentication and immediate onboarding state.
