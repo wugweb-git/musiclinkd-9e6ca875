@@ -32,8 +32,8 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      // The same brand ground the web splash uses, so the two do not flash different colours.
-      backgroundColor: "#EA4C89",
+      // The same ink ground the web splash uses (29ff7bb), so the two do not flash different colours.
+      backgroundColor: "#0D0D0D",
       showSpinner: false,
       androidScaleType: "CENTER_CROP",
       /*
