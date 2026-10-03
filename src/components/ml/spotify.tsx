@@ -87,13 +87,7 @@ export function SpotifyRow() {
         className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left disabled:opacity-60"
       >
         <span className="flex h-10 w-7 shrink-0 items-center justify-center">
-          <Icon
-            key={state?.state}
-            size={24}
-            strokeWidth={1.75}
-            className="animate-pop"
-            aria-hidden
-          />
+          <Icon key={state?.state} size={24} className="animate-pop" aria-hidden />
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-2 font-semibold">Spotify</span>

@@ -202,7 +202,7 @@ export const MiniCalendarDay = ({ date, className, ...props }: MiniCalendarDayPr
       <span
         className={cn(
           "font-medium text-[10px] text-muted-foreground",
-          isSelected && "text-primary-foreground/70",
+          isSelected && "text-ink-foreground/70",
         )}
       >
         {month}

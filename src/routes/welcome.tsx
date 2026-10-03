@@ -112,7 +112,7 @@ function RoleTicker({
               key={`${o.slug}-${i}`}
               className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-subtle pl-2 pr-2.5 text-1 font-medium text-foreground border border-border/40"
             >
-              <Icon size={12} strokeWidth={1.75} className="text-muted-foreground" />
+              <Icon size={12} className="text-muted-foreground" />
               {o.label}
             </span>
           );

@@ -122,7 +122,7 @@ function OpportunityAnalytics() {
             {daily.map((d, i) => (
               <div
                 key={i}
-                className="flex-1 rounded-t-lg bg-primary/80"
+                className="flex-1 rounded-t-lg bg-ink/80"
                 style={{ height: `${(d / peakReal) * 100}%` }}
                 aria-label={`${d} views`}
               />

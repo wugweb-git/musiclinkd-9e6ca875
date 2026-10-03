@@ -75,7 +75,7 @@ function BandContact() {
         <TopBar title="Message sent" back={`/bands/${band.id}`} />
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
-            <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
+            <CheckCircle2 size={40} className="mx-auto text-ink" aria-hidden />
             <h2 className="mt-3 text-3 leading-tight">{band.name} has your message</h2>
             <p className="mt-2 text-1 text-muted-foreground">
               It goes to whoever handles bookings for the band. Replies land in Connections.
@@ -116,7 +116,7 @@ function BandContact() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Date, venue, set length and what you can pay."
-            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="mt-2 w-full rounded-lg border border-input bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </Card>
 

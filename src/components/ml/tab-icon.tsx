@@ -72,7 +72,6 @@ export function StateIcon({
   active,
   size,
   move,
-  strokeWidth = 1.8,
 }: {
   outline: LucideIcon;
   solid: SolidIcon;
@@ -80,7 +79,6 @@ export function StateIcon({
   /** Pixels, or any CSS length (e.g. "4.8cqw" inside a container-sized card). */
   size: number | string;
   move: Move;
-  strokeWidth?: number;
 }) {
   // Set during render, not in an effect, so the move starts on the same frame the icon appears.
   const [was, setWas] = useState(active);
@@ -97,7 +95,6 @@ export function StateIcon({
       aria-hidden
     >
       <Outline
-        strokeWidth={strokeWidth}
         className={`absolute inset-0 h-full w-full transition-[opacity,scale] ${
           active
             ? "scale-[0.7] opacity-0 duration-[120ms] ease-standard"

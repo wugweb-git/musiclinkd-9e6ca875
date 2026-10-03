@@ -47,7 +47,7 @@ export function ContentBlocks({ blocks }: { blocks: ContentBlock[] }) {
             <ul key={i} className="space-y-2">
               {b.items.map((it) => (
                 <li key={it} className="flex gap-2.5 text-sm leading-relaxed text-muted-foreground">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
                   <span className="min-w-0">{it}</span>
                 </li>
               ))}
@@ -277,7 +277,7 @@ export function ContactSupport({
                 maxLength={2000}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="mt-2 w-full rounded-lg border border-input bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
             <Btn

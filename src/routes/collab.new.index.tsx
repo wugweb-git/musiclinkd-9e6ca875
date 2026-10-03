@@ -287,7 +287,7 @@ function NewCollab() {
                 }
                 maxLength={2000}
                 aria-labelledby="collab-about"
-                className="w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                className="w-full resize-none rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
               />
             </Field>
             <Field

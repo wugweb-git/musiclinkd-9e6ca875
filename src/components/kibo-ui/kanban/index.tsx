@@ -72,7 +72,7 @@ export const KanbanBoard = ({ id, children, className }: KanbanBoardProps) => {
     <div
       className={cn(
         "flex size-full min-h-40 flex-col divide-y overflow-hidden rounded-sm border bg-secondary text-xs shadow-sm ring-2 transition-all",
-        isOver ? "ring-primary" : "ring-transparent",
+        isOver ? "ring-ink" : "ring-transparent",
         className,
       )}
       ref={setNodeRef}
@@ -120,7 +120,7 @@ export const KanbanCard = <T extends KanbanItemProps = KanbanItemProps>({
         <t.In>
           <Card
             className={cn(
-              "cursor-grab gap-4 rounded-sm p-3 shadow-sm ring-2 ring-primary",
+              "cursor-grab gap-4 rounded-sm p-3 shadow-sm ring-2 ring-ink",
               isDragging && "cursor-grabbing",
               className,
             )}

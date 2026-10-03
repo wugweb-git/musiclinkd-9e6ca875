@@ -50,11 +50,7 @@ export function DrawerSearchButton({
       aria-expanded={open}
       className="state-layer hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground"
     >
-      {open ? (
-        <X size={iconSize.md} strokeWidth={1.75} aria-hidden />
-      ) : (
-        <Search size={iconSize.md} strokeWidth={1.75} aria-hidden />
-      )}
+      {open ? <X size={iconSize.md} aria-hidden /> : <Search size={iconSize.md} aria-hidden />}
     </button>
   );
 }
@@ -90,7 +86,7 @@ export function DrawerSearch({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={label}
-        className="h-13 w-full rounded-full border border-border bg-card py-3.5 pl-12 pr-5 text-sm outline-none focus:border-primary"
+        className="h-13 w-full rounded-full border border-input bg-card py-3.5 pl-12 pr-5 text-sm outline-none focus:border-ink"
       />
     </div>
   );
@@ -105,8 +101,8 @@ export function matching<T extends { label: string }>(options: readonly T[], que
 function OptionIcon({ option: o }: { option: DrawerOption }) {
   if (!o.iconNode && !o.icon) return null;
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip text-primary-foreground">
-      {o.iconNode ?? (o.icon ? <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden /> : null)}
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip text-ink-foreground">
+      {o.iconNode ?? (o.icon ? <o.icon size={iconSize.md} aria-hidden /> : null)}
     </span>
   );
 }

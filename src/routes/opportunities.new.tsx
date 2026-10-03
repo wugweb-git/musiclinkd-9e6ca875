@@ -144,7 +144,7 @@ function CreateOpportunity() {
         <TopBar title="Published" back="/opportunities/mine" />
         <div className="space-y-4 px-5 pt-6">
           <Card className="space-y-3 text-center">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ink text-ink-foreground">
               <Check size={iconSize.lg} />
             </span>
             <h2 className="text-3 leading-tight">Your opportunity is live</h2>
@@ -183,7 +183,7 @@ function CreateOpportunity() {
           {order.slice(0, 6).map((s, i) => (
             <span
               key={s}
-              className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-background"}`}
+              className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-ink" : "bg-background"}`}
             />
           ))}
         </div>
@@ -220,7 +220,7 @@ function CreateOpportunity() {
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
                 rows={4}
-                className="w-full rounded-lg border border-border bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full rounded-lg border border-input bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </Field>
           </>

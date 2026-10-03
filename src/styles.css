@@ -117,8 +117,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
+  --color-ink-foreground: var(--ink-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -158,7 +157,7 @@
   --color-status-category-bg: var(--status-category-bg);
   --color-status-category-text: var(--status-category-text);
 
-  /* Selection. Navy is primary; pink means selected. One active state, everywhere. */
+  /* Selection. Ink is the dark colour; pink means selected. One active state, everywhere. */
   --color-selected-bg: var(--selected-bg);
   --color-selected-text: var(--selected-text);
 
@@ -604,8 +603,6 @@
   --popover: oklch(1 0 89.88);
   --popover-foreground: var(--ink);
   /* Primary is ink (owner, 14 Sep): buttons, selection, progress, focus. Pink is --brand. */
-  --primary: var(--ink);
-  --primary-foreground: oklch(1 0 89.88);
   --secondary: #f8f8fb;
   --secondary-foreground: var(--ink);
   --muted: #f8f8fb;
@@ -633,10 +630,17 @@
    * at all on the two screens that are nothing but switches. This clears 3:1 against both white
    * and the thumb, which is what a control's boundary needs. */
   --switch-off: #8a8a93;
-  --input: #d5d5de;
+  /*
+   * Field border (inputs, textareas, the pickers beside them): 3.06:1 on the page #ECECF1 and 3.61:1
+   * on a white card, so a field's edge meets WCAG 1.4.11 (owner, 4 Oct 2026; it was #D5D5DE, 1.24:1).
+   * The lightest grey that passes, in the switch grey's hue. Cards and dividers keep --border.
+   */
+  --input: #86868f;
   --ring: var(--ink);
 
   --ink: #0d0d0d; /* tokens.json color.ink */
+  /* Text on an ink fill. One dark token, `ink` (owner, 4 Oct 2026): `primary` was merged into it. */
+  --ink-foreground: oklch(1 0 89.88);
   /* Brand pink, rare and always a signal: the active tab underline, press feedback while a finger
    * is down, a selected pill (pink-on-tint text over a 20% fill), prices, and the `brand` button
    * inside branded blocks only. Never a resting border, background or body text. */
@@ -708,7 +712,7 @@
   --easing-spring: cubic-bezier(0, 0.35, 0, 1.25);
 
   /* Focus. Every interactive control shows this on :focus-visible. */
-  --focus-ring: 2px solid var(--primary);
+  --focus-ring: 2px solid var(--ink);
   --focus-ring-offset: 2px;
 
   /*

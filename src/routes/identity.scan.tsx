@@ -209,7 +209,7 @@ function Scanner() {
             body="Enable camera permission for MusicLinkd in your browser or Android settings, or scan a saved QR image instead."
           >
             <Btn onClick={() => setPhase("ready")}>Try again</Btn>
-            <label className="hit-area flex min-h-touch w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-primary text-1 font-semibold text-primary-foreground">
+            <label className="hit-area flex min-h-touch w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-ink text-1 font-semibold text-ink-foreground">
               <Camera size={iconSize.sm} /> Take a photo of the code
               {pickInput(true)}
             </label>
@@ -224,7 +224,7 @@ function Scanner() {
             title="Camera scanning isn't supported in this browser"
             body="Take a photo of the code, or type the username or paste the profile link."
           >
-            <label className="hit-area flex min-h-touch w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-primary text-1 font-semibold text-primary-foreground">
+            <label className="hit-area flex min-h-touch w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-ink text-1 font-semibold text-ink-foreground">
               <Camera size={iconSize.sm} /> Take a photo of the code
               {pickInput(true)}
             </label>
@@ -232,7 +232,7 @@ function Scanner() {
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value)}
               placeholder={`username or ${PUBLIC_HOST}/@username`}
-              className="min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
+              className="min-h-control w-full rounded-lg border border-input bg-background px-3 text-1 outline-none focus:border-ink"
             />
             <Btn
               className="mt-2 w-full"

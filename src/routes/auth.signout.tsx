@@ -41,7 +41,7 @@ function SignOutScreen() {
         <div className="my-auto py-1">
           <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-subtle">
-              <LogOut size={iconSize.md} className="text-primary" />
+              <LogOut size={iconSize.md} className="text-ink" />
             </div>
             <AuthHeading
               title="Sign out of MusicLinkd?"

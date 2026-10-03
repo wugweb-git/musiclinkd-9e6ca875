@@ -248,7 +248,7 @@ function RequestReviewContent({ business }: { business: boolean }) {
             rows={3}
             maxLength={1000}
             placeholder="Optional. Sent with your answer."
-            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="mt-2 w-full rounded-lg border border-input bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
 

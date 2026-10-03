@@ -178,7 +178,7 @@ function AccountScreen() {
               New {field?.label.toLowerCase()}
             </span>
             {field?.key === "phone" ? (
-              <span className="mt-1.5 flex min-h-control items-center rounded-lg border border-border bg-background focus-within:border-primary has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+              <span className="mt-1.5 flex min-h-control items-center rounded-lg border border-input bg-background focus-within:border-ink has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
                 <span className="pl-3 text-1 text-muted-foreground">+91</span>
                 <input
                   value={input}
@@ -196,7 +196,7 @@ function AccountScreen() {
                   ? { type: "email", inputMode: "email" as const, autoComplete: "email" }
                   : {})}
                 onChange={(e) => setInput(e.target.value)}
-                className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
+                className="mt-1.5 min-h-control w-full rounded-lg border border-input bg-background px-3 text-1 outline-none focus:border-ink"
               />
             )}
           </label>

@@ -476,7 +476,7 @@ function ManagedListing({
             <MarketCategoryIcon
               slug={gearCategoryOf(l.item_category, taxonomy) ?? "other"}
               size={iconSize.lg}
-              className="text-primary-foreground"
+              className="text-ink-foreground"
             />
           </span>
         )}

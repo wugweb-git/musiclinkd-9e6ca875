@@ -166,7 +166,7 @@ function ReviewsHub() {
         <section className="space-y-2 pb-4">
           <Card className="space-y-2">
             <div className="flex items-center gap-2">
-              <ShieldCheck size={iconSize.sm} className="text-primary" aria-hidden />
+              <ShieldCheck size={iconSize.sm} className="text-ink" aria-hidden />
               <h2 className="text-sm">How reviews work</h2>
             </div>
             <ul className="space-y-1.5">

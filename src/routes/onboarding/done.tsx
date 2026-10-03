@@ -65,7 +65,7 @@ function Done() {
             rise,
           )}
         >
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ink text-ink-foreground shadow-xs">
             <Sparkles size={26} className="animate-pop" style={beat(2)} />
           </div>
           <h1 className="mt-4 text-3 font-bold text-foreground leading-tight">

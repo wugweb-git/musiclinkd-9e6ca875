@@ -107,7 +107,7 @@ function ApplyFlow() {
         <TopBar title="Application sent" back="/opportunities" />
         <div className="space-y-4 px-5 pt-6">
           <Card className="space-y-3 text-center">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ink text-ink-foreground">
               <Check size={iconSize.lg} />
             </span>
             <h2 className="text-3 leading-tight">You're in for {o.title}</h2>
@@ -135,7 +135,7 @@ function ApplyFlow() {
           {order.slice(0, 3).map((s, i) => (
             <span
               key={s}
-              className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-background"}`}
+              className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-ink" : "bg-background"}`}
             />
           ))}
         </div>
@@ -169,7 +169,7 @@ function ApplyFlow() {
                     <span className="flex h-20 w-full items-center justify-center bg-background">
                       {(() => {
                         const Icon = workIconFor(p.kind);
-                        return <Icon size={iconSize.lg} strokeWidth={1.75} aria-hidden />;
+                        return <Icon size={iconSize.lg} aria-hidden />;
                       })()}
                     </span>
                     <span className="block p-3">
@@ -202,7 +202,7 @@ function ApplyFlow() {
               rows={7}
               maxLength={600}
               placeholder={`Why you're right for "${o.title}"…`}
-              className="w-full rounded-lg border border-border bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="w-full rounded-lg border border-input bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <p className="text-right text-1 text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">
@@ -221,7 +221,7 @@ function ApplyFlow() {
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
                 placeholder="e.g. ₹32,000 per song"
-                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full rounded-lg border border-input bg-background px-4 py-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </Card>
           </>

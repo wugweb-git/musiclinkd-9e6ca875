@@ -62,7 +62,7 @@ export default function MediaDropzone({
               {file.progress?.total != null && (
                 <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
                   <div
-                    className="h-full bg-primary transition-all"
+                    className="h-full bg-ink transition-all"
                     style={{
                       width: `${Math.round((file.progress.loaded / file.progress.total) * 100)}%`,
                     }}

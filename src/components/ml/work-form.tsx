@@ -194,7 +194,7 @@ export function WorkForm({
           reading ? (
             <LoaderCircle size={iconSize.md} className="animate-spin text-muted-foreground" />
           ) : (
-            <Link2 size={iconSize.md} strokeWidth={1.75} />
+            <Link2 size={iconSize.md} />
           )
         }
         value={link}

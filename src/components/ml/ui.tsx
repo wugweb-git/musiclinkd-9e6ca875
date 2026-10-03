@@ -275,12 +275,7 @@ export function BottomNav() {
               className="hit-area flex h-16 w-full items-center justify-center"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full">
-                <Grid2x2
-                  size={iconSize.md}
-                  className="text-foreground"
-                  strokeWidth={1.8}
-                  aria-hidden
-                />
+                <Grid2x2 size={iconSize.md} className="text-foreground" aria-hidden />
               </span>
             </button>
           </li>
@@ -303,7 +298,7 @@ export function BottomNav() {
                       to={item.to}
                       {...(item.search ? { search: item.search } : {})}
                       title={item.label}
-                      icon={<Icon size={iconSize.md} strokeWidth={1.75} aria-hidden />}
+                      icon={<Icon size={iconSize.md} aria-hidden />}
                       onClick={() => setMenuOpen(false)}
                       {...(stage === "soon"
                         ? { badge: <SoonBadge /> }
@@ -517,7 +512,7 @@ const dimDisabled =
   "disabled:opacity-50 aria-disabled:text-muted-foreground data-pending:text-muted-foreground";
 
 const btnVariants: Record<BtnVariant, string> = {
-  primary: `bg-primary text-primary-foreground ${filledDisabled}`,
+  primary: `bg-ink text-ink-foreground ${filledDisabled}`,
   ink: `bg-ink text-background ${filledDisabled}`,
   outline: `border border-border bg-card text-foreground ${dimDisabled}`,
   ghost: `bg-subtle text-muted-foreground ${dimDisabled}`,
@@ -662,7 +657,7 @@ export const BtnLink = createLink(BtnAnchor);
 type IconBtnVariant = "outline" | "ink" | "ghost" | "plain";
 const iconBtnVariants: Record<IconBtnVariant, string> = {
   outline: "border border-border bg-card text-foreground",
-  ink: "bg-ink text-primary-foreground",
+  ink: "bg-ink text-ink-foreground",
   ghost: "bg-subtle text-foreground",
   plain: "text-foreground",
 };

@@ -248,7 +248,7 @@ function PrivacyScreen() {
                   className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
                 >
                   <span className="flex h-10 w-7 shrink-0 items-center justify-center">
-                    <Icon size={24} strokeWidth={1.75} aria-hidden />
+                    <Icon size={24} aria-hidden />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-2 font-semibold">{c.label}</span>
@@ -307,7 +307,7 @@ function PrivacyScreen() {
                   className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
                 >
                   <span className="flex h-10 w-7 shrink-0 items-center justify-center">
-                    <r.icon size={24} strokeWidth={1.75} aria-hidden />
+                    <r.icon size={24} aria-hidden />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-2 font-semibold">{r.label}</span>
@@ -334,7 +334,7 @@ function PrivacyScreen() {
                 className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
               >
                 <span className="flex h-10 w-7 shrink-0 items-center justify-center">
-                  <Compass size={24} strokeWidth={1.75} aria-hidden />
+                  <Compass size={24} aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-2 font-semibold">Goals on MusicLinkd</span>

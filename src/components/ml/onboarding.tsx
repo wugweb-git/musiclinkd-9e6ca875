@@ -752,11 +752,9 @@ export function OptionList({
               <span
                 className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border ${
                   multi ? "rounded-lg" : "rounded-full"
-                } ${on ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
+                } ${on ? "border-ink bg-ink text-ink-foreground" : "border-border"}`}
               >
-                {on ? (
-                  <Check size={iconSize.xs} strokeWidth={3} className="animate-pop" aria-hidden />
-                ) : null}
+                {on ? <Check size={iconSize.xs} className="animate-pop" aria-hidden /> : null}
               </span>
               <span className="min-w-0">
                 <span className="block text-sm font-semibold">{o.label}</span>
@@ -842,7 +840,7 @@ export function InlineField({
           readOnly && "bg-background",
           error
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
-            : "border-border focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
+            : "border-input focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
         )}
       >
         {leading ? (
@@ -1089,7 +1087,7 @@ export function DateDrawerField({
         type="button"
         aria-haspopup="dialog"
         onClick={openDrawer}
-        className="flex h-13 w-full items-center justify-between gap-2 rounded-full border border-border bg-card px-5 text-left text-sm"
+        className="flex h-13 w-full items-center justify-between gap-2 rounded-full border border-input bg-card px-5 text-left text-sm"
       >
         <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
           {shown}
@@ -1312,7 +1310,7 @@ export function ReadinessCard({
         }`}
         aria-hidden
       >
-        {done ? <Check size={iconSize.xs} strokeWidth={3} /> : null}
+        {done ? <Check size={iconSize.xs} /> : null}
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">

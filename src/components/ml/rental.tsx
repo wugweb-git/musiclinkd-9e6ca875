@@ -234,7 +234,7 @@ export function FulfilmentPicker({
               <Icon
                 size={iconSize.sm}
                 aria-hidden
-                className={active ? "text-primary-foreground" : "text-primary-foreground/60"}
+                className={active ? "text-ink-foreground" : "text-ink-foreground/60"}
               />
             </span>
             <span className="min-w-0 flex-1">
@@ -242,7 +242,7 @@ export function FulfilmentPicker({
               <span className="block truncate text-1 text-muted-foreground">{o.line}</span>
             </span>
             <span
-              className={`h-5 w-5 shrink-0 rounded-full border-2 ${active ? "border-primary bg-primary" : "border-border"}`}
+              className={`h-5 w-5 shrink-0 rounded-full border-2 ${active ? "border-ink bg-ink" : "border-border"}`}
             />
           </button>
         );
@@ -345,7 +345,7 @@ function RentalSwitch({
     >
       <span className="text-sm font-medium">{label}</span>
       <span
-        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${value ? "bg-primary" : "bg-border"}`}
+        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${value ? "bg-ink" : "bg-border"}`}
       >
         <span
           className={`absolute top-1 h-5 w-5 rounded-full bg-card transition-all ${value ? "left-6" : "left-1"}`}

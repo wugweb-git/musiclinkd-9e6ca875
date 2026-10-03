@@ -177,7 +177,7 @@ function ApplicationDetail() {
           {timelineFor(a).map((t) => (
             <div key={t.label} className="flex items-start gap-2">
               {t.done ? (
-                <CheckCircle2 size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
+                <CheckCircle2 size={iconSize.sm} className="mt-0.5 shrink-0 text-ink" />
               ) : (
                 <Circle size={iconSize.sm} className="mt-0.5 shrink-0 text-border" />
               )}

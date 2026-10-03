@@ -32,7 +32,7 @@ export type WavesurferProps = PartialWavesurferOptions &
 
 export const WAVESURFER_DEFAULTS = {
   waveColor: "var(--muted-foreground)",
-  progressColor: "var(--primary)",
+  progressColor: "var(--ink)",
   height: 64,
   barWidth: 3,
   barGap: 2,

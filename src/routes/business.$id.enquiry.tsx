@@ -79,7 +79,7 @@ function BusinessEnquiry() {
         <TopBar title="Enquiry sent" back={`/profile/${b.id}`} />
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
-            <CheckCircle2 size={iconSize.lg} className="mx-auto text-primary" aria-hidden />
+            <CheckCircle2 size={iconSize.lg} className="mx-auto text-ink" aria-hidden />
             <h2 className="mt-3 text-3 leading-tight">Your enquiry is with {b.name}</h2>
             <p className="mt-2 text-1 text-muted-foreground">
               {conversationId
@@ -132,7 +132,7 @@ function BusinessEnquiry() {
             onChange={(e) => setMessage(e.target.value)}
             rows={5}
             placeholder="Dates, how many people, what you need from the room."
-            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="mt-2 w-full rounded-lg border border-input bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           <p className="mt-2 text-1 text-muted-foreground">
             Sharing rough dates gets a faster answer than "are you free?".

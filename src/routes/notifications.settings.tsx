@@ -106,7 +106,7 @@ function NotificationSettings() {
             <p className="flex items-center gap-2 text-sm font-semibold">
               {(() => {
                 const Icon = notificationIcon(p.category);
-                return <Icon size={16} strokeWidth={1.75} aria-hidden />;
+                return <Icon size={16} aria-hidden />;
               })()}
               {categoryMeta[p.category].label}
             </p>
@@ -118,9 +118,7 @@ function NotificationSettings() {
                   aria-pressed={p[c.key]}
                   onClick={() => toggle(p.category, c.key)}
                   className={`min-h-9 rounded-full px-3.5 text-1 font-semibold ${
-                    p[c.key]
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-background text-muted-foreground"
+                    p[c.key] ? "bg-ink text-ink-foreground" : "bg-background text-muted-foreground"
                   }`}
                 >
                   {c.label}

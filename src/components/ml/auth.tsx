@@ -269,7 +269,7 @@ export function TextField({
           "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
           invalid
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
-            : "border-border focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
+            : "border-input focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
           disabled && "bg-background opacity-60",
         )}
       >
@@ -765,7 +765,7 @@ export function TrustNote({
         className,
       )}
     >
-      <ShieldCheck size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
+      <ShieldCheck size={iconSize.sm} className="mt-0.5 shrink-0 text-ink" />
       <span>{children}</span>
     </p>
   );

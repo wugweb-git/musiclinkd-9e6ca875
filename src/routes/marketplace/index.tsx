@@ -206,7 +206,7 @@ function MarketHome() {
         <CategoryTile
           slug="see-all"
           label="See all"
-          icon={<ArrowRight size={iconSize.lg} strokeWidth={1.75} aria-hidden />}
+          icon={<ArrowRight size={iconSize.lg} aria-hidden />}
           onOpen={() => setCategoriesOpen(true)}
         />
       </div>

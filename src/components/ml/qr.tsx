@@ -252,10 +252,10 @@ export function ScanFrame({ scanning }: { scanning: boolean }) {
         "left-0 bottom-0 border-l-4 border-b-4 rounded-bl-lg",
         "right-0 bottom-0 border-r-4 border-b-4 rounded-br-lg",
       ].map((c) => (
-        <span key={c} className={`absolute h-12 w-12 border-primary ${c}`} />
+        <span key={c} className={`absolute h-12 w-12 border-ink ${c}`} />
       ))}
       {scanning ? (
-        <span className="absolute inset-x-6 top-1/2 h-0.5 animate-pulse rounded-full bg-primary/80" />
+        <span className="absolute inset-x-6 top-1/2 h-0.5 animate-pulse rounded-full bg-ink/80" />
       ) : null}
     </div>
   );
@@ -287,7 +287,7 @@ export function ScannerControls({
         aria-pressed={flash}
         aria-label="Toggle flash"
         className={`flex h-12 w-12 items-center justify-center rounded-full border border-border ${
-          flash ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
+          flash ? "bg-ink text-ink-foreground" : "bg-card text-foreground"
         }`}
       >
         <Zap size={iconSize.md} />

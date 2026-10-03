@@ -397,7 +397,7 @@ export function ChipGroup({
   return (
     <div className="px-4 py-3.5">
       <p className="mb-2.5 flex items-center gap-2 text-sm font-medium text-muted-foreground">
-        {Icon ? <Icon size={16} strokeWidth={1.75} aria-hidden /> : null}
+        {Icon ? <Icon size={16} aria-hidden /> : null}
         {label}
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -673,7 +673,7 @@ export function CoverHero({
             <span
               aria-label={name}
               className={cn(
-                "flex aspect-square w-full items-center justify-center border-4 border-background bg-icon-chip font-semibold text-primary-foreground",
+                "flex aspect-square w-full items-center justify-center border-4 border-background bg-icon-chip font-semibold text-ink-foreground",
                 square ? "rounded-lg" : "rounded-full",
               )}
               style={{ fontSize: `${Math.round(photoSize * 0.3)}px` }}
@@ -880,7 +880,7 @@ export function AudioTrackCard({
               type="button"
               onClick={onToggle}
               aria-label={playing ? `Close player for ${track.title}` : `Play ${track.title}`}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs active:scale-95 transition-transform"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-ink-foreground shadow-xs active:scale-95 transition-transform"
             >
               {playing ? (
                 <Pause size={iconSize.sm} aria-hidden />
@@ -922,7 +922,7 @@ export function AudioTrackCard({
 export function NoCover({ className }: { className?: string }) {
   return (
     <div aria-hidden className={cn("flex items-center justify-center bg-ink", className)}>
-      <LogoMark className="w-2/5 max-w-16 text-primary-foreground" />
+      <LogoMark className="w-2/5 max-w-16 text-ink-foreground" />
     </div>
   );
 }
@@ -1115,8 +1115,8 @@ export function ProjectCard({ p }: { p: ProjectItem }) {
 export function ReviewInviteCard() {
   return (
     <div className="flex items-center gap-3 rounded-lg border border-border p-4">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-primary-foreground">
-        <MessageSquareQuote size={iconSize.md} strokeWidth={1.75} aria-hidden />
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-ink-foreground">
+        <MessageSquareQuote size={iconSize.md} aria-hidden />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold text-foreground">
@@ -1220,7 +1220,7 @@ export function ServiceCard({
           {meta ? <p className="eyebrow truncate text-muted-foreground">{meta}</p> : <span />}
           {selected ? (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground px-2 py-0.5 text-1 font-semibold text-background">
-              <Check size={10} strokeWidth={3} aria-hidden />
+              <Check size={10} aria-hidden />
               Selected
             </span>
           ) : disabled && disabledReason ? (
@@ -1276,12 +1276,7 @@ export function ServiceCard({
           <ul className="mt-3 space-y-1.5" aria-label="What you get">
             {gets.map((d) => (
               <li key={d} className="flex items-start gap-2 text-1 font-medium text-foreground">
-                <Check
-                  size={14}
-                  strokeWidth={2.25}
-                  className="mt-0.5 shrink-0 text-foreground"
-                  aria-hidden
-                />
+                <Check size={14} className="mt-0.5 shrink-0 text-foreground" aria-hidden />
                 <span className="min-w-0">{d}</span>
               </li>
             ))}
@@ -1353,7 +1348,7 @@ export function ServiceCardSkeleton({ className }: { className?: string | undefi
 export function ExperienceCard({ e }: { e: ExperienceItem }) {
   return (
     <div className="flex gap-3 px-4 py-4">
-      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
+      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-ink" />
       <div className="min-w-0">
         <h3 className="text-2">{e.title}</h3>
         <p className="text-1 font-semibold text-muted-foreground">{joinParts(e.org, e.period)}</p>

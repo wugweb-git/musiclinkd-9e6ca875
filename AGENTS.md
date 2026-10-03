@@ -85,7 +85,10 @@ canonical directories are now the Blocks and Components pages under Design Syste
   the inherited 16px — larger than body copy, when they were meant to be the smallest label on
   the screen.
 - Spacing: Tailwind numeric scale. Secondary text: `text-muted-foreground`.
-- Colour: primary is ink `#0D0D0D`; palette is black, greys, white. Brand pink `#EA4C89` is rare
+- Colour: one dark token, `ink` `#0D0D0D` (`bg-ink`, `text-ink-foreground` on it); there is no
+  `primary` (merged into `ink`, owner 4 Oct 2026). Palette is black, greys, white. Field borders use
+  `border-input` (3:1 on the page); cards and dividers `border-border`. Icons draw at Lucide's
+  default stroke 2; no per-icon `strokeWidth`. Brand pink `#EA4C89` is rare
   and always a signal: the logo, the active tab underline, press feedback while a finger is down, a
   selected pill, prices, and the `brand` button inside branded blocks. Never a resting border,
   background or body text. `src/styles.css` is the authority on this — read the comment on

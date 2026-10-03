@@ -383,7 +383,7 @@ function ListingDetail() {
                 const Icon = detailIcon(d.label);
                 return (
                   <div key={d.label} className="flex items-center gap-3 px-4 py-3">
-                    <Icon size={iconSize.md} strokeWidth={1.75} className="shrink-0" aria-hidden />
+                    <Icon size={iconSize.md} className="shrink-0" aria-hidden />
                     <dt className="min-w-0 flex-1 text-1 text-foreground">{d.label}</dt>
                     <dd className="text-right text-1 font-semibold">{d.value}</dd>
                   </div>
@@ -399,12 +399,7 @@ function ListingDetail() {
             <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg bg-card p-4">
               {l.included.map((x) => (
                 <li key={x} className="flex items-center gap-2 text-1 text-foreground">
-                  <CircleCheck
-                    size={iconSize.sm}
-                    strokeWidth={1.75}
-                    className="shrink-0"
-                    aria-hidden
-                  />
+                  <CircleCheck size={iconSize.sm} className="shrink-0" aria-hidden />
                   {x}
                 </li>
               ))}

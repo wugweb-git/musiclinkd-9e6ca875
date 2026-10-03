@@ -117,7 +117,7 @@ function AvailabilityContent() {
             value={hours}
             placeholder="e.g. Mon–Sat, 10am–7pm. Closed Sundays."
             onChange={(e) => setHours(e.target.value)}
-            className="mt-2 w-full resize-none rounded-lg border border-border bg-card p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-primary"
+            className="mt-2 w-full resize-none rounded-lg border border-input bg-card p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-ink"
           />
           <Btn className="mt-4 w-full" onClick={() => void onSaveHours()}>
             Save Opening Hours
@@ -167,7 +167,7 @@ const DAYS: { key: Weekday; label: string }[] = [
 ];
 
 const inputCls =
-  "min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary";
+  "min-h-control w-full rounded-lg border border-input bg-card px-4 text-sm outline-none focus:border-ink";
 
 /** The hours customers can pick from on the booking calendar, day by day. */
 function WeeklyHoursEditor({ studio }: { studio: MyBookable }) {

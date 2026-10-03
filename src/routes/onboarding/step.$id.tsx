@@ -576,7 +576,7 @@ function StepBody({
                 <button
                   type="button"
                   disabled
-                  className="flex h-13 w-full items-center rounded-full border border-border bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
+                  className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
                 >
                   State first
                 </button>
@@ -789,7 +789,7 @@ function StepBody({
 /* ------------------------------------------------------------------ contact */
 
 const linkIcons: Record<string, ReactNode> = {
-  website: <Globe size={iconSize.md} strokeWidth={1.75} />,
+  website: <Globe size={iconSize.md} />,
   instagram: <BrandIcon brand="instagram" />,
   youtube: <BrandIcon brand="youtube" />,
   spotify: <BrandIcon brand="spotify" />,

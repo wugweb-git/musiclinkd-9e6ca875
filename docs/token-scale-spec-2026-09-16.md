@@ -11,8 +11,9 @@
 >   aliases are gone; h1/h2 set at normal tracking. Sizes are the `text-*` steps only.
 > - **Removed tokens:** avatar sizes, `elevation-1`/`-4`, `--gradient-brand`/`brand-gradient`.
 >   `--shadow-ink` (a generic near-black, not a brand colour) tints `elevation-2`/`-3` and GearCta.
-> - **Primary vs Ink:** same colour; the usage list for the owner's decision is
->   `Claude outputs/primary-vs-ink-2026-10-04.md`.
+> - **Ink, one token:** `primary` merged into `ink` (owner, 4 Oct); `--ink-foreground` is the text on
+>   an ink fill. **Field border** `--input` #86868F: 3.06:1 on the page, 3.61:1 on white (was
+>   #D5D5DE, 1.24/1.46). **Icon stroke:** Lucide's default 2 everywhere.
 > - **Contrast**, measured per state: `Claude outputs/contrast-2026-10-04.md`.
 
 

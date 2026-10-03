@@ -111,7 +111,7 @@ function VerificationHub() {
         <Card className="space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
-              <ShieldCheck size={iconSize.md} className="shrink-0 text-primary" aria-hidden />
+              <ShieldCheck size={iconSize.md} className="shrink-0 text-ink" aria-hidden />
               <h2 className="min-w-0 text-2 leading-tight">{copy.title}</h2>
             </div>
             <StatusPill label={statusLabel[overall]} tone={statusTone[overall]} />
@@ -198,7 +198,7 @@ function VerificationHub() {
                     }`}
                   >
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-background text-foreground">
-                      <tile.Icon size={20} strokeWidth={1.75} aria-hidden />
+                      <tile.Icon size={20} aria-hidden />
                     </span>
                     <p className="mt-3 text-sm font-semibold leading-snug">{sig.label}</p>
                     <p className="mt-1 text-1 text-muted-foreground">{sig.detail}</p>

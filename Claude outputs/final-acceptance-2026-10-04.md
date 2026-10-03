@@ -1,6 +1,6 @@
 # Final acceptance report — convergence brief (29 Sep), 4 Oct 2026
 
-`main` at `09f58d5`, published to app.musiclinkd.com (verified live: the welcome form's `h1`, the
+`main` published to app.musiclinkd.com (verified live: the welcome form's `h1`, the
 business-profile facts removed, 9 routes 200). Item-by-item evidence is in
 `Claude outputs/convergence-status-2026-10-04.md`; this report gives each item exactly one heading.
 
@@ -17,6 +17,7 @@ business-profile facts removed, 9 routes 200). Item-by-item evidence is in
 | 5 | Rendering gate, 20 screens × 360/412/640: no overflow; touch areas fixed across Segmented, SegmentedField, profile tabs, bottom nav, rows, links, auth fields, 404 | `caff7ea` |
 | 7 | Superseded banners on three docs; token spec current; AGENTS.md bookables paragraph; SCREEN-INVENTORY count | `f31ca19` |
 | — | Welcome heading: the form's title is the visible `h1` | `09f58d5` |
+| Decisions 4 Oct | Primary merged into Ink (pixel-identical); field border `--input` 1.24 → 3.06:1 on the page (1.46 → 3.61 on white); one icon stroke (Lucide default 2, 52 overrides removed); M2/M3 applied | this merge |
 
 ## 2. Verified (already correct)
 
@@ -31,7 +32,7 @@ business-profile facts removed, 9 routes 200). Item-by-item evidence is in
 
 | Item | Reason / decision |
 |---|---|
-| Unsplash in `src/data` and stories | Owner, 4 Oct: keep Unsplash (one builder, `src/data/unsplash.ts`) |
+| Unsplash seed photos in `src/data` and stories | Owner, 4 Oct: ignore — kept as they are (one builder, `src/data/unsplash.ts`) |
 | Story-only vendor primitives (Registry/Kept, Lab) | "kept here on the owner's word rather than deleted" |
 | Availability words `Busy`/`Touring` | Compare stored taxonomy values, not display copy |
 | Seven auxiliary reads with no error card | A failure drops a minor detail only (prefill, saved hearts, a badge) |
@@ -39,6 +40,8 @@ business-profile facts removed, 9 routes 200). Item-by-item evidence is in
 | Calendar day cells 38–45px wide at 360–412 | Seven columns can't be 48px wide; cells are 48px tall |
 | Welcome inputs 46px inside a 48px field | The field is the 48px target |
 | Disabled button text 2.5:1 | Inactive controls are exempt from WCAG 1.4.3 |
+| Filled rating star `strokeWidth={0}`; India flag circle; GearCta waves | A solid shape / not Lucide icons |
+| New confirm and error wording | Approved by the owner, 4 Oct |
 | `collab*` routes and tables | Classified (`collab-references-2026-10-04.md`); removal needs band invitations moved off `/collab/$id` first |
 
 ## 4. Blocked (exact dependency)
@@ -46,11 +49,6 @@ business-profile facts removed, 9 routes 200). Item-by-item evidence is in
 | Item | Waiting on |
 |---|---|
 | Brand mark, favicon, app icon, splash, Android assets (§3.5 #34) | The owner sends the canonical mark |
-| Primary vs Ink merge (§3 #8) | Owner decision; list in `primary-vs-ink-2026-10-04.md` |
-| Hairline border contrast 1.24:1 | Owner decision (`contrast-2026-10-04.md`) |
-| Icon stroke token | Owner decision (`stroke-inventory-2026-10-04.md`) |
 | Android/Capacitor shell pass (insets on a device) | A device or emulator run; not available in this session |
 | Signed-in screens (confirms, uploads, request sheet, Pricing, Closed times) | An owner pass on the live site |
-| M2 retire rooms, M3 retire tags | The owner's Claude applying `20261004120000` and `20261004140000` (snapshot committed) |
 | M2b drop room ids | The owner's yes (recommended: hold to P2) |
-| New confirm and error wording | Owner review (listed in CHANGELOG §2) |

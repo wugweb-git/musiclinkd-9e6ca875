@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — owner decisions on the acceptance report: one ink token, field borders 3:1, one icon stroke (4 Oct)
+
+- **Primary merged into Ink.** Every `primary` class and `var(--primary)` (70 files, app and vendor)
+  points at `ink`; `--primary`/`--color-primary` removed; the text on an ink fill is
+  `--ink-foreground` (same value as the old `--primary-foreground`). Visual check: the rendering
+  gate's screenshots before and after (14 screens × 3 widths) are pixel-identical except the
+  animated welcome logo and one Discover tile, which differ by the same amount between two runs of
+  the same build.
+- **Field border 3:1.** No existing grey met 3:1 (`--switch-off` #8A8A93: 2.91; `--muted-foreground`
+  #1F1F24: 13.94, a text colour), so the existing field-border token `--input` moved from #D5D5DE to
+  #86868F. Contrast against the page #ECECF1: **1.24 → 3.06**; against a white card: **1.46 →
+  3.61**. 41 fields and the 5 pickers beside them use `border-input`; cards and dividers keep
+  `--border`.
+- **Icon stroke: Lucide's default 2.** 52 per-icon `strokeWidth` overrides removed (1.4–3), and
+  `StateIcon`'s 1.8 default. Kept, with reasons: the filled rating star (`strokeWidth={0}`, a solid
+  shape), the India flag's drawn circle and GearCta's decorative waves (not Lucide icons).
+- Unsplash photos: intentionally retained (owner, 4 Oct). M2/M3 (`20261004120000`,
+  `20261004140000`) are applied. The new confirm and error wording is approved.
+
 ### Fixed — the welcome screen's heading is its visible title (4 Oct)
 
 - "Welcome back" / "Create your account" is the page's `h1` at a heading size (`text-3`), not a

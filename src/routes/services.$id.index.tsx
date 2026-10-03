@@ -190,8 +190,8 @@ function ServiceDetail() {
                           className="h-12 w-12 shrink-0 rounded-sm object-cover"
                         />
                       ) : (
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip text-primary-foreground">
-                          <FolderKanban size={18} strokeWidth={1.75} aria-hidden />
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip text-ink-foreground">
+                          <FolderKanban size={18} aria-hidden />
                         </span>
                       )}
                       <span className="min-w-0 flex-1">
@@ -240,8 +240,8 @@ function ServiceDetail() {
                             className="h-12 w-12 shrink-0 rounded-sm object-cover"
                           />
                         ) : (
-                          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip text-primary-foreground">
-                            <Headphones size={18} strokeWidth={1.75} aria-hidden />
+                          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip text-ink-foreground">
+                            <Headphones size={18} aria-hidden />
                           </span>
                         )}
                         <span className="min-w-0 flex-1 truncate text-sm font-semibold">
@@ -299,10 +299,7 @@ function ServiceDetail() {
               <ul className="space-y-1.5">
                 {s.deliverables.map((d) => (
                   <li key={d} className="flex gap-2 text-1">
-                    <span
-                      aria-hidden
-                      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
-                    />
+                    <span aria-hidden className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
                     {d}
                   </li>
                 ))}

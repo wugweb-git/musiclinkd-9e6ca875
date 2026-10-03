@@ -93,7 +93,7 @@ function SecurityScreen() {
           ) : sessions.isError || !sessions.data?.length ? (
             <Card className="flex items-center gap-3">
               <span className="flex h-10 w-7 shrink-0 items-center justify-center">
-                <ShieldCheck size={iconSize.lg} strokeWidth={1.75} aria-hidden />
+                <ShieldCheck size={iconSize.lg} aria-hidden />
               </span>
               <p className="min-w-0 flex-1 text-1 text-muted-foreground">
                 {sessions.isError ? "Couldn't load your sessions." : "No active sessions found."}

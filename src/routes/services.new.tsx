@@ -268,7 +268,7 @@ function NewService() {
     iconNode: w.cover_url ? (
       <img src={sized(w.cover_url, { width: 412 })} alt="" className="h-full w-full object-cover" />
     ) : (
-      <FolderKanban size={iconSize.md} strokeWidth={1.75} aria-hidden />
+      <FolderKanban size={iconSize.md} aria-hidden />
     ),
   }));
 
@@ -420,7 +420,7 @@ function NewService() {
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
                   placeholder="What the client gets, how you work, what makes it yours."
-                  className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                  className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
                 />
               </Field>
               <TagListField

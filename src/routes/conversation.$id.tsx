@@ -341,7 +341,7 @@ function Conversation() {
             onClick={() => setSharing(true)}
             className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-card text-foreground transition-transform duration-200 ease-standard active:scale-97"
           >
-            <Plus size={iconSize.md} strokeWidth={2} aria-hidden />
+            <Plus size={iconSize.md} aria-hidden />
           </button>
           <div className="flex min-h-12 min-w-0 flex-1 items-center rounded-full bg-card px-5 transition-shadow duration-200 focus-within:shadow-[0_0_0_2px_var(--color-foreground)]">
             <label htmlFor="message" className="sr-only">
@@ -376,7 +376,7 @@ function Conversation() {
             disabled={!draft.trim()}
             className="state-layer flex h-12 w-14 shrink-0 items-center justify-center rounded-lg bg-ink text-background transition-[transform,background-color,color,border-radius] duration-200 ease-standard active:scale-97 active:rounded-full disabled:bg-card disabled:text-muted-foreground"
           >
-            <SendHorizontal size={iconSize.md} strokeWidth={2} aria-hidden />
+            <SendHorizontal size={iconSize.md} aria-hidden />
           </button>
         </form>
 

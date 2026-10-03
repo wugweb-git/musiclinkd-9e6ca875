@@ -598,7 +598,7 @@ function CollabRoom() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="username"
-                className="min-h-control min-w-0 flex-1 rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="min-h-control min-w-0 flex-1 rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
               <Btn
                 type="submit"
@@ -945,7 +945,7 @@ function EditCollabSheet({
             onChange={(e) => setAbout(e.target.value)}
             maxLength={2000}
             aria-labelledby="edit-collab-about"
-            className="w-full resize-none rounded-lg border border-border bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring focus:border-primary"
+            className="w-full resize-none rounded-lg border border-input bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring focus:border-ink"
           />
         </Field>
 
