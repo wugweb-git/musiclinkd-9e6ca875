@@ -175,6 +175,15 @@ function MarketHome() {
           </IconBtn>
         </div>
       </header>
+      {view === "Explore" && !showGrid ? (
+        <div className="mb-5">
+          <CategoryBanner
+            title="Gear for musicians"
+            count={goods.length}
+            icon={<ShoppingBag size={iconSize.lg} aria-hidden />}
+          />
+        </div>
+      ) : null}
 
       <ActiveFilters
         value={filter}
