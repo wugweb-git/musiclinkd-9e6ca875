@@ -112,9 +112,9 @@
 
   /* Media framing shared by portfolio, directory and market imagery. Use a real photo or
    * video in these frames; the ratios never imply content that is not there. */
-  --aspect-media-square: 1;
-  --aspect-media-wide: 16 / 9;
-  --aspect-media-card: 4 / 3;
+  --aspect-media-square: var(--media-aspect-square);
+  --aspect-media-wide: var(--media-aspect-wide);
+  --aspect-media-card: var(--media-aspect-card);
 
   --color-background: var(--background);
   --color-auth-ground: var(--auth-ground);
@@ -602,6 +602,9 @@
 
 :root {
   --radius: 16px; /* shadcn base = the card radius */
+  --media-aspect-square: 1;
+  --media-aspect-wide: 16 / 9;
+  --media-aspect-card: 4 / 3;
   /*
    * #ECECF1. Was #FCFCFD, which measured 1.025:1 against the #FFFFFF card fill —
    * roughly six times below the step at which a person can see a surface edge, so

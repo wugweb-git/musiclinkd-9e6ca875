@@ -7,7 +7,7 @@
 - [x] Refine the mobile Home/dashboard, portfolio/projects, profile sections, and Settings.
 - [x] Align Help, Connections inbox, and conversations with the same mobile language.
 - [x] Carry the flatter account-drawer rows into shared option, sort, create and profile-more drawers.
-- [ ] Verify interactive signed-in navigation and the drawer: local preview cancels client script requests, leaving server-rendered screens non-interactive in the automated browser.
+- [ ] Verify interactive signed-in navigation and the drawer: browser testing still sees cancelled client scripts after navigation to Home; server-rendered controls remain non-interactive in that run.
 
 ## Additional pending requests (moved from the separate pending note)
 
@@ -37,7 +37,7 @@
 ## 3 Oct 2026 — authentication entry redesign
 
 - [x] Sign-in screens rebuilt on lovable.dev/login: its grey ground, bare logo icon, pill fields, email-first then password, measured spacing; shared by every sign-in screen.
-- [ ] Owner to review the password step and forgot-password screen on a phone (automated capture of those two was not completed).
+- [ ] Review the password step and forgot-password screen on a phone: the automated click waited indefinitely for a navigation after submit, so this flow is still unverified.
 
 - [x] Replace the rejected legacy-looking auth presentation with a clean Lovable-inspired flow across every auth route, preserving MusicLinkd branding and behavior.
 - [x] Redesign `/welcome`, phone sign-in and verification, and onboarding Select.
