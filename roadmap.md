@@ -1,5 +1,12 @@
 # MusicLinkd roadmap
 
+## 4 Oct 2026 — mobile reference pass
+
+- [ ] Redesign the bottom drawer with live account identity and grouped navigation.
+- [ ] Refine the mobile Home/dashboard, portfolio/projects, profile sections, and Settings.
+- [ ] Align Help, Connections inbox, and conversations with the same mobile language.
+- [ ] Verify phone widths, signed-in navigation, and project checks without regressing auth.
+
 ## 3 Oct 2026 — product-wide visual rebuild
 
 - [x] Approve a reference-led visual-system and route-family rollout plan.
