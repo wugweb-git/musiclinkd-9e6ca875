@@ -12,6 +12,7 @@ import {
   Settings,
   UserRoundPlus,
   WifiOff,
+  ArrowRight,
 } from "lucide-react";
 
 import { BookableCard, PersonCard } from "@/components/ml/cards";
