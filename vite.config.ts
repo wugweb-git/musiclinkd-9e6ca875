@@ -29,6 +29,12 @@ export default defineConfig({
   },
   vite: {
     plugins: [serveGuidePlugin()],
+    // The dev dependency scan crawled every file in the repo (stories, lab, guide) and stalled,
+    // leaving every client module request hanging so no screen became interactive. Scan only
+    // what the app actually loads.
+    optimizeDeps: {
+      entries: ["src/router.tsx", "src/routes/**/*.tsx", "src/routes/**/*.ts"],
+    },
     resolve: {
       alias: {
         // supabase-js constructs a RealtimeClient whether or not you use realtime, which put the
