@@ -357,3 +357,9 @@ Order is array order; `visibleSteps()` filters, it never reorders.
 - [x] FLOW 12 Business Profiles — /business, /business/$id, /business/new (6-step), /business/$id/manage, /business/$id/team
 - [x] FLOW 13 Notifications — /notifications, /notifications/settings
 - [x] FLOW 21 Settings & Support — /settings, /settings/account, /settings/privacy, /settings/security
+
+## 4 Oct 2026 — AI matching and loading
+- [x] AI matching: "Describe who you need" (Discover) and "Describe a hiring need" (business Home), picks only from real public profiles and open opportunities.
+- [x] Discover skips the unused exact people count and reuses its read for a minute.
+- [ ] Tap-through checks of menus, profile, settings and portfolio: blocked — the sandbox test browser never finishes loading the app's scripts, so no button responds there. Needs a check on a real phone.
+- [ ] Note cleanup: every remaining note is marked current or referenced; nothing clearly obsolete left to delete without owner say-so.
