@@ -213,14 +213,14 @@ function HomeHeader({ business = false }: { business?: boolean }) {
   useEffect(() => setHello(greeting()), []);
   return (
     <header className="bg-card px-5 pb-5 pt-safe">
-      <div className="flex items-center justify-between gap-4">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="min-w-0">
           <p className="text-1 font-semibold text-muted-foreground">
             {business ? "Business workspace" : hello}
           </p>
-          <h1 className="mt-1 truncate text-3">{firstNameOf(displayName) || "MusicLinkd"}</h1>
+          <h1 className="mt-1 truncate text-3 font-semibold">{firstNameOf(displayName) || "MusicLinkd"}</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1">
           <NotificationsBell />
           <Link
             to="/settings"
@@ -411,7 +411,7 @@ function BusinessHome({ data }: { data: HomeData }) {
 
         <section>
           <SectionHeader title="Run your business" />
-          <div className="mx-5 grid grid-cols-2 gap-3">
+             <div className="mx-5 grid grid-cols-2 gap-2">
             <WorkspaceLink
               to="/business/bookings/requests"
               icon={<CalendarDays size={iconSize.lg} />}
@@ -546,12 +546,12 @@ function WorkspaceLink({
   detail: string;
 }) {
   return (
-    <Link to={to} className="state-layer min-h-32 rounded-lg border border-border bg-card p-4">
+     <Link to={to} className="state-layer flex min-h-32 min-w-0 flex-col rounded-lg border border-border bg-card p-4 shadow-elevation-2">
       <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
         {icon}
       </span>
-      <span className="mt-4 block text-sm font-semibold">{label}</span>
-      <span className="mt-1 block text-1 text-muted-foreground">{detail}</span>
+       <span className="mt-3 block break-words text-sm font-semibold">{label}</span>
+       <span className="mt-1 block break-words text-1 text-muted-foreground">{detail}</span>
     </Link>
   );
 }

@@ -165,29 +165,29 @@ export function WorkCard({
   const t = workType(item.kind);
   const [open, setOpen] = useState(false);
   return (
-    <div className="rounded-lg bg-subtle">
+    <div className="overflow-hidden rounded-lg border border-border bg-card shadow-elevation-2">
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="state-layer block w-full rounded-lg p-4 text-left transition-transform duration-125 ease-standard active:scale-97"
+        className="state-layer block w-full p-3 text-left transition-transform duration-125 ease-standard active:scale-97"
       >
-        <div className="flex gap-3">
+        <div className="flex min-w-0 gap-3">
           {item.cover_url ? (
             <img
               src={sized(item.cover_url, { width: 64 })}
               alt=""
               loading="lazy"
               decoding="async"
-              className="h-16 w-16 shrink-0 rounded-lg object-cover"
+              className="h-16 w-16 shrink-0 rounded-sm object-cover"
             />
           ) : (
             <WorkTypeIcon kind={item.kind} size="lg" />
           )}
           <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
               <h3 className="truncate text-2 font-semibold">{item.title}</h3>
-              <span className="flex shrink-0 items-center gap-1.5">
+              <span className="mt-1 flex flex-wrap items-center gap-1.5">
                 {item.featured ? (
                   <span className="pill bg-background text-muted-foreground">Featured</span>
                 ) : null}
@@ -375,8 +375,8 @@ export function PortfolioHeader({
     </div>
   );
   return (
-    <section className="rounded-lg bg-subtle p-5">
-      <div className="grid grid-cols-4 gap-3">
+    <section className="border-y border-border bg-card py-4">
+      <div className="grid grid-cols-4 gap-2">
         {stat(total, "Works")}
         {stat(published, "Published")}
         {stat(drafts, "Drafts")}

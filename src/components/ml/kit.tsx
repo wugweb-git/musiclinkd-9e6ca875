@@ -332,6 +332,7 @@ export function Row({
   hash,
   onClick,
   grouped = false,
+  flat = false,
 }: {
   icon?: ReactNode;
   title: string;
@@ -348,6 +349,8 @@ export function Row({
   onClick?: () => void;
   /** Inside a RowGroup, which draws the card and the dividers, so the row draws neither. */
   grouped?: boolean;
+  /** Flat navigation list used in the account drawer and settings. */
+  flat?: boolean;
 }) {
   const inner = (
     <>
@@ -357,7 +360,7 @@ export function Row({
         </span>
       ) : null}
       <span className="min-w-0 flex-1 text-left">
-        <span className="block truncate text-2 font-semibold">{title}</span>
+        <span className={`block truncate ${flat ? "text-2 font-medium" : "text-2 font-semibold"}`}>{title}</span>
         {subtitle ? (
           <span className="block truncate text-1 text-muted-foreground">{subtitle}</span>
         ) : null}
@@ -369,7 +372,7 @@ export function Row({
     </>
   );
   const cls = grouped
-    ? "state-layer flex w-full items-center gap-3 px-4 py-3.5"
+    ? `state-layer flex min-h-touch w-full items-center gap-3 ${flat ? "px-2 py-2.5" : "px-4 py-3.5"}`
     : "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3.5";
   if (to) {
     return (
@@ -458,11 +461,11 @@ export function Switch({
  * settings page UI"), shared so Settings and the menu are one thing rather than two styled copies.
  * Rows inside it take `grouped`.
  */
-export function RowGroup({ title, children }: { title: string; children: ReactNode }) {
+export function RowGroup({ title, children, flat = false }: { title: string; children: ReactNode; flat?: boolean }) {
   return (
     <section>
-      <h2 className="pill mb-2 px-1 text-muted-foreground">{title}</h2>
-      <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card shadow-elevation-2">
+      <h2 className={flat ? "mb-1 px-2 text-sm font-semibold text-foreground" : "pill mb-2 px-1 text-muted-foreground"}>{title}</h2>
+      <ul className={flat ? "divide-y divide-border/70" : "divide-y divide-border overflow-hidden rounded-lg bg-card shadow-elevation-2"}>
         {children}
       </ul>
     </section>

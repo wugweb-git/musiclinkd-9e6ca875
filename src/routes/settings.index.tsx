@@ -38,6 +38,8 @@ import { AuthNotice } from "@/components/ml/auth";
 import { Btn } from "@/components/ml/ui";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { reactivateMyAccount } from "@/lib/account.functions";
+import { useViewer } from "@/components/ml/viewer";
+import { PersonAvatar } from "@/components/ml/person-avatar";
 
 /**
  * Your public address, at the top of Settings, always (owner, 25 Sep 2026).
@@ -119,6 +121,7 @@ function SettingsScreen() {
   // One account is one journey: only a business account manages a business from here.
   const { allowed: isBusiness } = useRequireBusiness();
   const { signedIn } = useAuth();
+  const viewer = useViewer();
   const queryClient = useQueryClient();
   const loadMe = useServerFn(getMyProfile);
   const me = useQuery({ queryKey: ["profile", "me"], queryFn: () => loadMe(), enabled: signedIn });
@@ -143,7 +146,14 @@ function SettingsScreen() {
   return (
     <Screen>
       <TopBar title="Settings" subtitle="Account and preferences" back="/profile" />
-      <div className="space-y-6 px-5 pt-4 pb-6">
+      <div className="space-y-7 px-5 pt-5 pb-6">
+        {signedIn ? <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border-b border-border pb-5">
+          <PersonAvatar name={viewer.displayName ?? ""} photo={viewer.photo} className="h-14 w-14 shrink-0 text-1" />
+          <div className="min-w-0">
+            <p className="truncate text-2 font-semibold">{viewer.displayName || "Your account"}</p>
+            {viewer.username ? <p className="truncate text-sm text-muted-foreground">@{viewer.username}</p> : null}
+          </div>
+        </div> : null}
         {deactivated ? (
           <AuthNotice
             tone="warn"
@@ -159,7 +169,7 @@ function SettingsScreen() {
         ) : null}
         <ProfileLinkRow />
         {settingsGroups.map((g) => (
-          <RowGroup key={g.key} title={g.title}>
+          <RowGroup key={g.key} title={g.title} flat>
             {g.rows
               .filter((r) => r.key !== "business" || isBusiness)
               .map((r) => {
@@ -182,6 +192,7 @@ function SettingsScreen() {
                   <li key={r.key}>
                     <Row
                       grouped
+                      flat
                       icon={<Icon size={iconSize.lg} aria-hidden />}
                       title={r.label}
                       subtitle={r.hint}

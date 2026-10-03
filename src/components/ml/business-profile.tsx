@@ -129,7 +129,7 @@ export function BusinessProfileExperience({
         }
         title={
           <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
-            <h1 className="text-3 leading-tight">{b.name}</h1>
+            <h1 className="min-w-0 break-words text-3 font-semibold leading-tight">{b.name}</h1>
             {b.verified ? <StatusPill label="verified" tone="good" /> : null}
           </div>
         }

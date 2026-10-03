@@ -88,7 +88,7 @@ export function ProfileSection({
   return (
     <section className="mt-6">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-2">{title}</h2>
+        <h2 className="text-2 font-semibold">{title}</h2>
         {aside}
         {action ? (
           <button
@@ -606,7 +606,7 @@ export function CoverHero({
   const photoSize = 136 - 52 * shrink;
   return (
     /*
-     * A div, not a header. `<header>` outside article/aside/main/nav/section is a `banner`
+   * A div, not a header. `<header>` outside article/aside/main/nav/section is a `banner`
      * landmark, and a page may have one — but this is a shared hero used on the profile, band,
      * business, collab and booking screens, every one of which already has its own top bar. On the
      * owner's profile axe failed with "Document should not have more than one banner landmark".
@@ -650,7 +650,7 @@ export function CoverHero({
         ) : null}
       </div>
 
-      <div className="-mt-16 px-5">
+      <div className="-mt-12 px-5">
         <div className="relative motion-reduce:!w-34" style={{ width: `${photoSize}px` }}>
           {photo ? (
             <img
@@ -684,7 +684,7 @@ export function CoverHero({
           {photoPick}
           {badge}
         </div>
-        {title ?? (name ? <h1 className="mt-3 text-3 leading-tight">{name}</h1> : null)}
+         {title ?? (name ? <h1 className="mt-3 text-3 font-semibold leading-tight">{name}</h1> : null)}
         {children}
       </div>
     </div>
@@ -765,7 +765,7 @@ export function ProfileHero({
           <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
             {/* The verified mark now sits on the avatar's corner (see `badge` above), so the name
                 carries only the name and, next to it, availability. */}
-            {p.name ? <h1 className="text-3 leading-tight">{p.name}</h1> : null}
+             {p.name ? <h1 className="min-w-0 break-words text-3 font-semibold leading-tight">{p.name}</h1> : null}
             {p.availability ? <StatusBadge status={p.availability} /> : null}
             {owner ? (
               <IconBtnLink
