@@ -33,8 +33,16 @@ export const Route = createFileRoute("/discover/match")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>): { intent?: "hire" } =>
+    s["intent"] === "hire" ? { intent: "hire" } : {},
   component: MatchScreen,
 });
+
+const HIRE_EXAMPLES = [
+  "A sound engineer for a live show in Bengaluru, paid",
+  "A session guitarist for three studio days in Delhi",
+  "A music producer for a brand jingle, remote is fine",
+];
 
 const EXAMPLES = [
   "A Hindustani vocalist in Mumbai for a film song next month",
@@ -44,6 +52,9 @@ const EXAMPLES = [
 
 function MatchScreen() {
   const { signedIn, loading } = useAuth();
+  const { intent } = Route.useSearch();
+  const hiring = intent === "hire";
+  const examples = hiring ? HIRE_EXAMPLES : EXAMPLES;
   const [brief, setBrief] = useState("");
   const run = useServerFn(findAiMatches);
   const match = useMutation({ mutationFn: (b: string) => run({ data: { brief: b } }) });
@@ -55,7 +66,11 @@ function MatchScreen() {
 
   return (
     <Screen>
-      <TopBar title="Describe who you need" subtitle="AI-powered matches" back="/discover" />
+      <TopBar
+        title={hiring ? "Describe a hiring need" : "Describe who you need"}
+        subtitle="AI-powered matches"
+        back={hiring ? "/home" : "/discover"}
+      />
       <div className="space-y-6 px-5 pt-5">
         {!loading && !signedIn ? (
           <EmptyState
@@ -71,11 +86,11 @@ function MatchScreen() {
             className="space-y-3"
             onSubmit={(e) => {
               e.preventDefault();
-              if (!tooShort) match.mutate(brief.trim());
+              if (!tooShort) match.mutate(hiring ? `Hiring need: ${brief.trim()}` : brief.trim());
             }}
           >
             <label htmlFor="brief" className="block text-sm font-semibold">
-              What are you looking for?
+              {hiring ? "Who do you need to hire?" : "What are you looking for?"}
             </label>
             <textarea
               id="brief"
@@ -83,11 +98,11 @@ function MatchScreen() {
               onChange={(e) => setBrief(e.target.value)}
               maxLength={600}
               rows={4}
-              placeholder="Role, genre, city, timing, paid or collab…"
+              placeholder={hiring ? "Role, skills, city, dates, budget…" : "Role, genre, city, timing, paid or collab…"}
               className="w-full rounded-sm border border-input bg-card px-4 py-3 text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <div className="flex flex-wrap gap-2">
-              {EXAMPLES.map((ex) => (
+              {examples.map((ex) => (
                 <button
                   key={ex}
                   type="button"
@@ -126,7 +141,7 @@ function MatchScreen() {
       </div>
 
       {result?.ok ? (
-        result.people.length === 0 && result.opportunities.length === 0 ? (
+        result.people.length === 0 && (hiring || result.opportunities.length === 0) ? (
           <div className="px-5 pt-6">
             <EmptyState
               title="No strong matches yet"
@@ -150,7 +165,7 @@ function MatchScreen() {
                 </ul>
               </section>
             ) : null}
-            {result.opportunities.length ? (
+            {!hiring && result.opportunities.length ? (
               <section>
                 <SectionHeader title="Open opportunities" />
                 <div className="space-y-3 px-5">
