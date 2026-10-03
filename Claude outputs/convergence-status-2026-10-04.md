@@ -106,7 +106,7 @@ elevation, avatar tokens or `--gradient-brand`.
 | 4 Route coverage, contrast per state, focus-visible everywhere, L/E/E/O states | Fixed (§4 branch): coverage audit + fixes, contrast measured, focus rings restored; see `render-gate-2026-10-04.md` |
 | 4 Reduced motion | Verified (global) | `styles.css:809-820` |
 | 5 Rendering gate 360/412/640 + Android shell | Fixed in browser (20 screens × 3 widths, no overflow, touch areas fixed; 2 documented exceptions). Android shell: **not checked** (no device in session) |
-| 7 Stale `docs/*` (4 files, 16–23 Sep) | Remaining | — |
+| 7 Stale `docs/*` (4 files, 16–23 Sep) | Fixed (§7): three marked Superseded (code → Storybook → Notion); the token spec updated for §3; AGENTS.md bookables/rooms paragraph and SCREEN-INVENTORY count corrected |
 | 7 AGENTS.md decisions 2/3 | Fixed `2d13f06` | — |
 
 **AGENTS.md disagrees with the code** (to resolve in section 7): radius (AGENTS lists six steps,
@@ -124,3 +124,4 @@ dialog/sheet/drawer, the app uses ml `Sheet`).
 - **§3.5:** see the rows above. Also fixed here: band manage's Make admin/member, Remove member,
   Transfer ownership and Delete band did nothing (now wired; `deleteBand` added); the Business
   created dialog no longer promises "spaces"; three links skip their redirect stubs.
+- **§7:** see the row above. Storybook accessibility suite run: 20 files, 144 tests pass.

@@ -137,11 +137,13 @@ are the same profile cover. Media buckets, by job:
 | `verification-documents` | Private, owner-only |
 
 Equipment for sale or rent belongs in `listing-media`; the two buckets are not merged. A
-bookable space's tables are `bookables`, `bookable_rooms`, `bookable_blocks`, `bookable_equipment`
-and `bookable_photos`, linked by `bookable_id` (20261003130000_bookables_rename.sql); its business
-type stays on the owner's profile, and `studios_one_per_owner` keeps one per owner. The views and
-functions still named `studio*` are temporary compatibility shims, dropped by a cleanup
-migration — never write new code against them.
+bookable space's tables are `bookables`, `bookable_blocks`, `bookable_equipment` and
+`bookable_photos`, linked by `bookable_id` (20261003130000_bookables_rename.sql); its business
+type stays on the owner's profile, and `studios_one_per_owner` keeps one per owner. The old
+`studio*` views and functions were dropped (20261003140000). **There are no rooms** (owner,
+3 Oct 2026): people book a service (`booking_requests.service_id`), one calendar per place; no code
+reads `bookable_rooms` or `bookables.services`, which 20261004120000/20261004140000 retire by
+renaming (`bookable_rooms_retired`, `services_retired`) and P2 drops.
 Data access is server-side `createServerFn` in `*.functions.ts` with `requireSupabaseAuth`; no
 client-side Supabase writes. The one exception is file uploads (photos, verification documents):
 they go from the browser straight to Supabase Storage (owner, 3 Oct 2026). That is allowed because
