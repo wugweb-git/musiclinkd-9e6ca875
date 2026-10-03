@@ -6,8 +6,8 @@ import { IconBtn } from "./ui";
 /*
  * The one option list every bottom sheet uses (owner, 22 Sep 2026: "recycle blocks"): pickers in
  * the listing, service and onboarding flows, and Market's categories and location. A search box on
- * top when the list is long, then rows — round icon, label, optional hint line, a check when
- * picked — on the white row with a dark border for the picked one.
+ * top when the list is long, then flat grouped rows — icon, label, optional hint line and a
+ * check when picked. The same rhythm serves action menus, sorting and selection drawers.
  */
 
 export type DrawerOption = {
