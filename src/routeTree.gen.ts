@@ -20,6 +20,7 @@ import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SavedRouteImport } from './routes/saved'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as WelcomeRouteImport } from './routes/welcome'
@@ -208,6 +209,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SingersRoute = SingersRouteImport.update({
@@ -903,6 +909,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/signup': typeof SignupRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1050,6 +1057,7 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/signup': typeof SignupRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1197,6 +1205,7 @@ export interface FileRoutesById {
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/signup': typeof SignupRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1346,6 +1355,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/reset-password'
     | '/saved'
+    | '/signup'
     | '/singers'
     | '/studio'
     | '/welcome'
@@ -1493,6 +1503,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/reset-password'
     | '/saved'
+    | '/signup'
     | '/singers'
     | '/studio'
     | '/welcome'
@@ -1639,6 +1650,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/reset-password'
     | '/saved'
+    | '/signup'
     | '/singers'
     | '/studio'
     | '/welcome'
@@ -1787,6 +1799,7 @@ export interface RootRouteChildren {
   MessagesRoute: typeof MessagesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
+  SignupRoute: typeof SignupRoute
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -1994,6 +2007,13 @@ declare module '@tanstack/react-router' {
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/singers': {
@@ -2971,6 +2991,7 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesRoute: MessagesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
+  SignupRoute: SignupRoute,
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
   WelcomeRoute: WelcomeRoute,
