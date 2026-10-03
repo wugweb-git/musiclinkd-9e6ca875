@@ -131,6 +131,7 @@ function StepRoute() {
     claimedUsername,
     claimUsername,
   } = useOnboarding();
+  const taxonomy = useTaxonomy();
   const navigate = useNavigate();
   const listPortfolio = useServerFn(listMyPortfolio);
   const [banner, setBanner] = useState<Banner>("none");
@@ -333,8 +334,8 @@ function StepRoute() {
     ? def
     : def.id === "role"
       ? {
-          title: "Anything else you do?",
-          subtitle: "Pick up to two.",
+          title: "What else do you do?",
+          subtitle: `Your main role is ${labelFor(taxonomy.options?.person_types, draft.primaryRole ?? "")}. Add up to two supporting roles.`,
           why: "Extra roles widen the work you show up for, without diluting your main one.",
           optional: true,
         }
@@ -568,6 +569,23 @@ function StepBody({
                 Used for relevant work and people nearby.
               </p>
             </div>
+            <InlineField
+              inputId="pinCode"
+              label="PIN code (optional)"
+              value={d.pinCode}
+              onChange={(v) => {
+                const pin = v.replace(/\D/g, "").slice(0, 6);
+                set({ pinCode: pin });
+                void fillFromPin(pin);
+              }}
+              placeholder="400053"
+              inputMode="numeric"
+              autoComplete="postal-code"
+              maxLength={6}
+              {...(d.pinCode.length === 6 && pinProblem(d.pinCode)
+                ? { error: pinProblem(d.pinCode)! }
+                : { hint: "Enter this first to fill your location faster. Kept private." })}
+            />
             <div className="grid grid-cols-2 gap-3">
               <DrawerField label="State">
                 <SheetSelect
@@ -600,23 +618,6 @@ function StepBody({
                 )}
               </DrawerField>
             </div>
-            <InlineField
-              inputId="pinCode"
-              label="PIN code (optional)"
-              value={d.pinCode}
-              onChange={(v) => {
-                const pin = v.replace(/\D/g, "").slice(0, 6);
-                set({ pinCode: pin });
-                void fillFromPin(pin);
-              }}
-              placeholder="400053"
-              inputMode="numeric"
-              autoComplete="postal-code"
-              maxLength={6}
-              {...(d.pinCode.length === 6 && pinProblem(d.pinCode)
-                ? { error: pinProblem(d.pinCode)! }
-                : { hint: "Private. Helps us improve nearby results." })}
-            />
           </section>
           <section className="space-y-4 border-t border-border p-4">
             <div>

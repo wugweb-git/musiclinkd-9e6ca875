@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Plus, Search, Bookmark, Briefcase, Users, SlidersHorizontal } from "lucide-react";
+import { Plus, Search, Bookmark, Briefcase, SlidersHorizontal } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
@@ -139,7 +139,7 @@ function OpportunitiesHome() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 overflow-hidden rounded-lg border border-border bg-card">
+        <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-border bg-card">
           <Link
             to="/opportunities/applications"
             className="state-layer flex min-h-[88px] flex-col justify-between border-r border-border p-3"
@@ -162,34 +162,27 @@ function OpportunitiesHome() {
               <span className="text-1 text-muted-foreground">Your shortlist</span>
             </span>
           </Link>
-          <Link
-            to="/discover/$slug"
-            params={{ slug: "projects" }}
-            className="state-layer flex min-h-[88px] flex-col justify-between p-3"
-          >
-            <Users size={iconSize.md} aria-hidden />
-            <span>
-              <span className="block text-sm font-semibold">Projects</span>
-              <span className="text-1 text-muted-foreground">Join a team</span>
-            </span>
-          </Link>
         </div>
 
         <section>
           <h2 className="mb-2 text-sm font-semibold">Browse by need</h2>
-          <div className="rail no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
-            {opportunityCategories.slice(0, 10).map((c) => {
+          <div className="grid grid-cols-2 gap-2">
+            {opportunityCategories.slice(0, 6).map((c) => {
               const Icon = categoryIcon(c.key);
               return (
                 <Link
                   key={c.key}
                   to="/opportunities/search"
                   search={{ q: c.label }}
-                  className="w-[124px] shrink-0 rounded-sm border border-border bg-card p-3"
+                  className="state-layer grid min-h-touch grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-sm border border-border bg-card p-3"
                 >
                   <Icon size={20} aria-hidden />
-                  <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>
-                  <p className="text-1 text-muted-foreground">{openCount(c.key)} open</p>
+                  <span className="min-w-0">
+                    <span className="block truncate text-1 font-semibold">{c.label}</span>
+                    <span className="block text-1 text-muted-foreground">
+                      {openCount(c.key)} open
+                    </span>
+                  </span>
                 </Link>
               );
             })}
