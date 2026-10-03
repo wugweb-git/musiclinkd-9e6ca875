@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed — one name for amenities; the picker offers 12; studio services fold into service categories (owner, 3 Oct)
 
+- `20261003150000` and `20261003160000` applied to the live database by the owner's Claude on 3 Oct,
+  unchanged from `ba11e89` (hashes checked); every built-in check passed and the API schema was
+  reloaded. Photos: 15 `amenity`, 46 `equipment`, none `facility`. `amenities`: 33 options, 12 in
+  the picker; `studio_amenities` gone. `service_categories`: 55; 18 new person-type rows.
+
 - Taxonomy key `studio_amenities` is `amenities` (`20261003160000_amenities_key_and_service_fold.sql`).
   Same options and slugs; no stored selection changes.
 - The amenity picker offers 12 options (parking, valet parking, lounges, Wi-Fi, fiber internet, bar
@@ -38,8 +43,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 ### Changed — "facility" is "amenity" everywhere (owner, 3 Oct)
 
 - The photo subject type `facility` is `amenity`: `BookablePhotoSubject`, the `addMyBookablePhoto`
-  enum, every `photosOf`/`photosBy` lookup. Needs `20261003150000_photo_subject_amenity.sql` applied
-  first: this code writes and reads `'amenity'`, which the current check constraint refuses.
+  enum, every `photosOf`/`photosBy` lookup (`20261003150000_photo_subject_amenity.sql`, applied
+  3 Oct).
 - `MyBookablePhotos.facilities` → `amenities`; the booking page's `facilities`/`facilitySlugs`/
   `facilityPhotos` → `amenities`/`amenityLabelSlugs`/`amenityPhotos`.
 - Edit profile's section is "Amenities & equipment", opened by `?section=amenities` / `#amenities`
