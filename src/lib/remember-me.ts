@@ -25,7 +25,8 @@ function startHeartbeat() {
   beating = true;
   const beat = () => {
     try {
-      if (sessionStorage.getItem(ALIVE_KEY) === "1") localStorage.setItem(BEAT_KEY, String(Date.now()));
+      if (sessionStorage.getItem(ALIVE_KEY) === "1")
+        localStorage.setItem(BEAT_KEY, String(Date.now()));
     } catch {
       // Storage blocked: nothing to keep alive.
     }

@@ -147,13 +147,23 @@ function SettingsScreen() {
     <Screen>
       <TopBar title="Settings" subtitle="Account and preferences" back="/profile" />
       <div className="space-y-7 px-5 pt-5 pb-6">
-        {signedIn ? <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border-b border-border pb-5">
-          <PersonAvatar name={viewer.displayName ?? ""} photo={viewer.photo} className="h-14 w-14 shrink-0 text-1" />
-          <div className="min-w-0">
-            <p className="truncate text-2 font-semibold">{viewer.displayName || "Your account"}</p>
-            {viewer.username ? <p className="truncate text-sm text-muted-foreground">@{viewer.username}</p> : null}
+        {signedIn ? (
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border-b border-border pb-5">
+            <PersonAvatar
+              name={viewer.displayName ?? ""}
+              photo={viewer.photo}
+              className="h-14 w-14 shrink-0 text-1"
+            />
+            <div className="min-w-0">
+              <p className="truncate text-2 font-semibold">
+                {viewer.displayName || "Your account"}
+              </p>
+              {viewer.username ? (
+                <p className="truncate text-sm text-muted-foreground">@{viewer.username}</p>
+              ) : null}
+            </div>
           </div>
-        </div> : null}
+        ) : null}
         {deactivated ? (
           <AuthNotice
             tone="warn"

@@ -98,7 +98,11 @@ function MatchScreen() {
               onChange={(e) => setBrief(e.target.value)}
               maxLength={600}
               rows={4}
-              placeholder={hiring ? "Role, skills, city, dates, budget…" : "Role, genre, city, timing, paid or collab…"}
+              placeholder={
+                hiring
+                  ? "Role, skills, city, dates, budget…"
+                  : "Role, genre, city, timing, paid or collab…"
+              }
               className="w-full rounded-sm border border-input bg-card px-4 py-3 text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <div className="flex flex-wrap gap-2">
@@ -123,7 +127,9 @@ function MatchScreen() {
               Find matches
             </Btn>
             {tooShort && brief.length > 0 ? (
-              <p className="text-1 text-muted-foreground">Add a little more detail (10+ characters).</p>
+              <p className="text-1 text-muted-foreground">
+                Add a little more detail (10+ characters).
+              </p>
             ) : null}
           </form>
         )}
@@ -153,14 +159,36 @@ function MatchScreen() {
             {result.people.length ? (
               <section>
                 <SectionHeader title="People who fit" />
-                <ul className="mx-5 divide-y divide-border/70 overflow-hidden rounded-lg border border-border bg-card">
+                <ul className="space-y-3 px-5">
                   {result.people.map(({ person, reason }) => (
-                    <PersonRow
-                      key={person.id}
-                      person={person}
-                      roleLabels={options?.person_types}
-                      detail={reason}
-                    />
+                    <li key={person.id} className="lift reveal overflow-hidden rounded-lg bg-card">
+                      <PersonRow as="div" person={person} roleLabels={options?.person_types} />
+                      <div className="space-y-3 border-t border-border/70 px-4 pb-4 pt-3">
+                        <p className="text-sm">
+                          <span className="font-semibold">Why they fit: </span>
+                          {reason}
+                        </p>
+                        {person.username ? (
+                          <BtnLink
+                            to="/profile/$username"
+                            params={{ username: person.username }}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            View profile
+                          </BtnLink>
+                        ) : (
+                          <BtnLink
+                            to="/talent/$id"
+                            params={{ id: person.id }}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            View profile
+                          </BtnLink>
+                        )}
+                      </div>
+                    </li>
                   ))}
                 </ul>
               </section>
@@ -172,13 +200,24 @@ function MatchScreen() {
                   {result.opportunities.map(({ row, reason }) => {
                     const o = opportunityFromRow(row, labels.data ?? {});
                     return (
-                      <div key={row.id}>
+                      <div key={row.id} className="lift reveal space-y-2">
                         <OpportunityCard
                           o={o}
                           saved={saved.has(o.id)}
                           onSave={() => saved.toggle(o.id)}
                         />
-                        <p className="mt-1.5 px-1 text-1 text-muted-foreground">{reason}</p>
+                        <p className="px-1 text-sm">
+                          <span className="font-semibold">Why it fits: </span>
+                          {reason}
+                        </p>
+                        <BtnLink
+                          to="/opportunities/$id"
+                          params={{ id: row.id }}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          View opportunity
+                        </BtnLink>
                       </div>
                     );
                   })}
@@ -186,7 +225,8 @@ function MatchScreen() {
               </section>
             ) : null}
             <p className="px-5 text-1 text-muted-foreground">
-              Matches are suggested by AI from public profiles. Check a profile before you reach out.
+              Matches are suggested by AI from public profiles. Check a profile before you reach
+              out.
             </p>
           </div>
         )

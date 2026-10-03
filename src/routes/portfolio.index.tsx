@@ -165,9 +165,16 @@ function PortfolioOverview() {
     },
   });
   // Nothing to manage yet: the empty state's Add work is the one action.
-  const empty = signedIn && !authLoading && !q.isLoading && !q.isError && q.data !== undefined && items.length === 0;
+  const empty =
+    signedIn &&
+    !authLoading &&
+    !q.isLoading &&
+    !q.isError &&
+    q.data !== undefined &&
+    items.length === 0;
   // Counts and tools wait for the list, so a new user never sees a row of zeros flash first.
-  const showTools = signedIn && !empty && !q.isError && !q.isLoading && !authLoading && q.data !== undefined;
+  const showTools =
+    signedIn && !empty && !q.isError && !q.isLoading && !authLoading && q.data !== undefined;
 
   return (
     <Screen bottomNav={false} className="pb-32">

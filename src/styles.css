@@ -618,7 +618,8 @@
    * --color-line" — it is not; line is #D5D5DE, a different grey. Both recorded in
    * roadmap.md rather than resolved here.
    */
-  --background: #ececf1;
+  /* App ground: lovable.dev's grey on every screen (owner, 4 Oct 2026). Was #ECECF1. */
+  --background: oklch(0.9699 0 107);
   /* Sign-in screens only: the ground of lovable.dev/login (owner, 4 Oct 2026). */
   --auth-ground: oklch(0.9699 0 107);
   --foreground: var(--ink); /* default text is ink black */
@@ -1238,4 +1239,33 @@ html:active-view-transition-type(fade)::view-transition-new(root) {
 svg.lucide.text-muted-foreground,
 .text-muted-foreground svg.lucide:not([class*="text-"]) {
   color: var(--color-foreground);
+}
+
+/* Motion layer (owner, 4 Oct 2026): screens rise in, controls press, cards lift on hover. */
+@media (prefers-reduced-motion: no-preference) {
+  .screen-enter {
+    animation: var(--animate-rise);
+  }
+  a:not([aria-disabled="true"]):active,
+  button:not(:disabled):active,
+  [role="button"]:active {
+    transition: transform 90ms var(--easing-standard);
+    transform: scale(0.98);
+  }
+  .lift {
+    transition:
+      transform 200ms var(--easing-standard),
+      box-shadow 200ms var(--easing-standard);
+  }
+  @media (hover: hover) {
+    .lift:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px -14px color-mix(in oklab, var(--ink) 40%, transparent);
+    }
+  }
+  .reveal {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
 }

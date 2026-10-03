@@ -130,9 +130,7 @@ export function DrawerOptionRow({
       >
         <OptionIcon option={option} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-2 font-medium text-foreground">
-            {option.label}
-          </span>
+          <span className="block truncate text-2 font-medium text-foreground">{option.label}</span>
           {option.hint ? (
             <span className="mt-0.5 block text-1 text-muted-foreground">{option.hint}</span>
           ) : null}

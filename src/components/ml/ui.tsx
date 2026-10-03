@@ -38,6 +38,7 @@ import {
   QrCode,
   Settings,
   CircleHelp,
+  GraduationCap,
   Megaphone,
   type LucideIcon,
 } from "lucide-react";
@@ -89,7 +90,7 @@ export function Screen({
   const clearance = className || (bottomNav ? "pb-nav-clear" : "pb-8");
   return (
     <div className="app-canvas mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col bg-background">
-      <div className={`flex-1 ${clearance}`}>{children}</div>
+      <div className={`screen-enter flex-1 ${clearance}`}>{children}</div>
     </div>
   );
 }
@@ -192,6 +193,7 @@ const menuGroups: {
   {
     title: "You",
     items: [
+      { to: "/inbox", label: "Inbox", icon: Inbox },
       { to: "/notifications", label: "Notifications", icon: Bell },
       { to: "/identity/qr", label: "QR & Card", icon: QrCode },
       { to: "/verification", label: "Verification", icon: BadgeCheck },
@@ -203,6 +205,7 @@ const menuGroups: {
     items: [
       { to: "/settings", label: "Settings", icon: Settings },
       { to: "/help", label: "Help", icon: CircleHelp },
+      { to: "/academy", label: "Academy", icon: GraduationCap },
     ],
   },
 ];
@@ -285,45 +288,59 @@ export function BottomNav() {
         </ul>
       </nav>
       <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title="Menu">
-        <Link to={viewer.signedIn ? "/profile" : "/welcome"} onClick={() => setMenuOpen(false)} className="state-layer flex min-h-18 items-center gap-3 border-b border-border pb-5 pt-1">
-          <PersonAvatar name={viewer.displayName ?? ""} photo={viewer.photo} className="h-12 w-12 shrink-0 text-1" />
+        <Link
+          to={viewer.signedIn ? "/profile" : "/welcome"}
+          onClick={() => setMenuOpen(false)}
+          className="state-layer flex min-h-18 items-center gap-3 border-b border-border pb-5 pt-1"
+        >
+          <PersonAvatar
+            name={viewer.displayName ?? ""}
+            photo={viewer.photo}
+            className="h-12 w-12 shrink-0 text-1"
+          />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-2 font-semibold">{viewer.displayName || (viewer.signedIn ? "Your account" : "Sign in")}</span>
-            {viewer.username ? <span className="block truncate text-sm text-muted-foreground">@{viewer.username}</span> : null}
+            <span className="block truncate text-2 font-semibold">
+              {viewer.displayName || (viewer.signedIn ? "Your account" : "Sign in")}
+            </span>
+            {viewer.username ? (
+              <span className="block truncate text-sm text-muted-foreground">
+                @{viewer.username}
+              </span>
+            ) : null}
           </span>
         </Link>
         <div className="flex flex-col gap-5">
-        {menuGroups.map((group) => {
-          // The business entries are for a business page's own account.
-          const items = group.items.filter((i) => !i.to.startsWith("/business") || isBusiness);
-          if (!items.length) return null;
-          return (
-            <RowGroup key={group.title} title={group.title} flat>
-              {items.map((item) => {
-                const Icon = item.icon;
-                const stage = stageOf(item.to);
-                return (
-                  <li key={item.label}>
-                    <Row
-                      grouped
-                      flat
-                      to={item.to}
-                      {...(item.search ? { search: item.search } : {})}
-                      title={item.label}
-                      icon={<Icon size={iconSize.md} aria-hidden />}
-                      onClick={() => setMenuOpen(false)}
-                      {...(stage === "soon"
-                        ? { badge: <SoonBadge /> }
-                        : stage === "beta"
-                          ? { badge: <BetaBadge /> }
-                          : {})}
-                    />
-                  </li>
-                );
-              })}
-            </RowGroup>
-          );
-        })}
+          {menuGroups.map((group) => {
+            // The business entries are for a business page's own account.
+            const items = group.items.filter((i) => !i.to.startsWith("/business") || isBusiness);
+            if (!items.length) return null;
+            return (
+              <RowGroup key={group.title} title={group.title} flat>
+                {items.map((item) => {
+                  const Icon = item.icon;
+                  const stage = stageOf(item.to);
+                  return (
+                    <li key={item.label}>
+                      <Row
+                        grouped
+                        flat
+                        to={item.to}
+                        {...(item.search ? { search: item.search } : {})}
+                        title={item.label}
+                        icon={<Icon size={iconSize.md} aria-hidden />}
+                        onClick={() => setMenuOpen(false)}
+                        {...(stage === "soon"
+                          ? { badge: <SoonBadge /> }
+                          : stage === "beta"
+                            ? { badge: <BetaBadge /> }
+                            : {})}
+                      />
+                    </li>
+                  );
+                })}
+              </RowGroup>
+            );
+          })}
         </div>
       </Sheet>
     </>

@@ -212,7 +212,7 @@ function Conversation() {
   return (
     <Screen className="pb-0">
       <div className="flex h-[100dvh] flex-col">
-         <header className="flex shrink-0 items-center gap-3 border-b border-border bg-card/95 px-5 py-3 pt-safe backdrop-blur">
+        <header className="flex shrink-0 items-center gap-3 border-b border-border bg-card/95 px-5 py-3 pt-safe backdrop-blur">
           <Link
             to="/messages"
             className="hit-area flex h-10 w-10 shrink-0 items-center justify-center transition-transform duration-200 ease-standard active:scale-97"
@@ -242,8 +242,12 @@ function Conversation() {
           {person ? <CallBtn profileId={person.id} className="h-10 w-10" /> : null}
         </header>
 
-         <div ref={list} className="flex-1 overflow-y-auto px-5 pb-3">
-           {q.isError ? <div role="alert" className="py-6 text-sm text-muted-foreground">This conversation couldn't load. Return to Connections and try again.</div> : null}
+        <div ref={list} className="flex-1 overflow-y-auto px-5 pb-3">
+          {q.isError ? (
+            <div role="alert" className="py-6 text-sm text-muted-foreground">
+              This conversation couldn't load. Return to Connections and try again.
+            </div>
+          ) : null}
           {q.isLoading ? <Loading rows={3} /> : null}
 
           {q.data && messages.length === 0 ? (
@@ -330,7 +334,7 @@ function Conversation() {
         {/* The composer, the 2026 way: a round + for sharing your work, a borderless field that
             grows with the message, and a squared send key that fills in once there is text. */}
         <form
-           className="flex shrink-0 items-end gap-2 border-t border-border bg-card px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2"
+          className="flex shrink-0 items-end gap-2 border-t border-border bg-card px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2"
           onSubmit={(e) => {
             e.preventDefault();
             submit();
@@ -340,11 +344,11 @@ function Conversation() {
             type="button"
             aria-label="Share your profile, a service or a work"
             onClick={() => setSharing(true)}
-             className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground transition-transform duration-200 ease-standard active:scale-97"
+            className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground transition-transform duration-200 ease-standard active:scale-97"
           >
             <Plus size={iconSize.md} aria-hidden />
           </button>
-           <div className="flex min-h-12 min-w-0 flex-1 items-center rounded-full border border-input bg-card px-5 transition-shadow duration-200 focus-within:ring-2 focus-within:ring-ring">
+          <div className="flex min-h-12 min-w-0 flex-1 items-center rounded-full border border-input bg-card px-5 transition-shadow duration-200 focus-within:ring-2 focus-within:ring-ring">
             <label htmlFor="message" className="sr-only">
               Message
             </label>
@@ -375,7 +379,7 @@ function Conversation() {
             type="submit"
             aria-label="Send"
             disabled={!draft.trim()}
-             className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink text-ink-foreground transition-[transform,background-color,color] duration-200 ease-standard active:scale-97 disabled:bg-subtle disabled:text-muted-foreground"
+            className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink text-ink-foreground transition-[transform,background-color,color] duration-200 ease-standard active:scale-97 disabled:bg-subtle disabled:text-muted-foreground"
           >
             <SendHorizontal size={iconSize.md} aria-hidden />
           </button>
