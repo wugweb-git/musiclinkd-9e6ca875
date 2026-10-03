@@ -177,7 +177,7 @@ export function MadeByWugweb() {
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-lg bg-subtle p-4 ${className}`}>{children}</section>;
+  return <section className={`rounded-lg bg-card p-4 shadow-elevation-2 ${className}`}>{children}</section>;
 }
 
 /**
@@ -458,7 +458,7 @@ export function RowGroup({ title, children }: { title: string; children: ReactNo
   return (
     <section>
       <h2 className="pill mb-2 px-1 text-muted-foreground">{title}</h2>
-      <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-subtle">
+      <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card shadow-elevation-2">
         {children}
       </ul>
     </section>
@@ -505,14 +505,14 @@ export function EmptyState({
 
   if (variant === "circle-lg") {
     return (
-      <div className="flex flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-12 text-center">
+      <div className="flex flex-col items-start border-l-4 border-ink bg-card px-5 py-8 text-left shadow-elevation-2">
         {icon ? (
-          <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-ink">
+          <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-sm bg-ink text-ink-foreground">
             {icon}
           </span>
         ) : null}
         <h3 className="text-2">{title}</h3>
-        <p className="mt-1 mb-5 max-w-rail-lg text-1 text-muted-foreground">{body}</p>
+        <p className="mt-1 mb-5 max-w-rail-lg text-sm text-muted-foreground">{body}</p>
         {extra}
       </div>
     );
@@ -520,30 +520,30 @@ export function EmptyState({
 
   if (variant === "square-lg") {
     return (
-      <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
+      <div className="border-l-4 border-ink bg-card px-5 py-8 text-left shadow-elevation-2">
         {icon ? (
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-sm bg-subtle text-3">
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-sm bg-ink text-ink-foreground">
             {icon}
           </div>
         ) : null}
         <h3 className="text-2">{title}</h3>
-        <p className="mx-auto mt-1 max-w-rail-lg text-1 text-muted-foreground">{body}</p>
-        {extra ? <div className="mt-5">{extra}</div> : null}
+        <p className="mt-1 max-w-rail-lg text-sm text-muted-foreground">{body}</p>
+        {extra ? <div className="mt-5 flex justify-start">{extra}</div> : null}
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-8 text-center">
+    <div className="border-l-4 border-border bg-card px-5 py-7 text-left shadow-elevation-2">
       {icon ? (
-        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sm bg-subtle">
+        <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-sm bg-ink text-ink-foreground">
           {icon}
         </span>
       ) : null}
       <h3 className="text-2 leading-tight">{title}</h3>
-      <p className="mx-auto mt-2 max-w-prose-sm text-1 text-muted-foreground">{body}</p>
+      <p className="mt-2 max-w-prose-sm text-sm text-muted-foreground">{body}</p>
       {extra ? (
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">{extra}</div>
+        <div className="mt-5 flex flex-wrap items-center justify-start gap-2">{extra}</div>
       ) : null}
     </div>
   );
@@ -623,21 +623,27 @@ export function StateCard({
 
   return (
     <div
-      className={`rounded-lg border bg-card p-6 text-center ${tone === "error" ? "border-destructive" : "border-border"}`}
+      className={`border-l-4 bg-card p-5 text-left shadow-elevation-2 ${tone === "error" ? "border-destructive" : "border-ink"}`}
       role={tone === "error" ? "alert" : undefined}
     >
       <h3 className="text-2">{title}</h3>
-      <p className="mx-auto mt-1.5 max-w-prose-sm text-sm text-muted-foreground">{body}</p>
-      {extra ? <div className="mt-4 flex justify-center">{extra}</div> : null}
+      <p className="mt-1.5 max-w-prose-sm text-sm text-muted-foreground">{body}</p>
+      {extra ? <div className="mt-4 flex justify-start">{extra}</div> : null}
     </div>
   );
 }
 
 export function Loading({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="flex flex-col gap-2" role="status" aria-busy aria-label="Loading">
+    <div className="flex flex-col gap-3" role="status" aria-busy aria-label="Loading">
       {Array.from({ length: rows }).map((_, i) => (
-        <Skeleton key={i} className="h-20 rounded-lg" />
+        <div key={i} className="flex h-20 items-center gap-3 rounded-lg bg-card px-4 shadow-elevation-2">
+          <Skeleton className="h-11 w-11 shrink-0 rounded-sm" />
+          <span className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-3.5 w-2/5" />
+            <Skeleton className="h-3 w-3/4" />
+          </span>
+        </div>
       ))}
     </div>
   );

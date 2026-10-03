@@ -99,7 +99,7 @@
 
 
   /* The mobile shell width, previously repeated as max-w-app in 55 places. */
-  --container-app: 640px;
+  --container-app: 760px;
 
   /* Horizontal-scroll rail cards (w-rail-*): person/studio cards, live-video cards. Found repeated
    * as bare w-[168px]/w-[200px]/w-[260px] across cards.tsx and band-sections.tsx (22 Sep audit). */

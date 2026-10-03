@@ -86,7 +86,7 @@ export function Screen({
   bottomNav ??= isNavRoot(path);
   const clearance = className || (bottomNav ? "pb-nav-clear" : "pb-8");
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col bg-background">
+    <div className="app-canvas mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col bg-background">
       <div className={`flex-1 ${clearance}`}>{children}</div>
     </div>
   );
@@ -328,11 +328,8 @@ export function TopBar({
   back?: string;
   right?: ReactNode;
 }) {
-  // subtitle is intentionally never rendered (owner rule) — the prop stays so existing callers
-  // don't need touching, but the top bar is title-only, no exceptions.
-  void subtitle;
   return (
-    <header className="pt-safe sticky top-0 z-bar flex items-center gap-3 bg-background/90 px-5 pb-4 backdrop-blur">
+    <header className="pt-safe sticky top-0 z-bar flex items-center gap-3 border-b border-border/70 bg-card/92 px-5 pb-3.5 backdrop-blur">
       {back ? (
         <Link
           to={back}
@@ -344,6 +341,7 @@ export function TopBar({
       ) : null}
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-3 leading-tight">{title}</h1>
+        {subtitle ? <p className="mt-0.5 truncate text-1 text-muted-foreground">{subtitle}</p> : null}
       </div>
       {right}
     </header>
