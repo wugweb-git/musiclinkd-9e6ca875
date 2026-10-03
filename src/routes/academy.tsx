@@ -8,9 +8,15 @@ export const Route = createFileRoute("/academy")({
   head: () => ({
     meta: [
       { title: "Academy | MusicLinkd" },
-      { name: "description", content: "Lessons for music professionals on MusicLinkd. Coming soon." },
+      {
+        name: "description",
+        content: "Lessons for music professionals on MusicLinkd. Coming soon.",
+      },
       { property: "og:title", content: "Academy | MusicLinkd" },
-      { property: "og:description", content: "Learn to get booked, price your work and grow in music." },
+      {
+        property: "og:description",
+        content: "Learn to get booked, price your work and grow in music.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

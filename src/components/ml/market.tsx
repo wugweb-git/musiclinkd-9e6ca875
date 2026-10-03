@@ -1525,7 +1525,10 @@ export function CategoryBanner({
         aria-hidden
         className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-brand/35 blur-3xl animate-breathe"
       />
-      <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-1 w-1/3 bg-brand" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-0 h-1 w-1/3 bg-brand"
+      />
       <div className="relative flex items-end justify-between gap-4">
         <div className="min-w-0">
           <p className="text-1 text-ink-foreground/70">Market category</p>

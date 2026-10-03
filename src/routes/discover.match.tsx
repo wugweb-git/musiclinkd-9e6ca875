@@ -98,7 +98,11 @@ function MatchScreen() {
               onChange={(e) => setBrief(e.target.value)}
               maxLength={600}
               rows={4}
-              placeholder={hiring ? "Role, skills, city, dates, budget…" : "Role, genre, city, timing, paid or collab…"}
+              placeholder={
+                hiring
+                  ? "Role, skills, city, dates, budget…"
+                  : "Role, genre, city, timing, paid or collab…"
+              }
               className="w-full rounded-sm border border-input bg-card px-4 py-3 text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <div className="flex flex-wrap gap-2">
@@ -123,7 +127,9 @@ function MatchScreen() {
               Find matches
             </Btn>
             {tooShort && brief.length > 0 ? (
-              <p className="text-1 text-muted-foreground">Add a little more detail (10+ characters).</p>
+              <p className="text-1 text-muted-foreground">
+                Add a little more detail (10+ characters).
+              </p>
             ) : null}
           </form>
         )}
@@ -219,7 +225,8 @@ function MatchScreen() {
               </section>
             ) : null}
             <p className="px-5 text-1 text-muted-foreground">
-              Matches are suggested by AI from public profiles. Check a profile before you reach out.
+              Matches are suggested by AI from public profiles. Check a profile before you reach
+              out.
             </p>
           </div>
         )
