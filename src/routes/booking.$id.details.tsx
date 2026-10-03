@@ -36,7 +36,7 @@ function DetailsStep() {
 }
 
 function Details() {
-  const { bookable: b, resource: r, draft, set, price } = useBookingDraft();
+  const { bookable: b, draft, set, price } = useBookingDraft();
   const navigate = useNavigate();
 
   return (
@@ -49,8 +49,7 @@ function Details() {
       <main className="px-5 pt-4">
         <StepDots step={3} total={5} />
         <p className="mt-3 text-sm text-muted-foreground">
-          Only what the provider needs to prepare the room. Your contact details come from your
-          profile.
+          Only what the provider needs to prepare. Your contact details come from your profile.
         </p>
 
         <div className="mt-5 space-y-4">
@@ -99,12 +98,11 @@ function Details() {
               <button
                 type="button"
                 aria-label="More people"
-                onClick={() => set({ people: Math.min(r.capacity, draft.people + 1) })}
+                onClick={() => set({ people: Math.min(200, draft.people + 1) })}
                 className="h-12 w-12 rounded-full border border-border bg-card text-2"
               >
                 +
               </button>
-              <span className="text-1 text-muted-foreground">Room capacity {r.capacity}</span>
             </div>
           </Field>
 

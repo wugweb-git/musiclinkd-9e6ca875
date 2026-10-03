@@ -10,11 +10,11 @@ import {
 import { removeSubjectPhotos } from "@/lib/bookable-photos.functions";
 
 /*
- * The studio owner's own edit surface for the real, flat columns that exist today:
- * studios.hourly_rate_paise, .operating_hours, .cancellation_policy, and each
- * bookable_rooms.hourly_rate_paise. The weekly booking hours and closed times are edited through
+ * The owner's own edit surface for the bookable's flat columns: hourly_rate_paise,
+ * operating_hours, cancellation_policy, add_ons, amenities. There are no rooms (owner, 3 Oct 2026:
+ * people book a service). The weekly booking hours and closed times are edited through
  * src/lib/bookable-calendar.functions.ts, and the equipment list below.
- * RLS: "Owners write their own" on both studios and bookable_rooms (20260914180000_catalog.sql).
+ * RLS: "Owners write their own" on bookables (20260914180000_catalog.sql).
  */
 
 export type MyBookable = {
@@ -24,26 +24,8 @@ export type MyBookable = {
   hourly_rate_paise: number | null;
   operating_hours: string | null;
   cancellation_policy: string | null;
-  /** studios.add_ons — extras a session can have, shown on /booking/$id. */
+  /** bookables.add_ons — extras a session can have, shown on /booking/$id. */
   add_ons: BookableAddOnRow[];
-  rooms: {
-    id: string;
-    name: string;
-    hourly_rate_paise: number | null;
-    /** bookable_rooms.tiers — package rates beside the hourly one ("Half day", 4 hours). */
-    tiers: RoomTierRow[];
-  }[];
-};
-
-/**
- * One stored package rate. `unit` is the booking screens' duration unit (hour, halfDay, fullDay,
- * session); rows written before it existed may lack it. Any other stored keys ride along on save.
- */
-export type RoomTierRow = {
-  label: string;
-  hours: number | null;
-  price_paise: number | null;
-  unit?: string | null;
 };
 
 /** One stored add-on. `unit` "hour" is charged per hour, anything else per that unit. */
@@ -61,63 +43,16 @@ export const getMyBookable = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<MyBookable | null> => {
     const { data, error } = await context.supabase
       .from("bookables" as never)
-      .select(
-        "id, slug, name, hourly_rate_paise, operating_hours, cancellation_policy, add_ons, rooms:bookable_rooms(id, name, hourly_rate_paise, tiers, sort_order)",
-      )
+      .select("id, slug, name, hourly_rate_paise, operating_hours, cancellation_policy, add_ons")
       .eq("owner_profile_id", context.userId)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!data) return null;
-    const row = data as unknown as MyBookable & {
-      rooms: (MyBookable["rooms"][number] & { sort_order?: number | null })[];
-    };
-    return {
-      ...row,
-      add_ons: Array.isArray(row.add_ons) ? row.add_ons : [],
-      rooms: [...row.rooms]
-        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-        .map(({ sort_order: _order, ...room }) => ({
-          ...room,
-          tiers: Array.isArray(room.tiers) ? room.tiers : [],
-        })),
-    };
+    const row = data as unknown as MyBookable;
+    return { ...row, add_ons: Array.isArray(row.add_ons) ? row.add_ons : [] };
   });
 
 const PAISE = z.number().int().min(0).max(100_000_000).nullable();
-
-/** A room's package rates, replacing the stored list. Scoped to the owner's own studio. */
-export const updateBookableRoomTiers = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z
-      .object({
-        roomId: z.string().uuid(),
-        tiers: z
-          .array(
-            z
-              .object({
-                label: z.string().trim().min(1).max(60),
-                hours: z.number().int().min(1).max(24).nullable(),
-                price_paise: PAISE,
-                unit: z.enum(["hour", "halfDay", "fullDay", "session"]).nullable().optional(),
-              })
-              .passthrough(),
-          )
-          .max(12),
-      })
-      .parse(d),
-  )
-  .handler(async ({ context, data }): Promise<{ ok: true }> => {
-    const client = db(context.supabase);
-    const studioId = await myBookableId(client, context.userId);
-    const { error } = await client
-      .from("bookable_rooms")
-      .update({ tiers: data.tiers } as never)
-      .eq("id", data.roomId)
-      .eq("bookable_id", studioId);
-    if (error) throw new Error(error.message);
-    return { ok: true };
-  });
 
 /** The studio's add-ons, replacing the stored list. */
 export const updateMyBookableAddOns = createServerFn({ method: "POST" })
@@ -176,30 +111,6 @@ export const updateMyBookable = createServerFn({ method: "POST" })
       .select("id");
     if (error) throw new Error(error.message);
     if (!rows?.length) throw new Error("That didn't save. Try again.");
-    return { ok: true };
-  });
-
-export const updateBookableRoomRate = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z.object({ roomId: z.string().uuid(), hourly_rate_paise: z.number().int().min(0) }).parse(d),
-  )
-  .handler(async ({ context, data }): Promise<{ ok: true }> => {
-    // bookable_rooms has no owner column of its own — scope the write through the owner's studio.
-    const { data: studio, error: studioError } = await context.supabase
-      .from("bookables" as never)
-      .select("id")
-      .eq("owner_profile_id", context.userId)
-      .maybeSingle();
-    if (studioError) throw new Error(studioError.message);
-    const studioId = (studio as { id: string } | null)?.id;
-    if (!studioId) throw new Error("You don't have a studio yet.");
-    const { error } = await context.supabase
-      .from("bookable_rooms" as never)
-      .update({ hourly_rate_paise: data.hourly_rate_paise } as never)
-      .eq("id", data.roomId)
-      .eq("bookable_id", studioId);
-    if (error) throw new Error(error.message);
     return { ok: true };
   });
 

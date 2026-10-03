@@ -413,7 +413,7 @@ function NoticeAndBlackouts({ studio }: { studio: MyBookable }) {
   );
 }
 
-/** Times the owner closes on top of the weekly hours, for one room or the whole studio. */
+/** Times the owner closes on top of the weekly hours: the whole place (one calendar, no rooms). */
 function ClosedTimes({ studio }: { studio: MyBookable }) {
   const queryClient = useQueryClient();
   const load = useServerFn(listMyBookableBlocks);
@@ -421,13 +421,10 @@ function ClosedTimes({ studio }: { studio: MyBookable }) {
   const remove = useServerFn(removeMyBookableBlock);
   const q = useQuery({ queryKey: ["studio-blocks", "mine"], queryFn: () => load() });
   const [open, setOpen] = useState(false);
-  const [roomId, setRoomId] = useState("");
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
-  const roomName = (id: string | null) =>
-    studio.rooms.find((r) => r.id === id)?.name ?? "Whole studio";
 
   async function refresh() {
     await Promise.all([
@@ -441,7 +438,6 @@ function ClosedTimes({ studio }: { studio: MyBookable }) {
     try {
       await add({
         data: {
-          roomId: roomId || null,
           startsAt,
           endsAt,
           ...(reason.trim() ? { reason: reason.trim() } : {}),
@@ -489,7 +485,7 @@ function ClosedTimes({ studio }: { studio: MyBookable }) {
                   {when(b.starts_at)} – {when(b.ends_at)}
                 </span>
                 <span className="block truncate text-1 text-muted-foreground">
-                  {[roomName(b.room_id), b.reason].filter(Boolean).join(" · ")}
+                  {b.reason ?? ""}
                 </span>
               </span>
               <IconBtn label="Reopen this time" variant="ghost" onClick={() => void onRemove(b.id)}>
@@ -511,26 +507,6 @@ function ClosedTimes({ studio }: { studio: MyBookable }) {
             if (startsAt && endsAt && !busy) void onAdd();
           }}
         >
-          {studio.rooms.length ? (
-            <>
-              <label className="block text-1 font-semibold" htmlFor="block-room">
-                Room
-              </label>
-              <select
-                id="block-room"
-                value={roomId}
-                onChange={(e) => setRoomId(e.target.value)}
-                className={inputCls}
-              >
-                <option value="">Whole studio</option>
-                {studio.rooms.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
-                ))}
-              </select>
-            </>
-          ) : null}
           <label className="block text-1 font-semibold" htmlFor="block-start">
             From
           </label>

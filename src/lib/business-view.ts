@@ -64,15 +64,6 @@ export type BusinessView = {
   address: string;
   /** The business's Google Maps link, opened for directions. */
   mapsUrl: string | null;
-  spaces: {
-    id: string;
-    name: string;
-    rate: PriceParts | null;
-    capacity: string;
-    detail: string;
-    gear: string[];
-    photo: string;
-  }[];
   members: {
     id: string;
     name: string;
@@ -228,18 +219,6 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     })),
     address: business.business_address ?? "",
     mapsUrl: business.maps_url ?? null,
-    spaces: (studio?.rooms ?? []).map((room) => {
-      const capacity = room.capacity ? `Up to ${room.capacity}` : "";
-      return {
-        id: room.id,
-        name: room.name,
-        rate: priceParts(room.hourly_rate_paise, "hr"),
-        capacity,
-        detail: joinParts(room.kind, capacity),
-        gear: room.gear,
-        photo: room.photo_url ?? "",
-      };
-    }),
     members: r.team.map((m) => ({
       id: m.id,
       name: m.name,

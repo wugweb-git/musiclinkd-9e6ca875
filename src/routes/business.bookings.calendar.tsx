@@ -185,7 +185,7 @@ function BlockRow({ b }: { b: BookingRequest }) {
       <span className="mt-1 h-10 w-1 shrink-0 rounded-full bg-primary" aria-hidden />
       <div className="min-w-0 flex-1">
         <p className="truncate text-1 font-semibold">
-          {b.service?.name ?? b.room?.name ?? "Session"} ·{" "}
+          {b.service?.name ?? b.purpose ?? "Session"} ·{" "}
           {b.requester?.display_name ?? b.requester?.username ?? b.requester_name ?? "Someone"}
         </p>
         <p className="truncate text-1 text-muted-foreground">

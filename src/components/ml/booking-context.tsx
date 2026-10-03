@@ -1,17 +1,10 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Navigate } from "@tanstack/react-router";
-import {
-  getResource,
-  priceForService,
-  type Bookable,
-  type PriceLines,
-  type Resource,
-} from "@/data/booking";
+import { priceForService, type Bookable, type PriceLines } from "@/data/booking";
 import { BtnLink, Screen, TopBar } from "./ui";
 import { EmptyState } from "./kit";
 
 export type BookingDraft = {
-  resourceId: string;
   /** The service booked (profile_services id); purpose carries its name. */
   serviceId?: string | undefined;
   date?: string | undefined;
@@ -29,7 +22,6 @@ type Service = NonNullable<Bookable["services"]>[number];
 
 type Ctx = {
   bookable: Bookable;
-  resource: Resource;
   /** The service picked, once one is. */
   service: Service | undefined;
   draft: BookingDraft;
@@ -49,7 +41,7 @@ export function useBookingDraft() {
   return ctx;
 }
 
-/** Date, time and the steps after them need an availability calendar; without one, stay on rooms. */
+/** Date, time and the steps after them need an availability calendar; without one, stay on services. */
 export function CalendarGate({ children }: { children: ReactNode }) {
   const { bookable } = useBookingDraft();
   if (bookable.hasCalendar === false) {
@@ -75,7 +67,6 @@ export function BookingDraftProvider({
     ? bookable?.services?.find((s) => s.id === service || s.name === service)
     : undefined;
   const [draft, setDraft] = useState<BookingDraft>(() => ({
-    resourceId: bookable?.resources[0]?.id ?? "",
     serviceId: picked?.id,
     hours: 2,
     people: 2,
@@ -95,16 +86,16 @@ export function BookingDraftProvider({
         : [...d.addOnIds, addOnId],
     }));
 
-  const resource = getResource(bookable, draft.resourceId);
   const chosen = bookable?.services?.find((s) => s.id === draft.serviceId);
 
   const value = useMemo<Ctx | null>(() => {
-    if (!bookable || !resource) return null;
+    // Every service is bookable, and there is nothing else to book (owner, 3 Oct 2026): a place
+    // with no services takes no bookings.
+    if (!bookable || !bookable.services?.length) return null;
     const startHour = Number((draft.start ?? "10:00").split(":")[0]);
     const endHour = Math.min(23, startHour + draft.hours);
     return {
       bookable,
-      resource,
       service: chosen,
       draft,
       set,
@@ -112,11 +103,11 @@ export function BookingDraftProvider({
       price: priceForService(bookable, chosen, draft.hours, draft.addOnIds),
       endTime: `${String(endHour).padStart(2, "0")}:00`,
     };
-  }, [bookable, resource, chosen, draft]);
+  }, [bookable, chosen, draft]);
 
   /*
    * A real screen, not a bare centred div. This branch is reached by a bad slug *and* by a genuine
-   * listing with no resources configured — `getResource` returns undefined for an empty array — and
+   * place with no services yet, and
    * it used to render with no Screen, no TopBar, no nav and no link out, so on Android the system
    * back gesture was the only escape (audit C1, 29 Sep 2026).
    */

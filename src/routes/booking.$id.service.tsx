@@ -19,16 +19,15 @@ import { useAuth } from "@/hooks/use-auth";
 export const Route = createFileRoute("/booking/$id/service")({
   head: () => ({
     meta: [
-      { title: "Choose a room or service — MusicLinkd booking" },
+      { title: "Choose a service — MusicLinkd booking" },
       {
         name: "description",
-        content:
-          "Pick the room, booth or service you want to book, with capacity, gear and rates side by side.",
+        content: "Pick the service you want to book, with rates side by side.",
       },
-      { property: "og:title", content: "Choose a room or service — MusicLinkd booking" },
+      { property: "og:title", content: "Choose a service — MusicLinkd booking" },
       {
         property: "og:description",
-        content: "Capacity, equipment and rates for every bookable room.",
+        content: "Rates for every bookable service.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -46,10 +45,8 @@ function SelectService() {
 
   // A studio with no availability calendar is asked directly: the date you want, and what for.
   const noCalendar = b.hasCalendar === false;
-  // Without services of its own, a studio is booked as a general session.
-  const serviceChoices = b.services?.length
-    ? b.services
-    : [{ id: "session", name: "Studio session", price_paise: null, price_unit: null, uses: [] }];
+  // A place with no services takes no bookings (the provider shows it as unavailable).
+  const serviceChoices = b.services ?? [];
 
   const request = useMutation({
     mutationFn: (r: SessionRequest) =>
@@ -57,7 +54,6 @@ function SelectService() {
         data: {
           studioSlug: b.id,
           ...(draft.serviceId ? { serviceId: draft.serviceId } : {}),
-          ...(/^[0-9a-f-]{36}$/i.test(draft.resourceId) ? { roomId: draft.resourceId } : {}),
           date: r.date,
           ...(r.start ? { startTime: r.start } : {}),
           ...(r.hours ? { hours: r.hours } : {}),
@@ -81,7 +77,7 @@ function SelectService() {
         <p className="mt-3 text-sm text-muted-foreground">
           Pick a service. Next you choose a date and time.
         </p>
-        {/* The studio's services; its rooms stay behind the scenes and set the calendar. */}
+        {/* The place's services; one calendar for the whole place. */}
         <div className="mt-4 space-y-3">
           {serviceChoices.map((sv) => (
             <ServiceCard
@@ -89,7 +85,7 @@ function SelectService() {
               s={serviceItem(sv)}
               selected={draft.purpose === sv.name}
               onBook={() => {
-                set({ purpose: sv.name, serviceId: sv.id === "session" ? undefined : sv.id });
+                set({ purpose: sv.name, serviceId: sv.id });
                 if (noCalendar) {
                   if (signedIn) setAsk(true);
                   else void navigate({ to: "/welcome" });

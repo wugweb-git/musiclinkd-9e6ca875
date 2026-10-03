@@ -60,7 +60,8 @@ export function insideNotice(
 }
 
 /** A taken or closed interval, "yyyy-mm-ddThh:mm:ss" local. No room means every room. */
-export type BusyInterval = { roomId: string | null; start: string; end: string };
+/** A taken or closed time. It takes the whole place: one calendar per place (owner, 3 Oct 2026). */
+export type BusyInterval = { start: string; end: string };
 
 const HHMM = /^([01]\d|2[0-4]):[0-5]\d$/;
 
@@ -150,13 +151,12 @@ export function calendarWindow(now = new Date()) {
   return { from: isoDate(now), to: isoDate(end) };
 }
 
-/** One room's day: whole-hour slots inside the opening hours, each open, booked or past. */
+/** The place's day: whole-hour slots inside the opening hours, each open, booked or past. */
 export function bookableDay(
   weekly: WeeklyHours,
   busy: BusyInterval[],
-  roomId: string,
   date: string,
-  fromPrice: number,
+  fromPrice: number | undefined,
   rules: BookingRules = {},
   now = new Date(),
 ): DayAvailability {
@@ -171,9 +171,7 @@ export function bookableDay(
   // No slot starts inside the notice the studio needs.
   const earliest = now.getTime() + (rules.noticeHours ?? 0) * 3_600_000;
 
-  const taken = busy
-    .filter((b) => b.roomId === null || b.roomId === roomId)
-    .map((b) => [new Date(b.start).getTime(), new Date(b.end).getTime()] as const);
+  const taken = busy.map((b) => [new Date(b.start).getTime(), new Date(b.end).getTime()] as const);
 
   const slots: Slot[] = [];
   for (const span of spans) {
@@ -197,7 +195,7 @@ export function bookableDay(
     date,
     state: open === 0 ? "unavailable" : open <= 3 ? "limited" : "available",
     slots,
-    fromPrice,
+    ...(fromPrice === undefined ? {} : { fromPrice }),
   };
 }
 

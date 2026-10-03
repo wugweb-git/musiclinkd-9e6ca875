@@ -107,9 +107,11 @@ export const getBookableCalendar = createServerFn({ method: "GET" })
     return {
       weeklyHours,
       ...rules,
-      busy: ((busy ?? []) as { room_id: string | null; starts_at: string; ends_at: string }[]).map(
-        (b) => ({ roomId: b.room_id, start: local(b.starts_at), end: local(b.ends_at) }),
-      ),
+      // One calendar per place (owner, 3 Oct 2026): every busy time takes the whole place.
+      busy: ((busy ?? []) as { starts_at: string; ends_at: string }[]).map((b) => ({
+        start: local(b.starts_at),
+        end: local(b.ends_at),
+      })),
     };
   });
 
@@ -177,7 +179,6 @@ export const updateMyBookingRules = createServerFn({ method: "POST" })
 
 export type BookableBlock = {
   id: string;
-  room_id: string | null;
   starts_at: string;
   ends_at: string;
   reason: string | null;
@@ -264,7 +265,7 @@ export const listMyBookableBlocks = createServerFn({ method: "GET" })
     const studioId = await myBookableId(client, context.userId);
     const { data, error } = await client
       .from("bookable_blocks")
-      .select("id, room_id, starts_at, ends_at, reason")
+      .select("id, starts_at, ends_at, reason")
       .eq("bookable_id", studioId)
       .gte("ends_at", new Date().toISOString().slice(0, 10))
       .order("starts_at", { ascending: true });
@@ -281,7 +282,6 @@ export const addMyBookableBlock = createServerFn({ method: "POST" })
   .inputValidator((d) =>
     z
       .object({
-        roomId: z.string().uuid().nullable(),
         startsAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/),
         endsAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/),
         reason: z.string().max(200).optional(),
@@ -296,7 +296,6 @@ export const addMyBookableBlock = createServerFn({ method: "POST" })
       .from("bookable_blocks")
       .insert({
         bookable_id: studioId,
-        room_id: data.roomId,
         starts_at: data.startsAt,
         ends_at: data.endsAt,
         reason: data.reason?.trim() || null,

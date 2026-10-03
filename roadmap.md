@@ -21,6 +21,8 @@
   (`business.new.tsx`, `profile-groups.functions.ts`).
 - `studio_services` rows and other persona-named keys, columns and files (report, 3 Oct).
 - The Storybook accessibility suite (`bun run test-storybook`) was not run for this batch.
+- Talent have no list of incoming booking requests; they reach each one only from its
+  notification (`/business/bookings/requests/<id>`).
 
 ## Done
 - FLOW 03 (Discover) — discover home, categories, search, filters, profiles

@@ -41,7 +41,6 @@ export type BookingRequest = {
   /** Copied when the booking is made, so the history reads after the studio or person is gone. */
   bookable_name: string | null;
   requester_name: string | null;
-  room: { id: string; name: string } | null;
   /** The service booked, with who offers it; null for older bookings or a paused service. */
   service: {
     id: string;
@@ -62,7 +61,6 @@ export type BookingRequest = {
 const SELECT = `id, session_date, start_time, end_time, hours, people, purpose, notes, reply, status, created_at,
   bookable_name, requester_name,
   studio:bookables(id, slug, name, location, owner_profile_id),
-  room:bookable_rooms(id, name),
   service:profile_services(id, name, profile_id,
     provider:profiles!profile_services_profile_id_fkey(display_name, username)),
   requester:profiles!booking_requests_requester_profile_id_fkey(id, username, display_name, avatar_url)`;
@@ -95,7 +93,6 @@ export const requestBooking = createServerFn({ method: "POST" })
       .object({
         studioSlug: z.string().min(1).max(120).optional(),
         serviceId: z.string().uuid().optional(),
-        roomId: z.string().uuid().optional(),
         date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
         startTime: z
           .string()
@@ -147,24 +144,10 @@ export const requestBooking = createServerFn({ method: "POST" })
       await assertBookableTakes(client, studioId, data.date, data.startTime);
     }
 
-    // A studio with no rooms of its own is asked as a whole: the screens then carry the studio's
-    // id where a room id would be, so it is only stored when it really is one of that studio's rooms.
-    let roomId: string | null = null;
-    if (studioId && data.roomId) {
-      const { data: room } = await client
-        .from("bookable_rooms")
-        .select("id")
-        .eq("id", data.roomId)
-        .eq("bookable_id", studioId)
-        .maybeSingle();
-      roomId = (room as { id: string } | null)?.id ?? null;
-    }
-
     const { data: row, error } = await client
       .from("booking_requests")
       .insert({
         bookable_id: studioId,
-        room_id: roomId,
         service_id: service?.id ?? null,
         requester_profile_id: context.userId,
         session_date: data.date,

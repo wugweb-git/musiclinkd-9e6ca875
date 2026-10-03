@@ -33,9 +33,6 @@ export type SellerOwnerSummary = OwnerSummary & {
 /** A studio's extra, priced per unit when it has a price ("Engineer", ₹800, "hour"). */
 export type BookableAddOn = { name: string; price_paise: number | null; unit: string | null };
 
-/** A room's package rate beside its hourly one ("Half day", 4 hours, ₹8,000). */
-export type RoomTier = { label: string; hours: number | null; price_paise: number | null };
-
 export type BookableRow = {
   id: string;
   slug: string;
@@ -47,7 +44,6 @@ export type BookableRow = {
   review_count: number;
   verified_gold: boolean;
   console_type: string | null;
-  services: string[];
   amenities: string[];
   cancellation_policy: string | null;
   operating_hours: string | null;
@@ -57,18 +53,6 @@ export type BookableRow = {
   response_time?: string | null;
   add_ons?: BookableAddOn[];
   owner: SellerOwnerSummary | null;
-  rooms: {
-    id: string;
-    name: string;
-    capacity: number | null;
-    hourly_rate_paise: number | null;
-    amenities: string[];
-    gear: string[] | null;
-    photo_url: string | null;
-    sort_order: number;
-    description?: string | null;
-    tiers?: RoomTier[];
-  }[];
   equipment: {
     id: string;
     name: string;
@@ -156,15 +140,13 @@ function fromLiveOwners<T>(rows: T[], owner: "seller" | "creator"): T[] {
 }
 const SELLER = `${OWNER}, rating, review_count, followers_count`;
 const STUDIO_FIELDS = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
-  console_type, services, amenities, cancellation_policy, operating_hours, image_url, images,
+  console_type, amenities, cancellation_policy, operating_hours, image_url, images,
   owner:profiles!studios_owner_profile_id_fkey(${SELLER}),
   equipment:bookable_equipment(id, name, category, quantity, included, sort_order)`;
 const STUDIO = `${STUDIO_FIELDS}, response_time, add_ons,
-  rooms:bookable_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order, description, tiers),
   reviews(id, author_name, author_org, context, response, rating, body, created_at, tags)`;
 /** The studio read before 20260918240000_missing_data.sql, while its columns are not there yet. */
 const STUDIO_BEFORE = `${STUDIO_FIELDS},
-  rooms:bookable_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order),
   reviews(id, author_name, rating, body, created_at)`;
 const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note,
   collaboration_type, location, status, applicant_count, created_at,
@@ -210,9 +192,6 @@ function shapeStudio(raw: BookableRow): BookableRow {
     ...raw,
     rating: raw.rating == null ? null : Number(raw.rating),
     add_ons: Array.isArray(raw.add_ons) ? raw.add_ons : [],
-    rooms: [...(raw.rooms ?? [])]
-      .map((room) => ({ ...room, tiers: Array.isArray(room.tiers) ? room.tiers : [] }))
-      .sort(bySort),
     equipment: [...(raw.equipment ?? [])].sort(bySort),
     reviews: (raw.reviews ?? [])
       .map((r) => ({ ...r, rating: Number(r.rating), tags: r.tags ?? [] }))

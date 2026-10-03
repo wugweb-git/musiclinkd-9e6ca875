@@ -25,10 +25,10 @@ export const Route = createFileRoute("/booking/$id/review")({
       {
         name: "description",
         content:
-          "Everything in one place before you commit: room, date, time, add-ons, full price and the provider's terms.",
+          "Everything in one place before you commit: date, time, add-ons, full price and the provider's terms.",
       },
       { property: "og:title", content: "Review your booking — MusicLinkd" },
-      { property: "og:description", content: "Room, date, price and policies before you confirm." },
+      { property: "og:description", content: "Date, price and policies before you confirm." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -45,7 +45,7 @@ function ReviewStep() {
 }
 
 function Review() {
-  const { bookable: b, resource: r, draft, price, endTime } = useBookingDraft();
+  const { bookable: b, draft, price, endTime } = useBookingDraft();
   const navigate = useNavigate();
   const { signedIn } = useAuth();
   const send = useServerFn(requestBooking);
@@ -57,8 +57,6 @@ function Review() {
         data: {
           studioSlug: b.id,
           ...(draft.serviceId ? { serviceId: draft.serviceId } : {}),
-          // Database rooms carry their own id; a seeded room has no row to point at.
-          ...(/^[0-9a-f-]{36}$/i.test(draft.resourceId) ? { roomId: draft.resourceId } : {}),
           date: draft.date ?? "",
           ...(draft.start ? { startTime: draft.start } : {}),
           ...(endTime ? { endTime } : {}),
@@ -95,7 +93,6 @@ function Review() {
             <div className="mt-4">
               <BookingSummaryCard
                 b={b}
-                r={r}
                 date={draft.date}
                 start={draft.start}
                 end={endTime}

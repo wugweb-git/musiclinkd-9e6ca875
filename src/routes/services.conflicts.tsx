@@ -115,9 +115,15 @@ function ConflictsContent() {
                       <p className="text-sm font-semibold">{formatDate(c.a.session_date)}</p>
                       <p className="mt-1 text-1 text-muted-foreground">
                         {requesterName(c.a)}{" "}
-                        {joinParts(formatTime(c.a.start_time!.slice(0, 5)), c.a.room?.name ?? "")}{" "}
+                        {joinParts(
+                          formatTime(c.a.start_time!.slice(0, 5)),
+                          c.a.service?.name ?? "",
+                        )}{" "}
                         overlaps {requesterName(c.b)}{" "}
-                        {joinParts(formatTime(c.b.start_time!.slice(0, 5)), c.b.room?.name ?? "")}
+                        {joinParts(
+                          formatTime(c.b.start_time!.slice(0, 5)),
+                          c.b.service?.name ?? "",
+                        )}
                       </p>
                     </div>
                     <Tag>Double booking</Tag>
@@ -157,7 +163,7 @@ function ConflictsContent() {
                       {requesterName(b)}{" "}
                       {joinParts(
                         b.start_time ? formatTime(b.start_time.slice(0, 5)) : "",
-                        b.room?.name ?? "",
+                        b.service?.name ?? "",
                       )}{" "}
                       {detail}
                     </p>
