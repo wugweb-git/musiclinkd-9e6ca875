@@ -22,7 +22,7 @@ export const findAiMatches = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<AiMatchResult> => {
     const { pickMatches, MatchError } = await import("./ai-match.server");
     const [people, opps] = await Promise.all([
-      searchPeople({ data: { limit: 60 } }).then((r) => r.people),
+      searchPeople({ data: { limit: 60, withTotal: false } }).then((r) => r.people),
       listOpportunities().catch((): OpportunityRow[] => []),
     ]);
     const others = people.filter((p) => p.id !== context.userId);
