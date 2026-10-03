@@ -77,7 +77,7 @@ const HOME_READ_TIMEOUT = 6_000;
 function readOr<T>(read: Promise<T>, fallback: T): Promise<T> {
   return Promise.race([
     read.catch(() => fallback),
-    new Promise<T>((resolve) => window.setTimeout(() => resolve(fallback), HOME_READ_TIMEOUT)),
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), HOME_READ_TIMEOUT)),
   ]);
 }
 
