@@ -618,8 +618,9 @@
    * --color-line" — it is not; line is #D5D5DE, a different grey. Both recorded in
    * roadmap.md rather than resolved here.
    */
-  /* App ground: lovable.dev's grey on every screen (owner, 4 Oct 2026). Was #ECECF1. */
-  --background: oklch(0.9699 0 107);
+  /* Three grounds, after Lovable (owner, 4 Oct 2026): --auth-ground for sign-in, --background for
+   * content screens (Lovable's warm off-white), --card white for raised surfaces. */
+  --background: oklch(0.9846 0.0017 84.56);
   /* Sign-in screens only: the ground of lovable.dev/login (owner, 4 Oct 2026). */
   --auth-ground: oklch(0.9699 0 107);
   --foreground: var(--ink); /* default text is ink black */

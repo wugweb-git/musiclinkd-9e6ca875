@@ -147,7 +147,7 @@ function MatchScreen() {
       </div>
 
       {result?.ok ? (
-        result.people.length === 0 && (hiring || result.opportunities.length === 0) ? (
+        result.people.length === 0 && result.opportunities.length === 0 ? (
           <div className="px-5 pt-6">
             <EmptyState
               title="No strong matches yet"
@@ -193,9 +193,11 @@ function MatchScreen() {
                 </ul>
               </section>
             ) : null}
-            {!hiring && result.opportunities.length ? (
+            {result.opportunities.length ? (
               <section>
-                <SectionHeader title="Open opportunities" />
+                <SectionHeader
+                  title={hiring ? "Open hiring posts like this" : "Open opportunities"}
+                />
                 <div className="space-y-3 px-5">
                   {result.opportunities.map(({ row, reason }) => {
                     const o = opportunityFromRow(row, labels.data ?? {});
@@ -223,6 +225,13 @@ function MatchScreen() {
                   })}
                 </div>
               </section>
+            ) : null}
+            {hiring ? (
+              <div className="px-5">
+                <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
+                  Post this as a hiring post
+                </BtnLink>
+              </div>
             ) : null}
             <p className="px-5 text-1 text-muted-foreground">
               Matches are suggested by AI from public profiles. Check a profile before you reach

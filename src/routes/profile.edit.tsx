@@ -332,8 +332,12 @@ function EditProfile() {
   };
   // Shown under each field as it is typed; a save waits until none is left.
   const problems = {
-    first_name: nameProblem(form.first_name, "First name", true),
-    last_name: nameProblem(form.last_name, "Last name"),
+    first_name: isBusiness
+      ? form.first_name.trim()
+        ? null
+        : "Enter your business name."
+      : nameProblem(form.first_name, "First name", true),
+    last_name: isBusiness ? null : nameProblem(form.last_name, "Last name"),
     city: cityProblem(form.city),
     pin_code: pinProblem(form.pin_code),
     state: stateProblem(form.state),
@@ -370,8 +374,8 @@ function EditProfile() {
         data: {
           display_name:
             [form.first_name.trim(), form.last_name.trim()].filter(Boolean).join(" ") || null,
-          first_name: form.first_name.trim() || null,
-          last_name: form.last_name.trim() || null,
+          first_name: isBusiness ? null : form.first_name.trim() || null,
+          last_name: isBusiness ? null : form.last_name.trim() || null,
           // Set once, then locked by the database; only an unset username is sent.
           ...(row?.username ? {} : { username: form.username || null }),
           headline: form.headline || null,
@@ -520,20 +524,29 @@ function EditProfile() {
               </ImagePickButton>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          {isBusiness ? (
             <Field
-              label="First name"
+              label="Business name"
               value={form.first_name}
-              onChange={(v) => update({ first_name: v })}
+              onChange={(v) => update({ first_name: v, last_name: "" })}
               error={problems.first_name}
             />
-            <Field
-              label="Last name"
-              value={form.last_name}
-              onChange={(v) => update({ last_name: v })}
-              error={problems.last_name}
-            />
-          </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <Field
+                label="First name"
+                value={form.first_name}
+                onChange={(v) => update({ first_name: v })}
+                error={problems.first_name}
+              />
+              <Field
+                label="Last name"
+                value={form.last_name}
+                onChange={(v) => update({ last_name: v })}
+                error={problems.last_name}
+              />
+            </div>
+          )}
           <Field label="Headline" value={form.headline} onChange={(v) => update({ headline: v })} />
           <Field label="Bio" value={form.bio} onChange={(v) => update({ bio: v })} multiline />
           {/* Asked in onboarding; owner-only (profile_private), saved as they change. */}

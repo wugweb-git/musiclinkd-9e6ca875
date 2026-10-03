@@ -26,6 +26,7 @@ import {
   MarketFilterSheet,
   SectionRow,
   useMarketCity,
+  CategoryBanner,
 } from "@/components/ml/market";
 import { type Listing } from "@/data/market";
 import { popularCategories, useGearTaxonomy } from "@/lib/listing-category";
@@ -175,6 +176,15 @@ function MarketHome() {
           </IconBtn>
         </div>
       </header>
+      {view === "Explore" && !showGrid ? (
+        <div className="mb-5">
+          <CategoryBanner
+            title="Gear for musicians"
+            count={goods.length}
+            icon={<ShoppingBag size={iconSize.lg} aria-hidden />}
+          />
+        </div>
+      ) : null}
 
       <ActiveFilters
         value={filter}
