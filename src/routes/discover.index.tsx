@@ -95,7 +95,7 @@ function DiscoverScreen() {
       <main className="space-y-9 py-6">
         {mode === "For you" ? (
           <section className="px-5">
-            <Link to="/search/why/$id" params={{ id: "recommendations" }} className="state-layer flex items-center gap-3 rounded-lg border border-border bg-card p-4">
+            <Link to="/search/why/$id" params={{ id: "recommendations" }} search={{ kind: "person" }} className="state-layer flex items-center gap-3 rounded-lg border border-border bg-card p-4">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-pink-container"><Sparkles size={iconSize.md} aria-hidden /></span>
               <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">Made relevant to your work</span><span className="mt-0.5 block text-1 text-muted-foreground">See the profile and activity signals behind recommendations.</span></span>
               <ArrowRight size={iconSize.sm} aria-hidden />
@@ -133,7 +133,7 @@ function DiscoverScreen() {
           <div className="mt-3 grid grid-cols-2 gap-3">
             <IntentLink to="/search" icon={<UsersRound size={iconSize.lg} />} title={business.hasBusiness ? "Source talent" : "Find collaborators"} />
             <IntentLink to="/services" icon={<BriefcaseBusiness size={iconSize.lg} />} title="Book services" />
-            <IntentLink to="/discover/$slug" params={{ slug: "studios" }} icon={<Building2 size={iconSize.lg} />} title="Find a studio" />
+            <StudioIntentLink />
             <IntentLink to="/marketplace" icon={<Store size={iconSize.lg} />} title="Browse Market" />
           </div>
         </section>
@@ -142,6 +142,10 @@ function DiscoverScreen() {
   );
 }
 
-function IntentLink({ to, params, icon, title }: { to: "/search" | "/services" | "/marketplace" | "/discover/$slug"; params?: { slug: string }; icon: React.ReactNode; title: string }) {
-  return <Link to={to} params={params} className="state-layer flex min-h-28 flex-col justify-between rounded-lg border border-border bg-card p-4"><span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">{icon}</span><span className="mt-4 flex items-center justify-between gap-2 text-sm font-semibold">{title}<ArrowRight size={iconSize.sm} aria-hidden /></span></Link>;
+function IntentLink({ to, icon, title }: { to: "/search" | "/services" | "/marketplace"; icon: React.ReactNode; title: string }) {
+  return <Link to={to} className="state-layer flex min-h-28 flex-col justify-between rounded-lg border border-border bg-card p-4"><span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">{icon}</span><span className="mt-4 flex items-center justify-between gap-2 text-sm font-semibold">{title}<ArrowRight size={iconSize.sm} aria-hidden /></span></Link>;
+}
+
+function StudioIntentLink() {
+  return <Link to="/discover/$slug" params={{ slug: "studios" }} className="state-layer flex min-h-28 flex-col justify-between rounded-lg border border-border bg-card p-4"><span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle"><Building2 size={iconSize.lg} /></span><span className="mt-4 flex items-center justify-between gap-2 text-sm font-semibold">Find a studio<ArrowRight size={iconSize.sm} aria-hidden /></span></Link>;
 }

@@ -35,7 +35,7 @@ import { getMyProfile, getTaxonomyLabels, listMyPortfolio, type TaxonomyLabels }
 import { listPeopleByRole, type DirectoryPerson, getMyBusiness } from "@/lib/profile-groups.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { listMyServices, type ServiceRow } from "@/lib/services.functions";
-import { labelFor } from "@/lib/taxonomy";
+import { useTaxonomy } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -249,7 +249,7 @@ function BusinessHome({ data }: { data: HomeData }) {
         <section className="px-5">
           <div className="flex items-start gap-4 rounded-lg bg-ink p-5 text-ink-foreground">
             <div className="min-w-0 flex-1">
-              <p className="text-1 font-semibold text-background/70">{business?.business_type || "Business"}</p>
+              <p className="text-1 font-semibold text-background/70">{profile?.roles?.[0] || "Business"}</p>
               <h2 className="mt-1 text-3 text-ink-foreground">{profile?.display_name || "Your business"}</h2>
               {profile?.city ? <p className="mt-2 flex items-center gap-1 text-sm text-background/70"><MapPin size={iconSize.sm} aria-hidden />{profile.city}</p> : null}
             </div>
@@ -261,7 +261,7 @@ function BusinessHome({ data }: { data: HomeData }) {
           <section>
             <SectionHeader title="Needs attention" />
             <div className="mx-5 overflow-hidden rounded-lg border border-border bg-card">
-              {newLeads.length ? <ActionRow to="/business/leads" title={`${newLeads.length} new ${newLeads.length === 1 ? "enquiry" : "enquiries"}`} detail="Reply while the request is current." icon={<Inbox size={iconSize.md} />} /> : null}
+              {newLeads.length ? <ActionRow to="/leads" title={`${newLeads.length} new ${newLeads.length === 1 ? "enquiry" : "enquiries"}`} detail="Reply while the request is current." icon={<Inbox size={iconSize.md} />} /> : null}
               {pendingBookings.length ? <ActionRow to="/business/bookings/requests" title={`${pendingBookings.length} booking ${pendingBookings.length === 1 ? "request" : "requests"}`} detail="Review the date, service and request details." icon={<CalendarDays size={iconSize.md} />} /> : null}
             </div>
           </section>
@@ -271,7 +271,7 @@ function BusinessHome({ data }: { data: HomeData }) {
           <section>
             <SectionHeader title="Today" />
             <div className="mx-5 overflow-hidden rounded-lg border border-border bg-card">
-              {todayBookings.map((booking) => <ActionRow key={booking.id} to="/business/bookings/requests/$ref" params={{ ref: booking.id }} title={booking.service?.name || booking.purpose || "Booking"} detail={[booking.start_time, booking.requester_name].filter(Boolean).join(" · ")} icon={<CalendarDays size={iconSize.md} />} />)}
+              {todayBookings.map((booking) => <BookingActionRow key={booking.id} booking={booking} />)}
             </div>
           </section>
         ) : null}
@@ -280,7 +280,7 @@ function BusinessHome({ data }: { data: HomeData }) {
           <SectionHeader title="Run your business" />
           <div className="mx-5 grid grid-cols-2 gap-3">
             <WorkspaceLink to="/business/bookings/requests" icon={<CalendarDays size={iconSize.lg} />} label="Bookings" detail={pendingBookings.length ? `${pendingBookings.length} awaiting review` : "Manage requests"} />
-            <WorkspaceLink to="/business/leads" icon={<Inbox size={iconSize.lg} />} label="Enquiries" detail={newLeads.length ? `${newLeads.length} new` : "Open your inbox"} />
+            <WorkspaceLink to="/leads" icon={<Inbox size={iconSize.lg} />} label="Enquiries" detail={newLeads.length ? `${newLeads.length} new` : "Open your inbox"} />
             <WorkspaceLink to="/services" icon={<BriefcaseBusiness size={iconSize.lg} />} label="Services" detail={activeServices.length ? `${activeServices.length} active` : "Add what you offer"} />
             <WorkspaceLink to="/discover" icon={<UserRoundPlus size={iconSize.lg} />} label="Source talent" detail="Find the right people" />
           </div>
@@ -299,9 +299,9 @@ function BusinessHome({ data }: { data: HomeData }) {
   );
 }
 
-function ActionRow({ to, params, title, detail, icon }: { to: string; params?: Record<string, string>; title: string; detail: string; icon?: ReactNode }) {
+function ActionRow({ to, title, detail, icon }: { to: "/profile/edit" | "/onboarding/resume" | "/portfolio" | "/leads" | "/business/bookings/requests"; title: string; detail: string; icon?: ReactNode }) {
   return (
-    <Link to={to} params={params} className="state-layer flex min-h-touch items-center gap-3 border-b border-border px-4 py-3.5 last:border-b-0">
+    <Link to={to} className="state-layer flex min-h-touch items-center gap-3 border-b border-border px-4 py-3.5 last:border-b-0">
       {icon ? <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">{icon}</span> : null}
       <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{title}</span><span className="mt-0.5 block text-1 text-muted-foreground">{detail}</span></span>
       <ChevronRight size={iconSize.sm} className="shrink-0" aria-hidden />
@@ -309,17 +309,17 @@ function ActionRow({ to, params, title, detail, icon }: { to: string; params?: R
   );
 }
 
-function WorkspaceLink({ to, icon, label, detail }: { to: string; icon: ReactNode; label: string; detail: string }) {
+function BookingActionRow({ booking }: { booking: BookingRequest }) {
+  return <Link to="/business/bookings/requests/$ref" params={{ ref: booking.id }} className="state-layer flex min-h-touch items-center gap-3 px-4 py-3.5"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle"><CalendarDays size={iconSize.md} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{booking.service?.name || booking.purpose || "Booking"}</span><span className="mt-0.5 block text-1 text-muted-foreground">{[booking.start_time, booking.requester_name].filter(Boolean).join(" · ")}</span></span><ChevronRight size={iconSize.sm} aria-hidden /></Link>;
+}
+
+function WorkspaceLink({ to, icon, label, detail }: { to: "/business/bookings/requests" | "/leads" | "/services" | "/discover"; icon: ReactNode; label: string; detail: string }) {
   return <Link to={to} className="state-layer min-h-32 rounded-lg border border-border bg-card p-4"><span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">{icon}</span><span className="mt-4 block text-sm font-semibold">{label}</span><span className="mt-1 block text-1 text-muted-foreground">{detail}</span></Link>;
 }
 
 function PeopleRail({ title, people }: { title: string; people: DirectoryPerson[] }) {
-  const { options } = labelOptions();
-  return <section><SectionHeader title={title} action={<Link to="/discover" className="link-action text-sm font-semibold">See all</Link>} /><div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">{people.slice(0, 8).map((person) => <PersonCard key={person.id} person={person} roleLabels={options} featured />)}</div></section>;
-}
-
-function labelOptions() {
-  return { options: undefined } as { options: Parameters<typeof labelFor>[0] };
+  const { options } = useTaxonomy();
+  return <section><SectionHeader title={title} action={<Link to="/discover" className="link-action text-sm font-semibold">See all</Link>} /><div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">{people.slice(0, 8).map((person) => <PersonCard key={person.id} person={person} roleLabels={options?.person_types} featured />)}</div></section>;
 }
 
 function StudioRail({ title, studios }: { title: string; studios: DiscoverBookable[] }) {
