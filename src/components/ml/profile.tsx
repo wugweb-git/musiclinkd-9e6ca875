@@ -606,7 +606,7 @@ export function CoverHero({
   const photoSize = 136 - 52 * shrink;
   return (
     /*
-     * A div, not a header. `<header>` outside article/aside/main/nav/section is a `banner`
+   * A div, not a header. `<header>` outside article/aside/main/nav/section is a `banner`
      * landmark, and a page may have one — but this is a shared hero used on the profile, band,
      * business, collab and booking screens, every one of which already has its own top bar. On the
      * owner's profile axe failed with "Document should not have more than one banner landmark".

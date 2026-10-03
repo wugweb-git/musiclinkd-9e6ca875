@@ -205,7 +205,7 @@ function PortfolioOverview() {
         }
       />
 
-      <main className="px-5 pt-4">
+      <main className="px-5 pt-5">
         {searchOpen ? (
           <label className="mb-4 flex h-12 items-center gap-2 rounded-full bg-subtle px-4 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
             <Search size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
@@ -230,7 +230,7 @@ function PortfolioOverview() {
 
         {visible.length > visibleFeatured.length && visibleFeatured.length ? (
           <>
-            <h2 className="mt-7 text-2">Featured</h2>
+            <h2 className="mt-7 text-2 font-semibold">Featured</h2>
             <div className="mt-3 space-y-3">
               {visibleFeatured.map((item) => (
                 <WorkCard key={`f-${item.id}`} item={item} />
@@ -239,7 +239,7 @@ function PortfolioOverview() {
           </>
         ) : null}
 
-        {empty ? null : <h2 className="mt-7 text-2">All work</h2>}
+        {empty ? null : <h2 className="mt-7 text-2 font-semibold">All work</h2>}
         {!empty && term && visible.length === 0 ? (
           <StateCard title="Nothing matched" body={`No work titled or described with "${term}".`} />
         ) : null}
