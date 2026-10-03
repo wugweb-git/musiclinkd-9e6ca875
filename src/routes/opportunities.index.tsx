@@ -210,7 +210,7 @@ function OpportunitiesHome() {
                 o={o}
                 saved={has(o.id) || o.saved}
                 onSave={() => toggle(o.id)}
-                 applicationLabel={applicationBySlug.get(o.slug)}
+                 applicationLabel={applicationBySlug.get(o.id)}
               />
             ))}
           </div>

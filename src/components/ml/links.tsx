@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 /*
  * Links. Every link in the app comes from here.
  *
- *   <TextLink to="/auth">Sign In</TextLink>              inline text link, ink
- *   <TextLink to="/auth" icon={<Mail size={16} />}>…</TextLink>
+ *   <TextLink to="/welcome">Sign in</TextLink>           inline text link, ink
+ *   <TextLink to="/welcome" icon={<Mail size={16} />}>…</TextLink>
  *   <TextButton onClick={resend}>Send Again</TextButton>  the same look, but it acts instead of navigating
  *   <SectionActionLink to="/search">See All</SectionActionLink>  the action beside a section title, pink
  *   <BtnLink to="/home">Continue</BtnLink>                a link that looks like a button (re-export of ui.tsx)
