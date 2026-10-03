@@ -41,7 +41,7 @@ export function AuthScreen({
   return (
     <div
       className={cn(
-        "mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background select-none",
+        "mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-card select-none",
         className,
       )}
     >
@@ -160,8 +160,8 @@ export function AuthComposition({
   className?: string | undefined;
 }) {
   return (
-    <div className={cn("flex w-full flex-1 flex-col py-6 sm:py-10", className)}>
-      <div className="flex flex-col pt-3 sm:pt-6">{children}</div>
+    <div className={cn("flex w-full flex-1 flex-col py-5 sm:justify-center sm:py-10", className)}>
+      <div className="flex flex-col sm:py-6">{children}</div>
       {footer ? <footer className="mt-auto shrink-0 pt-8 text-center">{footer}</footer> : null}
     </div>
   );
@@ -175,7 +175,7 @@ export function AuthSurface({
   className?: string | undefined;
 }) {
   return (
-    <div className={cn("rounded-lg border border-border bg-card p-4 sm:p-5", className)}>
+    <div className={cn("rounded-lg border border-border bg-card p-4 shadow-xs sm:p-5", className)}>
       {children}
     </div>
   );
