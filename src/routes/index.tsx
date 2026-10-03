@@ -37,19 +37,6 @@ const PROFILE_WAIT_MS = 5000;
 /** An account this new, with no profile answer, is treated as a signup. */
 const NEW_ACCOUNT_MS = 10 * 60_000;
 
-/* Stage-light columns: tallest at the centre, each lit on its own offset. */
-const STAGE = [
-  { h: 30, w: 10, delay: 0 },
-  { h: 58, w: 16, delay: 620 },
-  { h: 42, w: 12, delay: 240 },
-  { h: 88, w: 20, delay: 880 },
-  { h: 64, w: 14, delay: 120 },
-  { h: 34, w: 10, delay: 700 },
-  { h: 76, w: 18, delay: 380 },
-  { h: 48, w: 12, delay: 960 },
-  { h: 26, w: 10, delay: 520 },
-];
-
 function SessionCheck() {
   const { signedIn, loading, user } = useAuth();
   const navigate = useNavigate();
@@ -122,52 +109,31 @@ function SessionCheck() {
       role="status"
       aria-label="Checking your session"
     >
-      {/* The stage: pink columns of light, tallest toward the middle, each on its own beat. */}
+      {/* One soft pool of stage light behind the mark: calm, nothing to download. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute inset-x-0 bottom-0 flex h-[86%] items-end justify-between px-2">
-          {STAGE.map((bar, i) => (
-            <span
-              key={i}
-              className="origin-bottom rounded-full bg-gradient-to-t from-brand/0 via-brand/60 to-brand"
-              style={{
-                height: `${bar.h}%`,
-                width: `${bar.w}px`,
-                animation: reducedMotion ? undefined : "var(--animate-stage)",
-                animationDelay: `${bar.delay}ms`,
-                filter: "blur(10px)",
-              }}
-            />
-          ))}
-        </div>
-        {/* Warm haze off the lights, and a floor that swallows them. */}
-        <div className="absolute inset-0 bg-[radial-gradient(90%_60%_at_50%_38%,color-mix(in_oklab,var(--brand)_38%,transparent),transparent_70%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink via-ink/85 to-transparent" />
+        <div className="absolute left-1/2 top-[38%] h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/25 blur-3xl animate-breathe" />
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center">
         <div className="relative flex items-center justify-center">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -inset-6 rounded-full bg-brand/30 blur-3xl animate-pulse-glow"
-          />
-          <LogoMark className="vt-brand relative z-10 w-36 max-w-[220px] animate-waveform text-brand [filter:drop-shadow(0_10px_30px_color-mix(in_oklab,var(--brand)_60%,transparent))]" />
+          <LogoMark className="vt-brand relative z-10 w-24 overflow-hidden rounded-3xl animate-splash-mark shadow-2xl" />
         </div>
 
-        <h1 className="mt-5 text-4 font-bold text-white">MusicLinkd</h1>
+        <h1 className="mt-5 text-3 font-semibold text-ink-foreground">MusicLinkd</h1>
 
-        <p className="mt-2 text-sm font-medium text-white/75">
+        <p className="mt-2 text-sm text-ink-foreground/70">
           Connect. Collaborate. <span className="text-brand">Create.</span>
         </p>
       </div>
 
       {/* The session check, as a bar that travels rather than a spinner. */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-3 pb-[max(2rem,env(safe-area-inset-bottom))]">
-        <span aria-hidden className="h-1 w-32 overflow-hidden rounded-full bg-white/15">
+        <span aria-hidden className="h-1 w-32 overflow-hidden rounded-full bg-ink-foreground/15">
           <span className="block h-full w-1/3 rounded-full bg-brand animate-loadbar" />
         </span>
         {/* The one tracking exception (token decision 2): an all-caps label, letter-spaced so the
             capitals stay legible at this size. Everything else sets at normal tracking. */}
-        <p className="text-1 font-semibold uppercase tracking-[0.22em] text-white/45">
+        <p className="text-1 font-semibold uppercase tracking-[0.22em] text-ink-foreground/45">
           A network for music people
         </p>
       </div>
