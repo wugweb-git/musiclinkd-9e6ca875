@@ -332,7 +332,11 @@ function EditProfile() {
   };
   // Shown under each field as it is typed; a save waits until none is left.
   const problems = {
-    first_name: nameProblem(form.first_name, isBusiness ? "Business name" : "First name", true),
+    first_name: isBusiness
+      ? form.first_name.trim()
+        ? null
+        : "Enter your business name."
+      : nameProblem(form.first_name, "First name", true),
     last_name: isBusiness ? null : nameProblem(form.last_name, "Last name"),
     city: cityProblem(form.city),
     pin_code: pinProblem(form.pin_code),
