@@ -5,12 +5,6 @@ import suppliedLogo from "@/assets/musiclinkd-logo.svg.asset.json";
 
 export function LogoMark({ className }: { className?: string | undefined }) {
   return (
-    <img
-      src={suppliedLogo.url}
-      className={className}
-      alt="MusicLinkd"
-      width={641}
-      height={550}
-    />
+    <img src={suppliedLogo.url} className={className} alt="MusicLinkd" width={641} height={550} />
   );
 }
