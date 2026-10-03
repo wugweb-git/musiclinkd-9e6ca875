@@ -70,7 +70,9 @@ function Details() {
                 { value: "Other", label: "Other", hint: "Say what you need in the notes" },
               ]}
               placeholder="Choose a service"
-              onChange={(v) => set({ purpose: v })}
+              onChange={(v) =>
+                set({ purpose: v, serviceId: b.services?.find((sv) => sv.name === v)?.id })
+              }
             />
           </Field>
 
@@ -119,7 +121,7 @@ function Details() {
       </main>
 
       <StickyBar
-        price={inr(price.total)}
+        price={price ? inr(price.total) : undefined}
         hint="Add equipment next"
         primaryLabel="Continue"
         onPrimary={() => navigate({ to: "/booking/$id/addons", params: { id: b.id } })}

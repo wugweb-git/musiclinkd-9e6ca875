@@ -109,7 +109,7 @@ function BookingEntry() {
                   key={sv.id}
                   s={serviceItem(sv)}
                   onBook={() => {
-                    set({ purpose: sv.name });
+                    set({ purpose: sv.name, serviceId: sv.id });
                     void navigate({
                       to:
                         b.hasCalendar === false ? "/booking/$id/service" : "/booking/$id/schedule",

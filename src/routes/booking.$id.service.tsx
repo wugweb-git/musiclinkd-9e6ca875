@@ -3,14 +3,18 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Screen, Btn, Sheet, TopBar } from "@/components/ml/ui";
-import { StepDots, StickyBar } from "@/components/ml/booking";
+import { Screen, TopBar } from "@/components/ml/ui";
+import {
+  RequestSessionSheet,
+  StepDots,
+  StickyBar,
+  type SessionRequest,
+} from "@/components/ml/booking";
 import { ServiceCard } from "@/components/ml/profile";
 import { serviceItem } from "@/lib/service-item";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { requestBooking } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { earliestBookingDate } from "@/lib/bookable-slots";
 
 export const Route = createFileRoute("/booking/$id/service")({
   head: () => ({
@@ -39,11 +43,6 @@ function SelectService() {
   const { signedIn } = useAuth();
   const send = useServerFn(requestBooking);
   const [ask, setAsk] = useState(false);
-  const [date, setDate] = useState("");
-  const [start, setStart] = useState("");
-  const [hours, setHours] = useState("3");
-  const [people, setPeople] = useState("2");
-  const [notes, setNotes] = useState("");
 
   // A studio with no availability calendar is asked directly: the date you want, and what for.
   const noCalendar = b.hasCalendar === false;
@@ -53,16 +52,17 @@ function SelectService() {
     : [{ id: "session", name: "Studio session", price_paise: null, price_unit: null, uses: [] }];
 
   const request = useMutation({
-    mutationFn: () =>
+    mutationFn: (r: SessionRequest) =>
       send({
         data: {
           studioSlug: b.id,
+          ...(draft.serviceId ? { serviceId: draft.serviceId } : {}),
           ...(/^[0-9a-f-]{36}$/i.test(draft.resourceId) ? { roomId: draft.resourceId } : {}),
-          date,
-          ...(start ? { startTime: start } : {}),
-          ...(Number(hours) ? { hours: Number(hours) } : {}),
-          ...(Number(people) ? { people: Number(people) } : {}),
-          ...(notes.trim() ? { notes: notes.trim() } : {}),
+          date: r.date,
+          ...(r.start ? { startTime: r.start } : {}),
+          ...(r.hours ? { hours: r.hours } : {}),
+          ...(r.people ? { people: r.people } : {}),
+          ...(r.notes ? { notes: r.notes } : {}),
           ...(draft.purpose ? { purpose: draft.purpose } : {}),
         },
       }),
@@ -89,7 +89,7 @@ function SelectService() {
               s={serviceItem(sv)}
               selected={draft.purpose === sv.name}
               onBook={() => {
-                set({ purpose: sv.name });
+                set({ purpose: sv.name, serviceId: sv.id === "session" ? undefined : sv.id });
                 if (noCalendar) {
                   if (signedIn) setAsk(true);
                   else void navigate({ to: "/welcome" });
@@ -122,87 +122,13 @@ function SelectService() {
         }
       />
 
-      <Sheet open={ask} onClose={() => setAsk(false)} title="Request a session">
-        <form
-          className="space-y-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (date && !request.isPending) request.mutate();
-          }}
-        >
-          <label className="block text-1 font-semibold" htmlFor="booking-date">
-            Date
-          </label>
-          <input
-            id="booking-date"
-            type="date"
-            min={earliestBookingDate()}
-            required
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
-          />
-          <div className="flex gap-3">
-            <span className="flex-1">
-              <label className="block text-1 font-semibold" htmlFor="booking-start">
-                Start
-              </label>
-              <input
-                id="booking-start"
-                type="time"
-                value={start}
-                onChange={(e) => setStart(e.target.value)}
-                className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
-              />
-            </span>
-            <span className="w-24">
-              <label className="block text-1 font-semibold" htmlFor="booking-hours">
-                Hours
-              </label>
-              <input
-                id="booking-hours"
-                type="number"
-                min={1}
-                max={24}
-                value={hours}
-                onChange={(e) => setHours(e.target.value)}
-                className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
-              />
-            </span>
-            <span className="w-24">
-              <label className="block text-1 font-semibold" htmlFor="booking-people">
-                People
-              </label>
-              <input
-                id="booking-people"
-                type="number"
-                min={1}
-                max={200}
-                value={people}
-                onChange={(e) => setPeople(e.target.value)}
-                className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
-              />
-            </span>
-          </div>
-          <label className="block text-1 font-semibold" htmlFor="booking-notes">
-            Anything they should know
-          </label>
-          <textarea
-            id="booking-notes"
-            rows={3}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="What you are recording, gear you need, who is coming."
-            className="w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none"
-          />
-          <Btn type="submit" className="w-full" disabled={!date} loading={request.isPending}>
-            Send request
-          </Btn>
-          <p className="text-1 text-muted-foreground">
-            Nothing is charged here. The studio replies, and you settle payment with them.
-          </p>
-        </form>
-      </Sheet>
+      <RequestSessionSheet
+        open={ask}
+        onClose={() => setAsk(false)}
+        onSend={(r) => request.mutate(r)}
+        pending={request.isPending}
+        who="The studio"
+      />
     </Screen>
   );
 }

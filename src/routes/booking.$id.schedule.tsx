@@ -61,14 +61,17 @@ function ScheduleStep() {
 }
 
 function Schedule() {
-  const { bookable: b, resource: r, draft, set, price, endTime } = useBookingDraft();
+  const { bookable: b, resource: r, service, draft, set, price, endTime } = useBookingDraft();
   const navigate = useNavigate();
   const [sim, setSim] = useState<Sim>("ok");
   // The start time that was taken while it was being chosen.
   const [conflict, setConflict] = useState<string | null>(null);
   const [customHours, setCustomHours] = useState(4);
 
-  const fromPrice = Math.min(...r.tiers.map((t) => t.price));
+  // The service's own price where it has one; the room's rate until rooms go (C2).
+  const fromPrice = service?.price_paise
+    ? service.price_paise / 100
+    : Math.min(...r.tiers.map((t) => t.price));
   // The studio's weekly hours and its taken and closed times, read again every minute so a slot
   // someone else books meanwhile stops being offered.
   const range = useMemo(() => calendarWindow(), []);
@@ -287,7 +290,7 @@ function Schedule() {
       </main>
 
       <StickyBar
-        price={draft.start ? inr(price.total) : undefined}
+        price={draft.start && price ? inr(price.total) : undefined}
         hint={
           draft.start
             ? `${formatDate(draft.date!)} · ${formatTime(draft.start)}`

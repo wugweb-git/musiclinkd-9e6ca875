@@ -127,6 +127,8 @@ export type Bookable = {
     name: string;
     price_paise: number | null;
     price_unit: string | null;
+    /** Hours an hourly service is booked for at least; null for none. */
+    min_hours?: number | null | undefined;
     /** What the service uses: amenities and equipment by name. */
     uses?: string[];
   }[];
@@ -586,6 +588,39 @@ export function priceFor(b: Bookable, r: Resource, hours: number, addOnIds: stri
     tax,
     taxPct: b.taxPct,
     total,
+  };
+}
+
+/**
+ * A booking's price, from the service booked (owner, 3 Oct 2026; a service has one starting price,
+ * 22 Sep): its price, times the hours when it is hourly (at least its minimum), plus the add-ons
+ * picked. Always an estimate — the business confirms the amount in its reply. Null when the
+ * service has no price, so nothing is quoted.
+ */
+export function priceForService(
+  b: Bookable,
+  service: NonNullable<Bookable["services"]>[number] | undefined,
+  hours: number,
+  addOnIds: string[],
+): PriceLines | null {
+  if (!service?.price_paise) return null;
+  const hourly = service.price_unit === "hour";
+  const billed = hourly ? Math.max(1, hours, service.min_hours ?? 0) : 1;
+  const base = (service.price_paise / 100) * billed;
+  const addOns = b.addOns
+    .filter((a) => addOnIds.includes(a.id))
+    .map((a) => ({ name: a.name, price: a.perHour ? a.price * Math.max(1, hours) : a.price }));
+  const subtotal = base + addOns.reduce((sum, a) => sum + a.price, 0);
+  const tax = Math.round((subtotal * b.taxPct) / 100);
+  return {
+    baseLabel: hourly ? `${service.name} · ${billed} hr${billed > 1 ? "s" : ""}` : service.name,
+    base,
+    addOns,
+    subtotal,
+    tax,
+    taxPct: b.taxPct,
+    total: subtotal + tax,
+    estimate: true,
   };
 }
 

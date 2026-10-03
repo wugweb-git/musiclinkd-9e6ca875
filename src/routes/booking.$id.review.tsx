@@ -56,6 +56,7 @@ function Review() {
       send({
         data: {
           studioSlug: b.id,
+          ...(draft.serviceId ? { serviceId: draft.serviceId } : {}),
           // Database rooms carry their own id; a seeded room has no row to point at.
           ...(/^[0-9a-f-]{36}$/i.test(draft.resourceId) ? { roomId: draft.resourceId } : {}),
           date: draft.date ?? "",
@@ -99,6 +100,7 @@ function Review() {
                 start={draft.start}
                 end={endTime}
                 people={draft.people}
+                service={draft.purpose}
               />
             </div>
 
@@ -126,10 +128,15 @@ function Review() {
               </button>
             </section>
 
-            <h2 className="mt-6 text-2">Price</h2>
-            <div className="mt-3">
-              <PriceBreakdownCard p={price} />
-            </div>
+            {/* A service with no price quotes nothing; the business names it in its reply. */}
+            {price ? (
+              <>
+                <h2 className="mt-6 text-2">Price</h2>
+                <div className="mt-3">
+                  <PriceBreakdownCard p={price} />
+                </div>
+              </>
+            ) : null}
 
             <h2 className="mt-6 text-2">Provider terms</h2>
             <div className="mt-3 space-y-2">
@@ -155,7 +162,7 @@ function Review() {
       </main>
 
       <StickyBar
-        price={inr(price.total)}
+        price={price ? inr(price.total) : undefined}
         disabled={!ready || ask.isPending || !signedIn}
         primaryLabel={signedIn ? "Request booking" : "Sign in to request"}
         // Bookings end at Confirmed: payment happens between the two people, off MusicLinkd.

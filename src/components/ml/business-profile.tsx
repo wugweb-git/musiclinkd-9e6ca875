@@ -40,7 +40,12 @@ import {
   VideoCard,
 } from "@/components/ml/profile";
 import { GalleryView } from "@/components/ml/gallery";
-import { PhotoSheet, ProofPill } from "@/components/ml/booking";
+import {
+  PhotoSheet,
+  ProofPill,
+  ServiceRequestSheet,
+  useServiceRequest,
+} from "@/components/ml/booking";
 import type { TalentProfile } from "@/data/profile";
 import { CallBtn } from "@/components/ml/talent-profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
@@ -85,6 +90,8 @@ export function BusinessProfileExperience({
   });
   const ownsPage = !!b && !isOwner && (linked.data ?? []).some((p) => p.id === b.profileId);
   const activeServices = (b?.services ?? []).filter((s) => s.status === "active");
+  // Without a place to book, Book on a service is a dated request (owner, 3 Oct 2026).
+  const serviceRequest = useServiceRequest();
 
   if (!b) {
     return (
@@ -200,18 +207,21 @@ export function BusinessProfileExperience({
                     <ServiceCard
                       key={sv.id}
                       s={sv.card}
-                      // A studio's Book opens its booking with this service picked; any other
-                      // business's Book is the service's own enquiry.
+                      // A business with a place opens its booking with this service picked; one
+                      // without sends a dated request for the service. The owner's own card keeps
+                      // its preview.
                       {...(b.studioSlug
                         ? {
                             onBook: () =>
                               void navigate({
                                 to: "/booking/$id/service",
                                 params: { id: b.studioSlug! },
-                                search: { service: sv.card.name },
+                                search: { service: sv.card.id },
                               }),
                           }
-                        : {})}
+                        : !isOwner && /^[0-9a-f-]{36}$/i.test(sv.card.id)
+                          ? { onBook: () => serviceRequest.book(sv.card) }
+                          : {})}
                     />
                   ))}
                 </div>
@@ -435,6 +445,11 @@ export function BusinessProfileExperience({
         title={viewing?.title ?? ""}
         photos={viewing?.photos ?? []}
         onClose={() => setViewing(null)}
+      />
+      <ServiceRequestSheet
+        service={serviceRequest.service}
+        who={b.name}
+        onClose={serviceRequest.close}
       />
     </Screen>
   );
