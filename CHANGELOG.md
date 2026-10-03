@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — M2b applied: bookings and closures have no room (4 Oct)
+
+- `20261004130000_drop_room_ids.sql` is applied to the live database (owner instruction, 4 Oct;
+  SHA `89705161…` matches `main`): `room_id` dropped from `booking_requests` and `bookable_blocks`;
+  11 bookings unchanged; schema reloaded. Snapshot: `supabase/dumps/2026-10-04-before-drop-room-ids.sql`.
+  No longer held for P2.
+- `src/integrations/supabase/types.ts` matches the live schema: no `room_id` or its foreign keys,
+  `bookable_busy` returns no `room_id`, the dropped `studio*` views and functions are gone, and the
+  retired `bookable_rooms_retired` / `bookables.services_retired` carry their new names.
+
 ### Changed — owner decisions on the acceptance report: one ink token, field borders 3:1, one icon stroke (4 Oct)
 
 - **Primary merged into Ink.** Every `primary` class and `var(--primary)` (70 files, app and vendor)
@@ -163,7 +173,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   screens' Room line.
 - Migrations, not applied: `20261004120000_retire_rooms.sql` (M2: `bookable_busy()` without
   `room_id`, room closures to the whole place, `bookable_rooms` → `bookable_rooms_retired` with
-  access revoked), `20261004130000_drop_room_ids.sql` (held for the owner's yes),
+  access revoked), `20261004130000_drop_room_ids.sql` (applied 4 Oct, see above),
   `20261004140000_retire_bookable_services.sql` (M3: `services` → `services_retired`). Snapshot
   query: `supabase/checks/before-retire-rooms.sql`.
 

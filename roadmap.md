@@ -12,9 +12,8 @@
 
 ## Later
 
-- Room types as real rooms (a room kind is a label today, not a bookable space).
-- The duplicate `bookable_rooms.gear` field (equipment also lives in `bookable_equipment`).
-- `live_room` is both an amenity option and a room type.
+- P2: drop the retired `bookable_rooms_retired` table and `bookables.services_retired` column
+  (rooms are gone: people book a service; `room_id` was dropped from bookings and closures on 4 Oct).
 - The opening-hours options (24x7 Access, Open Till 2 AM) are amenity options; they are hours.
 - `bookables.services` vs `profile_services`: two lists of what a business offers.
 - Create business still creates a bookable and asks for amenities only for type `studio`

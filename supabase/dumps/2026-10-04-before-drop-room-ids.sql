@@ -1,0 +1,8 @@
+-- Snapshot before 20261004130000_drop_room_ids.sql (applied by owner instruction, 4 Oct 2026).
+-- Taken read-only from the live database. Definitions and counts only; no user data.
+--
+-- Columns: booking_requests.room_id uuid NULL · bookable_blocks.room_id uuid NULL
+-- Foreign keys:
+--   booking_requests.booking_requests_room_id_fkey: FOREIGN KEY (room_id) REFERENCES bookable_rooms_retired(id) ON DELETE SET NULL
+--   bookable_blocks.studio_blocks_room_id_fkey:     FOREIGN KEY (room_id) REFERENCES bookable_rooms_retired(id) ON DELETE CASCADE
+-- Counts: bookings 11 · bookings with a room 10 · closures with a room 0
