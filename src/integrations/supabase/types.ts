@@ -125,59 +125,6 @@ export type Database = {
           },
         ]
       }
-      bookable_rooms_retired: {
-        Row: {
-          amenities: string[]
-          bookable_id: string
-          capacity: number | null
-          description: string | null
-          gear: string[]
-          hourly_rate_paise: number | null
-          id: string
-          kind: string | null
-          name: string
-          photo_url: string | null
-          sort_order: number
-          tiers: Json
-        }
-        Insert: {
-          amenities?: string[]
-          bookable_id: string
-          capacity?: number | null
-          description?: string | null
-          gear?: string[]
-          hourly_rate_paise?: number | null
-          id?: string
-          kind?: string | null
-          name: string
-          photo_url?: string | null
-          sort_order?: number
-          tiers?: Json
-        }
-        Update: {
-          amenities?: string[]
-          bookable_id?: string
-          capacity?: number | null
-          description?: string | null
-          gear?: string[]
-          hourly_rate_paise?: number | null
-          id?: string
-          kind?: string | null
-          name?: string
-          photo_url?: string | null
-          sort_order?: number
-          tiers?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "studio_rooms_studio_id_fkey"
-            columns: ["bookable_id"]
-            isOneToOne: false
-            referencedRelation: "bookables"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       bookables: {
         Row: {
           add_ons: Json
@@ -202,7 +149,6 @@ export type Database = {
           rating: number | null
           response_time: string | null
           review_count: number
-          services_retired: string[]
           slug: string
           updated_at: string
           verified_gold: boolean
@@ -231,7 +177,6 @@ export type Database = {
           rating?: number | null
           response_time?: string | null
           review_count?: number
-          services_retired?: string[]
           slug: string
           updated_at?: string
           verified_gold?: boolean
@@ -260,7 +205,6 @@ export type Database = {
           rating?: number | null
           response_time?: string | null
           review_count?: number
-          services_retired?: string[]
           slug?: string
           updated_at?: string
           verified_gold?: boolean
@@ -297,6 +241,7 @@ export type Database = {
           reply: string | null
           requester_name: string | null
           requester_profile_id: string | null
+          service_id: string | null
           session_date: string
           start_time: string | null
           status: string
@@ -315,6 +260,7 @@ export type Database = {
           reply?: string | null
           requester_name?: string | null
           requester_profile_id?: string | null
+          service_id?: string | null
           session_date: string
           start_time?: string | null
           status?: string
@@ -333,6 +279,7 @@ export type Database = {
           reply?: string | null
           requester_name?: string | null
           requester_profile_id?: string | null
+          service_id?: string | null
           session_date?: string
           start_time?: string | null
           status?: string
@@ -344,6 +291,13 @@ export type Database = {
             columns: ["requester_profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_requests_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "profile_services"
             referencedColumns: ["id"]
           },
           {
@@ -3801,6 +3755,10 @@ export type Database = {
       portfolio_save_count: { Args: { p_item: string }; Returns: number }
       profile_is_readable: { Args: { p_profile_id: string }; Returns: boolean }
       profile_response_time: { Args: { p: string }; Returns: string }
+      profile_service_is_mine: {
+        Args: { p_service_id: string }
+        Returns: boolean
+      }
       profile_service_is_readable: {
         Args: { p_service_id: string }
         Returns: boolean
