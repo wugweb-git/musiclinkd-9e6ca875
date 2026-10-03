@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
-  ArrowRight,
   BriefcaseBusiness,
   CalendarDays,
   ChevronRight,
@@ -236,7 +235,6 @@ function TalentHome({ data }: { data: HomeData }) {
 
 function BusinessHome({ data }: { data: HomeData }) {
   const profile = data.business?.profile;
-  const business = data.business?.business;
   const pendingBookings = data.bookings.filter((b) => b.status === "requested" || b.status === "reviewing");
   const newLeads = data.leads.filter((lead) => lead.status === "new");
   const activeServices = data.services.filter((service) => service.status === "active");
