@@ -43,6 +43,7 @@ import { Route as ConversationIdRouteImport } from './routes/conversation.$id'
 import { Route as DevNewUserRouteImport } from './routes/dev.new-user'
 import { Route as DiscoverIndexRouteImport } from './routes/discover.index'
 import { Route as DiscoverSlugRouteImport } from './routes/discover.$slug'
+import { Route as DiscoverMatchRouteImport } from './routes/discover.match'
 import { Route as HelpIndexRouteImport } from './routes/help.index'
 import { Route as HelpSlugRouteImport } from './routes/help.$slug'
 import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
@@ -321,6 +322,11 @@ const DiscoverIndexRoute = DiscoverIndexRouteImport.update({
 const DiscoverSlugRoute = DiscoverSlugRouteImport.update({
   id: '/discover/$slug',
   path: '/discover/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverMatchRoute = DiscoverMatchRouteImport.update({
+  id: '/discover/match',
+  path: '/discover/match',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HelpIndexRoute = HelpIndexRouteImport.update({
@@ -909,6 +915,7 @@ export interface FileRoutesByFullPath {
   '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/$slug': typeof DiscoverSlugRoute
+  '/discover/match': typeof DiscoverMatchRoute
   '/help/$slug': typeof HelpSlugRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
@@ -1053,6 +1060,7 @@ export interface FileRoutesByTo {
   '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/$slug': typeof DiscoverSlugRoute
+  '/discover/match': typeof DiscoverMatchRoute
   '/help/$slug': typeof HelpSlugRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
@@ -1199,6 +1207,7 @@ export interface FileRoutesById {
   '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/$slug': typeof DiscoverSlugRoute
+  '/discover/match': typeof DiscoverMatchRoute
   '/help/$slug': typeof HelpSlugRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
@@ -1346,6 +1355,7 @@ export interface FileRouteTypes {
     | '/conversation/$id'
     | '/dev/new-user'
     | '/discover/$slug'
+    | '/discover/match'
     | '/help/$slug'
     | '/identity/business'
     | '/identity/qr'
@@ -1490,6 +1500,7 @@ export interface FileRouteTypes {
     | '/conversation/$id'
     | '/dev/new-user'
     | '/discover/$slug'
+    | '/discover/match'
     | '/help/$slug'
     | '/identity/business'
     | '/identity/qr'
@@ -1635,6 +1646,7 @@ export interface FileRouteTypes {
     | '/conversation/$id'
     | '/dev/new-user'
     | '/discover/$slug'
+    | '/discover/match'
     | '/help/$slug'
     | '/identity/business'
     | '/identity/qr'
@@ -1781,6 +1793,7 @@ export interface RootRouteChildren {
   ConversationIdRoute: typeof ConversationIdRoute
   DevNewUserRoute: typeof DevNewUserRoute
   DiscoverSlugRoute: typeof DiscoverSlugRoute
+  DiscoverMatchRoute: typeof DiscoverMatchRoute
   HelpSlugRoute: typeof HelpSlugRoute
   IdentityBusinessRoute: typeof IdentityBusinessRoute
   IdentityQrRoute: typeof IdentityQrRoute
@@ -2129,6 +2142,13 @@ declare module '@tanstack/react-router' {
       path: '/discover/$slug'
       fullPath: '/discover/$slug'
       preLoaderRoute: typeof DiscoverSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/match': {
+      id: '/discover/match'
+      path: '/discover/match'
+      fullPath: '/discover/match'
+      preLoaderRoute: typeof DiscoverMatchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/help/': {
@@ -2949,6 +2969,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConversationIdRoute: ConversationIdRoute,
   DevNewUserRoute: DevNewUserRoute,
   DiscoverSlugRoute: DiscoverSlugRoute,
+  DiscoverMatchRoute: DiscoverMatchRoute,
   HelpSlugRoute: HelpSlugRoute,
   IdentityBusinessRoute: IdentityBusinessRoute,
   IdentityQrRoute: IdentityQrRoute,
