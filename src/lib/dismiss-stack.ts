@@ -20,10 +20,40 @@ const stack: (() => void)[] = [];
 /** Register an open overlay. Returns the unregister, which must run when it closes. */
 export function pushDismiss(close: () => void) {
   stack.push(close);
+  const web = typeof window !== "undefined" && !isNativeApp();
+  // On the web (a phone browser), the back gesture is a history pop: give the overlay its own
+  // history entry, so back closes it instead of leaving the screen.
+  const mark = ++marks;
+  if (web) {
+    startWebBack();
+    window.history.pushState({ ...(window.history.state ?? {}), mlSheet: mark }, "");
+  }
   return () => {
     const i = stack.lastIndexOf(close);
     if (i !== -1) stack.splice(i, 1);
+    // Closed by a tap, not by back: drop our entry — only if it is still the current one, so a
+    // menu item that navigated is never undone.
+    if (web && window.history.state?.mlSheet === mark) {
+      ignoreNextPop = true;
+      window.history.back();
+    }
   };
+}
+
+let marks = 0;
+let ignoreNextPop = false;
+let webBackStarted = false;
+function startWebBack() {
+  if (webBackStarted) return;
+  webBackStarted = true;
+  window.addEventListener("popstate", () => {
+    if (ignoreNextPop) {
+      ignoreNextPop = false;
+      return;
+    }
+    const top = stack.pop();
+    top?.();
+  });
 }
 
 /**
