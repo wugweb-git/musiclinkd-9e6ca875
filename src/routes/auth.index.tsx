@@ -121,7 +121,7 @@ function EmailSignIn() {
 
               <Btn
                 type="submit"
-                className="mt-2 w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
+                className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
                 loading={busy}
               >
                 Send 6-Digit Code
@@ -131,7 +131,7 @@ function EmailSignIn() {
             <TrustNote>Your email is never shown on your public profile.</TrustNote>
           </div>
 
-          <p className="mt-4 flex justify-center text-xs sm:text-sm">
+          <p className="mt-4 flex justify-center text-1">
             <AuthLink
               to="/auth/phone"
               icon={<Smartphone size={iconSize.sm} />}

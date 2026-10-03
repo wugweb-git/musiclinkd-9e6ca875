@@ -137,7 +137,7 @@ export function BookableHero({ b, back }: { b: Bookable; back?: string }) {
         <Link
           to="/profile/$username"
           params={{ username: b.username }}
-          className="mt-0.5 block text-sm text-muted-foreground"
+          className="hit-area mt-0.5 block text-sm text-muted-foreground"
         >
           @{b.username}
         </Link>
@@ -935,7 +935,7 @@ export function ProofPill({
       type="button"
       onClick={onOpen}
       aria-label={`${label}, ${photos.length} ${photos.length === 1 ? "photo" : "photos"}`}
-      className={`state-layer flex items-center gap-1.5 py-1 pr-3 ${Icon ? "pl-3" : "pl-1"} ${className}`}
+      className={`state-layer hit-area flex items-center gap-1.5 py-1 pr-3 ${Icon ? "pl-3" : "pl-1"} ${className}`}
     >
       {Icon ? <Icon size={iconSize.sm} className="text-foreground" aria-hidden /> : null}
       {Icon ? null : (
@@ -1024,7 +1024,7 @@ export function RequestSessionSheet({
           required
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+          className="min-h-control w-full rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         <div className="flex gap-3">
           <span className="flex-1">
@@ -1036,7 +1036,7 @@ export function RequestSessionSheet({
               type="time"
               value={start}
               onChange={(e) => setStart(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </span>
           <span className="w-24">
@@ -1050,7 +1050,7 @@ export function RequestSessionSheet({
               max={24}
               value={hours}
               onChange={(e) => setHours(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </span>
           <span className="w-24">
@@ -1064,7 +1064,7 @@ export function RequestSessionSheet({
               max={200}
               value={people}
               onChange={(e) => setPeople(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </span>
         </div>
@@ -1077,7 +1077,7 @@ export function RequestSessionSheet({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="What you are recording, gear you need, who is coming."
-          className="w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none"
+          className="w-full resize-none rounded-lg border border-border bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         {error ? (
           <p role="alert" className="text-1 text-destructive">

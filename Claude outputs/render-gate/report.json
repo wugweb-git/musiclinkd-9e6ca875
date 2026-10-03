@@ -1,0 +1,567 @@
+[
+  {
+    "width": 360,
+    "route": "/welcome",
+    "status": 200,
+    "overflow": 0,
+    "small": [
+      "name@example.com (276×46)",
+      "Your password (236×46)"
+    ],
+    "file": "Claude outputs/render-gate/360_welcome.png"
+  },
+  {
+    "width": 360,
+    "route": "/discover",
+    "status": 200,
+    "overflow": 0,
+    "small": [
+      "Menu (41×64)"
+    ],
+    "file": "Claude outputs/render-gate/360_discover.png"
+  },
+  {
+    "width": 360,
+    "route": "/discover/singers",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_discover_singers.png"
+  },
+  {
+    "width": 360,
+    "route": "/marketplace",
+    "status": 200,
+    "overflow": 0,
+    "small": [
+      "Menu (43×64)"
+    ],
+    "file": "Claude outputs/render-gate/360_marketplace.png"
+  },
+  {
+    "width": 360,
+    "route": "/marketplace/sell",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_marketplace_sell.png"
+  },
+  {
+    "width": 360,
+    "route": "/services",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_services.png"
+  },
+  {
+    "width": 360,
+    "route": "/services/5e66ff44-6903-4098-b801-2109f5afaaa3",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_services_5e66ff44_6903_4098_b801_2109f5afaaa3.png"
+  },
+  {
+    "width": 360,
+    "route": "/profile/maya.sharma",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_profile_maya_sharma.png"
+  },
+  {
+    "width": 360,
+    "route": "/profile/ironwood.records",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_profile_ironwood_records.png"
+  },
+  {
+    "width": 360,
+    "route": "/booking/analog-ensemble-studios",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_booking_analog_ensemble_studios.png"
+  },
+  {
+    "width": 360,
+    "route": "/booking/analog-ensemble-studios/service",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_booking_analog_ensemble_studios_service.png"
+  },
+  {
+    "width": 360,
+    "route": "/booking/analog-ensemble-studios/schedule",
+    "status": 200,
+    "overflow": 0,
+    "small": [
+      "Sun, 4 Oct — closed (38×48)",
+      "Mon, 5 Oct — available (38×48)",
+      "Tue, 6 Oct — available (38×48)",
+      "Wed, 7 Oct — available (38×48)",
+      "Thu, 8 Oct — available (38×48)",
+      "Fri, 9 Oct — available (38×48)",
+      "Sat, 10 Oct — available (38×48)",
+      "Sun, 11 Oct — closed (38×48)",
+      "Mon, 12 Oct — available (38×48)",
+      "Tue, 13 Oct — available (38×48)",
+      "Wed, 14 Oct — available (38×48)",
+      "Thu, 15 Oct — available (38×48)",
+      "Fri, 16 Oct — available (38×48)",
+      "Sat, 17 Oct — available (38×48)",
+      "Sun, 18 Oct — closed (38×48)",
+      "Mon, 19 Oct — available (38×48)",
+      "Tue, 20 Oct — available (38×48)",
+      "Wed, 21 Oct — available (38×48)",
+      "Thu, 22 Oct — available (38×48)",
+      "Fri, 23 Oct — available (38×48)",
+      "Sat, 24 Oct — available (38×48)",
+      "Sun, 25 Oct — closed (38×48)",
+      "Mon, 26 Oct — available (38×48)",
+      "Tue, 27 Oct — available (38×48)",
+      "Wed, 28 Oct — available (38×48)",
+      "Thu, 29 Oct — available (38×48)",
+      "Fri, 30 Oct — available (38×48)",
+      "Sat, 31 Oct — available (38×48)",
+      "Sun, 1 Nov — closed (38×48)",
+      "Mon, 2 Nov — available (38×48)",
+      "Tue, 3 Nov — available (38×48)",
+      "Wed, 4 Nov — available (38×48)",
+      "Thu, 5 Nov — available (38×48)",
+      "Fri, 6 Nov — available (38×48)",
+      "Sat, 7 Nov — available (38×48)"
+    ],
+    "file": "Claude outputs/render-gate/360_booking_analog_ensemble_studios_schedule.png"
+  },
+  {
+    "width": 360,
+    "route": "/opportunities",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_opportunities.png"
+  },
+  {
+    "width": 360,
+    "route": "/bands",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_bands.png"
+  },
+  {
+    "width": 360,
+    "route": "/bands/j-n-ad4c0",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_bands_j_n_ad4c0.png"
+  },
+  {
+    "width": 360,
+    "route": "/search",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_search.png"
+  },
+  {
+    "width": 360,
+    "route": "/help",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_help.png"
+  },
+  {
+    "width": 360,
+    "route": "/settings",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_settings.png"
+  },
+  {
+    "width": 360,
+    "route": "/identity/qr",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_identity_qr.png"
+  },
+  {
+    "width": 360,
+    "route": "/profile/does-not-exist-xyz",
+    "status": 404,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/360_profile_does_not_exist_xyz.png"
+  },
+  {
+    "width": 412,
+    "route": "/welcome",
+    "status": 200,
+    "overflow": 0,
+    "small": [
+      "name@example.com (328×46)",
+      "Your password (288×46)"
+    ],
+    "file": "Claude outputs/render-gate/412_welcome.png"
+  },
+  {
+    "width": 412,
+    "route": "/discover",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_discover.png"
+  },
+  {
+    "width": 412,
+    "route": "/discover/singers",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_discover_singers.png"
+  },
+  {
+    "width": 412,
+    "route": "/marketplace",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_marketplace.png"
+  },
+  {
+    "width": 412,
+    "route": "/marketplace/sell",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_marketplace_sell.png"
+  },
+  {
+    "width": 412,
+    "route": "/services",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_services.png"
+  },
+  {
+    "width": 412,
+    "route": "/services/5e66ff44-6903-4098-b801-2109f5afaaa3",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_services_5e66ff44_6903_4098_b801_2109f5afaaa3.png"
+  },
+  {
+    "width": 412,
+    "route": "/profile/maya.sharma",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_profile_maya_sharma.png"
+  },
+  {
+    "width": 412,
+    "route": "/profile/ironwood.records",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_profile_ironwood_records.png"
+  },
+  {
+    "width": 412,
+    "route": "/booking/analog-ensemble-studios",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_booking_analog_ensemble_studios.png"
+  },
+  {
+    "width": 412,
+    "route": "/booking/analog-ensemble-studios/service",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_booking_analog_ensemble_studios_service.png"
+  },
+  {
+    "width": 412,
+    "route": "/booking/analog-ensemble-studios/schedule",
+    "status": 200,
+    "overflow": 0,
+    "small": [
+      "Sun, 4 Oct — closed (45×48)",
+      "Mon, 5 Oct — available (45×48)",
+      "Tue, 6 Oct — available (45×48)",
+      "Wed, 7 Oct — available (45×48)",
+      "Thu, 8 Oct — available (45×48)",
+      "Fri, 9 Oct — available (45×48)",
+      "Sat, 10 Oct — available (45×48)",
+      "Sun, 11 Oct — closed (45×48)",
+      "Mon, 12 Oct — available (45×48)",
+      "Tue, 13 Oct — available (45×48)",
+      "Wed, 14 Oct — available (45×48)",
+      "Thu, 15 Oct — available (45×48)",
+      "Fri, 16 Oct — available (45×48)",
+      "Sat, 17 Oct — available (45×48)",
+      "Sun, 18 Oct — closed (45×48)",
+      "Mon, 19 Oct — available (45×48)",
+      "Tue, 20 Oct — available (45×48)",
+      "Wed, 21 Oct — available (45×48)",
+      "Thu, 22 Oct — available (45×48)",
+      "Fri, 23 Oct — available (45×48)",
+      "Sat, 24 Oct — available (45×48)",
+      "Sun, 25 Oct — closed (45×48)",
+      "Mon, 26 Oct — available (45×48)",
+      "Tue, 27 Oct — available (45×48)",
+      "Wed, 28 Oct — available (45×48)",
+      "Thu, 29 Oct — available (45×48)",
+      "Fri, 30 Oct — available (45×48)",
+      "Sat, 31 Oct — available (45×48)",
+      "Sun, 1 Nov — closed (45×48)",
+      "Mon, 2 Nov — available (45×48)",
+      "Tue, 3 Nov — available (45×48)",
+      "Wed, 4 Nov — available (45×48)",
+      "Thu, 5 Nov — available (45×48)",
+      "Fri, 6 Nov — available (45×48)",
+      "Sat, 7 Nov — available (45×48)"
+    ],
+    "file": "Claude outputs/render-gate/412_booking_analog_ensemble_studios_schedule.png"
+  },
+  {
+    "width": 412,
+    "route": "/opportunities",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_opportunities.png"
+  },
+  {
+    "width": 412,
+    "route": "/bands",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_bands.png"
+  },
+  {
+    "width": 412,
+    "route": "/bands/j-n-ad4c0",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_bands_j_n_ad4c0.png"
+  },
+  {
+    "width": 412,
+    "route": "/search",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_search.png"
+  },
+  {
+    "width": 412,
+    "route": "/help",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_help.png"
+  },
+  {
+    "width": 412,
+    "route": "/settings",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_settings.png"
+  },
+  {
+    "width": 412,
+    "route": "/identity/qr",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_identity_qr.png"
+  },
+  {
+    "width": 412,
+    "route": "/profile/does-not-exist-xyz",
+    "status": 404,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/412_profile_does_not_exist_xyz.png"
+  },
+  {
+    "width": 640,
+    "route": "/welcome",
+    "status": 200,
+    "overflow": 0,
+    "small": [
+      "name@example.com (540×46)",
+      "Your password (500×46)"
+    ],
+    "file": "Claude outputs/render-gate/640_welcome.png"
+  },
+  {
+    "width": 640,
+    "route": "/discover",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_discover.png"
+  },
+  {
+    "width": 640,
+    "route": "/discover/singers",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_discover_singers.png"
+  },
+  {
+    "width": 640,
+    "route": "/marketplace",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_marketplace.png"
+  },
+  {
+    "width": 640,
+    "route": "/marketplace/sell",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_marketplace_sell.png"
+  },
+  {
+    "width": 640,
+    "route": "/services",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_services.png"
+  },
+  {
+    "width": 640,
+    "route": "/services/5e66ff44-6903-4098-b801-2109f5afaaa3",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_services_5e66ff44_6903_4098_b801_2109f5afaaa3.png"
+  },
+  {
+    "width": 640,
+    "route": "/profile/maya.sharma",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_profile_maya_sharma.png"
+  },
+  {
+    "width": 640,
+    "route": "/profile/ironwood.records",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_profile_ironwood_records.png"
+  },
+  {
+    "width": 640,
+    "route": "/booking/analog-ensemble-studios",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_booking_analog_ensemble_studios.png"
+  },
+  {
+    "width": 640,
+    "route": "/booking/analog-ensemble-studios/service",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_booking_analog_ensemble_studios_service.png"
+  },
+  {
+    "width": 640,
+    "route": "/booking/analog-ensemble-studios/schedule",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_booking_analog_ensemble_studios_schedule.png"
+  },
+  {
+    "width": 640,
+    "route": "/opportunities",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_opportunities.png"
+  },
+  {
+    "width": 640,
+    "route": "/bands",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_bands.png"
+  },
+  {
+    "width": 640,
+    "route": "/bands/j-n-ad4c0",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_bands_j_n_ad4c0.png"
+  },
+  {
+    "width": 640,
+    "route": "/search",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_search.png"
+  },
+  {
+    "width": 640,
+    "route": "/help",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_help.png"
+  },
+  {
+    "width": 640,
+    "route": "/settings",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_settings.png"
+  },
+  {
+    "width": 640,
+    "route": "/identity/qr",
+    "status": 200,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_identity_qr.png"
+  },
+  {
+    "width": 640,
+    "route": "/profile/does-not-exist-xyz",
+    "status": 404,
+    "overflow": 0,
+    "small": [],
+    "file": "Claude outputs/render-gate/640_profile_does_not_exist_xyz.png"
+  }
+]

@@ -542,7 +542,7 @@ export function ListingRow({ l }: { l: Listing }) {
       </Link>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <Link to="/marketplace/l/$id" params={{ id: l.id }} className="min-w-0">
+          <Link to="/marketplace/l/$id" params={{ id: l.id }} className="hit-area min-w-0">
             <h3 className="line-clamp-2 text-sm font-semibold leading-snug">{l.title}</h3>
             <PriceBlock price={l.price} />
           </Link>

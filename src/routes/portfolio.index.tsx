@@ -207,14 +207,14 @@ function PortfolioOverview() {
 
       <main className="px-5 pt-4">
         {searchOpen ? (
-          <label className="mb-4 flex h-12 items-center gap-2 rounded-full bg-subtle px-4">
+          <label className="mb-4 flex h-12 items-center gap-2 rounded-full bg-subtle px-4 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
             <Search size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
             <input
               ref={searchInput}
               value={term}
               onChange={(e) => setTerm(e.target.value)}
               placeholder="Search your work"
-              className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+              className="min-w-0 flex-1 bg-transparent text-2 outline-none"
             />
           </label>
         ) : null}

@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — brief §4 and §5: verification and the rendering gate (4 Oct)
+
+- Route coverage (business, public and talent profiles, work form):
+  - connect/follow failures said "Connection request sent!"/"Now following" — they now show the
+    error; a failed connection lookup refuses a second request instead of sending one;
+  - invented studio facts ("Vocal Booth & Foley", "Neve & UA Chains", "Spaces") removed from every
+    business profile — there is no data behind them;
+  - signed-out `/profile` showed a hardcoded demo owner with Edit; it now goes to sign-in;
+  - the work form moved genres into "Your role" on every edit; genres and roles are split back on
+    load;
+  - a profile that failed to load showed "not found" or "no work yet"; it now shows a LoadError
+    with Try again (`PublicProfileError` on `/profile/$username` and `/@handle`);
+  - a hardcoded username → id map no longer stands in for a live profile id;
+  - "Room" removed from the business enquiry options (no rooms); off-scale icon sizes fixed; the
+    work title gets a focus ring; Manage business and See all reach 48px.
+- Focus: 21 fields had no visible focus ring; rings restored (on the field, or its pill), input
+  text 16px so iOS doesn't zoom.
+- Contrast measured per state (`Claude outputs/contrast-2026-10-04.md`).
+- Rendering gate (`scripts/render-gate.mjs`, 20 screens × 360/412/640 on the production build): no
+  horizontal overflow; touch areas fixed in Segmented, SegmentedField, profile tabs, bottom nav,
+  person rows, search/market result links, auth fields (48px), the root 404 and many links; search
+  fields are labels. Auth screens' `text-xs sm:text-sm` → `text-1`, `h-11 sm:h-12` → `h-12`.
+- Wording changed: "No portfolio attached." etc. listed under §3.5; here only removals ("Room",
+  the bento facts) and the welcome links' size.
+
 ### Changed — brief §3.5: engineering hygiene (4 Oct)
 
 - Removed 29 vendor primitives nothing imported (incl. `tour.tsx` and its `next/link`) and the

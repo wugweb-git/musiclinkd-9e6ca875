@@ -103,9 +103,9 @@ elevation, avatar tokens or `--gradient-brand`.
 
 | Item | Status | Evidence |
 |---|---|---|
-| 4 Route coverage, contrast per state, focus-visible everywhere, L/E/E/O states | Remaining | no record |
+| 4 Route coverage, contrast per state, focus-visible everywhere, L/E/E/O states | Fixed (§4 branch): coverage audit + fixes, contrast measured, focus rings restored; see `render-gate-2026-10-04.md` |
 | 4 Reduced motion | Verified (global) | `styles.css:809-820` |
-| 5 Rendering gate 360/412/640 + Android shell | Remaining | 412px spot checks only |
+| 5 Rendering gate 360/412/640 + Android shell | Fixed in browser (20 screens × 3 widths, no overflow, touch areas fixed; 2 documented exceptions). Android shell: **not checked** (no device in session) |
 | 7 Stale `docs/*` (4 files, 16–23 Sep) | Remaining | — |
 | 7 AGENTS.md decisions 2/3 | Fixed `2d13f06` | — |
 

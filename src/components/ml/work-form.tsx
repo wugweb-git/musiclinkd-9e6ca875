@@ -83,10 +83,13 @@ export function WorkForm({
   const [title, setTitle] = useState(initial?.title ?? "");
   const autoTitle = useRef<string | null>(null);
   const [description, setDescription] = useState(initial?.description ?? "");
-  const [roles, setRoles] = useState<string[]>(
-    initial?.role ? initial.role.split(", ").filter(Boolean) : [],
-  );
-  const [genre, setGenre] = useState<string[]>([]);
+  // `role` holds the credit roles and then the genres, one list (portfolio_items has no genre
+  // column). Read back, a genre goes to Genre and the rest to Your role, so editing never moves
+  // genres into the role.
+  const stored = initial?.role ? initial.role.split(", ").filter(Boolean) : [];
+  const genreNames = new Set<string>(genres);
+  const [roles, setRoles] = useState<string[]>(stored.filter((r) => !genreNames.has(r)));
+  const [genre, setGenre] = useState<string[]>(stored.filter((r) => genreNames.has(r)));
   const [year, setYear] = useState(initial?.release_year ? String(initial.release_year) : "");
   const [collabList, setCollabList] = useState<string[]>(initial?.collaborators ?? []);
   const [isPublic, setIsPublic] = useState(initial ? initial.published : true);
@@ -241,7 +244,7 @@ export function WorkForm({
         rows={1}
         placeholder={`${t.label} title`}
         aria-invalid={Boolean(titleError) || undefined}
-        className="mt-6 field-sizing-content w-full resize-none bg-transparent text-3 font-bold leading-tight outline-none placeholder:text-muted-foreground/50"
+        className="mt-6 field-sizing-content w-full resize-none rounded-sm bg-transparent text-3 font-bold leading-tight outline-none placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring"
       />
       {titleError ? (
         <p role="alert" className="mt-1 animate-message text-1 text-destructive">

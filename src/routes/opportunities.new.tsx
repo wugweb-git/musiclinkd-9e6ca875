@@ -220,7 +220,7 @@ function CreateOpportunity() {
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
                 rows={4}
-                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none"
+                className="w-full rounded-lg border border-border bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </Field>
           </>

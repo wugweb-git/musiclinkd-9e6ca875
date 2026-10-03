@@ -102,7 +102,7 @@ function ResetPassword() {
                 sub="You can now sign in with your new password."
               />
               <Btn
-                className="w-full h-11 sm:h-12"
+                className="w-full h-12"
                 onClick={() => void navigate({ to: "/", replace: true })}
               >
                 Continue to MusicLinkd
@@ -127,13 +127,10 @@ function ResetPassword() {
                 title="This reset link has expired"
                 sub="Reset links work once and expire after 60 minutes."
               />
-              <Btn
-                className="w-full h-11 sm:h-12"
-                onClick={() => void navigate({ to: "/auth/forgot" })}
-              >
+              <Btn className="w-full h-12" onClick={() => void navigate({ to: "/auth/forgot" })}>
                 Send a New Link
               </Btn>
-              <p className="mt-4 text-center text-xs sm:text-sm text-muted-foreground">
+              <p className="mt-4 text-center text-1 text-muted-foreground">
                 <TextLink to="/auth/phone">Back to Sign In</TextLink>
               </p>
             </div>
@@ -186,14 +183,14 @@ function ResetPassword() {
               />
               <Btn
                 type="submit"
-                className="mt-1 w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
+                className="mt-1 w-full h-12 text-sm font-semibold shadow-xs"
                 loading={busy}
               >
                 Save New Password
               </Btn>
             </form>
           </div>
-          <p className="mt-3.5 text-center text-xs sm:text-sm text-muted-foreground">
+          <p className="mt-3.5 text-center text-1 text-muted-foreground">
             <TextLink to="/auth/phone">Back to Sign In</TextLink>
           </p>
         </div>

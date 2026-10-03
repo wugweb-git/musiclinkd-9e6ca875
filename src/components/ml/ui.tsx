@@ -235,7 +235,7 @@ export function BottomNav() {
                   to={item.to}
                   aria-label={item.label}
                   aria-current={active ? "page" : undefined}
-                  className="flex h-16 items-center justify-center"
+                  className="hit-area flex h-16 w-full items-center justify-center"
                 >
                   <span
                     className={`relative flex h-10 items-center justify-center gap-2 rounded-full transition-[background-color,padding] duration-200 ease-standard ${
@@ -272,7 +272,7 @@ export function BottomNav() {
               aria-label="Menu"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(true)}
-              className="flex h-16 w-full items-center justify-center"
+              className="hit-area flex h-16 w-full items-center justify-center"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full">
                 <Grid2x2
@@ -367,7 +367,7 @@ export function SearchBar({
   onFocus?: () => void;
 }) {
   return (
-    <div className="flex h-14 items-center gap-3 rounded-full bg-subtle px-5">
+    <label className="flex h-14 items-center gap-3 rounded-full bg-subtle px-5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
       <Search size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
       <input
         value={value}
@@ -375,11 +375,11 @@ export function SearchBar({
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder ?? "Search"}
-        className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        className="w-full bg-transparent text-2 outline-none placeholder:text-muted-foreground"
       />
       <span className="h-6 w-px bg-border" />
       <Mic size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
-    </div>
+    </label>
   );
 }
 

@@ -266,7 +266,7 @@ export function TextField({
       </label>
       <div
         className={cn(
-          "press-brand flex h-11 sm:h-12 items-center gap-2 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
+          "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
           invalid
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
             : "border-border focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
@@ -731,7 +731,7 @@ export function AuthStatus({
             <AuthHeading title={title} sub={body} />
             {list?.length ? (
               <div className="mb-4 rounded-lg bg-subtle p-3.5">
-                {listTitle ? <p className="text-xs sm:text-sm font-semibold">{listTitle}</p> : null}
+                {listTitle ? <p className="text-1 font-semibold">{listTitle}</p> : null}
                 <ul className="mt-1.5 list-disc space-y-1 pl-4 text-1 leading-snug text-muted-foreground">
                   {list.map((item) => (
                     <li key={item}>{item}</li>
@@ -743,7 +743,7 @@ export function AuthStatus({
             <TrustNote>{note}</TrustNote>
           </div>
           {footer ? (
-            <p className="mt-3.5 text-center text-xs sm:text-sm text-muted-foreground">{footer}</p>
+            <p className="mt-3.5 text-center text-1 text-muted-foreground">{footer}</p>
           ) : null}
         </div>
       </div>

@@ -366,7 +366,7 @@ function Conversation() {
                 }
               }}
               placeholder={firstName ? `Message ${firstName}` : "Write a message"}
-              className="no-scrollbar max-h-[132px] w-full resize-none bg-transparent py-3 text-sm leading-snug outline-none placeholder:text-muted-foreground"
+              className="no-scrollbar max-h-[132px] w-full resize-none bg-transparent py-3 text-2 leading-snug outline-none placeholder:text-muted-foreground"
             />
           </div>
           {/* A plain button, because this one submits the form. */}

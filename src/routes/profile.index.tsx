@@ -1,5 +1,5 @@
 import { LoadError, StateCard } from "@/components/ml/kit";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { isMyAccountBusiness } from "@/lib/profile-groups.functions";
 import { useEffect, useState } from "react";
@@ -8,7 +8,6 @@ import { TalentProfileExperience } from "@/components/ml/talent-profile";
 import { ProfileSkeleton } from "@/components/ml/profile";
 import { PublicProfileScreen, loadPublicProfile } from "@/components/ml/public-profile";
 
-import { ownerProfile } from "@/data/profile";
 import {
   getMyProfile,
   getMyProfileSections,
@@ -160,9 +159,10 @@ function TalentProfile() {
     );
   }
 
-  // Signed in: your own record, with empty states for what it doesn't hold. Signed out: the demo owner.
+  // Signed in: your own record, with empty states for what it doesn't hold. Signed out: there is no
+  // "your profile" to show, so sign in (a hardcoded demo owner must never stand in for one).
   if (!signedIn) {
-    return <TalentProfileExperience p={ownerProfile} owner />;
+    return <Navigate to="/welcome" replace />;
   }
   const view = mergeSections(
     mergeProfileRow(profileFromRow(row ?? {}), row, labels),

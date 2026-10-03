@@ -191,7 +191,7 @@ export function StackSection({
         showAllTo ? (
           <Link
             to={showAllTo}
-            className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
+            className="link-action mt-4 flex min-h-touch w-full items-center justify-center gap-1 border-t border-border pt-1 text-sm font-semibold text-pink-strong"
           >
             {showAll}
             <ChevronRight size={iconSize.sm} aria-hidden />
@@ -200,7 +200,7 @@ export function StackSection({
           <button
             type="button"
             onClick={onShowAll}
-            className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
+            className="link-action mt-4 flex min-h-touch w-full items-center justify-center gap-1 border-t border-border pt-1 text-sm font-semibold text-pink-strong"
           >
             {showAll}
             <ChevronRight size={iconSize.sm} aria-hidden />
@@ -226,7 +226,7 @@ export function ClampedText({ text, lines = 3 }: { text: string; lines?: 2 | 3 |
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="state-layer mt-1 text-sm font-semibold text-muted-foreground"
+        className="state-layer hit-area mt-1 text-sm font-semibold text-muted-foreground"
       >
         {open ? "less" : "…more"}
       </button>
@@ -866,7 +866,7 @@ export function AudioTrackCard({
             onClick={() => setExpanded((e) => !e)}
             aria-expanded={isExpanded}
             aria-label={isExpanded ? "Collapse details" : "Expand details"}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-subtle active:scale-95 transition-transform"
+            className="hit-area flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-subtle active:scale-95 transition-transform"
           >
             <ChevronDown
               size={iconSize.sm}
@@ -1235,7 +1235,7 @@ export function ServiceCard({
             <Link
               to="/services/$id"
               params={{ id: s.id }}
-              className="block text-3 font-bold leading-snug text-foreground underline-offset-4 hover:underline"
+              className="hit-area block text-3 font-bold leading-snug text-foreground underline-offset-4 hover:underline"
             >
               {s.name}
             </Link>

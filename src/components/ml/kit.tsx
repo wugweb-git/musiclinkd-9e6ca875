@@ -216,7 +216,7 @@ export function SegmentedField<T extends string>({
           role="radio"
           aria-checked={value === o}
           onClick={() => onChange(o)}
-          className={`flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-full px-2 py-2 text-1 font-semibold transition-colors ${
+          className={`hit-area flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-full px-2 py-2 text-1 font-semibold transition-colors ${
             value === o ? "bg-brand/20 text-pink-on-tint" : "text-muted-foreground"
           }`}
         >
@@ -300,7 +300,7 @@ export function Segmented<T extends string>({
             type="button"
             aria-pressed={active}
             onClick={() => onChange(o)}
-            className={`state-layer relative flex shrink-0 items-center gap-1.5 px-3 py-3 text-sm font-semibold transition-colors duration-200 ease-standard first:pl-0 ${
+            className={`state-layer relative flex min-h-touch min-w-12 shrink-0 items-center gap-1.5 px-3 text-sm font-semibold transition-colors duration-200 ease-standard first:pl-0 ${
               active ? "text-foreground" : "text-muted-foreground"
             }`}
           >

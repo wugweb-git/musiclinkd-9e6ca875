@@ -605,7 +605,7 @@ function Wizard({
                   <span className="text-1 font-semibold">{r.label}</span>
                   <span className="mt-0.5 block text-1 text-muted-foreground">{r.why}</span>
                   {r.privateField === "phone" ? (
-                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-lg bg-subtle px-4 focus-within:border-primary">
+                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-lg bg-subtle px-4 focus-within:border-primary has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
                       <span className="text-sm text-muted-foreground">+91</span>
                       <input
                         value={values[r.id] ?? ""}
@@ -613,7 +613,7 @@ function Wizard({
                         maxLength={16}
                         inputMode="tel"
                         autoComplete="tel-national"
-                        className="h-full min-w-0 flex-1 bg-transparent text-sm outline-none"
+                        className="h-full min-w-0 flex-1 bg-transparent text-2 outline-none"
                         placeholder="Type here"
                       />
                     </span>

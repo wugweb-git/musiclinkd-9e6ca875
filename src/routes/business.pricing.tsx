@@ -302,7 +302,7 @@ function MoneyRow({
         </label>
         {hint ? <p className="truncate text-1 text-muted-foreground">{hint}</p> : null}
       </div>
-      <div className="flex shrink-0 items-center gap-1 rounded-full bg-background px-3 py-2">
+      <div className="flex shrink-0 items-center gap-1 rounded-full bg-background px-3 py-2 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
         <span className="text-1 font-semibold text-muted-foreground">₹</span>
         <input
           id={id}
@@ -310,7 +310,7 @@ function MoneyRow({
           inputMode="numeric"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-20 bg-transparent text-right text-1 font-bold outline-none"
+          className="w-20 bg-transparent text-right text-2 font-bold outline-none"
         />
       </div>
     </div>

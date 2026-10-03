@@ -202,7 +202,7 @@ function ApplyFlow() {
               rows={7}
               maxLength={600}
               placeholder={`Why you're right for "${o.title}"…`}
-              className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none"
+              className="w-full rounded-lg border border-border bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <p className="text-right text-1 text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">
@@ -221,7 +221,7 @@ function ApplyFlow() {
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
                 placeholder="e.g. ₹32,000 per song"
-                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none"
+                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </Card>
           </>

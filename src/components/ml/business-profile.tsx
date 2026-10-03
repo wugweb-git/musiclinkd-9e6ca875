@@ -119,7 +119,7 @@ export function BusinessProfileExperience({
             <Link
               to="/profile/edit"
               aria-label="Manage business"
-              className="grid h-10 w-10 place-items-center rounded-full bg-card/90"
+              className="hit-area grid h-10 w-10 place-items-center rounded-full bg-card/90"
             >
               <Settings2 size={iconSize.sm} />
             </Link>
@@ -180,25 +180,6 @@ export function BusinessProfileExperience({
                 <GalleryView images={b.gallery} title={`${b.name} showcase`} />
               </StackSection>
             ) : null}
-
-            {/* Studio Facility Bento Highlights */}
-            <div className="my-3 grid grid-cols-2 gap-2.5">
-              <div className="rounded-lg border border-border/80 bg-card p-3.5">
-                <p className="eyebrow text-muted-foreground">Spaces</p>
-                <p className="mt-1 text-sm font-bold text-foreground">
-                  {b.studioSlug ? "Vocal Booth & Foley" : "Production Suites"}
-                </p>
-                <p className="mt-0.5 text-1 font-medium text-muted-foreground">
-                  Acoustically isolated
-                </p>
-              </div>
-
-              <div className="rounded-lg border border-border/80 bg-card p-3.5">
-                <p className="eyebrow text-muted-foreground">Console & Signal</p>
-                <p className="mt-1 text-sm font-bold text-foreground">Analog & Hybrid</p>
-                <p className="mt-0.5 text-1 font-medium text-muted-foreground">Neve & UA Chains</p>
-              </div>
-            </div>
 
             {activeServices.length ? (
               <StackSection title="Services">
