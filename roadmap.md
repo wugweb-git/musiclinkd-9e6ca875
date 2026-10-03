@@ -19,6 +19,9 @@
 
 ## 3 Oct 2026 — authentication entry redesign
 
+- [x] Sign-in screens rebuilt on lovable.dev/login: its grey ground, bare logo icon, pill fields, email-first then password, measured spacing; shared by every sign-in screen.
+- [ ] Owner to review the password step and forgot-password screen on a phone (automated capture of those two was not completed).
+
 - [x] Replace the rejected legacy-looking auth presentation with a clean Lovable-inspired flow across every auth route, preserving MusicLinkd branding and behavior.
 - [x] Redesign `/welcome`, phone sign-in and verification, and onboarding Select.
 - [x] Verify at 412px and desktop widths; run TypeScript and preview diagnostics.
