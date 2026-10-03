@@ -256,17 +256,6 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                 labels={{ signin: "Sign in", signup: "Create account" }}
               />
             </div>
-            <div className="mb-5">
-              <h1 className="text-3 font-bold leading-tight text-foreground">
-                {signup ? "Your account details" : "Welcome back"}
-              </h1>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                {signup
-                  ? "Join musicians, producers and studios across India."
-                  : "Sign in with your email and password."}
-              </p>
-            </div>
-
             {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
             <TextField

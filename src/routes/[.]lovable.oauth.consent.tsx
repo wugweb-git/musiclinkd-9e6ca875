@@ -54,12 +54,12 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     return data as { client?: { name?: string } } | null;
   },
   component: Consent,
-  errorComponent: ({ error }) => (
+  errorComponent: () => (
     <AuthScreen back={{ to: "/welcome" }}>
       <AuthComposition footer={<AuthFooter />}><AuthSurface>
         <AuthHeading title="Connection unavailable" sub="We could not verify this app's request." />
         <AuthNotice title="This request couldn't be loaded">
-          {String((error as Error)?.message ?? error)} Start the connection again from the app.
+          Start the connection again from the requesting app, or try loading this request once more.
         </AuthNotice>
         <Btn className="w-full" onClick={() => window.location.reload()}>Try again</Btn>
       </AuthSurface></AuthComposition>
@@ -83,7 +83,7 @@ function Consent() {
     const target = data?.redirect_url ?? data?.redirect_to;
     if (err || !target) {
       setBusy(null);
-      setError(err?.message ?? "No redirect came back. Try again.");
+      setError("The app connection could not be completed. Try again or deny access.");
       return;
     }
     window.location.href = target;

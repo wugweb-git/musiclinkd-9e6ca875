@@ -623,7 +623,7 @@ function StepBody({
                     {options.map((option) => {
                       const selected = d.primaryRole === option.slug;
                       return (
-                        <button key={option.slug} type="button" aria-pressed={selected} onClick={() => { haptic("select"); set({ primaryRole: option.slug, secondaryRoles: d.secondaryRoles.filter((s) => s !== option.slug) }); }} className={cn("state-layer grid min-h-touch grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-sm border px-3 py-2.5 text-left text-sm font-semibold", selected ? "border-foreground bg-pink-container" : "border-border bg-card")}>
+                        <button key={option.slug} type="button" aria-pressed={selected} onClick={() => { haptic("select"); set({ primaryRole: option.slug, secondaryRoles: d.secondaryRoles.filter((s) => s !== option.slug) }); }} className={cn("state-layer grid min-h-touch grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-sm border px-3 py-2.5 text-left text-sm font-semibold", selected ? "border-foreground bg-ink text-ink-foreground" : "border-border bg-card")}>
                           <span className="shrink-0">{typeIcon(option)}</span><span className="truncate">{option.label}</span>{selected ? <Check size={iconSize.sm} aria-hidden /> : null}
                         </button>
                       );

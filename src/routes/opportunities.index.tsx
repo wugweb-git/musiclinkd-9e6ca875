@@ -210,21 +210,12 @@ function OpportunitiesHome() {
                 o={o}
                 saved={has(o.id) || o.saved}
                 onSave={() => toggle(o.id)}
-                 applicationLabel={applicationBySlug.get(o.id)}
+                 applicationLabel={applicationBySlug.get(o.slug)}
               />
             ))}
           </div>
         )}
 
-        <Card className="space-y-2">
-          <h3 className="text-sm">Need someone instead?</h3>
-          <p className="text-1 text-muted-foreground">
-            Post a structured requirement and get applications with portfolios attached.
-          </p>
-          <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
-            Post an Opportunity
-          </BtnLink>
-        </Card>
       </div>
 
       <Sheet open={sheet} onClose={() => setSheet(false)} title="Post an opportunity">
