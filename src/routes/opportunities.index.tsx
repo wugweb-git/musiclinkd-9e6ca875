@@ -179,7 +179,9 @@ function OpportunitiesHome() {
                   <Icon size={20} aria-hidden />
                   <span className="min-w-0">
                     <span className="block truncate text-1 font-semibold">{c.label}</span>
-                    <span className="block text-1 text-muted-foreground">{openCount(c.key)} open</span>
+                    <span className="block text-1 text-muted-foreground">
+                      {openCount(c.key)} open
+                    </span>
                   </span>
                 </Link>
               );
