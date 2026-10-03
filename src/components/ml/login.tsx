@@ -207,18 +207,24 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
   }
 
   return (
-    <AuthScreen back={signup ? { to: "/welcome" } : undefined} className="bg-background">
-      <AuthComposition footer={<AuthFooter />} className="py-0 sm:py-8">
-        <main className={cn("flex flex-col justify-center", rise)} style={beat(2)}>
-          <div className="-mx-4 mb-5 overflow-hidden rounded-b-3xl sm:-mx-6 sm:rounded-3xl">
+    <AuthScreen back={signup ? { to: "/welcome" } : undefined} wide>
+      <AuthComposition footer={<AuthFooter />} className="py-0 lg:py-6">
+        <main className={cn("flex flex-col justify-center lg:grid lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] lg:items-stretch lg:gap-6", rise)} style={beat(2)}>
+          <div className="relative -mx-4 mb-5 min-h-44 overflow-hidden rounded-b-3xl lg:mx-0 lg:mb-0 lg:min-h-[640px] lg:rounded-3xl">
             <img
               src={authMusicCollage}
               alt="Indian artists recording and performing music"
               width={1200}
               height={1000}
-              className="h-44 w-full object-cover sm:h-56"
+              className="absolute inset-0 h-full w-full object-cover"
             />
+            <div className="media-scrim" />
+            <div className="absolute inset-x-6 bottom-6 hidden text-ink-foreground lg:block">
+              <p className="text-1 font-semibold text-ink-foreground/70">MusicLinkd</p>
+              <p className="mt-1 max-w-sm text-3 font-bold leading-tight">India’s music industry, in one professional network.</p>
+            </div>
           </div>
+          <div className="lg:flex lg:flex-col lg:justify-center lg:rounded-3xl lg:bg-card lg:p-6 lg:shadow-elevation-2">
           <div className="mb-5">
             <p className="text-1 font-semibold text-muted-foreground">
               {signup ? "Join MusicLinkd" : "Your music career, connected"}
@@ -250,7 +256,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             </section>
           ) : null}
 
-          <AuthSurface className="border-0 p-0 shadow-none">
+          <AuthSurface className="p-0 shadow-none">
             <form
               noValidate
               onSubmit={(e) => {
@@ -387,6 +393,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               </>
             )}
           </p>
+          </div>
         </main>
 
         <div className="text-center">

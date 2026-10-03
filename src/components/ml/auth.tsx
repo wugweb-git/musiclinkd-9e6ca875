@@ -29,10 +29,12 @@ export function AuthScreen({
   children,
   brand = false,
   back,
+  wide = false,
   className = "",
 }: {
   children: ReactNode;
   brand?: boolean | undefined;
+  wide?: boolean | undefined;
   /** Shows Back. It follows history like the Android back gesture, else goes here. */
   back?: AuthBack | undefined;
   /** Override the ground. Defaults to the page grey; /welcome sits on white. */
@@ -41,11 +43,12 @@ export function AuthScreen({
   return (
     <div
       className={cn(
-        "mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-card select-none sm:max-w-[760px]",
+        "mx-auto flex min-h-[100dvh] w-full flex-col bg-background select-none",
+        wide ? "max-w-[1180px]" : "max-w-app sm:max-w-[760px]",
         className,
       )}
     >
-      <div className="mx-auto flex w-full max-w-[560px] flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6">
+      <div className={cn("mx-auto flex w-full flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6", wide ? "max-w-[1080px]" : "max-w-[560px]")}>
         <header className="grid min-h-12 grid-cols-[48px_minmax(0,1fr)_48px] items-center">
           <div>{back ? <AuthBackButton back={back} /> : null}</div>
           <BrandMark />
@@ -60,7 +63,7 @@ export function AuthScreen({
 function BrandMark() {
   return (
     <div className="flex min-w-0 items-center justify-center gap-2" aria-label="MusicLinkd">
-      <LogoMark className="h-6 w-6 shrink-0 text-brand" />
+      <LogoMark className="h-7 w-7 shrink-0 rounded-sm object-cover" />
       <span className="truncate text-2 font-bold text-foreground">MusicLinkd</span>
     </div>
   );
@@ -160,7 +163,7 @@ export function AuthComposition({
   className?: string | undefined;
 }) {
   return (
-    <div className={cn("flex w-full flex-1 flex-col py-5 sm:justify-center sm:py-10", className)}>
+    <div className={cn("flex w-full flex-1 flex-col py-5 sm:justify-center sm:py-8", className)}>
       <div className="flex flex-col sm:py-6">{children}</div>
       {footer ? <footer className="mt-auto shrink-0 pt-8 text-center">{footer}</footer> : null}
     </div>
@@ -175,7 +178,7 @@ export function AuthSurface({
   className?: string | undefined;
 }) {
   return (
-    <div className={cn("rounded-lg border border-border bg-card p-4 shadow-xs sm:p-5", className)}>
+    <div className={cn("rounded-lg bg-card p-4 shadow-elevation-2 sm:p-5", className)}>
       {children}
     </div>
   );

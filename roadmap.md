@@ -4,7 +4,9 @@
 
 - [x] Approve a reference-led visual-system and route-family rollout plan.
 - [x] Establish `/welcome`, `/home`, and `/discover` as the first visual benchmark.
-- [ ] Propagate the benchmark through account entry, onboarding, identity, work/network, commercial, and utility routes.
+- [x] Audit all route and shared-component families against the full reference history.
+- [x] Apply the first system-wide pass to logo, desktop canvas, headers, cards, grouped rows, auth, and shared states.
+- [ ] Complete family-specific composition passes where shared primitives cannot create a distinct domain layout.
 
 ## 3 Oct 2026 — role-aware Home and Discover restoration
 
