@@ -73,6 +73,14 @@ type HomeData = {
   services: ServiceRow[];
 };
 
+const HOME_READ_TIMEOUT = 6_000;
+function readOr<T>(read: Promise<T>, fallback: T): Promise<T> {
+  return Promise.race([
+    read.catch(() => fallback),
+    new Promise<T>((resolve) => window.setTimeout(() => resolve(fallback), HOME_READ_TIMEOUT)),
+  ]);
+}
+
 function useHomeData() {
   const { signedIn, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -105,17 +113,26 @@ function useHomeData() {
     queryKey: ["home", "workspace"],
     enabled: signedIn && !offline,
     queryFn: async (): Promise<HomeData> => {
-      const [profileRow, work, businessRow, network, applied, incoming, businessLeads, myServices] =
-        await Promise.all([
-          profile() as Promise<ProfileRow | null>,
-          portfolio(),
-          business(),
-          connections(),
-          applications(),
-          bookings(),
-          leads(),
-          services(),
-        ]);
+      const [profileRow, work, businessRow] = await Promise.all([
+        readOr(profile() as Promise<ProfileRow | null>, null),
+        readOr(portfolio(), []),
+        readOr(business(), null),
+      ]);
+      const [network, applied, incoming, businessLeads, myServices] = businessRow
+        ? await Promise.all([
+            Promise.resolve({ connected: [], received: [], sent: [] }) as ReturnType<typeof connections>,
+            Promise.resolve([]) as ReturnType<typeof applications>,
+            readOr(bookings(), []),
+            readOr(leads(), []),
+            readOr(services(), []),
+          ])
+        : await Promise.all([
+            readOr(connections(), { connected: [], received: [], sent: [] }),
+            readOr(applications(), []),
+            Promise.resolve([] as BookingRequest[]),
+            Promise.resolve([] as EnquiryRow[]),
+            Promise.resolve([] as ServiceRow[]),
+          ]);
       return {
         profile: profileRow,
         portfolioCount: work.length,
