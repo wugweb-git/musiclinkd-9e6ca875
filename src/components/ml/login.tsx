@@ -36,7 +36,7 @@ import { beat, useArrival } from "@/lib/flow-motion";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
-import { MadeByWugweb } from "@/components/ml/kit";
+import { MadeByWugweb, SegmentedField } from "@/components/ml/kit";
 import { AccountRow } from "@/components/ml/accounts";
 import { forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
 
@@ -102,6 +102,7 @@ function RoleTicker({
 }
 
 export type LoginMode = "signup" | "signin";
+const MODES = ["signin", "signup"] as const;
 
 /**
  * The login screen (`/welcome`, owner 4 Oct 2026: "rename welcome screen as login screen") and the
@@ -356,6 +357,20 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             }}
             className="rounded-lg bg-card p-2.5 sm:p-3.5 border border-border/80 shadow-xs"
           >
+            {/* A toggle between the two screens, not two states of one (owner, 4 Oct 2026): each
+                side is its own address, so the route, Back and a shared link all stay right. */}
+            <div className="mb-1.5">
+              <SegmentedField
+                value={mode}
+                options={MODES}
+                onChange={(next) => {
+                  if (next !== mode)
+                    void navigate({ to: next === "signup" ? "/signup" : "/welcome" });
+                }}
+                label="Sign in or create an account"
+                labels={{ signin: "Sign In", signup: "Sign Up" }}
+              />
+            </div>
             <div className="mb-1.5">
               <h1 className="text-3 font-bold leading-tight text-foreground">
                 {signup ? "Create your account" : "Welcome back"}
