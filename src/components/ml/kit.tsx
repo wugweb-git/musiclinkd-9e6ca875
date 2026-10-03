@@ -125,7 +125,7 @@ export function Price({
 export function Tag({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-md bg-subtle px-2 py-1 text-1 font-medium text-foreground ${className}`}
+      className={`inline-flex shrink-0 items-center rounded-sm bg-subtle px-2 py-1 text-1 font-medium text-foreground ${className}`}
     >
       {children}
     </span>

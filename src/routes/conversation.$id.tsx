@@ -284,8 +284,8 @@ function Conversation() {
               // Round all over, except the sender's side where bubbles in a group meet, and the
               // tail corner on the last one.
               const corners = m.mine
-                ? `${joinsPrev ? "rounded-tr-md" : ""} rounded-br-md`
-                : `${joinsPrev ? "rounded-tl-md" : ""} rounded-bl-md`;
+                ? `${joinsPrev ? "rounded-tr-sm" : ""} rounded-br-sm`
+                : `${joinsPrev ? "rounded-tl-sm" : ""} rounded-bl-sm`;
               return (
                 <li key={m.id} className={joinsPrev ? "mt-0.5" : "mt-3"}>
                   {newDay ? (
@@ -306,7 +306,7 @@ function Conversation() {
                       )
                     ) : null}
                     <p
-                      className={`max-w-[78%] whitespace-pre-wrap break-words rounded-[20px] px-4 py-2.5 text-sm leading-snug ${corners} ${
+                      className={`max-w-[78%] whitespace-pre-wrap break-words rounded-lg px-4 py-2.5 text-sm leading-snug ${corners} ${
                         m.mine ? "bg-ink text-background" : "bg-subtle text-foreground"
                       } ${m.pending ? "opacity-60" : ""}`}
                     >
@@ -343,7 +343,7 @@ function Conversation() {
           >
             <Plus size={iconSize.md} strokeWidth={2} aria-hidden />
           </button>
-          <div className="flex min-h-12 min-w-0 flex-1 items-center rounded-[26px] bg-card px-5 transition-shadow duration-200 focus-within:shadow-[0_0_0_2px_var(--color-foreground)]">
+          <div className="flex min-h-12 min-w-0 flex-1 items-center rounded-full bg-card px-5 transition-shadow duration-200 focus-within:shadow-[0_0_0_2px_var(--color-foreground)]">
             <label htmlFor="message" className="sr-only">
               Message
             </label>
@@ -374,7 +374,7 @@ function Conversation() {
             type="submit"
             aria-label="Send"
             disabled={!draft.trim()}
-            className="state-layer flex h-12 w-14 shrink-0 items-center justify-center rounded-2xl bg-ink text-background transition-[transform,background-color,color,border-radius] duration-200 ease-standard active:scale-97 active:rounded-full disabled:bg-card disabled:text-muted-foreground"
+            className="state-layer flex h-12 w-14 shrink-0 items-center justify-center rounded-lg bg-ink text-background transition-[transform,background-color,color,border-radius] duration-200 ease-standard active:scale-97 active:rounded-full disabled:bg-card disabled:text-muted-foreground"
           >
             <SendHorizontal size={iconSize.md} strokeWidth={2} aria-hidden />
           </button>

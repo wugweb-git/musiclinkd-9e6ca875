@@ -1,4 +1,5 @@
 import type { TalentProfile } from "./profile";
+import { unsplash } from "./unsplash";
 
 /**
  * Profiles for the people and businesses the seed data links to: opportunity posters, applicants
@@ -41,8 +42,7 @@ export type LinkedProfileSeed = {
   };
 };
 
-const u = (id: string, w = 600) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const u = (id: string, w = 600) => unsplash(id, w);
 
 const photo = {
   sunset: "photo-1470225620780-dba8ba36b745",

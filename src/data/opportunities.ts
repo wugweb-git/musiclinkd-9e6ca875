@@ -7,6 +7,7 @@
  */
 
 import { inr, type PriceParts } from "@/lib/price";
+import { unsplash } from "./unsplash";
 
 export type OpportunityKind =
   "Person" | "Gig" | "Project" | "Studio" | "Venue" | "Equipment" | "Collaborator";
@@ -101,8 +102,7 @@ export type Opportunity = {
   featured?: boolean;
 };
 
-const u = (id: string, w = 320) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const u = (id: string, w = 320) => unsplash(id, w);
 
 export const opportunities: Opportunity[] = [
   {

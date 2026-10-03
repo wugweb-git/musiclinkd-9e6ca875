@@ -158,7 +158,7 @@ function Actions({ onRemove }: { onRemove: () => void }) {
         type="button"
         onClick={onRemove}
         aria-label="Remove from saved"
-        className="hit-area flex min-h-touch w-11 items-center justify-center rounded-full border border-border"
+        className="hit-area flex min-h-touch w-12 items-center justify-center rounded-full border border-border"
       >
         <X size={iconSize.sm} aria-hidden />
       </button>

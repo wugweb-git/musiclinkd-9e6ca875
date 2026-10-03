@@ -178,7 +178,7 @@ function ApplicantDetail() {
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 {(work.data ?? []).map((p) => (
-                  <div key={p.id} className="overflow-hidden rounded-[20px] bg-subtle">
+                  <div key={p.id} className="overflow-hidden rounded-lg bg-subtle">
                     {p.cover_url ? (
                       <img
                         src={sized(p.cover_url, { width: 96 })}

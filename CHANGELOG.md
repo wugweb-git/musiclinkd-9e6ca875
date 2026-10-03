@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — brief §3: tokens (4 Oct)
+
+- Hit target: `--spacing-touch` (`min-h-touch`) is 48px (owner, 29 Sep); 40–44px is only a drawn
+  size inside a 48px `hit-area`. The 16 consumers are now 48px tall; Saved's icon button is 48×48.
+- Type: the `display-*`, `body-*`, `label-*` utilities and the `.headline-*`/`.title-*` aliases
+  (0 consumers) removed; h1/h2 set at normal tracking.
+- Radius tail: app code uses only `sm`/`lg`/`3xl`/`full` — `rounded-md` → `sm` (thumbnails, tags),
+  20/24px cards → `lg`, 14px tiles → `sm`, the 48px message composer → `full`, the 16px send and
+  new-message buttons → `lg` (same size), bubble tail corners → `sm`.
+- Unused tokens removed: avatar sizes, `elevation-1`/`-4`, `--gradient-brand` and `brand-gradient`.
+  The shadow tint is a generic `--shadow-ink` (not a brand colour); GearCta's hover glow uses
+  `--brand` instead of raw pink.
+- Primary vs Ink: usage list for the owner (`Claude outputs/primary-vs-ink-2026-10-04.md`); no
+  merge.
+- Unsplash (owner, 4 Oct: keep it): the 11 `src/data` modules share one builder,
+  `src/data/unsplash.ts`.
+- AGENTS.md: radius (four steps), hit target (48px) and overlays (`Sheet`, `Dialog`,
+  `useConfirm`) now match the code.
+
 ### Fixed — brief §2: component and state cleanup (4 Oct)
 
 - Safe area in the shared primitives: `Sheet` never reaches under the status bar; `CoverHero`'s

@@ -1,3 +1,4 @@
+import { unsplash } from "./unsplash";
 /**
  * FLOW 17 — REVIEWS. Design-only.
  * Canonical names: review, review_criteria, review_response, review_request, review_flag.
@@ -25,8 +26,7 @@ export type Review = {
   helpful: number;
 };
 
-const u = (id: string, w = 300) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const u = (id: string, w = 300) => unsplash(id, w);
 
 export const receivedReviews: Review[] = [
   {

@@ -80,7 +80,7 @@ export function GearCta() {
   return (
     <section
       onPointerDown={strum}
-      className="relative isolate overflow-hidden rounded-3xl bg-ink text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.1),0_28px_56px_-22px_rgb(13_11_38/0.6)]"
+      className="relative isolate overflow-hidden rounded-3xl bg-ink text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.1),0_28px_56px_-22px_rgb(var(--shadow-ink)/0.6)]"
     >
       {/* Turbulence: stretched fractal noise tinted magenta-violet, drifting slowly. */}
       <svg
@@ -140,7 +140,7 @@ export function GearCta() {
         <div className="mt-3 flex gap-2">
           <Link
             to="/marketplace/sell"
-            className="group/cta state-layer inline-flex min-h-touch flex-1 items-center justify-center gap-2 rounded-full bg-brand-button text-sm font-semibold text-white outline-none transition-[scale,box-shadow] duration-300 ease-spring hover:shadow-[0_6px_18px_-6px_rgb(234_76_137/0.7)] focus-visible:ring-2 focus-visible:ring-white/80 active:scale-95"
+            className="group/cta state-layer inline-flex min-h-touch flex-1 items-center justify-center gap-2 rounded-full bg-brand-button text-sm font-semibold text-white outline-none transition-[scale,box-shadow] duration-300 ease-spring hover:shadow-[0_6px_18px_-6px_color-mix(in_srgb,var(--brand)_70%,transparent)] focus-visible:ring-2 focus-visible:ring-white/80 active:scale-95"
           >
             <Plus
               size={iconSize.sm}

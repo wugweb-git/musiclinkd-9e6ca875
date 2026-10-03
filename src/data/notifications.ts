@@ -1,3 +1,4 @@
+import { unsplash } from "./unsplash";
 /**
  * FLOW 13 — NOTIFICATIONS (design-only mock data).
  * Canonical names: notification, notification_category, notification_channel, notification_preference.
@@ -38,7 +39,7 @@ export const categoryMeta: Record<NotificationCategory, { label: string; icon: s
   system: { label: "Account", icon: "settings" },
 };
 
-const img = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=120&q=80`;
+const img = (id: string) => unsplash(id, 120);
 
 export const notifications: NotificationItem[] = [
   {

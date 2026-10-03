@@ -530,10 +530,10 @@ export function BandReleaseSheet({
               <img
                 src={sized(cover, { width: 64 })}
                 alt=""
-                className="h-16 w-16 rounded-md object-cover"
+                className="h-16 w-16 rounded-sm object-cover"
               />
             ) : (
-              <span aria-hidden className="h-16 w-16 shrink-0 rounded-md bg-subtle" />
+              <span aria-hidden className="h-16 w-16 shrink-0 rounded-sm bg-subtle" />
             )}
             <ImagePickButton
               kind="cover"

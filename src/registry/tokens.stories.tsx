@@ -218,10 +218,10 @@ export const Depth: Story = {
   render: () => (
     <Page
       title="Elevation, motion, opacity"
-      intro="The three scales that already match the reference spec step for step. Prefer a hairline border to elevation-1 on a card."
+      intro="The three scales that already match the reference spec step for step. Prefer a hairline border to elevation on a card."
     >
       <section>
-        {["--elevation-1", "--elevation-2", "--elevation-3", "--elevation-4"].map((e) => (
+        {["--elevation-2", "--elevation-3"].map((e) => (
           <Row key={e} name={e}>
             <div className="flex items-center gap-3">
               <span

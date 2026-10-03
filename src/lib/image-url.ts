@@ -51,7 +51,7 @@ export const imageWidth = {
   avatarSm: 48,
   /** Card and header avatars: h-14 to h-20. */
   avatarMd: 80,
-  /** The profile photo at rest (--spacing-avatar-xl is 136px). */
+  /** The profile photo at rest (136px). */
   avatarLg: 136,
   /** A card's thumbnail in a rail or list row. */
   thumb: 200,

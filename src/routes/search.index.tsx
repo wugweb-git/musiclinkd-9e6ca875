@@ -540,10 +540,10 @@ function HitList({ hits, q }: { hits: SearchHit[]; q: string }) {
                 src={sized(h.photo, { width: 44 })}
                 alt=""
                 loading="lazy"
-                className={`h-11 w-11 shrink-0 object-cover ${h.kind === "person" ? "rounded-full" : "rounded-md"}`}
+                className={`h-11 w-11 shrink-0 object-cover ${h.kind === "person" ? "rounded-full" : "rounded-sm"}`}
               />
             ) : (
-              <span className="h-11 w-11 shrink-0 rounded-md bg-background" aria-hidden />
+              <span className="h-11 w-11 shrink-0 rounded-sm bg-background" aria-hidden />
             )}
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-1">

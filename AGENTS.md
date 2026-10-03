@@ -32,8 +32,10 @@ live at `app.musiclinkd.com`. Nothing here is a prototype.
 router links; if `to` won't type-check, the route is wrong.
 
 **Components.** Check `src/components/ml/ui.tsx`, `ml/kit.tsx` and `src/components/ui/` (shadcn)
-before creating anything; reuse and restyle, don't add siblings. Use shadcn `dialog`/`sheet`/`drawer`
-for overlays (focus trap, Escape, scroll lock).
+before creating anything; reuse and restyle, don't add siblings. Overlays: the `Sheet` in
+`ml/ui.tsx` for bottom sheets, `Dialog` in `ml/kit.tsx` for dialogs, and `useConfirm` in `ml/ui.tsx`
+for every destructive confirm (on `ui/alert-dialog`). Each has the focus trap, Escape, the Android
+back button and scroll lock; don't hand-roll another.
 
 **Primitive vs Component vs Block.** `src/components/ui/` (shadcn) is the Primitive layer:
 domain-agnostic, atomic, would look the same in any app (`Button`, `Chip`, badges, `Card` the bare
@@ -67,8 +69,9 @@ canonical directories are now the Blocks and Components pages under Design Syste
 
 **Tokens.**
 
-- Radius by role: `sm` 8 controls, `md` 12 inputs/thumbnails, `lg` 16 cards, `xl` 20, `2xl` 28
-  sheets, `3xl` hero, `full` buttons/chips/pills. No arbitrary `rounded-[…]`.
+- Radius, four steps by role (`src/styles.css`): `sm` 8 for chips, small controls, thumbnails and
+  inputs; `lg` 16 for cards and list containers; `3xl` 32 for sheets, dialogs and full-bleed hero;
+  `full` for buttons and pills. `md`, `xl` and `2xl` are retired. No arbitrary `rounded-[…]`.
 - Type: `text-1` (12–13px, the smallest step), `text-sm` (14–15, what the app leans on hardest),
   `text-2` (16–18), `text-3` (22–28), `text-4` (32–44). No `text-xs/base/lg`. The only
   arbitrary sizes allowed are `text-[10px]` and `text-[11px]`, and only for metadata and compact
@@ -87,7 +90,8 @@ canonical directories are now the Blocks and Components pages under Design Syste
   selected pill, prices, and the `brand` button inside branded blocks. Never a resting border,
   background or body text. `src/styles.css` is the authority on this — read the comment on
   `--brand` rather than restating the rule from memory.
-- `:focus-visible` ring on every control; 48dp touch targets.
+- `:focus-visible` ring on every control. Hit target 48px (owner, 29 Sep): `min-h-touch` /
+  `--spacing-touch` is 48px. A control may be drawn 40–44px only inside a 48px `hit-area`.
 
 **Routing.** Mostly flat dot-named files in `src/routes/`; `marketplace/`, `marketplace/rent/` and
 `onboarding/` are real directories (27 of 146 route files). `routeTree.gen.ts` is generated, never edit it.
