@@ -26,6 +26,7 @@ import {
   MarketFilterSheet,
   SectionRow,
   useMarketCity,
+  CategoryBanner,
 } from "@/components/ml/market";
 import { type Listing } from "@/data/market";
 import { popularCategories, useGearTaxonomy } from "@/lib/listing-category";
