@@ -12,7 +12,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   the name of one service of the business asked. The service's owner can read and answer a booking
   of it (two new rules; the answer guard and the booking notification know the service's owner),
   so a talent can accept or decline. The guard and notification are replaced only if the live
-  bodies match the repo's (md5), otherwise it stops. Nothing dropped; `room_id` untouched.
+  bodies match the snapshot (`supabase/dumps/2026-10-04-before-bookings-point-at-services.sql`,
+  md5 of each body), otherwise it stops. A business's notice still opens the request itself
+  (`/business/bookings/requests/<id>`); a talent's carries no link until C1 adds a screen for it.
+  Nothing dropped; `room_id` untouched.
 
 ### Changed — one name for amenities; the picker offers 12; studio services fold into service categories (owner, 3 Oct)
 

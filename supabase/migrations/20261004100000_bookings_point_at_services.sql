@@ -10,17 +10,23 @@
 --      the existing ones; the guard and the notification learn the service's owner the same way.
 --
 -- The guard and the notification are replaced, so the migration first checks that the live
--- bodies are exactly the ones in this repo (20260922150000 / 20260918120000 after the
--- 20261003130000 rename) and stops if either differs, rather than overwrite a change made elsewhere.
+-- bodies are exactly the ones in the snapshot (md5 of prosrc) and stops if either differs, rather
+-- than overwrite a change made elsewhere. Both were compared with the repo: the guard is
+-- 20260922150000 after the 20261003130000 rename, less one comment line; the notification is
+-- 20260922310000 (links to the request itself) after the rename. Same logic in both.
 --
--- Snapshot before applying: supabase/dumps/YYYY-MM-DD-before-bookings-point-at-services.sql, the
--- output of supabase/checks/before-bookings-point-at-services.sql (function and rule definitions,
--- counts; no user data).
+-- Links: a booking with a bookable still opens /business/bookings/requests/<id>, as today. A
+-- booking with no bookable (a talent's service) has no request screen yet, so its notice carries
+-- no link (notifications.href is optional and the list shows it unlinked) until C1 adds one.
+--
+-- Snapshot: supabase/dumps/2026-10-04-before-bookings-point-at-services.sql (taken read-only with
+-- supabase/checks/before-bookings-point-at-services.sql; definitions and counts, no user data).
 --
 -- Rollback:
 --   DROP POLICY "Service owner reads" ON public.booking_requests;
 --   DROP POLICY "Service owner answers" ON public.booking_requests;
---   then re-create booking_requests_guard() and notify_booking() from the snapshot;
+--   then re-create booking_requests_guard() and notify_booking() from the snapshot
+--   (supabase/dumps/2026-10-04-before-bookings-point-at-services.sql);
 --   DROP FUNCTION public.profile_service_is_mine(uuid);
 --   ALTER TABLE public.booking_requests DROP COLUMN service_id;
 
@@ -35,13 +41,13 @@ DECLARE got text;
 BEGIN
   SELECT md5(prosrc) INTO got FROM pg_proc
    WHERE oid = 'public.booking_requests_guard()'::regprocedure;
-  IF got IS DISTINCT FROM '24f4bca23f7718189c1ce41d0ca3d38f' THEN
-    RAISE EXCEPTION 'booking_requests_guard() is not the version in the repo (md5 %)', got;
+  IF got IS DISTINCT FROM 'd30d843d800fddc8a0fdf33f8e5aac5d' THEN
+    RAISE EXCEPTION 'booking_requests_guard() is not the version in the snapshot (md5 %)', got;
   END IF;
   SELECT md5(prosrc) INTO got FROM pg_proc
    WHERE oid = 'public.notify_booking()'::regprocedure;
-  IF got IS DISTINCT FROM '546c8b000bc4289a92c4f54d2b23f81a' THEN
-    RAISE EXCEPTION 'notify_booking() is not the version in the repo (md5 %)', got;
+  IF got IS DISTINCT FROM '50c25b098228e3e122866182ddde94f8' THEN
+    RAISE EXCEPTION 'notify_booking() is not the version in the snapshot (md5 %)', got;
   END IF;
   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public'
                AND table_name = 'booking_requests' AND column_name = 'service_id') THEN
@@ -128,7 +134,8 @@ END
 $fn$;
 REVOKE EXECUTE ON FUNCTION public.booking_requests_guard() FROM PUBLIC, anon, authenticated;
 
--- The notification goes to the bookable's owner, or, with no bookable, the service's owner.
+-- The notification goes to the bookable's owner, or, with no bookable, the service's owner. The
+-- owner's notice opens the request itself where there is a screen for it (a bookable's).
 CREATE OR REPLACE FUNCTION public.notify_booking()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -138,6 +145,7 @@ AS $fn$
 DECLARE
   v_owner uuid;
   v_name  text;
+  v_href  text;
 BEGIN
   SELECT owner_profile_id, name INTO v_owner, v_name FROM public.bookables WHERE id = NEW.bookable_id;
   IF v_owner IS NULL AND NEW.service_id IS NOT NULL THEN
@@ -147,17 +155,20 @@ BEGIN
   IF v_owner IS NULL THEN
     RETURN NULL;
   END IF;
+  IF NEW.bookable_id IS NOT NULL THEN
+    v_href := '/business/bookings/requests/' || NEW.id;
+  END IF;
 
   IF TG_OP = 'INSERT' THEN
     PERFORM public.notify(v_owner, NEW.requester_profile_id, 'booking_requested',
       public.display_name_of(NEW.requester_profile_id) || ' asked for a session',
       to_char(NEW.session_date, 'DD Mon') || coalesce(' · ' || NEW.purpose, ''),
-      '/provider/bookings/requests');
+      v_href);
   ELSIF NEW.status IS DISTINCT FROM OLD.status THEN
     IF NEW.status = 'cancelled' THEN
       PERFORM public.notify(v_owner, NEW.requester_profile_id, 'booking_answered',
         public.display_name_of(NEW.requester_profile_id) || ' cancelled a session',
-        to_char(NEW.session_date, 'DD Mon'), '/provider/bookings/requests');
+        to_char(NEW.session_date, 'DD Mon'), v_href);
     ELSE
       PERFORM public.notify(NEW.requester_profile_id, v_owner, 'booking_answered',
         v_name || ' marked your session ' || NEW.status,
