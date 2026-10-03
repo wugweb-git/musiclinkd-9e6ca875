@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — Add service asks every business, and only businesses, for amenities and equipment (3 Oct)
+
+- `services.new.tsx` decided "studio" from whether the equipment list loaded. Since every signed-in
+  account can now load it (empty when there's no bookable), talent accounts were shown amenities and
+  equipment instead of portfolio examples. It now keys off `useRequireBusiness()`: every business
+  type gets both fields, talent keeps examples.
+- Both fields are optional for a business (owner, 3 Oct); talent still needs at least one example.
+- `StudioSetupNote` → `BookableSetupNote`; its copy says "business", not "studio".
+
 ### Changed — route-local components classified; duplicates removed (P1-9, P1-10, P1-12, 3 Oct)
 
 - **Availability on Home** puts the switch back when the save fails (it stayed flipped, looking
