@@ -249,19 +249,6 @@ export function eligibility(
   return { allowed: true, reason: "" };
 }
 
-/** Trust signals surfaced on profiles, search results, listings and reviews. */
-export const trustSignals = [
-  { key: "identity", label: "ID verified", detail: "Government ID checked by the Trust team." },
-  { key: "professional", label: "Pro verified", detail: "Credited work confirmed on 2+ releases." },
-  { key: "response", label: "Responds in 2h", detail: "Median first reply over the last 30 days." },
-  { key: "reviews", label: "4.9 from 38 reviews", detail: "Reviews only from completed bookings." },
-  {
-    key: "since",
-    label: "On MusicLinkd since 2019",
-    detail: "Account age and continuous activity.",
-  },
-];
-
 /** VERIFY-15 — the badge must read the same everywhere it appears. */
 export const badgePlacements = [
   { surface: "Profile", detail: "Next to your name in the hero, at 16px." },

@@ -13,6 +13,7 @@ import {
   WorkCard,
   WorkTypeIcon,
 } from "./portfolio";
+import { unsplash } from "@/data/unsplash";
 
 /*
  * Portfolio pieces, with the states a real portfolio screen moves through: loading, empty, error,
@@ -156,8 +157,7 @@ export const MediaGrid: Story = {
           title: "Neon Monsoon",
           kind: "track",
           featured: true,
-          cover_url:
-            "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=800&q=80",
+          cover_url: unsplash("photo-1493225457124-a3eb161ffa5f", 800),
           media_url:
             "https://commondatastorage.googleapis.com/codeskulptor-assets/Epoq-Lepidoptera.ogg",
         },
@@ -167,8 +167,7 @@ export const MediaGrid: Story = {
           title: "NH7 Festival — Live Mix",
           kind: "video",
           featured: false,
-          cover_url:
-            "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=800&q=80",
+          cover_url: unsplash("photo-1470229722913-7c0e2dbbafd3", 800),
           media_url:
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         },
@@ -178,8 +177,7 @@ export const MediaGrid: Story = {
           title: "Sessions at Bandra East",
           kind: "performance",
           featured: false,
-          cover_url:
-            "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=800&q=80",
+          cover_url: unsplash("photo-1524368535928-5b5e00ddc76b", 800),
           media_url: null,
         },
       ]}

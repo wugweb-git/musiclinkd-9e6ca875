@@ -37,7 +37,8 @@ export function SavedSearchRow({ search }: { search: SavedSearch }) {
   return (
     <article className="flex items-center gap-3 rounded-lg bg-subtle p-3 pl-4">
       {search.scope === "rent" ? (
-        <Link to="/marketplace/rent/search" search={{ q: search.query }} className={link}>
+        // Rental search is Market search (one marketplace, owner 22 Sep).
+        <Link to="/marketplace/search" search={{ q: search.query }} className={link}>
           {body}
         </Link>
       ) : search.scope === "market" ? (

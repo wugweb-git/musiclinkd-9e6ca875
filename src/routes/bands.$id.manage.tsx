@@ -1,5 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { removeMember, setMemberRole, transferCollab } from "@/lib/collabs.functions";
+import { deleteBand } from "@/lib/bands.functions";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
   BandRiderSheet,
@@ -47,6 +51,26 @@ function ManageBand() {
   const [removing, setRemoving] = useState<string | null>(null);
   const [transfer, setTransfer] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
+  const navigate = useNavigate();
+  const saveRole = useServerFn(setMemberRole);
+  const remove = useServerFn(removeMember);
+  const handOver = useServerFn(transferCollab);
+  const end = useServerFn(deleteBand);
+  const [busy, setBusy] = useState<string | null>(null);
+  // Each action shows its own result: the band reloads on success, the error says why otherwise.
+  async function run(key: string, action: () => Promise<unknown>, done?: () => void) {
+    setBusy(key);
+    try {
+      await action();
+      done?.();
+      await router.invalidate();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "That didn't save. Try again.");
+    } finally {
+      setBusy(null);
+    }
+  }
 
   if (!band) {
     return (
@@ -100,7 +124,22 @@ function ManageBand() {
                 <p className="text-1 text-muted-foreground">{bandRoleCopy[m.role].blurb}</p>
                 {m.role !== "owner" ? (
                   <div className="flex gap-2">
-                    <Btn variant="outline" className="flex-1 text-1">
+                    <Btn
+                      variant="outline"
+                      className="flex-1 text-1"
+                      loading={busy === `role-${m.key}`}
+                      onClick={() =>
+                        void run(`role-${m.key}`, () =>
+                          saveRole({
+                            data: {
+                              id: band.dbId,
+                              profileId: m.profileId,
+                              role: m.role === "admin" ? "member" : "admin",
+                            },
+                          }),
+                        )
+                      }
+                    >
                       {m.role === "admin" ? "Make member" : "Make admin"}
                     </Btn>
                     <Btn
@@ -214,7 +253,19 @@ function ManageBand() {
         body="They stay on MusicLinkd with their own profile, but will no longer appear in this line-up."
         onClose={() => setRemoving(null)}
       >
-        <Btn onClick={() => setRemoving(null)}>Remove Member</Btn>
+        <Btn
+          loading={busy === "remove"}
+          onClick={() =>
+            removing &&
+            void run(
+              "remove",
+              () => remove({ data: { id: band.dbId, profileId: removing } }),
+              () => setRemoving(null),
+            )
+          }
+        >
+          Remove Member
+        </Btn>
         <Btn variant="outline" onClick={() => setRemoving(null)}>
           Keep Member
         </Btn>
@@ -225,7 +276,28 @@ function ManageBand() {
         body="Pick an admin to become the new owner. You stay in the band as an admin."
         onClose={() => setTransfer(false)}
       >
-        <Btn onClick={() => setTransfer(false)}>Choose an Admin</Btn>
+        {/* The admins to hand over to; with none, the band needs one first. */}
+        {band.members.some((m) => m.role === "admin") ? (
+          band.members
+            .filter((m) => m.role === "admin")
+            .map((m) => (
+              <Btn
+                key={m.key}
+                loading={busy === `owner-${m.key}`}
+                onClick={() =>
+                  void run(
+                    `owner-${m.key}`,
+                    () => handOver({ data: { id: band.dbId, profileId: m.profileId } }),
+                    () => setTransfer(false),
+                  )
+                }
+              >
+                {m.name}
+              </Btn>
+            ))
+        ) : (
+          <Btn disabled>Choose an Admin</Btn>
+        )}
         <Btn variant="outline" onClick={() => setTransfer(false)}>
           Cancel
         </Btn>
@@ -236,7 +308,23 @@ function ManageBand() {
         body="The band profile, shows and shared work links are removed. Individual member profiles are untouched."
         onClose={() => setDeleting(false)}
       >
-        <Btn onClick={() => setDeleting(false)}>Delete Band</Btn>
+        <Btn
+          loading={busy === "delete"}
+          onClick={async () => {
+            setBusy("delete");
+            try {
+              await end({ data: { id: band.dbId } });
+              setDeleting(false);
+              void navigate({ to: "/bands" });
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : "That didn't save. Try again.");
+            } finally {
+              setBusy(null);
+            }
+          }}
+        >
+          Delete Band
+        </Btn>
         <Btn variant="outline" onClick={() => setDeleting(false)}>
           Cancel
         </Btn>

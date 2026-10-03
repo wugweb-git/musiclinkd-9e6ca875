@@ -16,6 +16,7 @@ import {
 } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
+import { workIconFor } from "@/components/ml/portfolio";
 
 export const Route = createFileRoute("/opportunities/applications/$aid")({
   head: () => {
@@ -197,9 +198,13 @@ function ApplicationDetail() {
               return (
                 <span
                   key={pid}
-                  className="rounded-full bg-background px-3 py-1.5 text-1 font-semibold"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-1 font-semibold"
                 >
-                  {workType(item?.kind ?? "track").emoji} {item?.title ?? "Attached work"}
+                  {(() => {
+                    const Icon = workIconFor(item?.kind ?? "track");
+                    return <Icon size={iconSize.xs} aria-hidden />;
+                  })()}
+                  {item?.title ?? "Attached work"}
                 </span>
               );
             })}

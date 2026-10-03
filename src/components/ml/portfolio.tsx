@@ -67,6 +67,12 @@ const workIcons: Record<string, LucideIcon> = {
   link: Link2,
 };
 
+/** A work type's line icon on its own, for inline use (a chip, a line of text). */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
+export function workIconFor(kind: string): LucideIcon {
+  return workIcons[kind] ?? Music2;
+}
+
 /** A work type's line icon in a grey tile, in place of the emoji in `workTypes`. */
 export function WorkTypeIcon({
   kind,

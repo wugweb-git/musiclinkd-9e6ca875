@@ -13,6 +13,7 @@ import { applyToOpportunity } from "@/lib/applications.functions";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
+import { workIconFor } from "@/components/ml/portfolio";
 
 type Step = "portfolio" | "message" | "review" | "done";
 const order: Step[] = ["portfolio", "message", "review", "done"];
@@ -165,8 +166,11 @@ function ApplyFlow() {
                     }
                     className={`overflow-hidden rounded-lg border-2 text-left ${on ? "border-foreground" : "border-transparent"} bg-subtle`}
                   >
-                    <span className="flex h-20 w-full items-center justify-center bg-background text-3">
-                      {workType(p.kind).emoji}
+                    <span className="flex h-20 w-full items-center justify-center bg-background">
+                      {(() => {
+                        const Icon = workIconFor(p.kind);
+                        return <Icon size={iconSize.lg} strokeWidth={1.75} aria-hidden />;
+                      })()}
                     </span>
                     <span className="block p-3">
                       <span className="block truncate text-1 font-semibold">{p.title}</span>
@@ -229,10 +233,7 @@ function ApplyFlow() {
             <Card className="space-y-2">
               <StatusPill label="Attached work" tone="brand" />
               {picked.length === 0 ? (
-                <p className="text-1 text-muted-foreground">
-                  No portfolio attached — applications with work are 4× more likely to be
-                  shortlisted.
-                </p>
+                <p className="text-1 text-muted-foreground">No portfolio attached.</p>
               ) : (
                 picked.map((pid) => (
                   <p key={pid} className="text-1">

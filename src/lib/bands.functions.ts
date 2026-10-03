@@ -291,6 +291,25 @@ export const removeBandRelease = createServerFn({ method: "POST" })
     return { removed: true };
   });
 
+/**
+ * End a band: its profile, shows and shared links go; members keep their own profiles. Only its
+ * creator or owner can ("Creator and owner delete" on collabs), so a row not deleted is refused.
+ */
+export const deleteBand = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    const { data: rows, error } = await db(context.supabase)
+      .from("collabs")
+      .delete()
+      .eq("id", data.id)
+      .eq("type", "band")
+      .select("id");
+    if (error) throw new Error(error.message);
+    if (!rows?.length) throw new Error(NOT_ALLOWED);
+    return { deleted: true };
+  });
+
 /*
  * A band's showcase (collab_gallery): photos on the band page's Overview. Owners and admins add,
  * remove and reorder them (collab_can_manage, checked by the database). The file is uploaded from

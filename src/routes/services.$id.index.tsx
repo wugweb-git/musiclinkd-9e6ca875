@@ -32,7 +32,7 @@ import {
 
 import { serviceStatusTone } from "@/data/services";
 import {
-  categoryEmoji,
+  categoryIcon,
   optionLabel,
   useRefreshServices,
   useService,
@@ -43,6 +43,7 @@ import { priceParts } from "@/lib/price";
 import { deleteService, setServiceStatus } from "@/lib/services.functions";
 import { joinParts } from "@/lib/utils";
 import { sized } from "@/lib/image-url";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/services/$id/")({
   head: () => ({
@@ -141,9 +142,12 @@ function ServiceDetail() {
             <div className="flex items-start gap-3">
               <span
                 aria-hidden
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-subtle text-3"
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-subtle"
               >
-                {categoryEmoji(s.category)}
+                {(() => {
+                  const Icon = categoryIcon(s.category);
+                  return <Icon size={iconSize.md} />;
+                })()}
               </span>
               <div className="min-w-0 flex-1">
                 <h1 className="text-2 font-bold leading-snug">{s.name}</h1>
@@ -194,7 +198,7 @@ function ServiceDetail() {
                         <span className="block truncate text-sm font-semibold">{w.title}</span>
                         <span className="block text-1 capitalize text-foreground">{w.kind}</span>
                       </span>
-                      <ChevronRight size={18} className="shrink-0" aria-hidden />
+                      <ChevronRight size={iconSize.sm} className="shrink-0" aria-hidden />
                     </Link>
                   </li>
                 ))}

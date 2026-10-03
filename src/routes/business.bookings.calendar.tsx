@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { iconSize } from "@/lib/tokens";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -152,17 +154,17 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
       <button
         type="button"
         onClick={() => shift(-1)}
-        className="min-h-touch px-2 text-sm font-semibold text-foreground"
+        className="inline-flex min-h-touch items-center gap-1 px-2 text-sm font-semibold text-foreground"
       >
-        ← Prev
+        <ChevronLeft size={iconSize.sm} aria-hidden /> Prev
       </button>
       <p className="min-w-0 truncate text-sm font-bold">{formatDate(date)}</p>
       <button
         type="button"
         onClick={() => shift(1)}
-        className="min-h-touch px-2 text-sm font-semibold text-foreground"
+        className="inline-flex min-h-touch items-center gap-1 px-2 text-sm font-semibold text-foreground"
       >
-        Next →
+        Next <ChevronRight size={iconSize.sm} aria-hidden />
       </button>
     </div>
   );

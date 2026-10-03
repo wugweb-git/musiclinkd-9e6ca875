@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { BarChart3 } from "lucide-react";
 import { ArticleGrid, BottomCta, DownloadCta, TopicFilter, type Article } from "./marketing";
+import { unsplash } from "@/data/unsplash";
 
 /*
  * The marketing blocks, at the width they are built for. Every number and every piece of copy here
@@ -15,7 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const u = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=80`;
+const u = (id: string) => unsplash(id, 1200);
 
 export const Bottom: Story = {
   render: () => (
@@ -76,7 +77,7 @@ const articles: Article[] = [
     to: "/help",
     badge: {
       kind: "avatar",
-      src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=200&q=80",
+      src: unsplash("photo-1487412720507-e7ab37603c6f", 200),
       alt: "",
     },
   },

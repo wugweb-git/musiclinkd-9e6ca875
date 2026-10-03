@@ -15,6 +15,7 @@ import {
 } from "./cards";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
 import type { DiscoverBookable } from "@/lib/bookable-view";
+import { unsplash } from "@/data/unsplash";
 
 const demoPerson: DirectoryPerson = {
   id: "demo-person-1",
@@ -103,8 +104,7 @@ const demoStudio: DiscoverBookable = {
   reviewCount: 38,
   verified: true,
   rate: { amount: "₹2,500", unit: "hour" },
-  photo:
-    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80",
+  photo: unsplash("photo-1598488035139-bdbb2231ce04", 600),
   gear: ["Dolby Atmos", "Neumann U87", "SSL Duality"],
 };
 
