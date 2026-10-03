@@ -55,6 +55,11 @@ export type TaxonomyOption = {
     description?: string;
     /** cities: the state the city is in. */
     state?: string;
+    /** cities: the Market's suggested places, in this order (20261004160000). */
+    market_rank?: number;
+    /** cities: the centre, for the Market's map and Locate me. */
+    lat?: number;
+    lng?: number;
     /**
      * false: published, so a stored value keeps its label, but no longer offered in the picker
      * (amenities, owner 3 Oct 2026).

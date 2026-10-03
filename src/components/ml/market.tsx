@@ -45,6 +45,7 @@ import { useSavedListings } from "@/hooks/use-saved-listings";
 import { PersonAvatar } from "./person-avatar";
 import { useGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
 import { useTaxonomy } from "@/lib/taxonomy";
+import { sameCity } from "@/lib/place";
 import {
   DrawerList,
   DrawerOptionRow,
@@ -638,15 +639,6 @@ export function ListingSkeleton() {
 }
 
 /*
- * The six places offered first, each with a centre so Locate me can pick the nearest. Every name
- * here has to be a city the taxonomy knows, because that is what listings store: "Delhi NCR" and
- * "Goa" were neither cities nor taxonomy rows, so choosing one filtered to nothing while looking
- * like it had worked. Searching reaches every city, not just these six.
- */
-// eslint-disable-next-line react-refresh/only-export-components -- constant intentionally co-located with its component
-export const marketCities = ["Mumbai", "New Delhi", "Bengaluru", "Chennai", "Pune", "Panaji"];
-
-/*
  * Places saved on a device under names the Market no longer offers, mapped to the taxonomy city.
  * "Panjim" was offered until 4 Oct 2026, but the taxonomy (and so every listing) says "Panaji".
  */
@@ -655,6 +647,34 @@ const retiredCityNames: Record<string, string> = {
   Goa: "Panaji",
   Panjim: "Panaji",
 };
+
+type MarketPlace = { name: string; centre: [number, number] };
+
+/*
+ * The places the Market suggests first, from taxonomy_options (cities with metadata.market_rank,
+ * lat and lng; 20261004160000) — never a list in code (AGENTS.md). Each name is the value listings
+ * store (metadata.app_key). Searching still reaches every city in the taxonomy.
+ */
+function useMarketPlaces(): MarketPlace[] {
+  const cities = useTaxonomy().options?.cities ?? [];
+  return cities
+    .flatMap((c) => {
+      const m = c.metadata;
+      return typeof m?.market_rank === "number" &&
+        typeof m.lat === "number" &&
+        typeof m.lng === "number"
+        ? [
+            {
+              rank: m.market_rank,
+              name: m.app_key ?? c.label,
+              centre: [m.lat, m.lng] as [number, number],
+            },
+          ]
+        : [];
+    })
+    .sort((x, y) => x.rank - y.rank)
+    .map(({ name, centre }) => ({ name, centre }));
+}
 
 const CITY_KEY = "ml.market.city";
 
@@ -685,26 +705,14 @@ export function useMarketCity() {
   return [city, choose] as const;
 }
 
-/** Where each Market city is, for Locate me (nearest city) and the map. */
-const cityCentres: Record<string, [number, number]> = {
-  Mumbai: [19.076, 72.8777],
-  "New Delhi": [28.6139, 77.209],
-  Bengaluru: [12.9716, 77.5946],
-  Chennai: [13.0827, 80.2707],
-  Pune: [18.5204, 73.8567],
-  Panaji: [15.4909, 73.8278],
-};
-
-function nearestCity(lat: number, lng: number) {
-  let best = marketCities[0]!;
+function nearestPlace(places: MarketPlace[], lat: number, lng: number): string | null {
+  let best: string | null = null;
   let bestD = Infinity;
-  for (const c of marketCities) {
-    const centre = cityCentres[c];
-    if (!centre) continue;
-    const d = (centre[0] - lat) ** 2 + (centre[1] - lng) ** 2;
+  for (const p of places) {
+    const d = (p.centre[0] - lat) ** 2 + (p.centre[1] - lng) ** 2;
     if (d < bestD) {
       bestD = d;
-      best = c;
+      best = p.name;
     }
   }
   return best;
@@ -731,6 +739,7 @@ export function LocationSheet({
   const [query, setQuery] = useState("");
   const [here, setHere] = useState<[number, number] | null>(null);
   const allCities = useTaxonomy().options?.cities ?? [];
+  const places = useMarketPlaces();
   const pick = (next: string) => {
     onChoose(next);
     setEditing(false);
@@ -747,7 +756,8 @@ export function LocationSheet({
       (pos) => {
         setLocating(false);
         setHere([pos.coords.latitude, pos.coords.longitude]);
-        onChoose(nearestCity(pos.coords.latitude, pos.coords.longitude));
+        const nearest = nearestPlace(places, pos.coords.latitude, pos.coords.longitude);
+        if (nearest) onChoose(nearest);
       },
       () => {
         setLocating(false);
@@ -756,16 +766,16 @@ export function LocationSheet({
       { timeout: 10000 },
     );
   };
-  const centre = here ?? cityCentres[city];
+  const centre = here ?? places.find((p) => sameCity(p.name, city))?.centre;
   const mapSrc = centre
     ? `https://maps.google.com/maps?q=${centre[0]},${centre[1]}&z=${here ? 13 : 10}&output=embed`
     : `https://maps.google.com/maps?q=${encodeURIComponent(`${city}, India`)}&z=10&output=embed`;
-  // The six suggested places while idle; every city the taxonomy knows once you search, so a
+  // The suggested places while idle; every city the taxonomy knows once you search, so a
   // place outside the shortlist can still be chosen rather than being unreachable.
   const term = query.trim().toLowerCase();
   const shown = term
     ? allCities.map((c) => c.label).filter((c) => c.toLowerCase().includes(term))
-    : marketCities;
+    : places.map((p) => p.name);
   return (
     <Sheet
       open={open}
