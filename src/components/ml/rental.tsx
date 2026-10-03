@@ -312,20 +312,6 @@ export function BookingCard({
   );
 }
 
-const rentalFilterGroups: { label: string; options: string[] }[] = [
-  { label: "Category", options: ["Instruments", "Audio", "Studio", "DJ", "Live"] },
-  { label: "Location", options: ["Mumbai", "Delhi NCR", "Bengaluru", "Pune", "Goa"] },
-  { label: "Distance", options: ["Within 5 km", "Within 15 km", "Within 50 km", "Anywhere"] },
-  { label: "Price per day", options: ["Under ₹1k", "₹1k–3k", "₹3k–6k", "Above ₹6k"] },
-  { label: "Condition", options: ["New", "Like New", "Excellent", "Good"] },
-];
-
-const moreFilterGroups: { label: string; options: string[] }[] = [
-  { label: "Price per week", options: ["Under ₹5k", "₹5k–15k", "Above ₹15k"] },
-  { label: "Brand", options: ["Shure", "Fender", "Pearl", "Pioneer DJ", "JBL", "Nord", "Swaraj"] },
-  { label: "Security deposit", options: ["Under ₹10k", "₹10k–30k", "Above ₹30k"] },
-];
-
 function RentalSwitch({
   label,
   value,
