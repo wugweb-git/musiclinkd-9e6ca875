@@ -207,7 +207,7 @@ export function SegmentedField<T extends string>({
     <div
       role="radiogroup"
       aria-label={label ?? ""}
-      className="flex w-full items-stretch gap-1 rounded-full border border-border bg-subtle p-1"
+      className="grid min-h-touch w-full grid-cols-2 items-stretch rounded-sm border border-border bg-background p-1"
     >
       {options.map((o) => (
         <button
@@ -216,8 +216,8 @@ export function SegmentedField<T extends string>({
           role="radio"
           aria-checked={value === o}
           onClick={() => onChange(o)}
-          className={`hit-area flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-full px-2 py-2 text-1 font-semibold transition-colors ${
-            value === o ? "bg-brand/20 text-pink-on-tint" : "text-muted-foreground"
+          className={`hit-area flex min-w-0 items-center justify-center gap-1.5 truncate rounded-sm px-2 py-2 text-sm font-semibold transition-colors ${
+            value === o ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"
           }`}
         >
           {icons?.[o]
