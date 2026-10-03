@@ -131,6 +131,7 @@ function StepRoute() {
     claimedUsername,
     claimUsername,
   } = useOnboarding();
+  const taxonomy = useTaxonomy();
   const navigate = useNavigate();
   const listPortfolio = useServerFn(listMyPortfolio);
   const [banner, setBanner] = useState<Banner>("none");
@@ -334,7 +335,7 @@ function StepRoute() {
     : def.id === "role"
       ? {
           title: "What else do you do?",
-          subtitle: `Your main role is ${labelFor(taxonomy.options?.person_types, draft.primaryRole)}. Add up to two supporting roles.`,
+          subtitle: `Your main role is ${labelFor(taxonomy.options?.person_types, draft.primaryRole ?? "")}. Add up to two supporting roles.`,
           why: "Extra roles widen the work you show up for, without diluting your main one.",
           optional: true,
         }
