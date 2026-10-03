@@ -97,7 +97,6 @@
   --spacing-icon-lg: 24px;
   --spacing-icon-xl: 32px;
 
-
   /* The mobile shell width, previously repeated as max-w-app in 55 places. */
   --container-app: 760px;
 
@@ -545,22 +544,35 @@
   --animate-eq-2: eq-2 1.1s ease-in-out infinite alternate;
   --animate-eq-3: eq-3 0.7s ease-in-out infinite alternate;
   @keyframes eq-1 {
-    0% { height: 6px; }
-    100% { height: 18px; }
+    0% {
+      height: 6px;
+    }
+    100% {
+      height: 18px;
+    }
   }
   @keyframes eq-2 {
-    0% { height: 16px; }
-    100% { height: 8px; }
+    0% {
+      height: 16px;
+    }
+    100% {
+      height: 8px;
+    }
   }
   @keyframes eq-3 {
-    0% { height: 8px; }
-    100% { height: 22px; }
+    0% {
+      height: 8px;
+    }
+    100% {
+      height: 22px;
+    }
   }
 
   /* Audio waveform undulation for the splash logo (fluid acoustic frequency motion) */
   --animate-waveform: splash-waveform 3s ease-in-out infinite;
   @keyframes splash-waveform {
-    0%, 100% {
+    0%,
+    100% {
       transform: scale(1) translateY(0);
     }
     18% {
@@ -939,7 +951,6 @@
 @utility hairline {
   border: 1px solid var(--color-border);
 }
-
 
 /*
  * 48dp touch floor without growing the control (AGENTS.md). The pseudo-element extends the hit

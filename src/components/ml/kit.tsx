@@ -177,7 +177,11 @@ export function MadeByWugweb() {
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-lg bg-card p-4 shadow-elevation-2 ${className}`}>{children}</section>;
+  return (
+    <section className={`rounded-lg bg-card p-4 shadow-elevation-2 ${className}`}>
+      {children}
+    </section>
+  );
 }
 
 /**
@@ -637,7 +641,10 @@ export function Loading({ rows = 3 }: { rows?: number }) {
   return (
     <div className="flex flex-col gap-3" role="status" aria-busy aria-label="Loading">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex h-20 items-center gap-3 rounded-lg bg-card px-4 shadow-elevation-2">
+        <div
+          key={i}
+          className="flex h-20 items-center gap-3 rounded-lg bg-card px-4 shadow-elevation-2"
+        >
           <Skeleton className="h-11 w-11 shrink-0 rounded-sm" />
           <span className="min-w-0 flex-1 space-y-2">
             <Skeleton className="h-3.5 w-2/5" />

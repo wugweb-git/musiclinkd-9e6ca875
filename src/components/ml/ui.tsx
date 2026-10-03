@@ -341,7 +341,9 @@ export function TopBar({
       ) : null}
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-3 leading-tight">{title}</h1>
-        {subtitle ? <p className="mt-0.5 truncate text-1 text-muted-foreground">{subtitle}</p> : null}
+        {subtitle ? (
+          <p className="mt-0.5 truncate text-1 text-muted-foreground">{subtitle}</p>
+        ) : null}
       </div>
       {right}
     </header>
