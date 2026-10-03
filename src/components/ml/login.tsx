@@ -317,7 +317,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
 
         {/* Interactive mode switcher + Form */}
         <div className={cn("my-auto", rise)} style={beat(6)}>
-          {saved.length && !signup ? (
+          {saved.length > 0 && !signup ? (
             <section className="mb-1.5">
               <p className="mb-0.5 text-1 font-semibold text-muted-foreground">Continue as</p>
               <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card border border-border shadow-xs">
