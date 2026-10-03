@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HandleRouteImport } from './routes/$handle'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as LeadsRouteImport } from './routes/leads'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
@@ -169,6 +171,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcademyRoute = AcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountsRoute = AccountsRouteImport.update({
   id: '/accounts',
   path: '/accounts',
@@ -182,6 +189,11 @@ const ContactRoute = ContactRouteImport.update({
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InboxRoute = InboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeadsRoute = LeadsRouteImport.update({
@@ -889,9 +901,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
+  '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
@@ -1035,9 +1049,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
+  '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
@@ -1181,9 +1197,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
+  '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
@@ -1329,9 +1347,11 @@ export interface FileRouteTypes {
     | '/'
     | '/$handle'
     | '/about'
+    | '/academy'
     | '/accounts'
     | '/contact'
     | '/home'
+    | '/inbox'
     | '/leads'
     | '/me'
     | '/messages'
@@ -1475,9 +1495,11 @@ export interface FileRouteTypes {
     | '/'
     | '/$handle'
     | '/about'
+    | '/academy'
     | '/accounts'
     | '/contact'
     | '/home'
+    | '/inbox'
     | '/leads'
     | '/me'
     | '/messages'
@@ -1620,9 +1642,11 @@ export interface FileRouteTypes {
     | '/'
     | '/$handle'
     | '/about'
+    | '/academy'
     | '/accounts'
     | '/contact'
     | '/home'
+    | '/inbox'
     | '/leads'
     | '/me'
     | '/messages'
@@ -1767,9 +1791,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HandleRoute: typeof HandleRoute
   AboutRoute: typeof AboutRoute
+  AcademyRoute: typeof AcademyRoute
   AccountsRoute: typeof AccountsRoute
   ContactRoute: typeof ContactRoute
   HomeRoute: typeof HomeRoute
+  InboxRoute: typeof InboxRoute
   LeadsRoute: typeof LeadsRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
@@ -1927,6 +1953,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/academy': {
+      id: '/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AcademyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/accounts': {
       id: '/accounts'
       path: '/accounts'
@@ -1946,6 +1979,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inbox': {
+      id: '/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof InboxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leads': {
@@ -2943,9 +2983,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HandleRoute: HandleRoute,
   AboutRoute: AboutRoute,
+  AcademyRoute: AcademyRoute,
   AccountsRoute: AccountsRoute,
   ContactRoute: ContactRoute,
   HomeRoute: HomeRoute,
+  InboxRoute: InboxRoute,
   LeadsRoute: LeadsRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
