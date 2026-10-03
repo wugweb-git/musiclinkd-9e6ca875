@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — brand assets: every icon and splash from the one mark, pink on ink (4 Oct)
+
+- `scripts/brand-assets.mjs` generates every icon and splash from `LogoMark`'s path data
+  (`src/components/ml/logo.tsx`) and the `--ink`/`--brand` colours in `src/styles.css`, in the
+  splash treatment (29ff7bb): the mark in brand pink on an ink tile. Approved by the owner from the
+  preview sheet (4 Oct), including the ink tile and the static splash glow.
+- Web: `favicon.svg`, `favicon.ico` (16/32/48), `apple-touch-icon.png` (180); manifest icons
+  `icon-192.png`, `icon-512.png` and `icon-maskable-512.png`, listed in `manifest.webmanifest`.
+- Android: `ic_launcher` and `ic_launcher_round` at mdpi–xxxhdpi, the adaptive foreground inside the
+  66dp safe zone on an ink `ic_launcher_background`, and the 11 splash drawables (portrait and
+  landscape). Android 12+ splash set through `windowSplashScreenBackground`/`AnimatedIcon`; the
+  Capacitor splash ground moved from pink to ink to match the web splash.
+- Removed: the second "M wave" mark (old favicon `.svg`/`.ico`, apple-touch-icon) and Capacitor's
+  placeholder launcher vectors and splash.
+- Android assets are unverified on a device until the shell is rebuilt in Android Studio.
+
 ### Changed — M2b applied: bookings and closures have no room (4 Oct)
 
 - `20261004130000_drop_room_ids.sql` is applied to the live database (owner instruction, 4 Oct;

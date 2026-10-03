@@ -18,6 +18,7 @@ business-profile facts removed, 9 routes 200). Item-by-item evidence is in
 | 7 | Superseded banners on three docs; token spec current; AGENTS.md bookables paragraph; SCREEN-INVENTORY count | `f31ca19` |
 | — | Welcome heading: the form's title is the visible `h1` | `09f58d5` |
 | M2b | `20261004130000` applied (owner instruction, 4 Oct): `room_id` dropped from `booking_requests` and `bookable_blocks`, 11 bookings intact; snapshot `supabase/dumps/2026-10-04-before-drop-room-ids.sql`; `types.ts` matches the live schema | this merge |
+| Brand assets (§3.5 #34) | Favicon `.svg`/`.ico`, apple-touch-icon, manifest icons (192/512/maskable), Android launcher (legacy, round, adaptive) and splash drawables, all generated from `LogoMark` by `scripts/brand-assets.mjs`, pink on ink; the second "M wave" mark and Capacitor placeholders removed. Approved from the preview sheet (4 Oct). Android assets unverified until the shell is rebuilt in Android Studio | this merge |
 | Decisions 4 Oct | Primary merged into Ink (pixel-identical); field border `--input` 1.24 → 3.06:1 on the page (1.46 → 3.61 on white); one icon stroke (Lucide default 2, 52 overrides removed); M2/M3 applied | this merge |
 
 ## 2. Verified (already correct)
@@ -26,7 +27,7 @@ business-profile facts removed, 9 routes 200). Item-by-item evidence is in
   except the 13 kept Gestalt nav icons; "Made by Wugweb" only on sign-in and Settings; no
   marketplace nav/location picker built; reduced motion (global rule); `liquefy-ui.css`
   Storybook-only; 10/11px uses (13) are metadata/labels; spacing rule (no migration).
-- Mobile web: verified by the owner on his phone through the Lovable link (4 Oct).
+- Mobile web: verified by the owner on their phone through the Lovable link (4 Oct).
 - Checks: tsc, lint (0 errors), token drift, build, Cloudflare render, and the Storybook
   accessibility suite (20 files, 144 tests) all pass.
 
@@ -50,5 +51,4 @@ business-profile facts removed, 9 routes 200). Item-by-item evidence is in
 
 | Item | Waiting on |
 |---|---|
-| Brand mark, favicon, app icon, splash, Android assets (§3.5 #34) | The owner sends the canonical mark |
-| Android/Capacitor app shell (insets on a device) | Unverified: no Android device. Mobile web was verified by the owner on his phone through the Lovable link (4 Oct) |
+| Android/Capacitor app shell (insets, the new launcher icons and splash on a device) | Unverified: no Android device; needs a rebuild in Android Studio. Mobile web was verified by the owner on their phone through the Lovable link (4 Oct) |
