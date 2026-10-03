@@ -38,6 +38,7 @@ import {
   QrCode,
   Settings,
   CircleHelp,
+  GraduationCap,
   Megaphone,
   type LucideIcon,
 } from "lucide-react";
@@ -89,7 +90,7 @@ export function Screen({
   const clearance = className || (bottomNav ? "pb-nav-clear" : "pb-8");
   return (
     <div className="app-canvas mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col bg-background">
-      <div className={`flex-1 ${clearance}`}>{children}</div>
+      <div className={`screen-enter flex-1 ${clearance}`}>{children}</div>
     </div>
   );
 }
@@ -192,6 +193,7 @@ const menuGroups: {
   {
     title: "You",
     items: [
+      { to: "/inbox", label: "Inbox", icon: Inbox },
       { to: "/notifications", label: "Notifications", icon: Bell },
       { to: "/identity/qr", label: "QR & Card", icon: QrCode },
       { to: "/verification", label: "Verification", icon: BadgeCheck },
@@ -203,6 +205,7 @@ const menuGroups: {
     items: [
       { to: "/settings", label: "Settings", icon: Settings },
       { to: "/help", label: "Help", icon: CircleHelp },
+      { to: "/academy", label: "Academy", icon: GraduationCap },
     ],
   },
 ];

@@ -12,6 +12,5 @@ src/integrations/supabase/types.ts
 # Prose the formatter must never reflow. The .lovable/plan documents are the
 # only record of why 18 flows were built design-only; they exist nowhere else.
 .lovable/
-roadmap.md
 docs/
 src/routes/README.md
