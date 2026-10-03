@@ -134,14 +134,14 @@ function AvailabilityContent() {
         <WeeklyHoursEditor studio={q.data} />
         <NoticeAndBlackouts studio={q.data} />
         <ClosedTimes studio={q.data} />
-        {/* Facilities and equipment, with their photos, are edited in Edit profile. */}
+        {/* Amenities and equipment, with their photos, are edited in Edit profile. */}
         <BtnLink
           to="/profile/edit"
-          search={{ section: "facilities" }}
+          search={{ section: "amenities" }}
           variant="outline"
           className="mt-8 w-full"
         >
-          Facilities &amp; Equipment
+          Amenities &amp; Equipment
         </BtnLink>
 
         <BtnLink to="/business/bookings" variant="ghost" className="mt-2 w-full">

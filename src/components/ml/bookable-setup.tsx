@@ -33,7 +33,7 @@ import { sized } from "@/lib/image-url";
 
 /*
  * A studio's amenities, equipment and policies, each with photos where it has them (owner, 22 Sep
- * 2026). One set of editors for Create business and for Edit profile → Facilities & equipment:
+ * 2026). One set of editors for Create business and for Edit profile → Amenities & equipment:
  *   amenities — what the place has (studios.amenities, from studio_amenities);
  *   equipment — gear with a type (an instrument or an equipment category, the list Market uses),
  *     quantity and included-or-extra (bookable_equipment);
@@ -47,7 +47,7 @@ export const EQUIPMENT_KEY = ["studio-equipment", "mine"];
 const inputCls =
   "min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary";
 
-/** The owner's bookable, its facilities and photos. Off for accounts that can't have one. */
+/** The owner's bookable, its amenities and photos. Off for accounts that can't have one. */
 export function useMyBookablePhotos(enabled = true) {
   const load = useServerFn(listMyBookablePhotos);
   return useQuery({ queryKey: PHOTOS_KEY, queryFn: () => load(), enabled, retry: false });
@@ -64,15 +64,15 @@ export function AmenitiesEditor() {
   const tx = useTaxonomy().options;
   const save = useServerFn(updateMyBookable);
   const section = useRef<HTMLElement>(null);
-  // Edit profile > Facilities & equipment lands here (#facilities) once the section has rendered.
+  // Edit profile > Amenities & equipment lands here (#amenities) once the section has rendered.
   const shown = Boolean(q.data?.ready);
   useEffect(() => {
-    if (shown && window.location.hash === "#facilities") {
+    if (shown && window.location.hash === "#amenities") {
       section.current?.scrollIntoView({ block: "start" });
     }
   }, [shown]);
 
-  const picked = (q.data?.facilities ?? []).map((f) => f.slug);
+  const picked = (q.data?.amenities ?? []).map((f) => f.slug);
   const update = useMutation({
     mutationFn: (amenities: string[]) => save({ data: { amenities } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: PHOTOS_KEY }),
@@ -89,7 +89,7 @@ export function AmenitiesEditor() {
     );
   if (!q.data?.ready) return null;
   return (
-    <section id="facilities" ref={section} className="scroll-mt-4 space-y-3">
+    <section id="amenities" ref={section} className="scroll-mt-4 space-y-3">
       {/*
         Chips, like every other "pick several of these" question in onboarding — instruments,
         genres, languages (owner, 29 Sep 2026). This was a drawer, which made the same question
@@ -112,10 +112,10 @@ export function AmenitiesEditor() {
           }}
         />
       </DrawerField>
-      {q.data.facilities.map((f) => (
+      {q.data.amenities.map((f) => (
         <Card key={f.slug}>
           <p className="truncate text-sm font-semibold">{f.label}</p>
-          <ProofPhotos subjectType="facility" subjectId={f.slug} name={f.label} />
+          <ProofPhotos subjectType="amenity" subjectId={f.slug} name={f.label} />
         </Card>
       ))}
     </section>
@@ -410,7 +410,7 @@ export function PoliciesEditor({
 /* ------------------------------------------------------------------ */
 
 /**
- * One facility's or equipment item's photos: tap one to view it, remove it, or add another, up to
+ * One amenity's or equipment item's photos: tap one to view it, remove it, or add another, up to
  * MAX_BOOKABLE_PHOTOS. Shows nothing until the photos table exists.
  */
 export function ProofPhotos({

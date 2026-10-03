@@ -112,8 +112,8 @@ export type BusinessRecord = {
       quantity: number | null;
       included: boolean;
     }[];
-    /** Proof photos, by amenity slug (facility) or equipment id. */
-    photos: { subject_type: "facility" | "equipment"; subject_id: string; url: string }[];
+    /** Proof photos, by amenity slug or equipment id. */
+    photos: { subject_type: "amenity" | "equipment"; subject_id: string; url: string }[];
     rooms: {
       id: string;
       name: string;

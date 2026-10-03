@@ -10,19 +10,19 @@ import {
 } from "@/lib/bookable-calendar.functions";
 
 /*
- * Photos as proof for a studio's facilities and equipment (bookable_photos): the owner adds and
+ * Photos as proof for a studio's amenities and equipment (bookable_photos): the owner adds and
  * removes them, anyone reads them on the studio page. subject_id is a bookable_equipment id for
- * equipment and a studio_amenities slug for a facility. The file itself is uploaded from the
+ * equipment and a studio_amenities slug for an amenity. The file itself is uploaded from the
  * browser (src/lib/bookable-photos.ts); these functions keep the rows and remove the files.
  * Before 20260921150000_studio_proof_photos.sql is applied every read comes back empty.
  */
 
-/** Equipment and facilities of a bookable space; gear for sale or rent is listing-media. */
+/** Equipment and amenities of a bookable space; gear for sale or rent is listing-media. */
 export const BUSINESS_MEDIA_BUCKET = "business-media";
-/** Photos per facility or equipment item. */
+/** Photos per amenity or equipment item. */
 export const MAX_BOOKABLE_PHOTOS = 6;
 
-export type BookablePhotoSubject = "equipment" | "facility";
+export type BookablePhotoSubject = "equipment" | "amenity";
 
 export type BookablePhoto = {
   id: string;
@@ -34,8 +34,8 @@ export type BookablePhoto = {
 export type MyBookablePhotos = {
   /** Null until the business has a bookable: its first amenity or equipment item creates one. */
   studioId: string | null;
-  /** The studio's facilities (studios.amenities) with their published labels, in page order. */
-  facilities: { slug: string; label: string }[];
+  /** The studio's amenities (studios.amenities) with their published labels, in page order. */
+  amenities: { slug: string; label: string }[];
   photos: BookablePhoto[];
   /** false until the photos table exists, so the editor offers no uploads before then. */
   ready: boolean;
@@ -59,7 +59,7 @@ async function removeFiles(client: SupabaseClient, studioId: string, urls: strin
   if (paths.length) await client.storage.from(BUSINESS_MEDIA_BUCKET).remove(paths);
 }
 
-/** Every facility and equipment photo of one studio, in order. Public; empty on any failure. */
+/** Every amenity and equipment photo of one studio, in order. Public; empty on any failure. */
 export const getBookablePhotos = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ studioId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<BookablePhoto[]> => {
@@ -73,13 +73,13 @@ export const getBookablePhotos = createServerFn({ method: "GET" })
     return error ? [] : ((rows ?? []) as BookablePhoto[]);
   });
 
-/** The owner's studio id, its facilities and all its photos. Photos are empty before the table. */
+/** The owner's studio id, its amenities and all its photos. Photos are empty before the table. */
 export const listMyBookablePhotos = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<MyBookablePhotos> => {
     const client = db(context.supabase);
     const studioId = await myBookableIdOrNull(client, context.userId);
-    if (!studioId) return { studioId: null, facilities: [], photos: [], ready: true };
+    if (!studioId) return { studioId: null, amenities: [], photos: [], ready: true };
     const [studio, labels, photos] = await Promise.all([
       client.from("bookables").select("amenities").eq("id", studioId).single(),
       client.from("taxonomy_options").select("slug, label").eq("category_key", "studio_amenities"),
@@ -97,7 +97,7 @@ export const listMyBookablePhotos = createServerFn({ method: "GET" })
     const amenities = ((studio.data as { amenities: string[] | null }).amenities ?? []) as string[];
     return {
       studioId,
-      facilities: amenities.map((slug) => ({ slug, label: label.get(slug) ?? slug })),
+      amenities: amenities.map((slug) => ({ slug, label: label.get(slug) ?? slug })),
       photos: photos.error ? [] : ((photos.data ?? []) as BookablePhoto[]),
       ready: !photos.error,
     };
@@ -109,7 +109,7 @@ export const addMyBookablePhoto = createServerFn({ method: "POST" })
   .inputValidator((d) =>
     z
       .object({
-        subjectType: z.enum(["equipment", "facility"]),
+        subjectType: z.enum(["equipment", "amenity"]),
         subjectId: z.string().min(1).max(80),
         url: z.string().url().max(1000),
       })
@@ -122,7 +122,7 @@ export const addMyBookablePhoto = createServerFn({ method: "POST" })
       throw new Error("That photo isn't in your studio's folder.");
     }
 
-    // The subject must be this studio's own facility or equipment item.
+    // The subject must be this studio's own amenity or equipment item.
     if (data.subjectType === "equipment") {
       const { data: item } = await client
         .from("bookable_equipment")
@@ -139,7 +139,7 @@ export const addMyBookablePhoto = createServerFn({ method: "POST" })
         .single();
       const amenities = (studio as { amenities: string[] | null } | null)?.amenities ?? [];
       if (!amenities.includes(data.subjectId))
-        throw new Error("That facility isn't on your studio.");
+        throw new Error("That amenity isn't on your studio.");
     }
 
     const { data: existing, error: countError } = await client
@@ -192,7 +192,7 @@ export const removeMyBookablePhoto = createServerFn({ method: "POST" })
   });
 
 /**
- * Removes every photo of one equipment item or facility, rows and files. Used when the item itself
+ * Removes every photo of one equipment item or amenity, rows and files. Used when the item itself
  * is removed; does nothing before the table exists.
  */
 export async function removeSubjectPhotos(

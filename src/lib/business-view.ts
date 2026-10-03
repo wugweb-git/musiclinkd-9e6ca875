@@ -139,7 +139,7 @@ function websiteOf(links: unknown): string | null {
 
 function photosOf(
   photos: NonNullable<BusinessRecord["studio"]>["photos"] | undefined,
-  kind: "facility" | "equipment",
+  kind: "amenity" | "equipment",
   id: string,
 ) {
   return (photos ?? [])
@@ -212,7 +212,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     amenities: (studio?.amenities ?? []).map((slug) => ({
       slug,
       label: taxonomyLabel(labels, "studio_amenities", slug),
-      photos: photosOf(studio?.photos, "facility", slug),
+      photos: photosOf(studio?.photos, "amenity", slug),
     })),
     equipment: (studio?.equipment ?? []).map((e) => ({
       id: e.id,

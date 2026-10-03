@@ -200,7 +200,7 @@ async function serviceUses(
   return {
     amenities: amenitySlugs
       .filter((a) => label.has(a))
-      .map((a) => ({ slug: a, label: label.get(a)!, photos: photosOf("facility", a) })),
+      .map((a) => ({ slug: a, label: label.get(a)!, photos: photosOf("amenity", a) })),
     equipment: equipmentIds
       .filter((e) => items.has(e))
       .map((e) => ({ id: e, name: items.get(e)!, photos: photosOf("equipment", e) })),

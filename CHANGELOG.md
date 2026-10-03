@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — "facility" is "amenity" everywhere (owner, 3 Oct)
+
+- The photo subject type `facility` is `amenity`: `BookablePhotoSubject`, the `addMyBookablePhoto`
+  enum, every `photosOf`/`photosBy` lookup. Needs `20261003150000_photo_subject_amenity.sql` applied
+  first: this code writes and reads `'amenity'`, which the current check constraint refuses.
+- `MyBookablePhotos.facilities` → `amenities`; the booking page's `facilities`/`facilitySlugs`/
+  `facilityPhotos` → `amenities`/`amenityLabelSlugs`/`amenityPhotos`.
+- Edit profile's section is "Amenities & equipment", opened by `?section=amenities` / `#amenities`
+  (the Availability screen and Add service link there).
+
 ### Fixed — Add service asks every business, and only businesses, for amenities and equipment (3 Oct)
 
 - `services.new.tsx` decided "studio" from whether the equipment list loaded. Since every signed-in

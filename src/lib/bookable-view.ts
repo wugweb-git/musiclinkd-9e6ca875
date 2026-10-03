@@ -142,8 +142,8 @@ export function bookableFromRow(
   // Without a rate there is nothing honest to price, so the space stays unavailable.
   if (!priced.length) return null;
 
-  // Proof photos are keyed by what the page shows: the facility's label, the equipment's name.
-  const facilityPhotos = photosBy(photos, "facility");
+  // Proof photos are keyed by what the page shows: the amenity's label, the equipment's name.
+  const amenityPhotos = photosBy(photos, "amenity");
   const equipmentPhotos = photosBy(photos, "equipment");
   const proof = (pairs: [string, string[] | undefined][]) =>
     Object.fromEntries(pairs.filter((p): p is [string, string[]] => !!p[1]?.length));
@@ -166,16 +166,16 @@ export function bookableFromRow(
     ...(row.owner?.followers_count ? { followers: row.owner.followers_count } : {}),
     gallery: row.images,
     about: row.description ?? "",
-    facilities: row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),
+    amenities: row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),
     resources: priced,
     equipment: row.equipment.map((e) => e.name),
-    facilitySlugs: Object.fromEntries(
+    amenityLabelSlugs: Object.fromEntries(
       row.amenities.map((a) => [taxonomyLabel(labels, "studio_amenities", a), a]),
     ),
-    facilityPhotos: proof(
+    amenityPhotos: proof(
       row.amenities.map((a) => [
         taxonomyLabel(labels, "studio_amenities", a),
-        facilityPhotos.get(a),
+        amenityPhotos.get(a),
       ]),
     ),
     equipmentPhotos: proof(row.equipment.map((e) => [e.name, equipmentPhotos.get(e.id)])),

@@ -2,6 +2,8 @@
 -- an amenity is an on-site comfort or convenience — parking, a cafe, a lounge — and its photos
 -- are amenity photos). 12 rows today. Ships together with the code commit on this branch, which
 -- says 'amenity' wherever it said 'facility'; apply the migration first, then publish the code.
+-- Between the two the live code still says 'facility': amenity photos don't show and adding one
+-- fails (the new check refuses it). Equipment photos are unaffected. Publish straight after.
 --
 -- Snapshot before applying: supabase/dumps/YYYY-MM-DD-before-photo-subject-amenity.sql — the
 -- constraint definition and the count of rows per subject_type. No user data.

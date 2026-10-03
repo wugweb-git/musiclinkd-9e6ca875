@@ -134,9 +134,9 @@ export type Bookable = {
   followers?: number;
   gallery: string[];
   about: string;
-  facilities: string[];
-  /** Database studios: each facility label's amenity slug, for its icon. */
-  facilitySlugs?: Record<string, string>;
+  amenities: string[];
+  /** Database studios: each amenity label's slug, for its icon. */
+  amenityLabelSlugs?: Record<string, string>;
   resources: Resource[];
   addOns: AddOn[];
   /** Database studios: the written reviews, newest first. */
@@ -147,8 +147,8 @@ export type Bookable = {
   responseTime: string;
   /** Studio-wide house gear not tied to one room (database studios). */
   equipment?: string[];
-  /** Photos the owner added as proof, by facility label and by equipment name. */
-  facilityPhotos?: Record<string, string[]>;
+  /** Photos the owner added as proof, by amenity label and by equipment name. */
+  amenityPhotos?: Record<string, string[]>;
   equipmentPhotos?: Record<string, string[]>;
   /** false when there is no availability calendar (database studios): no date, time or later steps. */
   hasCalendar?: boolean;
@@ -243,7 +243,7 @@ export const bookables: Bookable[] = [
     gallery: [img(STUDIO_A), img(STUDIO_B), img(STUDIO_C)],
     about:
       "A tracking room built for live bands and vocalists, with an SSL-fed control room and an engineer on every session.",
-    facilities: ["Live room", "Vocal booth", "Engineer included", "Parking", "Green room", "Wi-Fi"],
+    amenities: ["Live room", "Vocal booth", "Engineer included", "Parking", "Green room", "Wi-Fi"],
     responseTime: "Usually replies in 2 hours",
     taxPct: 18,
     resources: [
@@ -359,7 +359,7 @@ export const bookables: Bookable[] = [
     gallery: [img(STUDIO_C), img(STUDIO_E)],
     about:
       "Attended and unattended mastering in a purpose-built room, with stem mastering on request.",
-    facilities: ["Attended sessions", "Stem mastering", "Analogue chain", "Reference library"],
+    amenities: ["Attended sessions", "Stem mastering", "Analogue chain", "Reference library"],
     responseTime: "Usually replies same day",
     taxPct: 18,
     resources: [
@@ -412,7 +412,7 @@ export const bookables: Bookable[] = [
     hero: img(STUDIO_D, 1200, 800),
     gallery: [img(STUDIO_D), img(STUDIO_F)],
     about: "Three backlined rehearsal rooms, open late, priced by the hour with no minimum.",
-    facilities: ["Backline included", "Open till 2 AM", "Lockers", "Cafe"],
+    amenities: ["Backline included", "Open till 2 AM", "Lockers", "Cafe"],
     responseTime: "",
     taxPct: 18,
     resources: [
@@ -476,7 +476,7 @@ export const bookables: Bookable[] = [
     hero: img(STUDIO_E, 1200, 800),
     gallery: [img(STUDIO_E), img(STUDIO_B)],
     about: "Four-mic podcast room with multicam video capture and a producer on the desk.",
-    facilities: ["4 mic positions", "Multicam video", "Producer", "Same-day audio"],
+    amenities: ["4 mic positions", "Multicam video", "Producer", "Same-day audio"],
     responseTime: "Usually replies in 1 hour",
     taxPct: 18,
     resources: [

@@ -32,12 +32,12 @@ export const Route = createFileRoute("/booking/$id/")({
       {
         name: "description",
         content:
-          "See rooms, rates, facilities and live availability, then check dates and request your session.",
+          "See rooms, rates, amenities and live availability, then check dates and request your session.",
       },
       { property: "og:title", content: "Book a studio session — MusicLinkd" },
       {
         property: "og:description",
-        content: "Rooms, rates, facilities and live availability for MusicLinkd bookable spaces.",
+        content: "Rooms, rates, amenities and live availability for MusicLinkd bookable spaces.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -50,7 +50,7 @@ function BookingEntry() {
   const { bookable: b, set } = useBookingDraft();
   const navigate = useNavigate();
   const message = useMessagePerson();
-  // The facility or equipment item whose photos are open.
+  // The amenity or equipment item whose photos are open.
   const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   // "From" is the lowest service price; a studio without priced services falls back to its rates.
   const servicePrices = (b.services ?? [])
@@ -122,17 +122,19 @@ function BookingEntry() {
           </section>
         ) : null}
 
-        {b.facilities.length ? (
+        {b.amenities.length ? (
           <section className="mt-6">
             <h3 className="text-2">Amenities</h3>
             <div className="mt-3 flex flex-wrap gap-2">
-              {b.facilities.map((f) => (
+              {b.amenities.map((f) => (
                 <ProofPill
                   key={f}
                   label={f}
-                  {...(b.facilitySlugs?.[f] ? { icon: amenityIcon(b.facilitySlugs[f]!) } : {})}
-                  photos={b.facilityPhotos?.[f]}
-                  onOpen={() => setViewing({ title: f, photos: b.facilityPhotos?.[f] ?? [] })}
+                  {...(b.amenityLabelSlugs?.[f]
+                    ? { icon: amenityIcon(b.amenityLabelSlugs[f]!) }
+                    : {})}
+                  photos={b.amenityPhotos?.[f]}
+                  onOpen={() => setViewing({ title: f, photos: b.amenityPhotos?.[f] ?? [] })}
                   className="rounded-full bg-background text-1 text-muted-foreground"
                 />
               ))}

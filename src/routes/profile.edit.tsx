@@ -174,7 +174,7 @@ function EditProfile() {
   const [policies, setPolicies] = useState<string[]>([]);
   // Every business lists what its place has here, with a photo of each (owner, 3 Oct 2026). The
   // first amenity or equipment item creates the business's bookable on the server.
-  const facilities = useMyBookablePhotos(isBusiness);
+  const amenities = useMyBookablePhotos(isBusiness);
   useEffect(() => {
     if (!isBusiness) return;
     void loadBusiness()
@@ -776,10 +776,10 @@ function EditProfile() {
     ...(isBusiness
       ? [
           {
-            id: "facilities",
-            label: "Facilities & equipment",
+            id: "amenities",
+            label: "Amenities & equipment",
             detail: "What your space has, with a photo of each",
-            done: (facilities.data?.facilities ?? []).length > 0,
+            done: (amenities.data?.amenities ?? []).length > 0,
             body: (
               <div className="space-y-8">
                 <AmenitiesEditor />
