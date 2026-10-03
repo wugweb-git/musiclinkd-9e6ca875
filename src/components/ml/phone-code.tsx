@@ -1,20 +1,20 @@
 import { useState } from "react";
-import { Mail, Pencil, RotateCw } from "lucide-react";
+import { Pencil, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 import { Btn } from "@/components/ml/ui";
 import {
   AuthHeading,
-  AuthLink,
+  AuthComposition,
+  AuthFooter,
   AuthNotice,
   AuthScreen,
+  AuthSurface,
   AuthTextButton,
   CodeInput,
-  LegalNote,
   classifyAuthError,
   formatIndianMobile,
   useCountdown,
 } from "@/components/ml/auth";
-import { MadeByWugweb } from "@/components/ml/kit";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { iconSize } from "@/lib/tokens";
@@ -30,7 +30,6 @@ export function PhoneCodeStep({
   onChangeNumber,
   onVerified,
   createUser = true,
-  useEmailLink = true,
 }: {
   phone: string;
   onChangeNumber: () => void;
@@ -38,8 +37,6 @@ export function PhoneCodeStep({
   onVerified: () => void;
   /** A resend may create the account (sign-in/sign-up); off for password recovery. */
   createUser?: boolean | undefined;
-  /** Show "Use Email" beside Change Number. */
-  useEmailLink?: boolean | undefined;
 }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState<{ title: string; body: string } | null>(null);
@@ -61,13 +58,17 @@ export function PhoneCodeStep({
     if (err) {
       haptic("error");
       setMisses((n) => n + 1);
-      setCode("");
       const m = err.message.toLowerCase();
       setError(
-        m.includes("expired") || m.includes("invalid")
+        m.includes("expired")
           ? {
-              title: "That code did not match",
-              body: "Check the text message, or send a new code.",
+              title: "This code has expired",
+              body: "Send a new code, then enter the latest one we send.",
+            }
+          : m.includes("invalid")
+          ? {
+              title: "That code is not valid",
+              body: "Check all six digits and try again, or send a new code.",
             }
           : classifyAuthError(err.message),
       );
@@ -93,11 +94,10 @@ export function PhoneCodeStep({
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col py-8 sm:py-12">
-        <div className="flex flex-col pt-8 sm:pt-10">
-          <div className="rounded-lg border border-border bg-card p-4 sm:p-5">
+      <AuthComposition footer={<AuthFooter />}>
+          <AuthSurface>
             <AuthHeading
-              title="Verify your number"
+               title="Enter verification code"
               sub={
                 phone
                   ? `We sent a 6-digit one-time code to ${ISD_CODE} ${formatIndianMobile(phone)}`
@@ -124,25 +124,25 @@ export function PhoneCodeStep({
               disabled={code.length !== 6 || !phone}
               onClick={() => void verify(code)}
             >
-              Verify & Continue
+              Verify code
             </Btn>
 
             <p className="mt-4 flex justify-center text-1 text-muted-foreground">
               {countdown.seconds > 0 ? (
-                <span aria-live="polite" className="rounded-full bg-subtle px-3 py-1 font-medium">
-                  Resend code in 0:{String(countdown.seconds).padStart(2, "0")}
+                <span aria-live="polite" className="min-h-touch inline-flex items-center font-medium">
+                  Send again in 0:{String(countdown.seconds).padStart(2, "0")}
                 </span>
               ) : (
                 <AuthTextButton
                   icon={<RotateCw size={iconSize.sm} />}
                   onClick={() => void resend()}
-                  className="rounded-full bg-subtle px-3 py-1 font-medium hover:text-foreground"
+                  className="font-medium hover:text-foreground"
                 >
-                  Resend Code Now
+                  Resend code
                 </AuthTextButton>
               )}
             </p>
-          </div>
+          </AuthSurface>
 
           <p className="mt-4 flex items-center justify-center gap-6 text-sm">
             <AuthTextButton
@@ -150,27 +150,10 @@ export function PhoneCodeStep({
               onClick={onChangeNumber}
               className="text-muted-foreground hover:text-foreground font-medium"
             >
-              Change Number
+               Change number
             </AuthTextButton>
-            {useEmailLink ? (
-              <AuthLink
-                to="/auth"
-                icon={<Mail size={iconSize.sm} />}
-                className="text-muted-foreground hover:text-foreground font-medium"
-              >
-                Use Email
-              </AuthLink>
-            ) : null}
           </p>
-        </div>
-
-        <div className="mt-auto shrink-0 pb-1 pt-8 text-center">
-          <LegalNote className="mt-0" />
-          <div className="mt-0.5">
-            <MadeByWugweb />
-          </div>
-        </div>
-      </div>
+      </AuthComposition>
     </AuthScreen>
   );
 }

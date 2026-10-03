@@ -6,13 +6,14 @@ import { toast } from "sonner";
 import { Linkedin, Smartphone } from "lucide-react";
 import {
   AuthLink,
+  AuthComposition,
+  AuthFooter,
   AuthNotice,
   AuthScreen,
-  Brand,
+  AuthSurface,
   Divider,
   EMAIL_PATTERN,
   GoogleIcon,
-  LegalNote,
   PasswordInput,
   PasswordRequirements,
   TextField,
@@ -34,7 +35,7 @@ import { setRememberMe } from "@/lib/remember-me";
 import { isNativeApp, signInWithGoogleNative } from "@/lib/native-auth";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
-import { MadeByWugweb, SegmentedField } from "@/components/ml/kit";
+import { SegmentedField } from "@/components/ml/kit";
 import { AccountRow } from "@/components/ml/accounts";
 import { forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
 
@@ -107,11 +108,8 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
         setError(classifyAuthError(err.message));
         return;
       }
-      if (data.user && data.user.identities?.length === 0) {
-        haptic("error");
-        setError(classifyAuthError("already registered"));
-        return;
-      }
+      // Keep the same confirmation response for existing and new addresses. The authentication
+      // service intentionally does not reveal whether this email already belongs to an account.
       haptic("confirm");
       void navigate({ to: "/auth/verify-email", search: { email: email.trim() } });
       return;
@@ -208,22 +206,17 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
   }
 
   return (
-    <AuthScreen brand={false} className="bg-background">
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col sm:py-12">
-        <header className={cn("pt-1", rise)} style={beat(1)}>
-          <Brand compact className="vt-brand mb-4" />
-          <p className="max-w-[360px] text-2 font-semibold leading-snug text-foreground">
-            Your professional identity in music.
-          </p>
-          <p className="mt-1 max-w-[420px] text-sm leading-relaxed text-muted-foreground">
-            Find people, share your work, and build what comes next.
-          </p>
-        </header>
-
+    <AuthScreen back={signup ? { to: "/welcome" } : undefined}>
+      <AuthComposition footer={<AuthFooter />}>
         <main
-          className={cn("flex flex-1 flex-col justify-center py-6 sm:flex-none sm:pt-10", rise)}
+          className={cn("flex flex-col justify-center", rise)}
           style={beat(2)}
         >
+          <div className="mb-5">
+            <p className="text-1 font-semibold text-muted-foreground">{signup ? "Join MusicLinkd" : "Your music career, connected"}</p>
+            <h1 className="mt-1 text-3 font-bold leading-tight text-foreground">{signup ? "Create account" : "Sign in"}</h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{signup ? "Build your professional identity and find your next opportunity." : "Continue to your profile, work and connections."}</p>
+          </div>
           {saved.length > 0 && !signup ? (
             <section className="mb-3">
               <p className="mb-1.5 text-1 font-semibold text-muted-foreground">Continue as</p>
@@ -242,13 +235,12 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             </section>
           ) : null}
 
-          <form
+          <AuthSurface><form
             noValidate
             onSubmit={(e) => {
               e.preventDefault();
               if (!busy) void submit();
             }}
-            className="rounded-lg border border-border bg-card p-4 sm:p-5"
           >
             {/* A toggle between the two screens, not two states of one (owner, 4 Oct 2026): each
                 side is its own address, so the route, Back and a shared link all stay right. */}
@@ -261,12 +253,12 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                     void navigate({ to: next === "signup" ? "/signup" : "/welcome" });
                 }}
                 label="Sign in or create an account"
-                labels={{ signin: "Sign In", signup: "Sign Up" }}
+                labels={{ signin: "Sign in", signup: "Create account" }}
               />
             </div>
             <div className="mb-5">
               <h1 className="text-3 font-bold leading-tight text-foreground">
-                {signup ? "Create your account" : "Welcome back"}
+                {signup ? "Your account details" : "Welcome back"}
               </h1>
               <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                 {signup
@@ -319,7 +311,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                   to="/auth/forgot"
                   className="text-muted-foreground hover:text-foreground font-medium text-1"
                 >
-                  Forgot Password?
+                  Forgot password?
                 </AuthLink>
               </div>
             )}
@@ -329,9 +321,9 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               className="h-12 w-full text-sm font-semibold"
               loading={busy === "email"}
             >
-              {signup ? "Create Account" : "Sign In"}
+              {signup ? "Create account" : "Sign in"}
             </Btn>
-          </form>
+          </form></AuthSurface>
 
           <Divider label="or continue with" className="my-4" />
 
@@ -374,7 +366,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                   to="/welcome"
                   className="hit-area font-semibold text-foreground underline underline-offset-4"
                 >
-                  Sign in
+                   Sign in
                 </AuthLink>
               </>
             ) : (
@@ -384,20 +376,14 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                   to="/signup"
                   className="hit-area font-semibold text-foreground underline underline-offset-4"
                 >
-                  Create an account
+                   Create account
                 </AuthLink>
               </>
             )}
           </p>
         </main>
 
-        {/* Footer */}
-        <footer className="shrink-0 pb-1 text-center sm:mt-2">
-          <LegalNote className="mt-0" />
-          <div className="mt-0.5">
-            <MadeByWugweb />
-          </div>
-
+        <div className="text-center">
           {showDemoControls ? (
             <p className="mt-0.5 text-center text-1">
               <AuthLink to="/dev/new-user" className="text-muted-foreground">
@@ -405,8 +391,8 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               </AuthLink>
             </p>
           ) : null}
-        </footer>
-      </div>
+        </div>
+      </AuthComposition>
     </AuthScreen>
   );
 }

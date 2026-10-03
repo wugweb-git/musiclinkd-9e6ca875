@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Globe, Plus } from "lucide-react";
+import { Check, Globe, Plus } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Btn } from "@/components/ml/ui";
 import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
@@ -54,6 +54,7 @@ import {
 import { instrumentIcon } from "@/lib/instrument-icons";
 import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
 import { iconSize } from "@/lib/tokens";
+import { cn } from "@/lib/utils";
 
 function typeIcon(o: TaxonomyOption) {
   const Icon = roleIcon(o);
@@ -534,82 +535,75 @@ function StepBody({
   switch (id) {
     case "identity": {
       return (
-        <div className="space-y-5">
-          <InlineField
-            inputId="displayName"
-            label="Display name"
-            value={d.displayName}
-            onChange={(v) => set({ displayName: v })}
-            placeholder="Your professional name"
-            autoComplete="name"
-            hint="Use the name you're credited under."
-          />
-          <UsernameField
-            value={d.username}
-            onChange={(v) => set({ username: v })}
-            status={usernameStatus}
-            locked={Boolean(claimedUsername)}
-            claimError={claimError}
-          />
-          <div className="grid grid-cols-2 gap-3">
-            <DrawerField label="State">
-              <SheetSelect
-                title="State"
-                value={d.state || null}
-                options={choicesFor(tx?.indian_states)}
-                placeholder="Choose"
-                searchable
-                onChange={(v) => set({ state: v, city: "" })}
-              />
-            </DrawerField>
-            <DrawerField label="City">
-              {d.state ? (
-                <SheetSelect
-                  title="City"
-                  value={d.city || null}
-                  options={choicesFor(tx?.cities.filter((c) => c.metadata?.state === d.state))}
-                  placeholder="Choose"
-                  searchable
-                  onChange={(v) => set({ city: v })}
-                />
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
-                >
-                  State first
-                </button>
-              )}
-            </DrawerField>
-          </div>
-          <InlineField
-            inputId="pinCode"
-            label="PIN code (optional)"
-            value={d.pinCode}
-            onChange={(v) => {
-              const pin = v.replace(/\D/g, "").slice(0, 6);
-              set({ pinCode: pin });
-              void fillFromPin(pin);
-            }}
-            placeholder="400053"
-            inputMode="numeric"
-            autoComplete="postal-code"
-            {...(d.pinCode.length === 6 && pinProblem(d.pinCode)
-              ? { error: pinProblem(d.pinCode)! }
-              : { hint: "Fills the city above. Never shown to anyone; it finds people near you." })}
-          />
-          <PrivateDetailsFields />
-          <InlineField
-            inputId="bio"
-            label="Short bio (optional)"
-            value={d.bio}
-            onChange={(v) => set({ bio: v })}
-            placeholder="What you do, who you've worked with, what you're looking for."
-            multiline
-            maxLength={BIO_LIMIT}
-            hint="Two lines is plenty. You can rewrite it any time."
-          />
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
+          <section className="space-y-4 p-4">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Public identity</h2>
+              <p className="mt-0.5 text-1 text-muted-foreground">The name and link people will find.</p>
+            </div>
+            <InlineField
+              inputId="displayName"
+              label="Display name"
+              value={d.displayName}
+              onChange={(v) => set({ displayName: v })}
+              placeholder="Your professional name"
+              autoComplete="name"
+              maxLength={80}
+              hint="Use the name you're credited under."
+            />
+            <UsernameField
+              value={d.username}
+              onChange={(v) => set({ username: v })}
+              status={usernameStatus}
+              locked={Boolean(claimedUsername)}
+              claimError={claimError}
+            />
+          </section>
+          <section className="space-y-4 border-t border-border p-4">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Location</h2>
+              <p className="mt-0.5 text-1 text-muted-foreground">Used for relevant work and people nearby.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <DrawerField label="State">
+                <SheetSelect title="State" value={d.state || null} options={choicesFor(tx?.indian_states)} placeholder="Choose" searchable onChange={(v) => set({ state: v, city: "" })} />
+              </DrawerField>
+              <DrawerField label="City">
+                {d.state ? (
+                  <SheetSelect title="City" value={d.city || null} options={choicesFor(tx?.cities.filter((c) => c.metadata?.state === d.state))} placeholder="Choose" searchable onChange={(v) => set({ city: v })} />
+                ) : (
+                  <button type="button" disabled className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60">State first</button>
+                )}
+              </DrawerField>
+            </div>
+            <InlineField
+              inputId="pinCode"
+              label="PIN code (optional)"
+              value={d.pinCode}
+              onChange={(v) => {
+                const pin = v.replace(/\D/g, "").slice(0, 6);
+                set({ pinCode: pin });
+                void fillFromPin(pin);
+              }}
+              placeholder="400053"
+              inputMode="numeric"
+              autoComplete="postal-code"
+              maxLength={6}
+              {...(d.pinCode.length === 6 && pinProblem(d.pinCode)
+                ? { error: pinProblem(d.pinCode)! }
+                : { hint: "Private. Helps us improve nearby results." })}
+            />
+          </section>
+          <section className="space-y-4 border-t border-border p-4">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Private details</h2>
+              <p className="mt-0.5 text-1 text-muted-foreground">Visible only to you.</p>
+            </div>
+            <PrivateDetailsFields />
+          </section>
+          <section className="border-t border-border p-4">
+            <InlineField inputId="bio" label="Short bio (optional)" value={d.bio} onChange={(v) => set({ bio: v })} placeholder="What you do, who you've worked with, what you're looking for." multiline maxLength={BIO_LIMIT} hint="Two lines is plenty. You can rewrite it any time." />
+          </section>
         </div>
       );
     }
@@ -618,18 +612,27 @@ function StepBody({
       const types = talentTypes(tx?.person_types ?? []);
       if (roleStage === "primary" || !d.primaryRole) {
         return (
-          <PersonTypePicker
-            groups={talentGroups}
-            options={types}
-            selected={d.primaryRole ? [d.primaryRole] : []}
-            icon={typeIcon}
-            onToggle={(slug) => {
-              set({
-                primaryRole: slug,
-                secondaryRoles: d.secondaryRoles.filter((s) => s !== slug),
-              });
-            }}
-          />
+          <div className="space-y-4">
+            {talentGroups.map((group) => {
+              const options = types.filter((o) => (o.metadata?.group ?? "other") === group.key);
+              if (!options.length) return null;
+              return (
+                <section key={group.key}>
+                  <h2 className="mb-2 text-1 font-semibold text-muted-foreground">{group.label}</h2>
+                  <div className="grid grid-cols-2 gap-2">
+                    {options.map((option) => {
+                      const selected = d.primaryRole === option.slug;
+                      return (
+                        <button key={option.slug} type="button" aria-pressed={selected} onClick={() => { haptic("select"); set({ primaryRole: option.slug, secondaryRoles: d.secondaryRoles.filter((s) => s !== option.slug) }); }} className={cn("state-layer grid min-h-touch grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-sm border px-3 py-2.5 text-left text-sm font-semibold", selected ? "border-foreground bg-pink-container" : "border-border bg-card")}>
+                          <span className="shrink-0">{typeIcon(option)}</span><span className="truncate">{option.label}</span>{selected ? <Check size={iconSize.sm} aria-hidden /> : null}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
         );
       }
       // Back returns to the main-role question.

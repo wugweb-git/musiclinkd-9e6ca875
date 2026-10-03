@@ -19,6 +19,7 @@ import { beat, useArrival } from "@/lib/flow-motion";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
+import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/onboarding/complete")({
   head: () => ({
@@ -49,6 +50,7 @@ function Complete() {
   const savedRef = useRef(false);
   const listPortfolio = useServerFn(listMyPortfolio);
   const [hasWork, setHasWork] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
   useEffect(() => {
     if (!signedIn) return;
     void (listPortfolio() as Promise<{ published: boolean }[]>)
@@ -60,14 +62,21 @@ function Complete() {
   const tx = useTaxonomy().options;
 
   // Persist the finished profile once for signed-in users; drafts stay local.
-  useEffect(() => {
+  const saveProfile = () => {
     if (!hydrated || !signedIn || savedRef.current) return;
     savedRef.current = true;
+    setSaveFailed(false);
     void persist({
       data: { ...draftToProfile(d), onboarding_complete: true, onboarding_step: null },
     }).catch(() => {
       savedRef.current = false;
+      setSaveFailed(true);
     });
+  };
+  useEffect(() => {
+    saveProfile();
+    // saveProfile reads the current draft only when this completion screen is reached.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, signedIn, persist, d]);
   // The same ten checks as Home and profile edit, read from what was just saved.
   const gaps = profileGaps(draftToProfile(d));
@@ -80,6 +89,7 @@ function Complete() {
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
+        {saveFailed ? <AuthNotice title="Your profile is not published yet" action={<AuthTextButton onClick={saveProfile}>Try Again</AuthTextButton>}>Check your connection, then try saving again.</AuthNotice> : null}
         <section
           className={cn(
             "rounded-lg bg-card p-6 border border-border/80 shadow-xs relative overflow-hidden",

@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { Btn } from "@/components/ml/ui";
 import {
   AuthHeading,
+  AuthComposition,
+  AuthFooter,
   AuthNotice,
   AuthScreen,
-  LegalNote,
+  AuthSurface,
   PasswordInput,
   PasswordRequirements,
   classifyAuthError,
@@ -15,7 +17,6 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { TextLink } from "@/components/ml/links";
-import { MadeByWugweb } from "@/components/ml/kit";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
@@ -84,9 +85,7 @@ function ResetPassword() {
   if (!ready) {
     return (
       <AuthScreen>
-        <div className="h-4 w-28 animate-pulse rounded-full bg-subtle" />
-        <div className="mt-4 h-9 w-56 animate-pulse rounded-full bg-subtle" />
-        <div className="mt-8 h-13 w-full animate-pulse rounded-sm bg-subtle" />
+        <AuthComposition footer={<AuthFooter />}><div role="status" aria-label="Loading password reset" className="space-y-4 pt-8"><div className="h-4 w-28 animate-pulse rounded-full bg-subtle" /><div className="h-9 w-56 animate-pulse rounded-full bg-subtle" /><div className="h-13 w-full animate-pulse rounded-sm bg-subtle" /></div></AuthComposition>
       </AuthScreen>
     );
   }
@@ -94,9 +93,8 @@ function ResetPassword() {
   if (done) {
     return (
       <AuthScreen>
-        <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-          <div className="my-auto py-1">
-            <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+        <AuthComposition footer={<AuthFooter />}>
+            <AuthSurface>
               <AuthHeading
                 title="Password updated"
                 sub="You can now sign in with your new password."
@@ -107,12 +105,8 @@ function ResetPassword() {
               >
                 Continue to MusicLinkd
               </Btn>
-            </div>
-          </div>
-          <div className="shrink-0 pt-1 text-center">
-            <MadeByWugweb />
-          </div>
-        </div>
+            </AuthSurface>
+        </AuthComposition>
       </AuthScreen>
     );
   }
@@ -120,34 +114,28 @@ function ResetPassword() {
   if (!valid) {
     return (
       <AuthScreen>
-        <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-          <div className="my-auto py-1">
-            <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+        <AuthComposition footer={<AuthFooter />}>
+            <AuthSurface>
               <AuthHeading
                 title="This reset link has expired"
                 sub="Reset links work once and expire after 60 minutes."
               />
               <Btn className="w-full h-12" onClick={() => void navigate({ to: "/auth/forgot" })}>
-                Send a New Link
+                 Send a new link
               </Btn>
               <p className="mt-4 text-center text-1 text-muted-foreground">
-                <TextLink to="/auth/phone">Back to Sign In</TextLink>
+                <TextLink to="/welcome">Back to sign in</TextLink>
               </p>
-            </div>
-          </div>
-          <div className="shrink-0 pt-1 text-center">
-            <MadeByWugweb />
-          </div>
-        </div>
+            </AuthSurface>
+        </AuthComposition>
       </AuthScreen>
     );
   }
 
   return (
     <AuthScreen>
-      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-        <div className="my-auto py-1">
-          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+      <AuthComposition footer={<AuthFooter />}>
+          <AuthSurface>
             <AuthHeading
               title="Set a new password"
               sub="Choose something you have not used on MusicLinkd before."
@@ -186,22 +174,14 @@ function ResetPassword() {
                 className="mt-1 w-full h-12 text-sm font-semibold shadow-xs"
                 loading={busy}
               >
-                Save New Password
+                Save new password
               </Btn>
             </form>
-          </div>
+          </AuthSurface>
           <p className="mt-3.5 text-center text-1 text-muted-foreground">
-            <TextLink to="/auth/phone">Back to Sign In</TextLink>
+            <TextLink to="/welcome">Back to sign in</TextLink>
           </p>
-        </div>
-
-        <div className="shrink-0 pt-1 text-center">
-          <LegalNote className="mt-0" />
-          <div className="mt-0.5">
-            <MadeByWugweb />
-          </div>
-        </div>
-      </div>
+      </AuthComposition>
     </AuthScreen>
   );
 }

@@ -1,30 +1,21 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Mail, Pencil, RotateCw } from "lucide-react";
-import { toast } from "sonner";
 import { Btn } from "@/components/ml/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { usePhoneSignIn } from "@/lib/post-auth";
 import {
   AuthHeading,
-  AuthLink,
+  AuthComposition,
+  AuthFooter,
   AuthNotice,
   AuthScreen,
-  AuthTextButton,
-  CodeInput,
-  LegalNote,
+  AuthSurface,
   PhoneField,
   TrustNote,
   classifyAuthError,
-  formatIndianMobile,
-  useCountdown,
   useFieldErrors,
 } from "@/components/ml/auth";
-import { ISD_CODE } from "@/lib/validation";
-import { iconSize } from "@/lib/tokens";
-
-import { MadeByWugweb } from "@/components/ml/kit";
 import { PhoneCodeStep } from "@/components/ml/phone-code";
 
 /*
@@ -97,9 +88,8 @@ function PhoneAuth() {
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col py-8 sm:py-12">
-        <div className="flex flex-col pt-8 sm:pt-10">
-          <div className="rounded-lg border border-border bg-card p-4 sm:p-5">
+      <AuthComposition footer={<AuthFooter />}>
+          <AuthSurface>
             <form
               noValidate
               onSubmit={(e) => {
@@ -108,8 +98,8 @@ function PhoneAuth() {
               }}
             >
               <AuthHeading
-                title="Continue with mobile"
-                sub="Enter your number and we’ll send a secure 6-digit verification code."
+                title="Sign in with mobile"
+                sub="Enter your number to receive a secure 6-digit verification code."
               />
 
               {provider === "off" ? (
@@ -132,31 +122,13 @@ function PhoneAuth() {
                 loading={busy}
                 disabled={provider === "off"}
               >
-                Send Verification Code
+                 Continue
               </Btn>
             </form>
 
             <TrustNote>Your number is never shown on your public profile.</TrustNote>
-          </div>
-
-          <p className="mt-4 flex justify-center text-sm">
-            <AuthLink
-              to="/auth"
-              icon={<Mail size={iconSize.sm} />}
-              className="font-semibold text-foreground"
-            >
-              Sign in with Email instead
-            </AuthLink>
-          </p>
-        </div>
-
-        <div className="mt-auto shrink-0 pb-1 pt-8 text-center">
-          <LegalNote className="mt-0" />
-          <div className="mt-0.5">
-            <MadeByWugweb />
-          </div>
-        </div>
-      </div>
+          </AuthSurface>
+      </AuthComposition>
     </AuthScreen>
   );
 }
