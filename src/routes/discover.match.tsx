@@ -195,7 +195,9 @@ function MatchScreen() {
             ) : null}
             {result.opportunities.length ? (
               <section>
-                <SectionHeader title={hiring ? "Open hiring posts like this" : "Open opportunities"} />
+                <SectionHeader
+                  title={hiring ? "Open hiring posts like this" : "Open opportunities"}
+                />
                 <div className="space-y-3 px-5">
                   {result.opportunities.map(({ row, reason }) => {
                     const o = opportunityFromRow(row, labels.data ?? {});

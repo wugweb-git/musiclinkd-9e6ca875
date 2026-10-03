@@ -532,20 +532,20 @@ function EditProfile() {
               error={problems.first_name}
             />
           ) : (
-          <div className="grid grid-cols-2 gap-3">
-            <Field
-              label="First name"
-              value={form.first_name}
-              onChange={(v) => update({ first_name: v })}
-              error={problems.first_name}
-            />
-            <Field
-              label="Last name"
-              value={form.last_name}
-              onChange={(v) => update({ last_name: v })}
-              error={problems.last_name}
-            />
-          </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Field
+                label="First name"
+                value={form.first_name}
+                onChange={(v) => update({ first_name: v })}
+                error={problems.first_name}
+              />
+              <Field
+                label="Last name"
+                value={form.last_name}
+                onChange={(v) => update({ last_name: v })}
+                error={problems.last_name}
+              />
+            </div>
           )}
           <Field label="Headline" value={form.headline} onChange={(v) => update({ headline: v })} />
           <Field label="Bio" value={form.bio} onChange={(v) => update({ bio: v })} multiline />
