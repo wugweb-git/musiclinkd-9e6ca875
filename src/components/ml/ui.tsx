@@ -270,17 +270,17 @@ export function BottomNav() {
             );
           })}
           <li className="flex-1">
-            <button
-              type="button"
-              aria-label="Menu"
+            <IconBtn
+              label="Menu"
+              variant="plain"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(true)}
-              className="hit-area flex h-16 w-full items-center justify-center"
+              className="h-16 w-full rounded-none"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full">
                 <Grid2x2 size={iconSize.md} className="text-foreground" aria-hidden />
               </span>
-            </button>
+            </IconBtn>
           </li>
         </ul>
       </nav>

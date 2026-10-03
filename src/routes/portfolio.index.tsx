@@ -165,9 +165,9 @@ function PortfolioOverview() {
     },
   });
   // Nothing to manage yet: the empty state's Add work is the one action.
-  const empty = signedIn && !q.isLoading && !q.isError && items.length === 0;
+  const empty = signedIn && !authLoading && !q.isLoading && !q.isError && q.data !== undefined && items.length === 0;
   // Counts and tools wait for the list, so a new user never sees a row of zeros flash first.
-  const showTools = !empty && !(signedIn && (q.isLoading || authLoading));
+  const showTools = signedIn && !empty && !q.isError && !q.isLoading && !authLoading && q.data !== undefined;
 
   return (
     <Screen bottomNav={false} className="pb-32">
@@ -239,7 +239,7 @@ function PortfolioOverview() {
           </>
         ) : null}
 
-        {empty ? null : <h2 className="mt-7 text-2 font-semibold">All work</h2>}
+        {showTools && items.length ? <h2 className="mt-7 text-2 font-semibold">All work</h2> : null}
         {!empty && term && visible.length === 0 ? (
           <StateCard title="Nothing matched" body={`No work titled or described with "${term}".`} />
         ) : null}
