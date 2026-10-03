@@ -10,7 +10,18 @@ import {
   type ServiceOption,
   type ServiceOptions,
 } from "@/lib/services.functions";
-import { serviceCategories } from "@/data/services";
+import {
+  Building2,
+  Disc3,
+  Guitar,
+  Mic,
+  Music2,
+  PenLine,
+  Piano,
+  SlidersHorizontal,
+  Ticket,
+  type LucideIcon,
+} from "lucide-react";
 
 /** The signed-in profile's services. Empty without a session. */
 export function useMyServices() {
@@ -77,9 +88,23 @@ export function optionLabel(list: ServiceOption[] | undefined, slug: string | nu
   return list?.find((o) => o.slug === slug)?.label ?? slug;
 }
 
-/** The emoji shown for a category; it follows from the category and is not stored. */
-export function categoryEmoji(slug: string | null | undefined) {
-  return serviceCategories.find((c) => c.key === slug)?.emoji ?? "";
+const categoryIcons: Record<string, LucideIcon> = {
+  vocals: Mic,
+  mixing: SlidersHorizontal,
+  mastering: Disc3,
+  production: Piano,
+  instrument: Guitar,
+  songwriting: PenLine,
+  live: Ticket,
+  studio: Building2,
+};
+
+/**
+ * A category's line icon (Lucide, never an emoji — brief §3.5, 29 Sep). It follows from the
+ * category and is not stored; a category without one gets the generic music note.
+ */
+export function categoryIcon(slug: string | null | undefined): LucideIcon {
+  return (slug && categoryIcons[slug]) || Music2;
 }
 
 /** Work mode labels joined for one line. */

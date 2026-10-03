@@ -119,11 +119,11 @@ export function ProviderSummary({ p, compact }: { p: ProviderLike; compact?: boo
   );
 }
 
-/** Opens the provider's rental page (/marketplace/rent/provider/$id, keyed by profile id). */
+/** Opens the provider's seller page (/marketplace/seller/$id, keyed by profile id). */
 export function ProviderCard({ p }: { p: ProviderLike }) {
   return (
     <Link
-      to="/marketplace/rent/provider/$id"
+      to="/marketplace/seller/$id"
       params={{ id: p.id }}
       className="block w-full rounded-lg bg-subtle p-4 text-left"
     >

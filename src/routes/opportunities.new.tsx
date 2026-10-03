@@ -285,7 +285,7 @@ function CreateOpportunity() {
               </div>
             </Field>
             {payType === "Paid" ? (
-              <Field label="Budget" hint="Posts with a budget get 3× more applications.">
+              <Field label="Budget">
                 <input
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}

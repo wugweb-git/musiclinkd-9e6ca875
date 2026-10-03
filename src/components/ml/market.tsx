@@ -874,10 +874,10 @@ export function CategorySheet({
             option={o}
             onClick={() => {
               onClose();
-              void navigate({
-                to: rental ? "/marketplace/rent/c/$slug" : "/marketplace/c/$slug",
-                params: { slug: o.value },
-              });
+              // A rental category opens Market's Rent view (one marketplace, owner 22 Sep).
+              void (rental
+                ? navigate({ to: "/marketplace", search: { view: "Rent" } })
+                : navigate({ to: "/marketplace/c/$slug", params: { slug: o.value } }));
             }}
           />
         ))}

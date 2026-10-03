@@ -8,11 +8,11 @@ import { LiquidChip } from "@/components/ui/liquid-chip";
 import { LiquidSegmented } from "@/components/ui/liquid-segmented";
 import { LiquidToastProvider, useLiquidToast } from "@/components/ui/liquid-toast";
 import { LiquefyProvider } from "@/lib/provider";
+import { unsplash } from "@/data/unsplash";
 
 /* Lab: glass. Our chips, segmented control, labels and button next to @liquefy-ui and @glasscn. */
 
-const PHOTO =
-  "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=900&q=70";
+const PHOTO = unsplash("photo-1511671782779-c97d3d27a1d4", 900, { q: 70 });
 
 /** Glass needs something behind it: every story sits on a photo. */
 const onPhoto: Decorator = (Story) => (

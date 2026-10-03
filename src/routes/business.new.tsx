@@ -584,7 +584,7 @@ function NewBusiness() {
       <Dialog
         open={create.isSuccess && !isStudio}
         title="Business created"
-        body="Add your spaces, hours and rates next."
+        body="Add your hours and rates next."
         onClose={() => create.reset()}
       >
         <BtnLink to="/home" className="w-full">

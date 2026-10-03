@@ -14,6 +14,7 @@ import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { joinParts } from "@/lib/utils";
+import { WorkTypeIcon } from "@/components/ml/portfolio";
 
 /*
  * One Discover slug, every subject. `/discover/<slug>` is the shareable form of a Discover filter
@@ -121,9 +122,7 @@ function MusicList({ tracks }: { tracks: TrendingItem[] }) {
               <Link key={t.id} to="/portfolio/$id" params={{ id: t.id }} className="block">
                 <Card>
                   <div className="flex items-center gap-3">
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-background text-2">
-                      {workType(t.kind).emoji}
-                    </span>
+                    <WorkTypeIcon kind={t.kind} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{t.title}</p>
                       <p className="truncate text-1 text-muted-foreground">

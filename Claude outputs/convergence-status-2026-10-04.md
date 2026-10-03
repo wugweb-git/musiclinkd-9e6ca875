@@ -82,22 +82,22 @@ elevation, avatar tokens or `--gradient-brand`.
 
 | # | Status | Evidence | What's left |
 |---|---|---|---|
-| 15 tour.tsx | Remaining | 0 importers, `next/link`, excluded from tsconfig/eslint | Remove |
-| 16 Vendor primitives | Remaining | ~50 `ui/` primitives with 0 product consumers | Remove unused |
-| 17 Glyph/emoji | Remaining (partial) | `c657382`, `55c2d62`, `966649c`, `4535840` | "← Prev"/"Next →"; work-type and category emoji |
+| 15 tour.tsx | Fixed (§3.5: removed) | 0 importers, `next/link`, excluded from tsconfig/eslint | Remove |
+| 16 Vendor primitives | Fixed (§3.5: 29 with no importers removed, plus `file-upload-01.tsx`); story-only ones Intentionally retained (Registry/Kept, "kept here on the owner's word") | ~50 `ui/` primitives with 0 product consumers | Remove unused |
+| 17 Glyph/emoji | Fixed (§3.5: Prev/Next chevrons; work-type and service-category emoji → Lucide) | `c657382`, `55c2d62`, `966649c`, `4535840` | "← Prev"/"Next →"; work-type and category emoji |
 | 18 font-extrabold | Fixed `2d13f06` | — | — |
 | 19 DownloadCta | Fixed `5484503` | 0 app consumers | — |
 | 20 Optional props | Ongoing rule | — | fix when touched |
 | 21 Tailwind defaults | Ongoing rule | — | — |
-| 22 `--gradient-brand`, stroke | Remaining | 0 consumers | Remove; stroke inventory |
-| Fabricated metrics | Fixed (named, `906b5f3`) / Remaining | "4× more likely", "3× more applications" | Remove |
-| Storybook Unsplash | Remaining | 7 story URLs | Local fixtures |
+| 22 `--gradient-brand`, stroke | Fixed (§3: gradient removed); stroke inventory `Claude outputs/stroke-inventory-2026-10-04.md` (icon-stroke token awaits owner) | 0 consumers | Remove; stroke inventory |
+| Fabricated metrics | Fixed (`906b5f3`; §3.5: "4×"/"3×" claims and dead `trustSignals` removed) | "4× more likely", "3× more applications" | Remove |
+| Storybook Unsplash | Intentionally retained (owner keeps Unsplash), routed through `src/data/unsplash.ts`; Google sample media in `portfolio.stories` noted in external-media file | 7 story URLs | Local fixtures |
 | 33 liquefy-ui.css | Verified Storybook-only | `.storybook/preview.tsx:13` | — |
 | 34 Brand assets | Blocked | owner assets | — |
-| 35 AUDIT-2026-09-29.md | Remaining | `Claude outputs/specs/` | Classify |
-| 36 collab references | Remaining | 4 importers, 4 routes, nav item | Classify/migrate |
-| 37 Platform leakage | Remaining | `next/link` in tour.tsx only | With #15 |
-| 38 External media | Remaining (classification) | intentional embeds listed | Unsplash → local |
+| 35 AUDIT-2026-09-29.md | Fixed: classified in `Claude outputs/audit-2026-09-29-classification.md` (35 incorporated, 3 superseded, 22 actionable; J2/J3 fixed in §3.5) | `Claude outputs/specs/` | Classify |
+| 36 collab references | Classified: `Claude outputs/collab-references-2026-10-04.md` with a removal order (band invitations must move off `/collab/$id` first); band manage buttons wired in §3.5 | 4 importers, 4 routes, nav item | Classify/migrate |
+| 37 Platform leakage | Fixed (§3.5: `next/link` went with tour.tsx) | `next/link` in tour.tsx only | With #15 |
+| 38 External media | Classified: `Claude outputs/external-media-2026-10-04.md` | intentional embeds listed | Unsplash → local |
 
 ## Sections 4, 5, 7
 
@@ -121,3 +121,6 @@ dialog/sheet/drawer, the app uses ml `Sheet`).
 - **§3:** touch token re-pointed: `--spacing-touch` is 48px (owner, 29 Sep); every `min-h-touch`
   consumer is now ≥48px (`saved.tsx` icon button 48×48). AGENTS.md radius, touch target and overlay
   rules now match the code.
+- **§3.5:** see the rows above. Also fixed here: band manage's Make admin/member, Remove member,
+  Transfer ownership and Delete band did nothing (now wired; `deleteBand` added); the Business
+  created dialog no longer promises "spaces"; three links skip their redirect stubs.

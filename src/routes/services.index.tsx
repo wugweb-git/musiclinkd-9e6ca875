@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 
 import { serviceStatusTone } from "@/data/services";
-import { categoryEmoji, optionLabel, useMyServices, useServiceOptions } from "@/hooks/use-services";
+import { categoryIcon, optionLabel, useMyServices, useServiceOptions } from "@/hooks/use-services";
 import { priceParts } from "@/lib/price";
 import type { ServiceStatus } from "@/lib/services.functions";
 import { iconSize } from "@/lib/tokens";
@@ -109,9 +109,12 @@ function ServicesHome() {
                   <div className="flex items-start gap-3">
                     <span
                       aria-hidden
-                      className="grid h-10 w-10 shrink-0 place-items-center rounded-sm bg-subtle text-2"
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-sm bg-subtle"
                     >
-                      {categoryEmoji(s.category)}
+                      {(() => {
+                        const Icon = categoryIcon(s.category);
+                        return <Icon size={iconSize.sm} />;
+                      })()}
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{s.name}</p>

@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — brief §3.5: engineering hygiene (4 Oct)
+
+- Removed 29 vendor primitives nothing imported (incl. `tour.tsx` and its `next/link`) and the
+  unused `file-upload-01.tsx`. Primitives used only by the Registry/Kept and Lab stories stay (kept
+  on the owner's word).
+- Glyphs and emoji: the calendar's "← Prev"/"Next →" use chevrons; work-type and service-category
+  emoji are Lucide icons (`WorkTypeIcon`, `workIconFor`, `categoryIcon`).
+- Fabricated claims removed: "applications with work are 4× more likely to be shortlisted" (now "No
+  portfolio attached."), the Budget hint "Posts with a budget get 3× more applications.", and the
+  unused `trustSignals` data.
+- Story images go through `src/data/unsplash.ts`.
+- Dead controls found by the collab sweep: band manage's Make admin/member, Remove member,
+  Transfer ownership (picks an admin) and Delete band now do what they say (`deleteBand` added).
+- From the audit classification: the Business created dialog reads "Add your hours and rates
+  next." (no spaces); the provider card, a saved rental search and a rental category link straight
+  to their pages instead of through redirect stubs.
+- Reports: audit classification, collab references, external media, stroke inventory
+  (`Claude outputs/`).
+
 ### Changed — brief §3: tokens (4 Oct)
 
 - Hit target: `--spacing-touch` (`min-h-touch`) is 48px (owner, 29 Sep); 40–44px is only a drawn
