@@ -404,7 +404,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
           </div>
         </main>
 
-        <div className="text-center">
+        <div className="mt-4 text-center">
           {showDemoControls ? (
             <p className="mt-0.5 text-center text-1">
               <AuthLink to="/dev/new-user" className="text-muted-foreground">
