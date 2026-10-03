@@ -5,6 +5,32 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one name for amenities; the picker offers 12; studio services fold into service categories (owner, 3 Oct)
+
+- Taxonomy key `studio_amenities` is `amenities` (`20261003160000_amenities_key_and_service_fold.sql`).
+  Same options and slugs; no stored selection changes.
+- The amenity picker offers 12 options (parking, valet parking, lounges, Wi-Fi, fiber internet, bar
+  & diner, lockers, cafe, AC, water, catering). The other 21 carry `metadata.picker = false`: still
+  published, so a profile that already has one still shows it, and the editor still lists it so the
+  owner can remove it. Nothing deleted.
+- `service_categories` gains studio_services' 7 missing options (`recording`, `resident_engineers`,
+  `attended_sessions`, `stem_mastering`, `producer`, `same_day_audio`, `multicam_video`) with their
+  existing labels, under the `studio` parent, offered to every person type already offered `studio`.
+  No screen read `studio_services`; its rows stay because `service_category_specialties` points at
+  them. `bookables.services` is untouched.
+- `20261003140000` (cleanup) compares row counts before and after instead of hard-coding 21 / 57;
+  its snapshot, `supabase/dumps/2026-10-03-before-drop-bookables-compat.sql`, is committed.
+
+### Changed — Edit profile edits every onboarding answer (3 Oct)
+
+- Date of birth and gender: onboarding's `PrivateDetailsFields` (moved from the step route to
+  `ml/onboarding.tsx`) in Edit profile → Identity, talent only. They were not editable after
+  onboarding.
+- "Available for": onboarding's `available_for` picker instead of a free-text field (talent; a
+  business keeps the text field, which business setup never asks).
+- "Where you work": onboarding's `work_modes` picker from the taxonomy instead of a hardcoded list
+  in `src/data/onboarding.ts`.
+
 ### Changed — "facility" is "amenity" everywhere (owner, 3 Oct)
 
 - The photo subject type `facility` is `amenity`: `BookablePhotoSubject`, the `addMyBookablePhoto`
