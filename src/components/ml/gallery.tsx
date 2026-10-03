@@ -22,6 +22,8 @@ import { ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { GalleryGrid, ImagePickButton } from "./profile";
 import { PhotoSheet } from "./booking";
+import { LoadError, Loading } from "./kit";
+import { Btn, useConfirm } from "./ui";
 import {
   MAX_GALLERY_PHOTOS,
   addMyGalleryPhoto,
@@ -106,6 +108,7 @@ function EditableGallery({
   source,
 }: Omit<GalleryEditorProps, "source"> & { source: GallerySource }) {
   const queryClient = useQueryClient();
+  const confirm = useConfirm();
   const queryKey = source.queryKey;
   const q = useQuery({ queryKey, queryFn: () => source.list() });
   const [viewing, setViewing] = useState(false);
@@ -141,7 +144,9 @@ function EditableGallery({
       await refresh();
       toast.success("Photo added", { id: "gallery-add" });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Couldn't add that photo");
+      toast.error(e instanceof Error ? e.message : "Couldn't add that photo", {
+        action: { label: "Try again", onClick: () => void onPick(_kind, file) },
+      });
     }
   }
 
@@ -176,13 +181,26 @@ function EditableGallery({
     }
   }
 
-  if (q.isLoading || q.isError || !q.data) return null;
+  // Loading and a failed read show as such, not as an empty space (brief §2, 29 Sep).
+  if (q.isLoading) return <Loading rows={1} />;
+  if (q.isError || !q.data)
+    return (
+      <LoadError
+        what="the photos"
+        action={
+          <Btn variant="outline" onClick={() => void q.refetch()}>
+            Try again
+          </Btn>
+        }
+      />
+    );
   // Before the gallery bucket exists nothing can be uploaded; what's there can still be managed.
   const canAdd = q.data.ready && photos.length < MAX_GALLERY_PHOTOS;
   if (!photos.length && !canAdd) return null;
 
   return (
     <>
+      {confirm.dialog}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -201,7 +219,11 @@ function EditableGallery({
                 onView={() => {
                   if (!dragged.current) setViewing(true);
                 }}
-                onRemove={() => void onRemove(p.id)}
+                onRemove={() =>
+                  confirm.ask({ title: "Remove this photo?", confirmLabel: "Remove" }, () =>
+                    onRemove(p.id),
+                  )
+                }
               />
             ))}
             {canAdd ? (

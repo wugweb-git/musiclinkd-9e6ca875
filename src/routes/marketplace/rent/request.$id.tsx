@@ -5,7 +5,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { FulfilmentPicker, ProviderSummary, RentalAvailabilityBadge } from "@/components/ml/rental";
+import {
+  FulfilmentPicker,
+  ProviderSummary,
+  RentalAvailabilityBadge,
+  fulfilmentLabels,
+  type Fulfilment,
+} from "@/components/ml/rental";
 import { Loading, Price, StepProgress } from "@/components/ml/kit";
 import { AvailabilityCalendar, PriceBreakdownCard } from "@/components/ml/booking";
 import { rentalPriceLines } from "@/data/rentals";
@@ -79,7 +85,7 @@ function RequestFlow() {
   const [start, setStart] = useState<string | null>(null);
   const [end, setEnd] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
-  const [fulfilment, setFulfilment] = useState("Pickup");
+  const [fulfilment, setFulfilment] = useState<Fulfilment>("pickup");
   const [note, setNote] = useState("");
   const [bookingId, setBookingId] = useState<string | null>(null);
 
@@ -92,7 +98,7 @@ function RequestFlow() {
           startDate: start,
           endDate: end,
           quantity: qty,
-          fulfilment: fulfilment === "Pickup" ? "pickup" : "provider_delivery",
+          fulfilment,
           ...(note ? { note } : {}),
         },
       });
@@ -140,7 +146,7 @@ function RequestFlow() {
         ) + 1
       : null;
   const days = Math.max(span ?? e.minDays, e.minDays);
-  const delivery = fulfilment !== "Pickup";
+  const delivery = fulfilment !== "pickup";
   // A range that runs across a day the provider blocked can't be requested.
   const crossesBlocked =
     start !== null && end !== null && e.unavailableDates.some((d) => d >= start && d <= end);
@@ -279,7 +285,7 @@ function RequestFlow() {
               {[
                 { k: "Dates", v: `${range ?? ""} (${days} days)` },
                 { k: "Quantity", v: `${qty}` },
-                { k: "Fulfilment", v: fulfilment },
+                { k: "Fulfilment", v: fulfilmentLabels[fulfilment] },
                 ...(e.location ? [{ k: "Location", v: e.location }] : []),
               ].map((r) => (
                 <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
@@ -339,7 +345,7 @@ function RequestFlow() {
               {[
                 { k: "Equipment", v: e.name },
                 { k: "Dates", v: range ?? "" },
-                { k: "Fulfilment", v: fulfilment },
+                { k: "Fulfilment", v: fulfilmentLabels[fulfilment] },
                 ...(e.deposit ? [{ k: "Deposit", v: inr(e.deposit * qty) }] : []),
               ].map((r) => (
                 <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">

@@ -59,7 +59,7 @@ function Sell() {
   const save = useServerFn(updateListing);
   const loadMine = useServerFn(listMyManagedListings);
   const [step, setStep] = useState(0);
-  const [draft, patch] = useListingDraft(type === "rent" ? "Rent out" : "Sell", Boolean(edit));
+  const [draft, patch] = useListingDraft(type === "rent" ? "rent" : "sell", Boolean(edit));
   const [publishing, setPublishing] = useState(false);
   const taxonomy = useGearTaxonomy();
   const last = listingSteps.length - 1;

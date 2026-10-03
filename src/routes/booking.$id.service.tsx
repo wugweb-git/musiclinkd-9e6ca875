@@ -123,6 +123,7 @@ function SelectService() {
         onClose={() => setAsk(false)}
         onSend={(r) => request.mutate(r)}
         pending={request.isPending}
+        error={request.error instanceof Error ? request.error.message : null}
         who="The studio"
       />
     </Screen>

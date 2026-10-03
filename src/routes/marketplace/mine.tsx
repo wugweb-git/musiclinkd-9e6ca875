@@ -21,6 +21,7 @@ import { Dialog, LoadError, Price, StatusPill, EmptyState } from "@/components/m
 import { MarketCategoryIcon } from "@/components/ml/market";
 import {
   clearListingDraft,
+  listingModeLabels,
   readListingDraft,
   type ListingDraft,
 } from "@/components/ml/listing-form";
@@ -220,7 +221,7 @@ function Mine() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{draft.name || "Untitled listing"}</p>
                 <p className="text-1 text-foreground">
-                  {draft.mode ?? "Sell"} · saved on this device
+                  {listingModeLabels[draft.mode ?? "sell"]} · saved on this device
                 </p>
               </div>
               <IconBtn

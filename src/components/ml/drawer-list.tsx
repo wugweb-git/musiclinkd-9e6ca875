@@ -48,7 +48,7 @@ export function DrawerSearchButton({
       onClick={onToggle}
       aria-label={open ? "Close search" : label}
       aria-expanded={open}
-      className="state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground"
+      className="state-layer hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground"
     >
       {open ? (
         <X size={iconSize.md} strokeWidth={1.75} aria-hidden />

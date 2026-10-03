@@ -120,7 +120,7 @@ export function mergeProfileRow(
   const linkMap = asLinkMap(row.links);
   const links = Object.entries(linkMap)
     .filter(([, v]) => Boolean(v))
-    .map(([key, handle]) => ({ label: platformLabel(key, labels), handle }));
+    .map(([key, handle]) => ({ platform: key, label: platformLabel(key, labels), handle }));
   // rating and review_count are kept from reviews by the database; no reviews, no rating.
   const reviewCount = row.review_count ?? 0;
   const rating = reviewCount && row.rating != null ? Number(row.rating) : 0;

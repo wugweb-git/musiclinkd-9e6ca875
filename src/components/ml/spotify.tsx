@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { ChevronRight, Music, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { Btn, Sheet } from "@/components/ml/ui";
+import { Btn, Sheet, useConfirm } from "@/components/ml/ui";
 import {
   disconnectSpotify,
   getSpotifyStatus,
@@ -24,6 +24,7 @@ export function SpotifyRow() {
   const disconnect = useServerFn(disconnectSpotify);
   const [state, setState] = useState<SpotifyStatus | null>(null);
   const [open, setOpen] = useState(false);
+  const confirm = useConfirm();
   const [sharing, setSharing] = useState<SpotifySharing>("connections");
   const [busy, setBusy] = useState(false);
   // A failed status read is an error with a retry, never "Not available yet".
@@ -78,6 +79,7 @@ export function SpotifyRow() {
 
   return (
     <>
+      {confirm.dialog}
       <button
         type="button"
         disabled={unavailable}
@@ -104,7 +106,14 @@ export function SpotifyRow() {
         {state?.state === "connected" ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">{hint}</p>
-            <Btn variant="outline" className="w-full" loading={busy} onClick={() => void remove()}>
+            <Btn
+              variant="outline"
+              className="w-full"
+              loading={busy}
+              onClick={() =>
+                confirm.ask({ title: "Disconnect Spotify?", confirmLabel: "Disconnect" }, remove)
+              }
+            >
               Disconnect
             </Btn>
           </div>

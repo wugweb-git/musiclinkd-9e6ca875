@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { Card, Meter } from "@/components/ml/kit";
+import { Btn, Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { Card, LoadError, Meter } from "@/components/ml/kit";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
 import {
   getOpportunitySaveCount,
@@ -81,12 +81,33 @@ function OpportunityAnalytics() {
         back="/opportunities/mine"
       />
       <div className="space-y-4 px-5 pt-4 pb-6">
+        {/* A failed read is an error, never zero views (P0: no counts that aren't real). */}
+        {stats.isError || saves.isError || sources.isError ? (
+          <LoadError
+            what="these numbers"
+            action={
+              <Btn
+                variant="outline"
+                onClick={() => {
+                  void stats.refetch();
+                  void saves.refetch();
+                  void sources.refetch();
+                }}
+              >
+                Try again
+              </Btn>
+            }
+          />
+        ) : null}
         <div className="grid grid-cols-2 gap-2">
           {[
-            { label: "Views", value: stats.isLoading ? "—" : totalViews },
+            { label: "Views", value: stats.isLoading || stats.isError ? "—" : totalViews },
             { label: "Saves", value: saves.data ?? "—" },
             { label: "Applicants", value: applicants },
-            { label: "View → apply", value: stats.isLoading ? "—" : viewToApply },
+            {
+              label: "View → apply",
+              value: stats.isLoading || stats.isError ? "—" : viewToApply,
+            },
           ].map((s) => (
             <Card key={s.label}>
               <p className="text-1 text-muted-foreground">{s.label}</p>

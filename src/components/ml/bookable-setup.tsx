@@ -3,8 +3,8 @@ import { toast } from "sonner";
 import { ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Btn, Chip, IconBtn, Sheet } from "@/components/ml/ui";
-import { Card, EmptyState, LoadError, Loading, SegmentedField } from "@/components/ml/kit";
+import { Btn, Chip, IconBtn, Sheet, useConfirm } from "@/components/ml/ui";
+import { Card, LoadError, Loading, SegmentedField } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
 import { ImagePickButton } from "@/components/ml/profile";
 import { ChipPicker, DrawerField } from "@/components/ml/onboarding";
@@ -137,11 +137,17 @@ type EquipmentDraft = {
   included: boolean;
 };
 const blankDraft: EquipmentDraft = { name: "", category: "", quantity: "", included: true };
-const INCLUSION = ["Included", "Extra cost"] as const;
+/** Included or at extra cost, as keys; the words are only what the control shows. */
+const INCLUSION = ["included", "extra"] as const;
+const INCLUSION_LABELS: Record<(typeof INCLUSION)[number], string> = {
+  included: "Included",
+  extra: "Extra cost",
+};
 
 /** Add, change or remove the studio's equipment, each with its photos. */
 export function EquipmentEditor() {
   const queryClient = useQueryClient();
+  const confirm = useConfirm();
   const load = useServerFn(getMyBookableEquipment);
   const save = useServerFn(saveMyBookableEquipment);
   const remove = useServerFn(removeMyBookableEquipment);
@@ -239,11 +245,14 @@ export function EquipmentEditor() {
         {q.isLoading ? (
           <Loading rows={2} />
         ) : q.isError ? (
-          <EmptyState title="Couldn't load equipment" body="Check your connection and try again.">
-            <Btn variant="outline" onClick={() => void q.refetch()}>
-              Retry
-            </Btn>
-          </EmptyState>
+          <LoadError
+            what="your equipment"
+            action={
+              <Btn variant="outline" onClick={() => void q.refetch()}>
+                Try again
+              </Btn>
+            }
+          />
         ) : (
           (q.data?.items ?? []).map((i) => (
             <Card key={i.id}>
@@ -263,7 +272,11 @@ export function EquipmentEditor() {
                 <IconBtn
                   label={`Remove ${i.name}`}
                   variant="ghost"
-                  onClick={() => removeItem.mutate(i.id)}
+                  onClick={() =>
+                    confirm.ask({ title: `Remove ${i.name}?`, confirmLabel: "Remove" }, () =>
+                      removeItem.mutate(i.id),
+                    )
+                  }
                 >
                   <Trash2 size={iconSize.sm} aria-hidden />
                 </IconBtn>
@@ -278,6 +291,7 @@ export function EquipmentEditor() {
           </Btn>
         )}
       </div>
+      {confirm.dialog}
 
       <Sheet
         open={!!draft}
@@ -335,9 +349,10 @@ export function EquipmentEditor() {
             </div>
             <SegmentedField
               label="Included or extra cost"
-              value={draft.included ? INCLUSION[0] : INCLUSION[1]}
+              value={draft.included ? "included" : "extra"}
               options={INCLUSION}
-              onChange={(v) => setDraft({ ...draft, included: v === INCLUSION[0] })}
+              labels={INCLUSION_LABELS}
+              onChange={(v) => setDraft({ ...draft, included: v === "included" })}
             />
             <Btn type="submit" className="w-full" disabled={!valid} loading={saveItem.isPending}>
               {draft.id ? "Save" : "Add"}
@@ -426,6 +441,7 @@ export function ProofPhotos({
   name: string;
 }) {
   const queryClient = useQueryClient();
+  const confirm = useConfirm();
   const q = useMyBookablePhotos();
   const add = useServerFn(addMyBookablePhoto);
   const remove = useServerFn(removeMyBookablePhoto);
@@ -444,7 +460,9 @@ export function ProofPhotos({
       await queryClient.invalidateQueries({ queryKey: PHOTOS_KEY });
       toast.success("Photo added");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Couldn't add that photo");
+      toast.error(e instanceof Error ? e.message : "Couldn't add that photo", {
+        action: { label: "Try again", onClick: () => void onPick(kind, file) },
+      });
     }
   }
 
@@ -460,6 +478,7 @@ export function ProofPhotos({
 
   return (
     <div className="mt-3 flex flex-wrap gap-2">
+      {confirm.dialog}
       {photos.map((p, i) => (
         <div key={p.id} className="relative">
           <button
@@ -477,10 +496,14 @@ export function ProofPhotos({
           </button>
           <button
             type="button"
-            onClick={() => void onRemove(p.id)}
+            onClick={() =>
+              confirm.ask({ title: "Remove this photo?", confirmLabel: "Remove" }, () =>
+                onRemove(p.id),
+              )
+            }
             aria-label={`Remove photo ${i + 1} of ${name}`}
             title="Remove photo"
-            className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-foreground"
+            className="hit-area absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-foreground"
           >
             <X size={iconSize.xs} aria-hidden />
           </button>

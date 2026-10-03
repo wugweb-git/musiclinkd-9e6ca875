@@ -5,6 +5,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — brief §2: component and state cleanup (4 Oct)
+
+- Safe area in the shared primitives: `Sheet` never reaches under the status bar; `CoverHero`'s
+  back and actions sit below the top inset (back gets a 48px hit area).
+- 48px hit areas: duration chips (48px), listing photo and tag remove, proof-photo remove,
+  `DrawerSearchButton`, market chips, Clear all and Filters, `ServiceCard` Book and Details, review
+  Read more.
+- Upload: `ImagePickButton` shows a focus ring on keyboard focus and never fails silently;
+  upload failures offer Try again (profile, gallery, proof photos, bands, collabs); the gallery
+  shows loading and a `LoadError` instead of nothing; equipment's error is the canonical `LoadError`.
+- Dead controls: `ResourceCard` removed (no consumers after rooms); `ServiceCard`'s Book with
+  nothing to open is disabled; Share QR sends the QR image (saves it where files can't be shared);
+  an add-on's rental link opens its listing.
+- Confirms (`useConfirm` in `ml/ui.tsx`, on `ui/alert-dialog`): equipment, gallery photo, proof
+  photo, band live video, stage plot and release, sign-in method, Spotify disconnect.
+- Logic keyed off copy moved to keys: listing mode (`sell`/`rent`; drafts saved with the old
+  words still load), rental fulfilment (`pickup`/`provider_delivery`, the stored values),
+  equipment inclusion (`included`/`extra`), social-link icons (platform key), `VerificationBadge`
+  typed to `VerificationTier`. `SegmentedField` takes optional `labels` for keyed options.
+- Accessibility: `FulfilmentPicker` is a radiogroup with checked state; the hire and support
+  textareas get their focus ring back (and 16px text, so iOS doesn't zoom).
+- Errors: My profile shows a `LoadError` when the business check fails (it used to fall through to
+  the talent profile); opportunity analytics shows a `LoadError` and "—" instead of 0 views on a
+  failed read; the booking request sheet shows its error inside the sheet as well as the toast.
+- Brand: count badges (notifications, Filters) are ink, not pink.
+- Wording changed: confirm titles "Remove <name>?", "Remove this photo?", "Remove stage plot?",
+  "Disconnect Spotify?" with buttons Remove / Disconnect / Cancel (new: a confirm needs a
+  question); upload toasts gain a "Try again" action; the equipment error reads "We couldn't load
+  your equipment" (the canonical LoadError) with "Try again" instead of "Retry".
+
 ### Fixed — a service's own page has Book (4 Oct)
 
 - The talent request test saved nothing. The profile cards' Book path is correct end to end (it

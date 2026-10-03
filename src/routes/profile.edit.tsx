@@ -279,7 +279,10 @@ function EditProfile() {
       );
       toast.success(kind === "avatar" ? "Profile photo updated" : "Cover updated");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "That upload didn't work. Try again.");
+      // The file is still here, so the failed upload can run again in one tap.
+      toast.error(err instanceof Error ? err.message : "That upload didn't work. Try again.", {
+        action: { label: "Try again", onClick: () => void pickImage(kind, file) },
+      });
     }
   };
 

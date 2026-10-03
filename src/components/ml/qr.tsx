@@ -28,20 +28,54 @@ import { DOWNLOAD_UNAVAILABLE, downloadBlob } from "@/lib/download";
  */
 export async function downloadQr(value: string, fileName: string) {
   try {
-    const QRCode = await loadQrCode();
-    const dataUrl = await QRCode.toDataURL(value, {
-      width: 1024,
-      margin: 4,
-      errorCorrectionLevel: "M",
-      color: { dark: "#000000", light: "#ffffff" },
-    });
-    const name = `${fileName.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "") || "musiclinkd"}-qr.png`;
-    const png = await (await fetch(dataUrl)).blob();
+    const { name, png } = await qrPng(value, fileName);
     if (downloadBlob(name, png)) toast.success("QR image saved");
     else toast.error(DOWNLOAD_UNAVAILABLE);
   } catch {
     toast.error("Couldn't make the QR image. Try again.");
   }
+}
+
+/** The QR for `value` as a printable PNG (black on white, quiet zone), with its file name. */
+async function qrPng(value: string, fileName: string) {
+  const QRCode = await loadQrCode();
+  const dataUrl = await QRCode.toDataURL(value, {
+    width: 1024,
+    margin: 4,
+    errorCorrectionLevel: "M",
+    color: { dark: "#000000", light: "#ffffff" },
+  });
+  const name = `${fileName.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "") || "musiclinkd"}-qr.png`;
+  return { name, png: await (await fetch(dataUrl)).blob() };
+}
+
+/**
+ * Sends the QR image itself through the share sheet. Where the device can't share files, the
+ * image is saved instead, so the control always does what it says: gives you the code image.
+ */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
+export async function shareQr(value: string, title: string) {
+  let file: File;
+  try {
+    const { name, png } = await qrPng(value, title);
+    file = new File([png], name, { type: "image/png" });
+  } catch {
+    toast.error("Couldn't make the QR image. Try again.");
+    return;
+  }
+  const nav = navigator as Navigator & {
+    canShare?: (d: ShareData) => boolean;
+    share?: (d: ShareData) => Promise<void>;
+  };
+  if (nav.share && nav.canShare?.({ files: [file] })) {
+    try {
+      await nav.share({ title, files: [file] });
+    } catch {
+      /* user dismissed — no error state needed */
+    }
+    return;
+  }
+  await downloadQr(value, title);
 }
 
 /* ------------------------------------------------------------------ */
@@ -460,7 +494,7 @@ export function ShareActions({
         icon={<Share2 size={iconSize.sm} />}
         label="Share QR"
         hint="Send the code image"
-        onClick={() => void nativeShare({ title, url })}
+        onClick={() => void shareQr(url, title)}
       />
       <ActionRow
         icon={<Camera size={iconSize.sm} />}
