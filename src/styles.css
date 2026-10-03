@@ -98,7 +98,7 @@
   --spacing-icon-xl: 32px;
 
   /* The mobile shell width, previously repeated as max-w-app in 55 places. */
-  --container-app: 760px;
+  --container-app: 640px;
 
   /* Horizontal-scroll rail cards (w-rail-*): person/studio cards, live-video cards. Found repeated
    * as bare w-[168px]/w-[200px]/w-[260px] across cards.tsx and band-sections.tsx (22 Sep audit). */
@@ -111,6 +111,7 @@
   --spacing-prose-sm: 280px;
 
   --color-background: var(--background);
+  --color-auth-ground: var(--auth-ground);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -609,6 +610,8 @@
    * roadmap.md rather than resolved here.
    */
   --background: #ececf1;
+  /* Sign-in screens only: the ground of lovable.dev/login (owner, 4 Oct 2026). */
+  --auth-ground: oklch(0.9699 0 107);
   --foreground: var(--ink); /* default text is ink black */
   --card: oklch(1 0 89.88);
   --card-foreground: var(--ink);

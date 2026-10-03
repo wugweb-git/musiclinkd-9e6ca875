@@ -48,12 +48,12 @@ function SignOutScreen() {
               sub="Your profile, portfolio and bookings stay exactly as they are. You'll just need to sign in again on this device."
             />
             <div className="space-y-2.5">
-              <Btn className="w-full h-12" onClick={() => void signOut()} disabled={busy}>
+              <Btn className="w-full h-12 text-2 font-medium" onClick={() => void signOut()} disabled={busy}>
                 {busy ? "Signing out…" : "Yes, sign out"}
               </Btn>
               <Btn
                 variant="outline"
-                className="w-full h-12"
+                className="w-full h-12 text-2 font-medium"
                 onClick={() => void navigate({ to: "/profile" })}
               >
                 Stay signed in

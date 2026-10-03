@@ -53,6 +53,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
   const [password, setPassword] = useState("");
   // Login only (owner, 4 Oct 2026): sign-up has neither Remember me nor Forgot Password.
   const [remember, setRemember] = useState(true);
+  const [step, setStep] = useState<"email" | "password">("email");
   const [busy, setBusy] = useState<"email" | "google" | "linkedin" | null>(null);
   // Only offer a way in that the server will actually accept. LinkedIn is offered the moment the
   // provider is switched on for the project, and hidden until then, so the button never fails —
@@ -201,17 +202,33 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
     }
   }
 
+  // Email first, then the password (after lovable.dev/login, owner 3 Oct 2026).
+  function continueWithEmail() {
+    fields.touch("email");
+    if (emailProblem) {
+      haptic("error");
+      return;
+    }
+    setError(null);
+    setStep("password");
+  }
+
+  const provider =
+    "relative h-12 w-full border-input bg-transparent text-2 font-medium [&>span:last-child]:static [@media(hover:hover)]:hover:bg-card";
+
   return (
-    <AuthScreen back={signup ? { to: "/welcome" } : undefined} wide>
+    <AuthScreen back={signup ? { to: "/welcome" } : undefined}>
       <AuthComposition footer={<AuthFooter />}>
         <main className="flex flex-col" style={beat(2)}>
-            <div className="mb-8 mt-6 sm:mt-0">
-              <h1 className="text-4 font-bold leading-tight text-foreground">
-                {signup ? "Create your account" : "Sign in to MusicLinkd"}
+            <div className="mb-8 mt-6">
+              <h1 className="text-3 font-medium leading-normal text-foreground">
+                {signup ? "Create your account" : "Sign in"}
               </h1>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {signup ? "Join India’s professional music community." : "Welcome back."}
-              </p>
+              {signup ? (
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Join India’s professional music community.
+                </p>
+              ) : null}
             </div>
             {saved.length > 0 && !signup ? (
               <section className="mb-5">
@@ -231,34 +248,53 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
               </section>
             ) : null}
 
-            <div className="grid gap-3">
+            <div className="grid gap-4">
               <Btn
                 variant="outline"
-                className="h-12 w-full bg-card text-sm font-semibold"
-                icon={<GoogleIcon />}
+                className={provider}
                 loading={busy === "google"}
                 onClick={() => void google()}
               >
+                <span className="absolute left-3.5 flex items-center" aria-hidden>
+                  <GoogleIcon />
+                </span>
                 Continue with Google
               </Btn>
               {showLinkedIn ? (
-                <Btn variant="outline" className="h-12 w-full bg-card text-sm font-semibold" icon={<Linkedin size={iconSize.sm} aria-hidden />} loading={busy === "linkedin"} onClick={() => void linkedin()}>
+                <Btn
+                  variant="outline"
+                  className={provider}
+                  loading={busy === "linkedin"}
+                  onClick={() => void linkedin()}
+                >
+                  <span className="absolute left-3.5 flex items-center" aria-hidden>
+                    <Linkedin size={iconSize.sm} />
+                  </span>
                   Continue with LinkedIn
                 </Btn>
               ) : null}
-              <Btn variant="outline" className="h-12 w-full bg-card text-sm font-semibold" icon={<Smartphone size={iconSize.sm} aria-hidden />} onClick={() => void navigate({ to: "/auth/phone" })}>
+              <Btn
+                variant="outline"
+                className={provider}
+                onClick={() => void navigate({ to: "/auth/phone" })}
+              >
+                <span className="absolute left-3.5 flex items-center" aria-hidden>
+                  <Smartphone size={iconSize.sm} />
+                </span>
                 Continue with phone
               </Btn>
             </div>
 
-            <Divider label="or" className="my-6" />
+            <Divider label="OR" className="my-6" />
 
             <AuthSurface>
               <form
                 noValidate
                 onSubmit={(e) => {
                   e.preventDefault();
-                  if (!busy) void submit();
+                  if (busy) return;
+                  if (step === "email") continueWithEmail();
+                  else void submit();
                 }}
               >
                 {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
@@ -270,63 +306,68 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                   onChange={(v) => {
                     setEmail(v);
                     carryEmail(v);
+                    if (step === "password") setStep("email");
                   }}
                   onBlur={() => fields.touch("email")}
                   error={fields.errorFor("email", emailProblem)}
                   type="email"
                   inputMode="email"
                   autoComplete="email"
-                  enterKeyHint="next"
-                  placeholder="name@example.com"
+                  enterKeyHint={step === "email" ? "go" : "next"}
+                  placeholder="Email"
                 />
-                <PasswordInput
-                  className="mb-2"
-                  value={password}
-                  onChange={setPassword}
-                  onBlur={() => fields.touch("password")}
-                  error={fields.errorFor("password", passwordProblem)}
-                  placeholder={signup ? "Create a strong password" : "Your password"}
-                  autoComplete={signup ? "new-password" : "current-password"}
-                  below={signup ? <PasswordRequirements value={password} /> : null}
-                />
+                {step === "password" ? (
+                  <div className="animate-message">
+                    <PasswordInput
+                      className="mb-2"
+                      value={password}
+                      onChange={setPassword}
+                      onBlur={() => fields.touch("password")}
+                      error={fields.errorFor("password", passwordProblem)}
+                      placeholder={signup ? "Create a strong password" : "Password"}
+                      autoComplete={signup ? "new-password" : "current-password"}
+                      below={signup ? <PasswordRequirements value={password} /> : null}
+                    />
 
-                {signup ? null : (
-                  <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-                    <label className="hit-area relative flex items-center gap-1 text-1 font-medium text-muted-foreground">
-                      <input
-                        type="checkbox"
-                        checked={remember}
-                        onChange={(e) => setRemember(e.target.checked)}
-                        className="h-5 w-5 shrink-0 accent-[var(--ink)]"
-                      />
-                      Remember me
-                    </label>
-                    <AuthLink
-                      to="/auth/forgot"
-                      className="text-muted-foreground hover:text-foreground font-medium text-1"
-                    >
-                      Forgot password?
-                    </AuthLink>
+                    {signup ? null : (
+                      <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                        <label className="hit-area relative flex items-center gap-2 text-1 font-medium text-muted-foreground">
+                          <input
+                            type="checkbox"
+                            checked={remember}
+                            onChange={(e) => setRemember(e.target.checked)}
+                            className="h-5 w-5 shrink-0 accent-[var(--ink)]"
+                          />
+                          Remember me
+                        </label>
+                        <AuthLink
+                          to="/auth/forgot"
+                          className="text-muted-foreground hover:text-foreground font-medium text-1"
+                        >
+                          Forgot password?
+                        </AuthLink>
+                      </div>
+                    )}
                   </div>
-                )}
+                ) : null}
 
                 <Btn
                   type="submit"
-                  className="h-12 w-full text-sm font-semibold"
+                  className="mt-1 h-12 w-full text-2 font-medium"
                   loading={busy === "email"}
                 >
-                  {signup ? "Create account" : "Sign in"}
+                  {step === "email" ? "Continue" : signup ? "Create account" : "Sign in"}
                 </Btn>
               </form>
             </AuthSurface>
 
-            <p className="mt-6 text-center text-sm text-muted-foreground">
+            <p className="mt-4 text-center text-sm text-muted-foreground">
               {signup ? (
                 <>
                   Already have an account?{" "}
                   <AuthLink
                     to="/welcome"
-                    className="hit-area font-semibold text-foreground underline underline-offset-4"
+                    className="hit-area text-foreground underline underline-offset-2"
                   >
                     Sign in
                   </AuthLink>
@@ -336,7 +377,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                   New to MusicLinkd?{" "}
                   <AuthLink
                     to="/signup"
-                    className="hit-area font-semibold text-foreground underline underline-offset-4"
+                    className="hit-area text-foreground underline underline-offset-2"
                   >
                     Create account
                   </AuthLink>

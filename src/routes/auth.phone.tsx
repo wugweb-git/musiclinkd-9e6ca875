@@ -118,7 +118,7 @@ function PhoneAuth() {
 
             <Btn
               type="submit"
-              className="mt-3 h-12 w-full text-sm font-semibold"
+              className="mt-3 h-12 w-full text-2 font-medium"
               loading={busy}
               disabled={provider === "off"}
             >
