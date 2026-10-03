@@ -5,6 +5,11 @@ Use the supplied mobile reference boards, the linked design conversations, and t
 
 Preserve routes, business logic, database contracts, authentication behavior, and the five-destination navigation. Do not fabricate activity, counts, ratings, availability, bookings, revenue, or success.
 
+## Reference conversations
+- https://lovable.dev/projects/ace967d9-a62e-48bb-b076-c3b63b11b185?messageId=main%3Aagent%2300000000300059%23ast%3AXZQWPLMH
+- https://lovable.dev/projects/ace967d9-a62e-48bb-b076-c3b63b11b185?messageId=main%3Aagent%2300000000299689%23usr%3AQTB4YIL5
+- https://lovable.dev/projects/ace967d9-a62e-48bb-b076-c3b63b11b185?messageId=main%3Aagent%2300000000300216%23usr%3ALSQEQ7KQ
+
 ## 1. Rebuild the shared visual foundation
 - Rework the global CSS and shared primitives before restyling individual screens: page ground, content widths, typography rhythm, section hierarchy, spacing, borders, elevation, media treatment, focus/pressed/loading states, and responsive behavior.
 - Keep the established Brand OS: Inter; ink, white, and neutral ground; real media supplies colour; pink is a rare signal; radii remain 8/16/32/full; Lucide icons; 48px touch targets.

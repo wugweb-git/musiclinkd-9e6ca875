@@ -743,6 +743,15 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  ::selection {
+    background: var(--pink-container);
+    color: var(--foreground);
+  }
+
+  img {
+    background-color: var(--surface-subtle);
+  }
+
   /*
    * Element defaults for h1–h6, in ink #0D0D0D. Headings set at normal tracking (decision 2,
    * 29 Sep). Sizes are the text-* steps; there is no separate display/headline/title/body/label

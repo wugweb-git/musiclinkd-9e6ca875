@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { SegmentedField } from "@/components/ml/kit";
 import { AccountRow } from "@/components/ml/accounts";
 import { forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
+import authMusicCollage from "@/assets/auth-music-collage.jpg";
 
 export type LoginMode = "signup" | "signin";
 const MODES = ["signin", "signup"] as const;
@@ -206,9 +207,18 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
   }
 
   return (
-    <AuthScreen back={signup ? { to: "/welcome" } : undefined}>
-      <AuthComposition footer={<AuthFooter />}>
+    <AuthScreen back={signup ? { to: "/welcome" } : undefined} className="bg-background">
+      <AuthComposition footer={<AuthFooter />} className="py-0 sm:py-8">
         <main className={cn("flex flex-col justify-center", rise)} style={beat(2)}>
+          <div className="-mx-4 mb-5 overflow-hidden rounded-b-3xl sm:-mx-6 sm:rounded-3xl">
+            <img
+              src={authMusicCollage}
+              alt="Indian artists recording and performing music"
+              width={1200}
+              height={1000}
+              className="h-44 w-full object-cover sm:h-56"
+            />
+          </div>
           <div className="mb-5">
             <p className="text-1 font-semibold text-muted-foreground">
               {signup ? "Join MusicLinkd" : "Your music career, connected"}
@@ -240,7 +250,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
             </section>
           ) : null}
 
-          <AuthSurface>
+          <AuthSurface className="border-0 p-0 shadow-none">
             <form
               noValidate
               onSubmit={(e) => {

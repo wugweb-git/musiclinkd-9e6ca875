@@ -41,11 +41,11 @@ export function AuthScreen({
   return (
     <div
       className={cn(
-        "mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-card select-none",
+        "mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-card select-none sm:max-w-[760px]",
         className,
       )}
     >
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6">
+      <div className="mx-auto flex w-full max-w-[560px] flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6">
         <header className="grid min-h-12 grid-cols-[48px_minmax(0,1fr)_48px] items-center">
           <div>{back ? <AuthBackButton back={back} /> : null}</div>
           <BrandMark />

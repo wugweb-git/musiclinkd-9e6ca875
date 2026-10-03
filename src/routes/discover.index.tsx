@@ -1,348 +1,290 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Boxes,
-  CalendarDays,
-  Disc3,
-  Drum,
-  MapPin,
-  Mic2,
-  SlidersVertical,
+  BriefcaseBusiness,
+  Building2,
+  Search,
+  SlidersHorizontal,
   Sparkles,
-  Star,
   Store,
-  Ticket,
-  Users,
-  type LucideIcon,
+  UsersRound,
 } from "lucide-react";
-import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
-import { BetaBadge, Price, Row, Segmented, SoonBadge } from "@/components/ml/kit";
-import { stageOf } from "@/lib/release";
-import { sameCity } from "@/lib/place";
-import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
-import { SectionActionLink } from "@/components/ml/links";
-import { useState } from "react";
-import { categories, quickCategories } from "@/data/discover";
-import { listBookables } from "@/lib/catalog.functions";
-import {
-  listTrendingPages,
-  listTrendingWork,
-  type TrendingItem,
-  type TrendingPage,
-} from "@/lib/trending.functions";
-import { useAuth } from "@/hooks/use-auth";
-import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
-import { PersonCard, PersonRow, BookableCard } from "@/components/ml/cards";
-import { useTaxonomy } from "@/lib/taxonomy";
-import { AudioTrackCard, VideoCard } from "@/components/ml/profile";
-import { workType } from "@/data/portfolio";
-import { joinParts } from "@/lib/utils";
-import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+
+import { BookableCard, PersonCard, PersonRow } from "@/components/ml/cards";
+import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
+import { NotificationsBell } from "@/components/ml/tab-header";
+import { Chip, Screen, SectionHeader } from "@/components/ml/ui";
+import { listBookables, listOpportunities } from "@/lib/catalog.functions";
 import { discoverBookableFromRow } from "@/lib/bookable-view";
 import { iconSize } from "@/lib/tokens";
+import { opportunityFromRow } from "@/lib/opportunity-view";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
+import { useMyBusinessIdentity } from "@/hooks/use-my-business-identity";
+import { useTaxonomy } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/discover/")({
   head: () => ({
     meta: [
-      { title: "Discover Talent | MusicLinkd" },
+      { title: "Discover Music Professionals | MusicLinkd" },
       {
         name: "description",
         content:
-          "Discover singers, session musicians, DJs, producers, studios, labels and venues across India on MusicLinkd.",
+          "Search talent, businesses, studios and opportunities across India's music industry.",
       },
-      { property: "og:title", content: "Discover Talent | MusicLinkd" },
+      { property: "og:title", content: "Discover Music Professionals | MusicLinkd" },
       {
         property: "og:description",
-        content:
-          "India's professional network for the music industry — find talent, studios and venues fast.",
+        content: "Find the people, places and work for your next music project.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  // The people and studios here are the stored ones; an unreachable database leaves them empty.
   loader: async () => {
-    const [rows, labels, trendingWork, people, trendingPages] = await Promise.all([
+    const [studioRows, opportunityRows, labels, people] = await Promise.all([
       listBookables().catch(() => []),
+      listOpportunities().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-      listTrendingWork().catch((): TrendingItem[] => []),
-      searchPeople({ data: { limit: 12 } })
-        .then((r) => r.people)
+      searchPeople({ data: { limit: 20 } })
+        .then((result) => result.people)
         .catch((): DirectoryPerson[] => []),
-      listTrendingPages().catch((): TrendingPage[] => []),
     ]);
     return {
-      dbStudios: rows.map((row) => discoverBookableFromRow(row, labels)),
-      trendingWork,
+      studios: studioRows.map((row) => discoverBookableFromRow(row, labels)),
+      opportunities: opportunityRows.map((row) => opportunityFromRow(row, labels)),
       people,
-      trendingPages,
     };
   },
-  component: Discover,
+  component: DiscoverScreen,
 });
 
-/** One line icon per quick category. No emoji: they render as empty boxes on real devices. */
-function categoryIcon(label: string) {
-  const icons: Record<string, LucideIcon> = {
-    Talent: Mic2,
-    Bands: Drum,
-    Studios: SlidersVertical,
-    Events: CalendarDays,
-    Marketplace: Store,
-    Rentals: Boxes,
-    Labels: Disc3,
-    Venues: Ticket,
-    Communities: Users,
-  };
-  const Icon = icons[label] ?? Mic2;
-  return <Icon size={20} className="text-muted-foreground" aria-hidden />;
-}
+const TALENT_MODES = ["For you", "People", "Opportunities", "Studios"] as const;
+const BUSINESS_MODES = ["For you", "Talent", "Studios", "Opportunities"] as const;
+type Mode = (typeof TALENT_MODES)[number] | (typeof BUSINESS_MODES)[number];
 
-function Discover() {
-  const { dbStudios, trendingWork, people, trendingPages } = Route.useLoaderData();
-  const [searchOpen, setSearchOpen] = useState(false);
-  // One trending track open at a time, as on a profile.
-  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
-  // A persona type is a filter here, not a screen of its own (owner, 28 Sep 2026).
-  const [personaFilter, setPersonaFilter] = useState<string>("All");
-  const personaOptions = ["All", ...categories.map((c) => c.label)];
-  const { signedIn } = useAuth();
-  const audioWork = trendingWork.filter((w) => workType(w.kind).media === "audio");
-  // Every kind that plays as video (videos and live performances); reels have their own rail.
-  const videoWork = trendingWork.filter(
-    (w) => workType(w.kind).media === "video" && w.kind !== "reel",
-  );
-  const reelWork = trendingWork.filter((w) => w.kind === "reel");
-  // Trending this week: people and studios by the last 7 days' views, follows, saves, enquiries,
-  // bookings and reviews (listTrendingPages). A studio shows with the same card as Studios below.
-  const studioById = new Map(dbStudios.map((s) => [s.id, s]));
-  type TrendingCard =
-    { key: string; person: DirectoryPerson } | { key: string; studio: (typeof dbStudios)[number] };
-  const trendingNow = trendingPages.flatMap((t): TrendingCard[] => {
-    if (t.kind === "person") return [{ key: `p-${t.person.id}`, person: t.person }];
-    const studio = studioById.get(t.studioId);
-    return studio ? [{ key: `s-${studio.id}`, studio }] : [];
-  });
+function DiscoverScreen() {
+  const loaded = Route.useLoaderData();
+  const navigate = useNavigate();
+  const business = useMyBusinessIdentity();
+  const recommendations = useRecommendations();
+  const saved = useSavedOpportunities();
   const { options } = useTaxonomy();
-  // Recommendations used to be three screens of invented reasons (owner, 18 Sep). They are a
-  // section here instead: signed in, the people ranked from the viewer's own roles, genres,
-  // instruments, city, follows and saves (recommendations.functions.ts); signed out, the directory.
-  const recs = useRecommendations();
-  const allSuggested = recs?.people.length ? recs.people : people;
-  const filterRole = categories.find((c) => c.label === personaFilter)?.role;
-  const suggested = filterRole
-    ? allSuggested.filter((p) => p.roles.includes(filterRole))
-    : allSuggested;
-  // Around you is the viewer's own stored city, never someone else's.
-  const myCity = recs?.city ?? "";
-  const nearby = myCity
-    ? [...suggested, ...people].filter(
-        (p, i, all) => sameCity(p.city, myCity) && all.findIndex((q) => q.id === p.id) === i,
-      )
-    : [];
-  const studios = rankBy(dbStudios, recs?.studios, (s) => s.id);
+  const modes = business.hasBusiness ? BUSINESS_MODES : TALENT_MODES;
+  const [mode, setMode] = useState<Mode>("For you");
+  const people = recommendations?.people.length ? recommendations.people : loaded.people;
+  const studios = rankBy(loaded.studios, recommendations?.studios, (studio) => studio.id);
+  const opportunities = rankBy(
+    loaded.opportunities,
+    recommendations?.opportunities,
+    (opportunity) => opportunity.id,
+  );
+  const showPeople = mode === "For you" || mode === "People" || mode === "Talent";
+  const showStudios = mode === "For you" || mode === "Studios";
+  const showOpportunities = mode === "For you" || mode === "Opportunities";
+
   return (
-    <Screen>
-      <header className="px-5 pb-4 pt-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3 leading-tight">Discover</h1>
-          <div className="flex items-center gap-2">
-            <NotificationsBell />
-            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
+    <Screen className="pb-nav-clear">
+      <header className="bg-card px-5 pb-5 pt-safe">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-1 font-semibold text-muted-foreground">
+              {business.hasBusiness ? "Build the right team" : "Find your next move"}
+            </p>
+            <h1 className="mt-1 text-3">Discover</h1>
           </div>
+          <NotificationsBell />
         </div>
-        {searchOpen ? (
-          <div className="mt-4">
-            <SearchField
-              to="/search"
-              placeholder="Search talent, studios, bands, labels"
-              onClose={() => setSearchOpen(false)}
-            />
-          </div>
-        ) : null}
+        <button
+          type="button"
+          onClick={() => void navigate({ to: "/search" })}
+          className="state-layer mt-5 flex min-h-14 w-full items-center gap-3 rounded-full bg-subtle px-5 text-left"
+        >
+          <Search size={iconSize.md} aria-hidden />
+          <span className="min-w-0 flex-1 truncate text-2 text-muted-foreground">
+            Search people, studios, services and work
+          </span>
+          <SlidersHorizontal size={iconSize.md} aria-hidden />
+        </button>
+        <div className="rail no-scrollbar -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1">
+          {modes.map((item) => (
+            <Chip key={item} active={mode === item} onClick={() => setMode(item)}>
+              {item}
+            </Chip>
+          ))}
+        </div>
       </header>
 
-      <div className="rail flex gap-2 overflow-x-auto px-5 pb-5 no-scrollbar">
-        {quickCategories.map((c) => {
-          const inner = (
-            <>
-              <span className="flex h-8 items-center justify-center">{categoryIcon(c.label)}</span>
-              <span className="text-1 font-semibold">{c.label}</span>
-            </>
-          );
-          const cls =
-            "relative flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg bg-subtle px-2 py-3";
-          const stage = stageOf(c.to);
-          return stage === "soon" ? (
-            <div key={c.label} aria-disabled="true" className={cls}>
-              {inner}
-              <SoonBadge className="absolute -top-1.5 right-1" />
-            </div>
-          ) : (
+      <main className="space-y-9 py-6">
+        {mode === "For you" ? (
+          <section className="px-5">
             <Link
-              key={c.label}
-              {...("slug" in c ? { to: c.to, params: { slug: c.slug } } : { to: c.to })}
-              className={cls}
+              to="/search/why/$id"
+              params={{ id: "recommendations" }}
+              search={{ kind: "person" }}
+              className="state-layer flex items-center gap-3 rounded-lg border border-border bg-card p-4"
             >
-              {inner}
-              {stage === "beta" ? <BetaBadge className="absolute -top-1.5 right-1" /> : null}
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-pink-container">
+                <Sparkles size={iconSize.md} aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold">Made relevant to your work</span>
+                <span className="mt-0.5 block text-1 text-muted-foreground">
+                  See the profile and activity signals behind recommendations.
+                </span>
+              </span>
+              <ArrowRight size={iconSize.sm} aria-hidden />
             </Link>
-          );
-        })}
-      </div>
+          </section>
+        ) : null}
 
-      {allSuggested.length ? (
-        <section className="pb-6">
-          <SectionHeader
-            title="People to work with"
-            action={<SectionActionLink to="/search">See All</SectionActionLink>}
-          />
-          <div className="px-5">
-            <Segmented
-              value={personaFilter}
-              options={personaOptions}
-              onChange={setPersonaFilter}
-              className=""
+        {showPeople && people.length ? (
+          <section>
+            <SectionHeader
+              title={business.hasBusiness ? "Talent for your next project" : "People worth meeting"}
+              action={
+                <Link to="/search" className="link-action text-sm font-semibold">
+                  See all
+                </Link>
+              }
             />
-          </div>
-          {suggested.length ? (
-            <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-              {suggested.slice(0, 8).map((p) => (
-                <PersonCard key={p.id} person={p} roleLabels={options?.person_types} featured />
+            {mode === "People" || mode === "Talent" ? (
+              <div className="mx-5 overflow-hidden rounded-lg border border-border bg-card">
+                {people.slice(0, 10).map((person) => (
+                  <PersonRow key={person.id} person={person} roleLabels={options?.person_types} />
+                ))}
+              </div>
+            ) : (
+              <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
+                {people.slice(0, 8).map((person) => (
+                  <PersonCard
+                    key={person.id}
+                    person={person}
+                    roleLabels={options?.person_types}
+                    featured
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        ) : null}
+
+        {showOpportunities && opportunities.length ? (
+          <section>
+            <SectionHeader
+              title={
+                business.hasBusiness
+                  ? "Open industry opportunities"
+                  : "Opportunities matched to you"
+              }
+              action={
+                <Link to="/opportunities" className="link-action text-sm font-semibold">
+                  See all
+                </Link>
+              }
+            />
+            <div className="space-y-3 px-5">
+              {opportunities.slice(0, mode === "Opportunities" ? 8 : 3).map((opportunity) => (
+                <OpportunityCard
+                  key={opportunity.id}
+                  o={opportunity}
+                  saved={saved.has(opportunity.id)}
+                  onSave={() => saved.toggle(opportunity.id)}
+                />
               ))}
             </div>
-          ) : (
-            <p className="px-5 py-6 text-1 text-muted-foreground">
-              Nobody here yet. Try another filter.
-            </p>
-          )}
-        </section>
-      ) : null}
+          </section>
+        ) : null}
 
-      {audioWork.length ? (
-        <section className="pb-6">
-          <SectionHeader title="Trending audio" />
-          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {audioWork.map((item) => (
-              <div key={item.id} className="w-rail-lg shrink-0">
-                <AudioTrackCard
-                  track={{
-                    id: item.id,
-                    title: item.title,
-                    role: "",
-                    project: joinParts(
-                      item.display_name ?? "",
-                      `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
-                    ),
-                    duration: "",
-                    artwork: item.cover_url ?? "",
-                    ...(item.media_url ? { media: item.media_url } : {}),
-                  }}
-                  playing={playingAudio === item.id}
-                  onToggle={() => setPlayingAudio((id) => (id === item.id ? null : item.id))}
-                />
-              </div>
-            ))}
+        {showStudios && studios.length ? (
+          <section>
+            <SectionHeader
+              title="Studios and spaces"
+              action={
+                <Link
+                  to="/discover/$slug"
+                  params={{ slug: "studios" }}
+                  className="link-action text-sm font-semibold"
+                >
+                  See all
+                </Link>
+              }
+            />
+            <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
+              {studios.slice(0, 8).map((studio) => (
+                <BookableCard key={studio.id} studio={studio} featured />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="px-5">
+          <h2 className="text-2 font-semibold">Explore by intent</h2>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <IntentLink
+              to="/search"
+              icon={<UsersRound size={iconSize.lg} />}
+              title={business.hasBusiness ? "Source talent" : "Find collaborators"}
+            />
+            <IntentLink
+              to="/services"
+              icon={<BriefcaseBusiness size={iconSize.lg} />}
+              title="Book services"
+            />
+            <StudioIntentLink />
+            <IntentLink
+              to="/marketplace"
+              icon={<Store size={iconSize.lg} />}
+              title="Browse Market"
+            />
           </div>
         </section>
-      ) : null}
-
-      {videoWork.length ? (
-        <section className="pb-6">
-          <SectionHeader title="Trending video" />
-          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {videoWork.map((item) => (
-              <VideoCard
-                key={item.id}
-                v={{
-                  id: item.id,
-                  title: item.title,
-                  context: joinParts(
-                    item.display_name ?? "",
-                    `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
-                  ),
-                  duration: "",
-                  thumb: item.cover_url ?? "",
-                  ...(item.media_url ? { media: item.media_url } : {}),
-                }}
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {reelWork.length ? (
-        <section className="pb-6">
-          <SectionHeader title="Trending reels" />
-          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {reelWork.map((item) => (
-              <VideoCard
-                key={item.id}
-                v={{
-                  id: item.id,
-                  title: item.title,
-                  context: joinParts(
-                    item.display_name ?? "",
-                    `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
-                  ),
-                  duration: "",
-                  thumb: item.cover_url ?? "",
-                  format: "reel",
-                  ...(item.media_url ? { media: item.media_url } : {}),
-                }}
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {trendingNow.length ? (
-        <section className="pb-6">
-          <SectionHeader title="Trending this week" />
-          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {trendingNow.map((t) =>
-              "person" in t ? (
-                <PersonCard
-                  key={t.key}
-                  person={t.person}
-                  roleLabels={options?.person_types}
-                  featured
-                />
-              ) : (
-                <BookableCard key={t.key} studio={t.studio} featured />
-              ),
-            )}
-          </div>
-        </section>
-      ) : null}
-
-      {nearby.length > 1 ? (
-        <section className="pb-8">
-          <SectionHeader title="Around you" />
-          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {nearby.slice(0, 8).map((p) => (
-              <PersonCard key={p.id} person={p} roleLabels={options?.person_types} featured />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {studios.length ? (
-        <section className="pb-8">
-          <SectionHeader
-            title="Studios"
-            action={
-              <SectionActionLink to="/discover/$slug" params={{ slug: "studios" }}>
-                See All
-              </SectionActionLink>
-            }
-          />
-          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {studios.map((s) => (
-              <BookableCard key={s.slug} studio={s} featured />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      </main>
     </Screen>
+  );
+}
+
+function IntentLink({
+  to,
+  icon,
+  title,
+}: {
+  to: "/search" | "/services" | "/marketplace";
+  icon: React.ReactNode;
+  title: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="state-layer flex min-h-28 flex-col justify-between rounded-lg border border-border bg-card p-4"
+    >
+      <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
+        {icon}
+      </span>
+      <span className="mt-4 flex items-center justify-between gap-2 text-sm font-semibold">
+        {title}
+        <ArrowRight size={iconSize.sm} aria-hidden />
+      </span>
+    </Link>
+  );
+}
+
+function StudioIntentLink() {
+  return (
+    <Link
+      to="/discover/$slug"
+      params={{ slug: "studios" }}
+      className="state-layer flex min-h-28 flex-col justify-between rounded-lg border border-border bg-card p-4"
+    >
+      <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
+        <Building2 size={iconSize.lg} />
+      </span>
+      <span className="mt-4 flex items-center justify-between gap-2 text-sm font-semibold">
+        Find a studio
+        <ArrowRight size={iconSize.sm} aria-hidden />
+      </span>
+    </Link>
   );
 }

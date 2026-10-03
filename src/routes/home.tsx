@@ -1,373 +1,616 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import type { ReactNode } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronRight, WifiOff, RefreshCw, Star, Settings, Sparkles } from "lucide-react";
-import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
-import { EmptyState, Loading } from "@/components/ml/kit";
-import { SavedToggle } from "@/components/ml/saved-toggle";
-import { SwitchRow } from "@/components/ml/market";
-import { toast } from "sonner";
-import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
+import {
+  BriefcaseBusiness,
+  CalendarDays,
+  ChevronRight,
+  Inbox,
+  MapPin,
+  RefreshCw,
+  Settings,
+  UserRoundPlus,
+  WifiOff,
+} from "lucide-react";
+
+import { BookableCard, PersonCard } from "@/components/ml/cards";
+import { EmptyState, Loading, StatusPill } from "@/components/ml/kit";
+import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { NotificationsBell } from "@/components/ml/tab-header";
-import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
+import { Btn, BtnLink, Screen, SectionHeader } from "@/components/ml/ui";
+import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { useAuth } from "@/hooks/use-auth";
+import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
+import { listMyApplications } from "@/lib/applications.functions";
+import { discoverBookableFromRow, type DiscoverBookable } from "@/lib/bookable-view";
+import { listBookableBookings, type BookingRequest } from "@/lib/bookings.functions";
+import { listBookables, listOpportunities } from "@/lib/catalog.functions";
+import { listMyConnections } from "@/lib/connections.functions";
+import { listMyLeads, type EnquiryRow } from "@/lib/enquiries.functions";
+import { iconSize } from "@/lib/tokens";
+import { opportunityFromRow } from "@/lib/opportunity-view";
 import {
   getMyProfile,
-  listMyPortfolio,
   getTaxonomyLabels,
-  saveMyProfile,
+  listMyPortfolio,
+  type TaxonomyLabels,
 } from "@/lib/portfolio.functions";
-import type { TaxonomyLabels } from "@/lib/portfolio.functions";
-import { listOpportunities, listBookables } from "@/lib/catalog.functions";
-import { listPeopleByRole, type DirectoryPerson } from "@/lib/profile-groups.functions";
-import { discoverBookableFromRow } from "@/lib/bookable-view";
+import {
+  listPeopleByRole,
+  type DirectoryPerson,
+  getMyBusiness,
+} from "@/lib/profile-groups.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
-import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
-import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
-import { SectionActionLink } from "@/components/ml/links";
-import { iconSize } from "@/lib/tokens";
-import { sized } from "@/lib/image-url";
+import { listMyServices, type ServiceRow } from "@/lib/services.functions";
+import { useTaxonomy } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
-      { title: "Your Dashboard | MusicLinkd" },
+      { title: "Home | MusicLinkd" },
       {
         name: "description",
-        content:
-          "Your MusicLinkd home — what's happening in your network right now and the best next thing to do: requests, sessions, matches and activity.",
+        content: "Your work, requests, opportunities and music network in one place.",
       },
-      { property: "og:title", content: "Your Dashboard | MusicLinkd" },
-      {
-        property: "og:description",
-        content: "See what's happening in your music network and what to do next.",
-      },
+      { property: "og:title", content: "Home | MusicLinkd" },
+      { property: "og:description", content: "What needs your attention across MusicLinkd." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  // Home's content is the network's: roles being cast, people, studios. All public reads.
   loader: async () => {
     const [opportunities, studios, labels] = await Promise.all([
       listOpportunities().catch(() => []),
       listBookables().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
     ]);
-    // All of them: signed in, the rails are ranked by recommendations before they are cut to six.
     return {
-      opportunities,
+      opportunities: opportunities.map((row) => opportunityFromRow(row, labels)),
       studios: studios.map((row) => discoverBookableFromRow(row, labels)),
       labels,
     };
   },
-  component: Dashboard,
+  component: HomeScreen,
 });
 
-type Status = "loading" | "ready" | "error" | "offline";
+type HomeData = {
+  profile: ProfileRow | null;
+  portfolioCount: number;
+  business: Awaited<ReturnType<typeof getMyBusiness>>;
+  connections: Awaited<ReturnType<typeof listMyConnections>>;
+  applications: Awaited<ReturnType<typeof listMyApplications>>;
+  bookings: BookingRequest[];
+  leads: EnquiryRow[];
+  services: ServiceRow[];
+};
 
-type Home = { data: DashboardData; cont: ContinueCard[]; roleSlug: string | null };
+const HOME_READ_TIMEOUT = 6_000;
+const EMPTY_HOME: HomeData = {
+  profile: null,
+  portfolioCount: 0,
+  business: null,
+  connections: { connected: [], received: [], sent: [] },
+  applications: [],
+  bookings: [],
+  leads: [],
+  services: [],
+};
+function readOr<T>(read: Promise<T>, fallback: T): Promise<T> {
+  return Promise.race([
+    read.catch(() => fallback),
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), HOME_READ_TIMEOUT)),
+  ]);
+}
 
-/*
- * Home is the signed-in person's own: their profile row, their portfolio and the open opportunities.
- * There are no tables yet for connection requests, messages, profile views, activity or
- * recommendations, so those start empty rather than showing the seed account's numbers.
- */
-function useDashboard() {
+function useHomeData() {
   const { signedIn, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const loadProfile = useServerFn(getMyProfile);
-  const loadPortfolio = useServerFn(listMyPortfolio);
-  const [offline, setOffline] = useState(
-    typeof navigator !== "undefined" && navigator.onLine === false,
-  );
-
-  /*
-   * React Query, like every other screen. Home held its own useState/useEffect, so the
-   * most-navigated tab in the app re-fetched and showed a spinner every single time it was
-   * returned to — no cache, no dedupe, and its own hand-rolled loading/error/offline states
-   * beside the ones the rest of the app shares (audit, 29 Sep 2026).
-   */
-  const q = useQuery({
-    queryKey: ["home", "dashboard"],
-    enabled: signedIn && !offline,
-    queryFn: async () => {
-      const [row, items, tx] = await Promise.all([
-        loadProfile() as Promise<ProfileRow | null>,
-        loadPortfolio(),
-        loadTaxonomy().catch(() => null),
-      ]);
-      return buildHome(row, items.length, tx?.person_types);
-    },
-  });
+  const profile = useServerFn(getMyProfile);
+  const portfolio = useServerFn(listMyPortfolio);
+  const business = useServerFn(getMyBusiness);
+  const connections = useServerFn(listMyConnections);
+  const applications = useServerFn(listMyApplications);
+  const bookings = useServerFn(listBookableBookings);
+  const leads = useServerFn(listMyLeads);
+  const services = useServerFn(listMyServices);
+  const [offline, setOffline] = useState(false);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!signedIn) void navigate({ to: "/welcome", replace: true });
+    if (!authLoading && !signedIn) void navigate({ to: "/welcome", replace: true });
   }, [authLoading, signedIn, navigate]);
-
   useEffect(() => {
-    const on = () => setOffline(false);
-    const off = () => setOffline(true);
-    window.addEventListener("online", on);
-    window.addEventListener("offline", off);
+    const online = () => setOffline(false);
+    const offlineNow = () => setOffline(true);
+    setOffline(navigator.onLine === false);
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offlineNow);
     return () => {
-      window.removeEventListener("online", on);
-      window.removeEventListener("offline", off);
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offlineNow);
     };
   }, []);
 
-  const status: Status = offline ? "offline" : q.isError ? "error" : q.data ? "ready" : "loading";
-
-  return { status, home: q.data ?? null, retry: () => void q.refetch() };
-}
-
-function buildHome(
-  row: ProfileRow | null,
-  portfolioCount: number,
-  personTypes: Parameters<typeof labelFor>[0],
-): Home {
-  const gaps = profileGaps(row);
-  const roles = (row?.roles ?? []).slice(0, 2).map((slug) => labelFor(personTypes, slug));
-  const data: DashboardData = {
-    ...emptyDashboard,
-    studios: [],
-    user: {
-      ...emptyDashboard.user,
-      firstName: "",
-      role: roles.join(" · "),
-      photo: row?.avatar_url ?? "",
-      profileCompletion: gaps.percent,
-      available: Boolean(row?.availability),
+  const query = useQuery({
+    queryKey: ["home", "workspace"],
+    enabled: !offline,
+    placeholderData: EMPTY_HOME,
+    queryFn: async (): Promise<HomeData> => {
+      const [profileRow, work, businessRow] = await Promise.all([
+        readOr(profile() as Promise<ProfileRow | null>, null),
+        readOr(portfolio(), []),
+        readOr(business(), null),
+      ]);
+      const [network, applied, incoming, businessLeads, myServices] = businessRow
+        ? await Promise.all([
+            Promise.resolve({ connected: [], received: [], sent: [] }) as ReturnType<
+              typeof connections
+            >,
+            Promise.resolve([]) as ReturnType<typeof applications>,
+            readOr(bookings(), []),
+            readOr(leads(), []),
+            readOr(services(), []),
+          ])
+        : await Promise.all([
+            readOr(connections(), { connected: [], received: [], sent: [] }),
+            readOr(applications(), []),
+            Promise.resolve([] as BookingRequest[]),
+            Promise.resolve([] as EnquiryRow[]),
+            Promise.resolve([] as ServiceRow[]),
+          ]);
+      return {
+        profile: profileRow,
+        portfolioCount: work.length,
+        business: businessRow,
+        connections: network,
+        applications: applied,
+        bookings: incoming,
+        leads: businessLeads,
+        services: myServices,
+      };
     },
-  };
-
-  const cont: ContinueCard[] = [];
-  // The real signal is what's actually filled in, not whether onboarding was ever marked done —
-  // an account that skipped straight through still has an incomplete profile to finish.
-  if (gaps.missing.length) {
-    cont.push({
-      id: "setup",
-      eyebrow: "Pick up where you left off",
-      title: "Finish your profile",
-      meta: `${gaps.missing.length} left`,
-      detail: `${gaps.percent}% done`,
-      cta: "Continue setup",
-      to: row?.onboarding_complete ? "/profile/edit" : "/onboarding/resume",
-      progress: gaps.percent,
-    });
-  }
-  if (portfolioCount === 0) {
-    cont.push({
-      id: "portfolio",
-      eyebrow: "Next step",
-      title: "Add your portfolio",
-      meta: "Tracks, videos and credits are what turn a profile view into an enquiry.",
-      detail: "",
-      cta: "Add work",
-      to: "/portfolio",
-    });
-  }
-
-  return { data, cont, roleSlug: row?.roles?.[0] ?? null };
+  });
+  return { offline, query };
 }
 
-function greeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-}
-
-/** Set after mount: the server renders in UTC, so its greeting is wrong for the reader's clock. */
-function useGreeting() {
-  const [text, setText] = useState("Hello");
-  useEffect(() => setText(greeting()), []);
-  return text;
-}
-
-function Dashboard() {
-  const { status, home, retry } = useDashboard();
-
+function HomeScreen() {
+  const { offline, query } = useHomeData();
   return (
-    <Screen className="relative pb-nav-clear">
-      <Header />
-      {status === "loading" ? <SkeletonBody /> : null}
-      {status === "offline" ? (
-        <StateBlock
-          icon={<WifiOff size={iconSize.lg} className="text-muted-foreground" />}
-          title="You're offline"
-          body="Reconnect to refresh your activity. Saved profiles stay available."
-          onRetry={retry}
+    <Screen className="pb-nav-clear">
+      {offline ? (
+        <HomeState
+          icon={<WifiOff size={iconSize.lg} />}
+          title="You’re offline"
+          body="Reconnect to refresh what needs your attention."
+          onRetry={() => void query.refetch()}
         />
-      ) : null}
-      {status === "error" ? (
-        <StateBlock
-          icon={<RefreshCw size={iconSize.lg} className="text-muted-foreground" />}
-          title="Couldn't load your dashboard"
-          body="Something went wrong on our side. Try again in a moment."
-          onRetry={retry}
+      ) : query.isError ? (
+        <HomeState
+          icon={<RefreshCw size={iconSize.lg} />}
+          title="Home didn’t load"
+          body="Your information is safe. Try again in a moment."
+          onRetry={() => void query.refetch()}
         />
-      ) : null}
-      {status === "ready" && home ? <Body home={home} /> : null}
+      ) : !query.data ? (
+        <HomeSkeleton />
+      ) : query.data.business ? (
+        <BusinessHome data={query.data} />
+      ) : (
+        <TalentHome data={query.data} />
+      )}
     </Screen>
   );
 }
 
-function Header() {
+function greeting() {
+  const hour = new Date().getHours();
+  return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+}
+
+function HomeHeader({ business = false }: { business?: boolean }) {
+  const { displayName } = useViewer();
+  const [hello, setHello] = useState("Hello");
+  useEffect(() => setHello(greeting()), []);
   return (
-    <header className="absolute inset-x-0 top-0 z-bar flex items-center justify-end gap-2 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-      <NotificationsBell tone="onInk" />
-      <Link
-        to="/settings"
-        aria-label="Settings"
-        className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10 text-background backdrop-blur"
-      >
-        <Settings size={iconSize.md} aria-hidden />
-      </Link>
-      <ViewerAvatar className="h-12 w-12 ring-2 ring-background/30" />
+    <header className="bg-card px-5 pb-5 pt-safe">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-1 font-semibold text-muted-foreground">
+            {business ? "Business workspace" : hello}
+          </p>
+          <h1 className="mt-1 truncate text-3">{firstNameOf(displayName) || "MusicLinkd"}</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <NotificationsBell />
+          <Link
+            to="/settings"
+            aria-label="Settings"
+            className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+          >
+            <Settings size={iconSize.md} aria-hidden />
+          </Link>
+          <ViewerAvatar className="h-11 w-11 ring-1 ring-border" />
+        </div>
+      </div>
     </header>
   );
 }
 
-function Body({ home }: { home: Home }) {
-  const saveProfile = useServerFn(saveMyProfile);
-  const { data, cont } = home;
-  const { user } = data;
+function TalentHome({ data }: { data: HomeData }) {
   const loaded = Route.useLoaderData();
-  const { displayName } = useViewer();
-  const viewerFirstName = firstNameOf(displayName);
-  const hello = useGreeting();
-  const [qrOpen, setQrOpen] = useState(false);
-  // Ranked by the viewer's own signals (recommendations.functions.ts); newest first until then.
   const recs = useRecommendations();
-  const rolePeers = usePeers(home.roleSlug);
-  const peers: (DirectoryPerson & { reason?: string })[] = recs?.people.length
-    ? recs.people.slice(0, 8)
-    : rolePeers;
+  const saved = useSavedOpportunities();
+  const gaps = profileGaps(data.profile);
+  const roles = data.profile?.roles ?? [];
+  const peers = usePeers(roles[0] ?? null);
+  const people = recs?.people.length ? recs.people.slice(0, 8) : peers;
+  const opportunities = rankBy(loaded.opportunities, recs?.opportunities, (o) => o.id).slice(0, 4);
+  const studios = rankBy(loaded.studios, recs?.studios, (s) => s.id).slice(0, 5);
+  const attention =
+    data.connections.received.length +
+    data.applications.filter((a) => ["shortlisted", "accepted"].includes(a.status)).length;
 
   return (
-    <div className="min-w-0 pb-4">
-      {/*
-       * The stage: the one dark band on any screen. Who you are, whether you are taking work and
-       * how complete the profile is, in white on ink, so Home opens with weight instead of a list.
-       */}
-      <section className="relative -mt-px overflow-hidden rounded-b-3xl bg-ink px-5 pb-6 pt-[calc(4.5rem+env(safe-area-inset-top))] text-background">
-        <p className="text-1 text-background/70">{hello}</p>
-        <h1 className="mt-1 break-words text-4 font-bold leading-[1.05]">
-          {viewerFirstName || "Welcome"}
-        </h1>
-        {user.role ? <p className="mt-1 truncate text-sm text-background/70">{user.role}</p> : null}
-
-        {/* Availability is one profile field both cohorts have, so it is a toggle here rather than
-            a screen of its own (owner, 28 Sep 2026) — /services/availability was a detour. */}
-        <div className="mt-4 rounded-lg bg-background/10 px-4">
-          <AvailabilityToggle
-            available={user.available}
-            onChange={async (next) => {
-              try {
-                await saveProfile({ data: { availability: next ? "available_now" : null } });
-              } catch (e) {
-                toast.error("Couldn't save that — try again");
-                throw e;
-              }
-            }}
-          />
-        </div>
-
-        {cont.length ? (
-          <ul className="mt-5 space-y-2">
-            {cont.map((c) => (
-              <li key={c.id}>
-                <Link
-                  to={c.to ?? "/onboarding/resume"}
-                  className="state-layer flex items-center gap-3 rounded-lg bg-background/10 px-4 py-3"
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold">{c.title}</span>
-                    {c.meta ? (
-                      <span className="block truncate text-1 text-background/70">{c.meta}</span>
-                    ) : null}
-                  </span>
-                  <ChevronRight
-                    size={iconSize.sm}
-                    className="shrink-0 text-background/70"
-                    aria-hidden
-                  />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </section>
-
-      {/* People in the same line of work, from the live profiles table. */}
-      {peers.length ? (
-        <section className="pt-7">
-          <SectionHeader
-            title="People to meet"
-            action={<SectionActionLink to="/discover">See All</SectionActionLink>}
-          />
-          <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5 pb-1">
-            {peers.map((p) => (
-              <article
-                key={p.username}
-                className="relative w-[150px] shrink-0 rounded-lg bg-subtle p-4"
+    <>
+      <HomeHeader />
+      <main className="space-y-8 py-5">
+        <section className="px-5">
+          <div className="rounded-lg bg-ink p-5 text-ink-foreground">
+            <p className="text-1 font-semibold text-background/70">What matters now</p>
+            <h2 className="mt-1 text-3 text-ink-foreground">
+              {attention
+                ? `${attention} ${attention === 1 ? "update" : "updates"} need your attention`
+                : "Your next move starts here"}
+            </h2>
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              <BtnLink
+                to="/opportunities"
+                variant="outline"
+                className="border-background/20 bg-background text-foreground"
               >
-                <span className="absolute right-2 top-2 z-10">
-                  <SavedToggle targetType="talent" targetId={p.id} size={28} />
-                </span>
-                <Link
-                  to="/profile/$username"
-                  params={{ username: p.username }}
-                  className="state-layer flex flex-col items-center gap-2 text-center"
-                >
-                  {p.avatarUrl ? (
-                    <img
-                      src={sized(p.avatarUrl, { width: 56 })}
-                      alt=""
-                      loading="lazy"
-                      className="h-14 w-14 rounded-full object-cover"
-                    />
-                  ) : (
-                    <span aria-hidden className="h-14 w-14 rounded-full bg-background" />
-                  )}
-                  <span className="min-w-0">
-                    <span className="block truncate text-1 font-semibold">{p.name}</span>
-                    <span className="block truncate text-1 text-muted-foreground">
-                      {p.reason || (p.city ?? p.roles[0] ?? "")}
-                    </span>
-                  </span>
-                </Link>
-              </article>
-            ))}
+                Find work
+              </BtnLink>
+              <BtnLink
+                to="/discover"
+                variant="outline"
+                className="border-background/20 bg-background text-foreground"
+              >
+                Meet people
+              </BtnLink>
+            </div>
           </div>
         </section>
-      ) : null}
-    </div>
+
+        {gaps.missing.length || data.portfolioCount === 0 ? (
+          <section>
+            <SectionHeader title="Continue building" />
+            <div className="mx-5 overflow-hidden rounded-lg border border-border bg-card">
+              {gaps.missing.length ? (
+                <ActionRow
+                  to={data.profile?.onboarding_complete ? "/profile/edit" : "/onboarding/resume"}
+                  title="Strengthen your profile"
+                  detail={`${gaps.percent}% complete · Next: ${gaps.missing[0]?.label ?? "Profile details"}`}
+                />
+              ) : null}
+              {data.portfolioCount === 0 ? (
+                <ActionRow
+                  to="/portfolio"
+                  title="Add work to your portfolio"
+                  detail="Give people something useful to hear, watch or review."
+                />
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        {opportunities.length ? (
+          <section>
+            <SectionHeader
+              title={recs?.hasSignals ? "Opportunities for you" : "Open opportunities"}
+              action={
+                <Link to="/opportunities" className="link-action text-sm font-semibold">
+                  See all
+                </Link>
+              }
+            />
+            <div className="space-y-3 px-5">
+              {opportunities.map((o) => (
+                <OpportunityCard
+                  key={o.id}
+                  o={o}
+                  saved={saved.has(o.id)}
+                  onSave={() => saved.toggle(o.id)}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {people.length ? <PeopleRail title="People worth meeting" people={people} /> : null}
+        {studios.length ? (
+          <StudioRail title="Places for your next session" studios={studios} />
+        ) : null}
+      </main>
+    </>
   );
 }
 
-/** People in the same line of work; falls back to anyone public when the viewer has no role yet. */
-function usePeers(roleSlug: string | null) {
-  const list = useServerFn(listPeopleByRole);
-  const [people, setPeople] = useState<Awaited<ReturnType<typeof listPeopleByRole>>>([]);
-  useEffect(() => {
-    let active = true;
-    void list({ data: { ...(roleSlug ? { role: roleSlug } : {}), limit: 8 } })
-      .then((rows) => {
-        if (active) setPeople(rows);
-      })
-      .catch(() => undefined);
-    return () => {
-      active = false;
-    };
-  }, [list, roleSlug]);
-  return people;
+function BusinessHome({ data }: { data: HomeData }) {
+  const profile = data.business?.profile;
+  const pendingBookings = data.bookings.filter(
+    (b) => b.status === "requested" || b.status === "reviewing",
+  );
+  const newLeads = data.leads.filter((lead) => lead.status === "new");
+  const activeServices = data.services.filter((service) => service.status === "active");
+  const today = new Date().toISOString().slice(0, 10);
+  const todayBookings = data.bookings.filter(
+    (booking) => booking.session_date === today && booking.status === "confirmed",
+  );
+  return (
+    <>
+      <HomeHeader business />
+      <main className="space-y-8 py-5">
+        <section className="px-5">
+          <div className="flex items-start gap-4 rounded-lg bg-ink p-5 text-ink-foreground">
+            <div className="min-w-0 flex-1">
+              <p className="text-1 font-semibold text-background/70">
+                {profile?.roles?.[0] || "Business"}
+              </p>
+              <h2 className="mt-1 text-3 text-ink-foreground">
+                {profile?.display_name || "Your business"}
+              </h2>
+              {profile?.city ? (
+                <p className="mt-2 flex items-center gap-1 text-sm text-background/70">
+                  <MapPin size={iconSize.sm} aria-hidden />
+                  {profile.city}
+                </p>
+              ) : null}
+            </div>
+            {profile?.is_verified ? (
+              <StatusPill label="Verified" tone="good" />
+            ) : (
+              <StatusPill label="Not verified" tone="neutral" />
+            )}
+          </div>
+        </section>
+
+        {newLeads.length || pendingBookings.length ? (
+          <section>
+            <SectionHeader title="Needs attention" />
+            <div className="mx-5 overflow-hidden rounded-lg border border-border bg-card">
+              {newLeads.length ? (
+                <ActionRow
+                  to="/leads"
+                  title={`${newLeads.length} new ${newLeads.length === 1 ? "enquiry" : "enquiries"}`}
+                  detail="Reply while the request is current."
+                  icon={<Inbox size={iconSize.md} />}
+                />
+              ) : null}
+              {pendingBookings.length ? (
+                <ActionRow
+                  to="/business/bookings/requests"
+                  title={`${pendingBookings.length} booking ${pendingBookings.length === 1 ? "request" : "requests"}`}
+                  detail="Review the date, service and request details."
+                  icon={<CalendarDays size={iconSize.md} />}
+                />
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        {todayBookings.length ? (
+          <section>
+            <SectionHeader title="Today" />
+            <div className="mx-5 overflow-hidden rounded-lg border border-border bg-card">
+              {todayBookings.map((booking) => (
+                <BookingActionRow key={booking.id} booking={booking} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section>
+          <SectionHeader title="Run your business" />
+          <div className="mx-5 grid grid-cols-2 gap-3">
+            <WorkspaceLink
+              to="/business/bookings/requests"
+              icon={<CalendarDays size={iconSize.lg} />}
+              label="Bookings"
+              detail={
+                pendingBookings.length
+                  ? `${pendingBookings.length} awaiting review`
+                  : "Manage requests"
+              }
+            />
+            <WorkspaceLink
+              to="/leads"
+              icon={<Inbox size={iconSize.lg} />}
+              label="Enquiries"
+              detail={newLeads.length ? `${newLeads.length} new` : "Open your inbox"}
+            />
+            <WorkspaceLink
+              to="/services"
+              icon={<BriefcaseBusiness size={iconSize.lg} />}
+              label="Services"
+              detail={
+                activeServices.length ? `${activeServices.length} active` : "Add what you offer"
+              }
+            />
+            <WorkspaceLink
+              to="/discover"
+              icon={<UserRoundPlus size={iconSize.lg} />}
+              label="Source talent"
+              detail="Find the right people"
+            />
+          </div>
+        </section>
+
+        {activeServices.length ? (
+          <section>
+            <SectionHeader
+              title="Active services"
+              action={
+                <Link to="/services" className="link-action text-sm font-semibold">
+                  Manage
+                </Link>
+              }
+            />
+            <div className="mx-5 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+              {activeServices.slice(0, 4).map((service) => (
+                <div
+                  key={service.id}
+                  className="flex items-center justify-between gap-3 px-4 py-3.5"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{service.name}</p>
+                    <p className="text-1 text-muted-foreground">Active</p>
+                  </div>
+                  <ChevronRight size={iconSize.sm} aria-hidden />
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+      </main>
+    </>
+  );
 }
 
-function StateBlock({
+function ActionRow({
+  to,
+  title,
+  detail,
+  icon,
+}: {
+  to:
+    | "/profile/edit"
+    | "/onboarding/resume"
+    | "/portfolio"
+    | "/leads"
+    | "/business/bookings/requests";
+  title: string;
+  detail: string;
+  icon?: ReactNode;
+}) {
+  return (
+    <Link
+      to={to}
+      className="state-layer flex min-h-touch items-center gap-3 border-b border-border px-4 py-3.5 last:border-b-0"
+    >
+      {icon ? (
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
+          {icon}
+        </span>
+      ) : null}
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold">{title}</span>
+        <span className="mt-0.5 block text-1 text-muted-foreground">{detail}</span>
+      </span>
+      <ChevronRight size={iconSize.sm} className="shrink-0" aria-hidden />
+    </Link>
+  );
+}
+
+function BookingActionRow({ booking }: { booking: BookingRequest }) {
+  return (
+    <Link
+      to="/business/bookings/requests/$ref"
+      params={{ ref: booking.id }}
+      className="state-layer flex min-h-touch items-center gap-3 px-4 py-3.5"
+    >
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
+        <CalendarDays size={iconSize.md} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold">
+          {booking.service?.name || booking.purpose || "Booking"}
+        </span>
+        <span className="mt-0.5 block text-1 text-muted-foreground">
+          {[booking.start_time, booking.requester_name].filter(Boolean).join(" · ")}
+        </span>
+      </span>
+      <ChevronRight size={iconSize.sm} aria-hidden />
+    </Link>
+  );
+}
+
+function WorkspaceLink({
+  to,
+  icon,
+  label,
+  detail,
+}: {
+  to: "/business/bookings/requests" | "/leads" | "/services" | "/discover";
+  icon: ReactNode;
+  label: string;
+  detail: string;
+}) {
+  return (
+    <Link to={to} className="state-layer min-h-32 rounded-lg border border-border bg-card p-4">
+      <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
+        {icon}
+      </span>
+      <span className="mt-4 block text-sm font-semibold">{label}</span>
+      <span className="mt-1 block text-1 text-muted-foreground">{detail}</span>
+    </Link>
+  );
+}
+
+function PeopleRail({ title, people }: { title: string; people: DirectoryPerson[] }) {
+  const { options } = useTaxonomy();
+  return (
+    <section>
+      <SectionHeader
+        title={title}
+        action={
+          <Link to="/discover" className="link-action text-sm font-semibold">
+            See all
+          </Link>
+        }
+      />
+      <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
+        {people.slice(0, 8).map((person) => (
+          <PersonCard key={person.id} person={person} roleLabels={options?.person_types} featured />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function StudioRail({ title, studios }: { title: string; studios: DiscoverBookable[] }) {
+  return (
+    <section>
+      <SectionHeader
+        title={title}
+        action={
+          <Link
+            to="/discover/$slug"
+            params={{ slug: "studios" }}
+            className="link-action text-sm font-semibold"
+          >
+            See all
+          </Link>
+        }
+      />
+      <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
+        {studios.map((studio) => (
+          <BookableCard key={studio.id} studio={studio} featured />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function usePeers(role: string | null) {
+  const list = useServerFn(listPeopleByRole);
+  const query = useQuery({
+    queryKey: ["home", "peers", role],
+    queryFn: () => list({ data: { ...(role ? { role } : {}), limit: 8 } }),
+  });
+  return query.data ?? [];
+}
+
+function HomeState({
   icon,
   title,
   body,
@@ -379,53 +622,22 @@ function StateBlock({
   onRetry: () => void;
 }) {
   return (
-    <div className="px-5 py-16">
+    <div className="px-5 py-20">
       <EmptyState icon={icon} title={title} body={body}>
-        <Btn variant="ink" className="w-full" onClick={onRetry}>
-          Try Again
+        <Btn onClick={onRetry} className="w-full">
+          Try again
         </Btn>
       </EmptyState>
     </div>
   );
 }
 
-function SkeletonBody() {
+function HomeSkeleton() {
   return (
-    <div className="space-y-4 px-5 pt-20" aria-busy aria-label="Loading your dashboard">
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 w-2/3 rounded-full bg-background" />
-        <div className="h-4 w-1/2 rounded-full bg-background" />
-        <div className="h-24 rounded-lg bg-subtle" />
-        <div className="h-28 rounded-lg bg-subtle" />
-        <div className="grid grid-cols-2 gap-3">
-          <div className="h-24 rounded-lg bg-subtle" />
-          <div className="h-24 rounded-lg bg-subtle" />
-        </div>
-      </div>
-      <Loading rows={3} />
+    <div className="space-y-5 px-5 pt-safe" aria-busy aria-label="Loading home">
+      <div className="h-16 animate-pulse rounded-lg bg-card" />
+      <div className="h-48 animate-pulse rounded-lg bg-ink/10" />
+      <Loading rows={4} />
     </div>
-  );
-}
-
-/** Taking work, or not. One field, both cohorts, no screen. */
-function AvailabilityToggle({
-  available,
-  onChange,
-}: {
-  available: boolean;
-  onChange: (next: boolean) => Promise<void>;
-}) {
-  const [on, setOn] = useState(available);
-  useEffect(() => setOn(available), [available]);
-  return (
-    <SwitchRow
-      label={on ? "Taking work" : "Not taking work"}
-      value={on}
-      onChange={(v) => {
-        // Shows the change at once and puts it back if the save fails.
-        setOn(v);
-        onChange(v).catch(() => setOn(!v));
-      }}
-    />
   );
 }
