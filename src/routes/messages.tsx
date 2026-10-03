@@ -334,7 +334,7 @@ function Connections() {
             <button
               type="button"
               onClick={() => setStarting(true)}
-              className="state-layer pointer-events-auto inline-flex h-14 items-center gap-2 rounded-2xl bg-ink px-5 text-sm font-semibold text-background shadow-[0_6px_20px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-standard active:scale-97"
+              className="state-layer pointer-events-auto inline-flex h-14 items-center gap-2 rounded-lg bg-ink px-5 text-sm font-semibold text-background shadow-[0_6px_20px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-standard active:scale-97"
             >
               <SquarePen size={iconSize.md} aria-hidden />
               Start chat

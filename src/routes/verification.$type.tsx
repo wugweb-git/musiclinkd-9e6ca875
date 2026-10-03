@@ -679,9 +679,7 @@ function Wizard({
                   </div>
                   {file ? (
                     <>
-                      <p className="truncate rounded-[14px] bg-background px-3 py-2 text-1">
-                        {file}
-                      </p>
+                      <p className="truncate rounded-sm bg-background px-3 py-2 text-1">{file}</p>
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
@@ -782,7 +780,7 @@ function Wizard({
                 </div>
               ))}
             </Card>
-            <label className="flex items-start gap-3 rounded-[20px] bg-subtle px-4 py-3">
+            <label className="flex items-start gap-3 rounded-lg bg-subtle px-4 py-3">
               <input
                 type="checkbox"
                 checked={consent}
@@ -852,7 +850,7 @@ function Wizard({
       </div>
 
       <Sheet open={preview !== null} onClose={() => setPreview(null)} title="Document preview">
-        <div className="flex h-48 items-center justify-center rounded-[20px] bg-subtle text-1 text-muted-foreground">
+        <div className="flex h-48 items-center justify-center rounded-lg bg-subtle text-1 text-muted-foreground">
           {preview}
         </div>
         <p className="mt-3 text-1 text-muted-foreground">

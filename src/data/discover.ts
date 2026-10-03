@@ -1,4 +1,5 @@
 import type { PriceParts } from "@/lib/price";
+import { unsplash } from "./unsplash";
 
 export type Talent = {
   id: string;
@@ -23,8 +24,7 @@ export function availabilityTone(a: Talent["availability"]): "good" | "warn" | "
   return "neutral";
 }
 
-const u = (id: string, w = 400) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const u = (id: string, w = 400) => unsplash(id, w);
 
 export const talents: Talent[] = [
   {

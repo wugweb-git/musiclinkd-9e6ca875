@@ -1,4 +1,5 @@
 import type { PriceParts } from "@/lib/price";
+import { unsplash } from "./unsplash";
 
 export type ListingType = "product" | "service" | "rental" | "space";
 
@@ -86,8 +87,7 @@ export type Listing = {
   status?: "Draft" | "Pending Review" | "Published" | "Paused" | "Sold" | "Rented";
 };
 
-const img = (id: string, w = 800) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const img = (id: string, w = 800) => unsplash(id, w);
 
 export const sellers: Seller[] = [
   {

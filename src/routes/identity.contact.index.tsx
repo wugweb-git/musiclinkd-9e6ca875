@@ -45,7 +45,7 @@ function BusinessCard() {
     <Screen>
       <TopBar title="Digital card" subtitle={me.name} back="/identity/qr" />
       <main className="px-5 pt-4">
-        <section className="overflow-hidden rounded-[24px] bg-subtle">
+        <section className="overflow-hidden rounded-lg bg-subtle">
           <div className="flex items-center gap-4 bg-ink px-5 py-5 text-background">
             {me.photo ? (
               <img

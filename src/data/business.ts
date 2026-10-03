@@ -8,6 +8,7 @@
  */
 
 import type { PriceParts } from "@/lib/price";
+import { unsplash } from "./unsplash";
 
 export type BusinessType = "studio" | "label" | "production_house" | "venue" | "agency" | "rental";
 export type BusinessRole = "owner" | "manager" | "engineer" | "staff";
@@ -80,8 +81,7 @@ export type BusinessProfile = {
   ownerUsername: string;
 };
 
-const img = (id: string, w = 800) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const img = (id: string, w = 800) => unsplash(id, w);
 
 export const myBusinesses: BusinessProfile[] = [
   {
@@ -212,8 +212,7 @@ export const businessLeads: BusinessLead[] = [
   {
     id: "ld-1",
     name: "Meher Kapoor",
-    photo:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80",
+    photo: img("photo-1544005313-94ddf0286df2", 120),
     intent: "Studio A · 6 hours",
     message: "Tracking a four-piece on the 18th, need a drum room and a house engineer.",
     at: "2 hours ago",
@@ -222,8 +221,7 @@ export const businessLeads: BusinessLead[] = [
   {
     id: "ld-2",
     name: "Vikram Nair",
-    photo:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
+    photo: img("photo-1500648767791-00dcc994a43e", 120),
     intent: "Mixing · 3 songs",
     message: "Have stems ready from a home session. What's your turnaround in September?",
     at: "Yesterday",
@@ -232,8 +230,7 @@ export const businessLeads: BusinessLead[] = [
   {
     id: "ld-3",
     name: "Sana Qureshi",
-    photo:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+    photo: img("photo-1534528741775-53994a69daeb", 120),
     intent: "Studio B · vocals",
     message: "Two vocal days, flexible on dates. Do you have a Sunday slot?",
     at: "3 days ago",
@@ -274,8 +271,7 @@ export const businessReviews = [
   {
     id: "brv-1",
     author: "Neon Monsoon",
-    photo:
-      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=120&q=80",
+    photo: img("photo-1493225457124-a3eb161ffa5f", 120),
     rating: 5,
     at: "2 weeks ago",
     body: "Booked five nights for the LP. The live room is genuinely quiet and Kabir kept the takes moving.",
@@ -284,8 +280,7 @@ export const businessReviews = [
   {
     id: "brv-2",
     author: "Sana Qureshi",
-    photo:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+    photo: img("photo-1534528741775-53994a69daeb", 120),
     rating: 4,
     at: "1 month ago",
     body: "Great vocal chain. Parking is a nightmare on weekends — worth warning people.",

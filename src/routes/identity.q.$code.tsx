@@ -107,7 +107,7 @@ function QrResult() {
               </div>
             ) : null}
 
-            <div className="mt-6 rounded-[24px] bg-subtle p-4">
+            <div className="mt-6 rounded-lg bg-subtle p-4">
               <p className="text-1 font-semibold">Why you can trust this</p>
               <p className="mt-1 text-1 text-muted-foreground">
                 The code carries only a MusicLinkd address. Nothing personal is stored inside it,

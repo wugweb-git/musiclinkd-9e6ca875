@@ -82,7 +82,7 @@ function SaveContact() {
           </StateCard>
         ) : (
           <>
-            <section className="rounded-[24px] bg-subtle p-4">
+            <section className="rounded-lg bg-subtle p-4">
               <p className="pill bg-background text-muted-foreground">Will be saved</p>
               <div className="mt-3 flex flex-col gap-2">
                 <ActionRow

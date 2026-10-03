@@ -81,9 +81,12 @@
   --space-3: 16px;
   --space-4: 32px;
 
-  /* Control heights: h-control / min-h-control and friends. 44 is the touch floor, not a size. */
+  /*
+   * Control heights: h-control / min-h-control and friends. `touch` is the hit target: 48px
+   * (owner, 29 Sep). A control may be drawn 40–44px only inside a 48px hit area (`hit-area`).
+   */
   --spacing-control-sm: 40px;
-  --spacing-touch: 44px;
+  --spacing-touch: 48px;
   --spacing-control: 48px;
   --spacing-control-lg: 56px;
 
@@ -94,11 +97,6 @@
   --spacing-icon-lg: 24px;
   --spacing-icon-xl: 32px;
 
-  /* Avatars: size-avatar-*. xl is the profile photo at rest. */
-  --spacing-avatar-sm: 32px;
-  --spacing-avatar-md: 48px;
-  --spacing-avatar-lg: 64px;
-  --spacing-avatar-xl: 136px;
 
   /* The mobile shell width, previously repeated as max-w-app in 55 places. */
   --container-app: 640px;
@@ -164,10 +162,8 @@
   --color-selected-bg: var(--selected-bg);
   --color-selected-text: var(--selected-text);
 
-  --shadow-elevation-1: var(--elevation-1);
   --shadow-elevation-2: var(--elevation-2);
   --shadow-elevation-3: var(--elevation-3);
-  --shadow-elevation-4: var(--elevation-4);
 
   --ease-standard: var(--easing-standard);
   --ease-enter: var(--easing-enter);
@@ -675,7 +671,6 @@
    * 17.04:1 on white. NOTE: icons/text drawn on bg-icon-chip were dark-on-light before this
    * change — the owner is handling the follow-up recolor of those call sites themselves. */
   --icon-chip: #1c1c1c;
-  --gradient-brand: linear-gradient(135deg, var(--brand), var(--purple));
   --gradient-ink: linear-gradient(150deg, #0d0d0d, #2b2b2b); /* ink -> inkPressed */
 
   /* Category badge pair. Text is darkened to clear 4.5:1 on its own tint. */
@@ -687,10 +682,13 @@
   --selected-text: #ffffff;
 
   /* Elevation, verbatim from the generated ml-tokens.css. */
-  --elevation-1: 0 1px 3px rgba(13, 11, 38, 0.08);
-  --elevation-2: 0 4px 12px rgba(13, 11, 38, 0.05);
-  --elevation-3: 0 8px 24px rgba(13, 11, 38, 0.08);
-  --elevation-4: 0 12px 32px rgba(13, 11, 38, 0.12);
+  /*
+   * The shadow tint: a near-black with a little blue, so shadows read as depth rather than dirt.
+   * A generic colour, not a brand one (brief §3: #0D0B26 never becomes a brand token).
+   */
+  --shadow-ink: 13 11 38;
+  --elevation-2: 0 4px 12px rgb(var(--shadow-ink) / 0.05);
+  --elevation-3: 0 8px 24px rgb(var(--shadow-ink) / 0.08);
 
   /* Type ramps, verbatim from the generated ml-tokens.css. */
   --type-1: clamp(12px, calc(12px + 1 * (100vw - 360px) / 1080), 13px);
@@ -741,32 +739,28 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* 
-   * Google Design / Material 3 Typography Scale mapped to Gestalt Tokens:
-   * Displays, Headlines (H1-H3), Titles (H4-H6), Body & Labels in ink #0D0D0D.
+  /*
+   * Element defaults for h1–h6, in ink #0D0D0D. Headings set at normal tracking (decision 2,
+   * 29 Sep). Sizes are the text-* steps; there is no separate display/headline/title/body/label
+   * layer (decision 1 — those utilities had no consumers and were removed 4 Oct).
    */
-  h1,
-  .headline-large {
+  h1 {
     font-family: var(--font-display);
     font-size: var(--type-4);
     font-weight: 700;
     line-height: 1.2;
-    letter-spacing: -0.02em;
     color: var(--ink);
   }
 
-  h2,
-  .headline-medium {
+  h2 {
     font-family: var(--font-display);
     font-size: var(--type-3);
     font-weight: 700;
     line-height: 1.25;
-    letter-spacing: -0.01em;
     color: var(--ink);
   }
 
-  h3,
-  .headline-small {
+  h3 {
     font-family: var(--font-display);
     font-size: var(--type-2);
     font-weight: 600;
@@ -774,8 +768,7 @@
     color: var(--ink);
   }
 
-  h4,
-  .title-large {
+  h4 {
     font-family: var(--font-display);
     font-size: var(--type-2);
     font-weight: 600;
@@ -783,8 +776,7 @@
     color: var(--ink);
   }
 
-  h5,
-  .title-medium {
+  h5 {
     font-family: var(--font-sans);
     font-size: var(--type-sm);
     font-weight: 600;
@@ -792,8 +784,7 @@
     color: var(--ink);
   }
 
-  h6,
-  .title-small {
+  h6 {
     font-family: var(--font-sans);
     font-size: var(--type-1);
     font-weight: 600;
@@ -818,75 +809,6 @@
       scroll-behavior: auto !important;
     }
   }
-}
-
-@utility display-large {
-  font-family: var(--font-display);
-  font-size: clamp(36px, calc(36px + 16 * (100vw - 360px) / 1080), 52px);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  color: var(--ink);
-}
-
-@utility display-medium {
-  font-family: var(--font-display);
-  font-size: clamp(32px, calc(32px + 10 * (100vw - 360px) / 1080), 42px);
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-
-@utility body-large {
-  font-family: var(--font-sans);
-  font-size: var(--type-2);
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--ink);
-}
-
-@utility body-medium {
-  font-family: var(--font-sans);
-  font-size: var(--type-sm);
-  font-weight: 400;
-  line-height: 1.45;
-  color: var(--ink);
-}
-
-@utility body-small {
-  font-family: var(--font-sans);
-  font-size: var(--type-1);
-  font-weight: 400;
-  line-height: 1.4;
-  color: var(--muted-foreground);
-}
-
-@utility label-large {
-  font-family: var(--font-sans);
-  font-size: var(--type-sm);
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: 0.01em;
-  color: var(--ink);
-}
-
-@utility label-medium {
-  font-family: var(--font-sans);
-  font-size: var(--type-1);
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: 0.02em;
-  color: var(--ink);
-}
-
-@utility label-small {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: 0.03em;
-  color: var(--ink);
 }
 
 @utility no-scrollbar {
@@ -1005,9 +927,6 @@
   border: 1px solid var(--color-border);
 }
 
-@utility brand-gradient {
-  background-image: var(--gradient-brand);
-}
 
 /*
  * 48dp touch floor without growing the control (AGENTS.md). The pseudo-element extends the hit

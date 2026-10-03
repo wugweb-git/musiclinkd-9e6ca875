@@ -3,6 +3,7 @@ import { singers, talents, type Talent } from "./discover";
 import { priceText, type PriceParts } from "@/lib/price";
 import type { Listing } from "./market";
 import type { Opportunity } from "./opportunities";
+import { unsplash } from "./unsplash";
 
 /**
  * FLOW-02 · Profile module data contract (design-time fixtures only).
@@ -160,8 +161,7 @@ export type TalentProfile = {
   mutuals: { name: string; photo: string }[];
 };
 
-const u = (id: string, w = 600) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const u = (id: string, w = 600) => unsplash(id, w);
 
 const art = [
   u("photo-1470225620780-dba8ba36b745", 300),

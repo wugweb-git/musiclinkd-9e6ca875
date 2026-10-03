@@ -12,6 +12,7 @@ import type { ReviewItem } from "@/data/profile";
 
 import { rupeeParts, type PriceParts } from "@/lib/price";
 import { isoDate } from "@/lib/when";
+import { unsplash } from "./unsplash";
 
 export type BookableKind =
   | "Recording Studio"
@@ -178,8 +179,7 @@ export type Booking = {
   createdAt: string;
 };
 
-const img = (seed: string, w = 800, h = 600) =>
-  `https://images.unsplash.com/${seed}?auto=format&fit=crop&w=${w}&h=${h}&q=70`;
+const img = (seed: string, w = 800, h = 600) => unsplash(seed, w, { h, q: 70 });
 
 const STUDIO_A = "photo-1598488035139-bdbb2231ce04";
 const STUDIO_B = "photo-1519508234439-4f23643125c1";

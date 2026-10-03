@@ -1,4 +1,4 @@
-# Convergence brief (29 Sep) — status on 4 Oct, `main` at `d606bf6`
+# Convergence brief (29 Sep) — status on 4 Oct (sweep at `d606bf6`, updated as sections land)
 
 Read-only sweep of brief sections 2, 3, 3.5, 4, 5 and 7 against today's code. The brief's
 file:line references are from 29 Sep; items were found by content. P0 and section 1 are done.
@@ -53,7 +53,7 @@ elevation, avatar tokens or `--gradient-brand`.
 | Textarea focus ring | Remaining | `hire-modal.tsx:298`, `help.tsx:280` `outline-none` | Ring |
 | Contextual LoadError | Remaining (partial) | `c657382`; 32 of 73 query files render LoadError | 9 files with no error state; 2 null-on-error |
 | Brand: purple pills, Spotify radios | Fixed `2d13f06` | — | — |
-| Brand: Unsplash behind card Blocks | Remaining | 11 `src/data/*.ts` files | Local photos |
+| Brand: Unsplash behind card Blocks | Intentionally retained (owner, 4 Oct: keep Unsplash); one builder `src/data/unsplash.ts` | 11 `src/data/*.ts` files | Local photos |
 | Brand: pink button scope | Remaining | `bg-brand-button` on count badges `tab-header.tsx:42`, `market.tsx:1092` | Neutral |
 | Brand: duplicate/wrong marks | Blocked | owner assets | — |
 | Icons: Lucide; 13 Gestalt kept | Verified | only `tab-icon.tsx` imports gestalt | — |
@@ -64,19 +64,19 @@ elevation, avatar tokens or `--gradient-brand`.
 
 | Item | Status | Evidence | What's left |
 |---|---|---|---|
-| 1 Unused type utilities | Remaining | `display-*`, `body-*`, `label-*`, `.headline-*`, `.title-*` have 0 consumers | Remove |
-| 2 Tracking | Remaining (partial) | `2d13f06` cleared utilities | h1 -0.02em / h2 -0.01em in base CSS |
+| 1 Unused type utilities | Fixed (§3 branch) | `display-*`, `body-*`, `label-*`, `.headline-*`, `.title-*` have 0 consumers | Remove |
+| 2 Tracking | Fixed (§3: h1/h2 base letter-spacing removed) | `2d13f06` cleared utilities | h1 -0.02em / h2 -0.01em in base CSS |
 | 3 10/11px | Verified / retained | 4× 10px, 9× 11px, each metadata/label (AGENTS.md) | Vendor `text-[0.8rem]`, `[11.2px]`, `[13px]`, `[12.5px]`, `[16px]` |
 | 4 Spacing | Verified (rule) | no migration | rule for new code |
-| 5 Radius tail | Remaining | `rounded-md` ×6, `-2xl` ×3, `-3xl` ×18, `rounded-[…]` ×18 | Clean or document |
-| 6 Unused tokens | Remaining | avatar tokens 0; elevation-1/-4 stories only | Remove |
+| 5 Radius tail | Fixed (§3: app code on sm/lg/3xl/full; vendor files go with §3.5 #16) | `rounded-md` ×6, `-2xl` ×3, `-3xl` ×18, `rounded-[…]` ×18 | Clean or document |
+| 6 Unused tokens | Fixed (§3: avatar tokens, elevation-1/-4, `--gradient-brand` removed) | avatar tokens 0; elevation-1/-4 stories only | Remove |
 | 7 raw values → ink | Fixed `2d13f06` | — | — |
-| 8 Primary vs Ink | Remaining | `--primary: var(--ink)` | Usage list for owner |
+| 8 Primary vs Ink | List produced: `Claude outputs/primary-vs-ink-2026-10-04.md`; owner decides | `--primary: var(--ink)` | Usage list for owner |
 | 10 Skeleton 1.4s | Fixed `2d13f06` | — | — |
-| GearCta raw pink | Remaining | `gear-cta.tsx:143` shadow | Token |
+| GearCta raw pink | Fixed (§3: `color-mix(var(--brand))`) | `gear-cta.tsx:143` shadow | Token |
 | market.tsx raw hex | Fixed `ebc9c6d` | — | — |
-| qr.tsx raw hex | Remaining (partial) | `qr.tsx:233`, `:36` | Token where an equivalent exists |
-| `#0D0B26` | Remaining (isolated) | `rgb(13 11 38)` in elevation and gear-cta | Generic token or remove |
+| qr.tsx raw hex | Intentionally retained: `#374151` backdrop has no equivalent token; QR black/white are generator inputs | `qr.tsx:233`, `:36` | Token where an equivalent exists |
+| `#0D0B26` | Fixed (§3: generic `--shadow-ink`, used by elevation and GearCta) | `rgb(13 11 38)` in elevation and gear-cta | Generic token or remove |
 
 ## Section 3.5 — Engineering hygiene
 
@@ -112,3 +112,12 @@ elevation, avatar tokens or `--gradient-brand`.
 **AGENTS.md disagrees with the code** (to resolve in section 7): radius (AGENTS lists six steps,
 styles.css four); touch target (AGENTS 48dp, token 44px); overlays (AGENTS says shadcn
 dialog/sheet/drawer, the app uses ml `Sheet`).
+
+## Updates as sections land
+
+- **§2 merged `405a1fe`.** Every §2 row marked Remaining above is Fixed there, except: Unsplash
+  (retained, owner), availability words `Busy`/`Touring` (retained: they compare stored values),
+  and seven auxiliary reads with no error card (retained: a failure drops a minor detail only).
+- **§3:** touch token re-pointed: `--spacing-touch` is 48px (owner, 29 Sep); every `min-h-touch`
+  consumer is now ≥48px (`saved.tsx` icon button 48×48). AGENTS.md radius, touch target and overlay
+  rules now match the code.

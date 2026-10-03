@@ -153,7 +153,7 @@ function OpportunitiesHome() {
                   key={c.key}
                   to="/opportunities/search"
                   search={{ q: c.label }}
-                  className="w-[116px] shrink-0 rounded-[20px] bg-subtle p-3"
+                  className="w-[116px] shrink-0 rounded-lg bg-subtle p-3"
                 >
                   <Icon size={20} strokeWidth={1.75} aria-hidden />
                   <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>

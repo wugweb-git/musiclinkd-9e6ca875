@@ -163,7 +163,7 @@ function ApplyFlow() {
                             : prev,
                       )
                     }
-                    className={`overflow-hidden rounded-[20px] border-2 text-left ${on ? "border-foreground" : "border-transparent"} bg-subtle`}
+                    className={`overflow-hidden rounded-lg border-2 text-left ${on ? "border-foreground" : "border-transparent"} bg-subtle`}
                   >
                     <span className="flex h-20 w-full items-center justify-center bg-background text-3">
                       {workType(p.kind).emoji}
@@ -198,7 +198,7 @@ function ApplyFlow() {
               rows={7}
               maxLength={600}
               placeholder={`Why you're right for "${o.title}"…`}
-              className="w-full rounded-[20px] border border-border bg-card p-4 text-sm outline-none"
+              className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none"
             />
             <p className="text-right text-1 text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">

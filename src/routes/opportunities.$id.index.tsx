@@ -130,7 +130,7 @@ function OpportunityDetail() {
           ]
             .filter((s) => s.value)
             .map((s) => (
-              <div key={s.label} className="rounded-[20px] bg-subtle p-3">
+              <div key={s.label} className="rounded-lg bg-subtle p-3">
                 <span className="flex items-center gap-1 text-1 text-muted-foreground">
                   {s.icon} {s.label}
                 </span>

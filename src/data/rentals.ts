@@ -1,4 +1,5 @@
 import type { PriceLines } from "./booking";
+import { unsplash } from "./unsplash";
 export type RentalCategory = "instruments" | "audio" | "studio" | "dj" | "live" | "other";
 
 export type RentalStatus =
@@ -98,8 +99,7 @@ export type RentalItem = Pick<Equipment, "id" | "name" | "photos"> &
     };
   };
 
-const img = (id: string, w = 900) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const img = (id: string, w = 900) => unsplash(id, w);
 
 export const rentalCategories: {
   slug: RentalCategory;

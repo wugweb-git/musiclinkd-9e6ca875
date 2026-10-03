@@ -5,6 +5,7 @@
  */
 import { talents } from "./discover";
 import type { PriceParts } from "@/lib/price";
+import { unsplash } from "./unsplash";
 
 export type BandRole = "owner" | "admin" | "member";
 
@@ -72,8 +73,7 @@ export type Band = {
   qrCode: string;
 };
 
-const img = (id: string, w = 900) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const img = (id: string, w = 900) => unsplash(id, w);
 
 export const bands: Band[] = [
   {
