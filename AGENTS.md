@@ -162,7 +162,13 @@ subquery's table (20261003100000_fix_studio_media_policies.sql). Private user de
 By default run `bunx tsc --noEmit`. Before a push, run what CI runs, because CI blocks the merge on
 all of it (`.github/workflows/ci.yml`): `bunx tsc --noEmit`, `bun run lint`, `bun run test-storybook`
 (the accessibility gate — there are no `*.test.*` files, the stories are the test suite),
-`bun run check-token-drift` and `bun run build`. 412px screenshots, `CHANGELOG.md` and `roadmap.md`
-updates happen only when asked. Say plainly what was not run.
+`bun run check-token-drift` and `bun run build`. 412px screenshots and `CHANGELOG.md`
+updates happen only when asked. There is no `roadmap.md` (removed 4 Oct 2026): open work is reported
+in the reply, not kept in a file. Dated audit reports and one-off prompts are not committed; specs
+and design docs in `docs/` and `Claude outputs/specs/` are. Say plainly what was not run.
+
+Motion lives in `src/styles.css`: `screen-enter` on every `Screen`, a press scale on every control,
+`lift` for hoverable cards, `reveal` for scroll entry — all behind `prefers-reduced-motion`.
+The app ground is one `--background` token on every screen, auth included.
 
 If a link, file or attachment can't be read, say so. If two sources disagree, surface it.
