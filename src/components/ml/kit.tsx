@@ -360,7 +360,9 @@ export function Row({
         </span>
       ) : null}
       <span className="min-w-0 flex-1 text-left">
-        <span className={`block truncate ${flat ? "text-2 font-medium" : "text-2 font-semibold"}`}>{title}</span>
+        <span className={`block truncate ${flat ? "text-2 font-medium" : "text-2 font-semibold"}`}>
+          {title}
+        </span>
         {subtitle ? (
           <span className="block truncate text-1 text-muted-foreground">{subtitle}</span>
         ) : null}
@@ -461,11 +463,33 @@ export function Switch({
  * settings page UI"), shared so Settings and the menu are one thing rather than two styled copies.
  * Rows inside it take `grouped`.
  */
-export function RowGroup({ title, children, flat = false }: { title: string; children: ReactNode; flat?: boolean }) {
+export function RowGroup({
+  title,
+  children,
+  flat = false,
+}: {
+  title: string;
+  children: ReactNode;
+  flat?: boolean;
+}) {
   return (
     <section>
-      <h2 className={flat ? "mb-1 px-2 text-sm font-semibold text-foreground" : "pill mb-2 px-1 text-muted-foreground"}>{title}</h2>
-      <ul className={flat ? "divide-y divide-border/70" : "divide-y divide-border overflow-hidden rounded-lg bg-card shadow-elevation-2"}>
+      <h2
+        className={
+          flat
+            ? "mb-1 px-2 text-sm font-semibold text-foreground"
+            : "pill mb-2 px-1 text-muted-foreground"
+        }
+      >
+        {title}
+      </h2>
+      <ul
+        className={
+          flat
+            ? "divide-y divide-border/70"
+            : "divide-y divide-border overflow-hidden rounded-lg bg-card shadow-elevation-2"
+        }
+      >
         {children}
       </ul>
     </section>

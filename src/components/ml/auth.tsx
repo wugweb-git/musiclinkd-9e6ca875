@@ -46,7 +46,10 @@ export function AuthScreen({
   void wide;
   return (
     <div
-      className={cn("flex min-h-[100dvh] w-full flex-col bg-auth-ground text-foreground select-none", className)}
+      className={cn(
+        "flex min-h-[100dvh] w-full flex-col bg-auth-ground text-foreground select-none",
+        className,
+      )}
     >
       {/* Measured from lovable.dev/login at 412px: 32px side margins, a 350px column, the whole
           block centred vertically. */}
@@ -66,7 +69,13 @@ export function AuthScreen({
 function BrandMark() {
   return (
     // The owner-supplied icon (4 Oct 2026), drawn bare like the mark on lovable.dev/login.
-    <img src={logoIcon.url} alt="MusicLinkd" width={538} height={311} className="h-9 w-auto self-start" />
+    <img
+      src={logoIcon.url}
+      alt="MusicLinkd"
+      width={538}
+      height={311}
+      className="h-9 w-auto self-start"
+    />
   );
 }
 

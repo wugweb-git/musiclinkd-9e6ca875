@@ -102,7 +102,10 @@ export async function pickMatches(
             )
             .map((p) => ({ id: p.id, reason: p.reason.slice(0, 160) }))
         : [];
-    return { people: clean(parsed.people).slice(0, 6), opportunities: clean(parsed.opportunities).slice(0, 4) };
+    return {
+      people: clean(parsed.people).slice(0, 6),
+      opportunities: clean(parsed.opportunities).slice(0, 4),
+    };
   } catch {
     return { people: [], opportunities: [] };
   }

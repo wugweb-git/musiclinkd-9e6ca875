@@ -220,170 +220,170 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
     <AuthScreen back={signup ? { to: "/welcome" } : undefined}>
       <AuthComposition footer={<AuthFooter />}>
         <main className="flex flex-col" style={beat(2)}>
-            <div className="mb-8 mt-6">
-              <h1 className="text-3 font-medium leading-normal text-foreground">
-                {signup ? "Create your account" : "Sign in"}
-              </h1>
-              {signup ? (
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Join India’s professional music community.
-                </p>
-              ) : null}
-            </div>
-            {saved.length > 0 && !signup ? (
-              <section className="mb-5">
-                <p className="mb-1.5 text-1 font-semibold text-muted-foreground">Continue as</p>
-                <ul className="overflow-hidden rounded-lg border border-border bg-card">
-                  {saved.slice(0, 1).map((a) => (
-                    <AccountRow
-                      key={a.userId}
-                      account={a}
-                      current={false}
-                      busy={busy !== null}
-                      onPick={() => void continueAs(a.userId)}
-                      onRemove={() => forgetAccount(a.userId)}
-                    />
-                  ))}
-                </ul>
-              </section>
+          <div className="mb-8 mt-6">
+            <h1 className="text-3 font-medium leading-normal text-foreground">
+              {signup ? "Create your account" : "Sign in"}
+            </h1>
+            {signup ? (
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Join India’s professional music community.
+              </p>
             ) : null}
+          </div>
+          {saved.length > 0 && !signup ? (
+            <section className="mb-5">
+              <p className="mb-1.5 text-1 font-semibold text-muted-foreground">Continue as</p>
+              <ul className="overflow-hidden rounded-lg border border-border bg-card">
+                {saved.slice(0, 1).map((a) => (
+                  <AccountRow
+                    key={a.userId}
+                    account={a}
+                    current={false}
+                    busy={busy !== null}
+                    onPick={() => void continueAs(a.userId)}
+                    onRemove={() => forgetAccount(a.userId)}
+                  />
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
-            <div className="grid gap-4">
+          <div className="grid gap-4">
+            <Btn
+              variant="outline"
+              className={provider}
+              loading={busy === "google"}
+              onClick={() => void google()}
+            >
+              <span className="absolute left-3.5 flex items-center" aria-hidden>
+                <GoogleIcon />
+              </span>
+              Continue with Google
+            </Btn>
+            {showLinkedIn ? (
               <Btn
                 variant="outline"
                 className={provider}
-                loading={busy === "google"}
-                onClick={() => void google()}
+                loading={busy === "linkedin"}
+                onClick={() => void linkedin()}
               >
                 <span className="absolute left-3.5 flex items-center" aria-hidden>
-                  <GoogleIcon />
+                  <Linkedin size={iconSize.sm} />
                 </span>
-                Continue with Google
+                Continue with LinkedIn
               </Btn>
-              {showLinkedIn ? (
-                <Btn
-                  variant="outline"
-                  className={provider}
-                  loading={busy === "linkedin"}
-                  onClick={() => void linkedin()}
-                >
-                  <span className="absolute left-3.5 flex items-center" aria-hidden>
-                    <Linkedin size={iconSize.sm} />
-                  </span>
-                  Continue with LinkedIn
-                </Btn>
-              ) : null}
-              <Btn
-                variant="outline"
-                className={provider}
-                onClick={() => void navigate({ to: "/auth/phone" })}
-              >
-                <span className="absolute left-3.5 flex items-center" aria-hidden>
-                  <Smartphone size={iconSize.sm} />
-                </span>
-                Continue with phone
-              </Btn>
-            </div>
+            ) : null}
+            <Btn
+              variant="outline"
+              className={provider}
+              onClick={() => void navigate({ to: "/auth/phone" })}
+            >
+              <span className="absolute left-3.5 flex items-center" aria-hidden>
+                <Smartphone size={iconSize.sm} />
+              </span>
+              Continue with phone
+            </Btn>
+          </div>
 
-            <Divider label="OR" className="my-6" />
+          <Divider label="OR" className="my-6" />
 
-            <AuthSurface>
-              <form
-                noValidate
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (busy) return;
-                  if (step === "email") continueWithEmail();
-                  else void submit();
+          <AuthSurface>
+            <form
+              noValidate
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (busy) return;
+                if (step === "email") continueWithEmail();
+                else void submit();
+              }}
+            >
+              {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+
+              <TextField
+                label="Email"
+                value={email}
+                className="mb-3"
+                onChange={(v) => {
+                  setEmail(v);
+                  carryEmail(v);
+                  if (step === "password") setStep("email");
                 }}
+                onBlur={() => fields.touch("email")}
+                error={fields.errorFor("email", emailProblem)}
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                enterKeyHint={step === "email" ? "go" : "next"}
+                placeholder="Email"
+              />
+              {step === "password" ? (
+                <div className="animate-message">
+                  <PasswordInput
+                    className="mb-2"
+                    value={password}
+                    onChange={setPassword}
+                    onBlur={() => fields.touch("password")}
+                    error={fields.errorFor("password", passwordProblem)}
+                    placeholder={signup ? "Create a strong password" : "Password"}
+                    autoComplete={signup ? "new-password" : "current-password"}
+                    below={signup ? <PasswordRequirements value={password} /> : null}
+                  />
+
+                  {signup ? null : (
+                    <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                      <label className="hit-area relative flex items-center gap-2 text-1 font-medium text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          checked={remember}
+                          onChange={(e) => setRemember(e.target.checked)}
+                          className="h-5 w-5 shrink-0 accent-[var(--ink)]"
+                        />
+                        Remember me
+                      </label>
+                      <AuthLink
+                        to="/auth/forgot"
+                        className="text-muted-foreground hover:text-foreground font-medium text-1"
+                      >
+                        Forgot password?
+                      </AuthLink>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              <Btn
+                type="submit"
+                className="mt-1 h-12 w-full text-2 font-medium"
+                loading={busy === "email"}
               >
-                {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+                {step === "email" ? "Continue" : signup ? "Create account" : "Sign in"}
+              </Btn>
+            </form>
+          </AuthSurface>
 
-                <TextField
-                  label="Email"
-                  value={email}
-                  className="mb-3"
-                  onChange={(v) => {
-                    setEmail(v);
-                    carryEmail(v);
-                    if (step === "password") setStep("email");
-                  }}
-                  onBlur={() => fields.touch("email")}
-                  error={fields.errorFor("email", emailProblem)}
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  enterKeyHint={step === "email" ? "go" : "next"}
-                  placeholder="Email"
-                />
-                {step === "password" ? (
-                  <div className="animate-message">
-                    <PasswordInput
-                      className="mb-2"
-                      value={password}
-                      onChange={setPassword}
-                      onBlur={() => fields.touch("password")}
-                      error={fields.errorFor("password", passwordProblem)}
-                      placeholder={signup ? "Create a strong password" : "Password"}
-                      autoComplete={signup ? "new-password" : "current-password"}
-                      below={signup ? <PasswordRequirements value={password} /> : null}
-                    />
-
-                    {signup ? null : (
-                      <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-                        <label className="hit-area relative flex items-center gap-2 text-1 font-medium text-muted-foreground">
-                          <input
-                            type="checkbox"
-                            checked={remember}
-                            onChange={(e) => setRemember(e.target.checked)}
-                            className="h-5 w-5 shrink-0 accent-[var(--ink)]"
-                          />
-                          Remember me
-                        </label>
-                        <AuthLink
-                          to="/auth/forgot"
-                          className="text-muted-foreground hover:text-foreground font-medium text-1"
-                        >
-                          Forgot password?
-                        </AuthLink>
-                      </div>
-                    )}
-                  </div>
-                ) : null}
-
-                <Btn
-                  type="submit"
-                  className="mt-1 h-12 w-full text-2 font-medium"
-                  loading={busy === "email"}
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            {signup ? (
+              <>
+                Already have an account?{" "}
+                <AuthLink
+                  to="/welcome"
+                  className="hit-area text-foreground underline underline-offset-2"
                 >
-                  {step === "email" ? "Continue" : signup ? "Create account" : "Sign in"}
-                </Btn>
-              </form>
-            </AuthSurface>
-
-            <p className="mt-4 text-center text-sm text-muted-foreground">
-              {signup ? (
-                <>
-                  Already have an account?{" "}
-                  <AuthLink
-                    to="/welcome"
-                    className="hit-area text-foreground underline underline-offset-2"
-                  >
-                    Sign in
-                  </AuthLink>
-                </>
-              ) : (
-                <>
-                  New to MusicLinkd?{" "}
-                  <AuthLink
-                    to="/signup"
-                    className="hit-area text-foreground underline underline-offset-2"
-                  >
-                    Create account
-                  </AuthLink>
-                </>
-              )}
-            </p>
+                  Sign in
+                </AuthLink>
+              </>
+            ) : (
+              <>
+                New to MusicLinkd?{" "}
+                <AuthLink
+                  to="/signup"
+                  className="hit-area text-foreground underline underline-offset-2"
+                >
+                  Create account
+                </AuthLink>
+              </>
+            )}
+          </p>
         </main>
 
         <div className="mt-4 text-center">

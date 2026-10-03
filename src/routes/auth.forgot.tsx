@@ -211,11 +211,7 @@ function ForgotPassword() {
                   error={fields.errorFor("phone", phoneProblem)}
                 />
               )}
-              <Btn
-                type="submit"
-                className="mt-2 w-full h-12 text-2 font-medium"
-                loading={busy}
-              >
+              <Btn type="submit" className="mt-2 w-full h-12 text-2 font-medium" loading={busy}>
                 {method === "email" ? "Send reset link" : "Send verification code"}
               </Btn>
               {method === "email" ? (
@@ -229,10 +225,7 @@ function ForgotPassword() {
 
         <p className="mt-4 text-center text-1 text-muted-foreground">
           Remember your password?{" "}
-          <AuthLink
-            to="/welcome"
-            className="text-foreground underline underline-offset-2"
-          >
+          <AuthLink to="/welcome" className="text-foreground underline underline-offset-2">
             Sign in
           </AuthLink>
         </p>
