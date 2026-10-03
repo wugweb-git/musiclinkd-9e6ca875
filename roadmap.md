@@ -1,12 +1,18 @@
 # MusicLinkd roadmap
 
+## 3 Oct 2026 — product-wide visual rebuild
+
+- [x] Approve a reference-led visual-system and route-family rollout plan.
+- [ ] Establish `/welcome`, `/home`, and `/discover` as the first visual benchmark.
+- [ ] Propagate the benchmark through account entry, onboarding, identity, work/network, commercial, and utility routes.
+
 ## 3 Oct 2026 — role-aware Home and Discover restoration
 
-- [ ] Rebuild `/home` as distinct Talent and Business experiences selected from the signed-in identity.
-- [ ] Make Talent Home action-led with real attention, continuation, opportunities, people, places, and activity.
-- [ ] Make Business Home an operating console using real enquiries, bookings, services, inventory, team, and notifications only when available.
-- [ ] Rebuild `/discover` around persistent search, progressive intent modes, explainable recommendations, and entity-specific results.
-- [ ] Adapt Discover priorities for Talent versus Business without creating separate route architecture.
+- [x] Rebuild `/home` as distinct Talent and Business experiences selected from the signed-in identity.
+- [x] Make Talent Home action-led with real attention, continuation, opportunities, people, and places.
+- [x] Make Business Home an operating console using real enquiries, bookings, and services only when available.
+- [x] Rebuild `/discover` around persistent search, progressive intent modes, explainable recommendations, and entity-specific results.
+- [x] Adapt Discover priorities for Talent versus Business without creating separate route architecture.
 - [ ] Verify signed-in role states, loading/empty/offline/error states, mobile widths, desktop, TypeScript, lint, tokens, and build.
 
 ## 3 Oct 2026 — authentication entry redesign
