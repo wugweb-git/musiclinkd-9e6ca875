@@ -107,7 +107,10 @@ function Discover() {
   const personaOptions = ["All", ...categories.map((c) => c.label)];
   const { signedIn } = useAuth();
   const audioWork = trendingWork.filter((w) => workType(w.kind).media === "audio");
-  const videoWork = trendingWork.filter((w) => w.kind === "video");
+  // Every kind that plays as video (videos and live performances); reels have their own rail.
+  const videoWork = trendingWork.filter(
+    (w) => workType(w.kind).media === "video" && w.kind !== "reel",
+  );
   const reelWork = trendingWork.filter((w) => w.kind === "reel");
   // Trending this week: people and studios by the last 7 days' views, follows, saves, enquiries,
   // bookings and reviews (listTrendingPages). A studio shows with the same card as Studios below.
@@ -175,7 +178,11 @@ function Discover() {
               <SoonBadge className="absolute -top-1.5 right-1" />
             </div>
           ) : (
-            <Link key={c.label} to={c.to} className={cls}>
+            <Link
+              key={c.label}
+              {...("slug" in c ? { to: c.to, params: { slug: c.slug } } : { to: c.to })}
+              className={cls}
+            >
               {inner}
               {stage === "beta" ? <BetaBadge className="absolute -top-1.5 right-1" /> : null}
             </Link>

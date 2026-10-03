@@ -644,7 +644,17 @@ export function ListingSkeleton() {
  * like it had worked. Searching reaches every city, not just these six.
  */
 // eslint-disable-next-line react-refresh/only-export-components -- constant intentionally co-located with its component
-export const marketCities = ["Mumbai", "New Delhi", "Bengaluru", "Chennai", "Pune", "Panjim"];
+export const marketCities = ["Mumbai", "New Delhi", "Bengaluru", "Chennai", "Pune", "Panaji"];
+
+/*
+ * Places saved on a device under names the Market no longer offers, mapped to the taxonomy city.
+ * "Panjim" was offered until 4 Oct 2026, but the taxonomy (and so every listing) says "Panaji".
+ */
+const retiredCityNames: Record<string, string> = {
+  "Delhi NCR": "New Delhi",
+  Goa: "Panaji",
+  Panjim: "Panaji",
+};
 
 const CITY_KEY = "ml.market.city";
 
@@ -655,7 +665,11 @@ export function useMarketCity() {
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(CITY_KEY);
-      if (saved) setCity(saved);
+      if (saved) {
+        const current = retiredCityNames[saved] ?? saved;
+        setCity(current);
+        if (current !== saved) window.localStorage.setItem(CITY_KEY, current);
+      }
     } catch {
       /* storage may be unavailable */
     }
@@ -678,7 +692,7 @@ const cityCentres: Record<string, [number, number]> = {
   Bengaluru: [12.9716, 77.5946],
   Chennai: [13.0827, 80.2707],
   Pune: [18.5204, 73.8567],
-  Panjim: [15.4909, 73.8278],
+  Panaji: [15.4909, 73.8278],
 };
 
 function nearestCity(lat: number, lng: number) {
