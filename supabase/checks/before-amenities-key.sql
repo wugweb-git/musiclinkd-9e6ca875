@@ -1,7 +1,7 @@
 -- Read-only. The snapshot for 20261003160000_amenities_key_and_service_fold.sql: save the output as
 -- supabase/dumps/2026-10-03-before-amenities-key.sql. Taxonomy only, no user data.
 SELECT * FROM (
-SELECT 'category' AS kind, to_jsonb(c) AS row
+SELECT 'category' AS kind, to_jsonb(c) AS data
   FROM public.taxonomy_categories c
  WHERE c.key IN ('studio_amenities', 'studio_services', 'service_categories', 'amenities')
 UNION ALL
@@ -14,4 +14,4 @@ SELECT 'person_type_map', to_jsonb(m)
  WHERE m.service_category_slug IN ('studio', 'recording', 'resident_engineers', 'attended_sessions',
                                    'stem_mastering', 'producer', 'same_day_audio', 'multicam_video')
 ) snapshot
- ORDER BY kind, row::text;
+ ORDER BY kind, data::text;
