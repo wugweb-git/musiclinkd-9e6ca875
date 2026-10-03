@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Plus, Search, Bookmark, Briefcase, Users } from "lucide-react";
+import { Plus, Search, Bookmark, Briefcase, Users, SlidersHorizontal } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { Card, EmptyState, LoadError, Loading, Row, Segmented } from "@/components/ml/kit";
+import { Card, EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunityCategories } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
@@ -94,6 +94,13 @@ function OpportunitiesHome() {
   const active = (applications.data ?? []).filter(
     (a) => a.status !== "rejected" && a.status !== "withdrawn",
   ).length;
+  const applicationBySlug = new Map(
+    (applications.data ?? []).flatMap((application) =>
+      application.opportunity?.slug
+        ? [[application.opportunity.slug, application.status] as const]
+        : [],
+    ),
+  );
 
   return (
     <Screen>
@@ -113,38 +120,63 @@ function OpportunitiesHome() {
         }
       />
 
-      <div className="space-y-4 px-5 pt-4">
-        <Link to="/opportunities/search" className="block">
-          <div className="flex h-13 items-center gap-3 rounded-full bg-subtle px-5 py-3.5">
-            <Search size={iconSize.sm} className="text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Singer, mixing engineer, studio…</span>
-          </div>
-        </Link>
-
-        <div className="grid grid-cols-2 gap-2">
-          <Row
-            icon={<Briefcase size={iconSize.sm} />}
-            title="My applications"
-            subtitle={applications.data ? `${active} active` : "Yours"}
-            to="/opportunities/applications"
-          />
-          <Row
-            icon={<Bookmark size={iconSize.sm} />}
-            title="Bookmarked"
-            subtitle="Shortlist"
-            to="/saved"
-          />
+      <div className="space-y-5 px-5 pt-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_48px] gap-2">
+          <Link to="/opportunities/search" className="block min-w-0">
+            <div className="flex h-12 items-center gap-3 rounded-full border border-input bg-card px-4">
+              <Search size={iconSize.sm} className="text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                Singer, mixing engineer, studio…
+              </span>
+            </div>
+          </Link>
+          <Link
+            to="/opportunities/search"
+            aria-label="Filter opportunities"
+            className="hit-area flex h-12 w-12 items-center justify-center rounded-full border border-input bg-card"
+          >
+            <SlidersHorizontal size={iconSize.md} aria-hidden />
+          </Link>
         </div>
-        <Row
-          icon={<Users size={iconSize.sm} />}
-          title="Projects you can join"
-          subtitle="Work in progress looking for collaborators"
-          to="/discover/$slug"
-          params={{ slug: "projects" }}
-        />
+
+        <div className="grid grid-cols-3 overflow-hidden rounded-lg border border-border bg-card">
+          <Link
+            to="/opportunities/applications"
+            className="state-layer flex min-h-[88px] flex-col justify-between border-r border-border p-3"
+          >
+            <Briefcase size={iconSize.md} aria-hidden />
+            <span>
+              <span className="block text-sm font-semibold">Applications</span>
+              <span className="text-1 text-muted-foreground">
+                {applications.data ? `${active} active` : "View yours"}
+              </span>
+            </span>
+          </Link>
+          <Link
+            to="/saved"
+            className="state-layer flex min-h-[88px] flex-col justify-between border-r border-border p-3"
+          >
+            <Bookmark size={iconSize.md} aria-hidden />
+            <span>
+              <span className="block text-sm font-semibold">Saved</span>
+              <span className="text-1 text-muted-foreground">Your shortlist</span>
+            </span>
+          </Link>
+          <Link
+            to="/discover/$slug"
+            params={{ slug: "projects" }}
+            className="state-layer flex min-h-[88px] flex-col justify-between p-3"
+          >
+            <Users size={iconSize.md} aria-hidden />
+            <span>
+              <span className="block text-sm font-semibold">Projects</span>
+              <span className="text-1 text-muted-foreground">Join a team</span>
+            </span>
+          </Link>
+        </div>
 
         <section>
-          <h2 className="mb-2 text-sm">Browse by need</h2>
+          <h2 className="mb-2 text-sm font-semibold">Browse by need</h2>
           <div className="rail no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
             {opportunityCategories.slice(0, 10).map((c) => {
               const Icon = categoryIcon(c.key);
@@ -153,7 +185,7 @@ function OpportunitiesHome() {
                   key={c.key}
                   to="/opportunities/search"
                   search={{ q: c.label }}
-                  className="w-[116px] shrink-0 rounded-lg bg-subtle p-3"
+                  className="w-[124px] shrink-0 rounded-sm border border-border bg-card p-3"
                 >
                   <Icon size={20} aria-hidden />
                   <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>
@@ -216,20 +248,11 @@ function OpportunitiesHome() {
                 o={o}
                 saved={has(o.id) || o.saved}
                 onSave={() => toggle(o.id)}
+                applicationLabel={applicationBySlug.get(o.id)}
               />
             ))}
           </div>
         )}
-
-        <Card className="space-y-2">
-          <h3 className="text-sm">Need someone instead?</h3>
-          <p className="text-1 text-muted-foreground">
-            Post a structured requirement and get applications with portfolios attached.
-          </p>
-          <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
-            Post an Opportunity
-          </BtnLink>
-        </Card>
       </div>
 
       <Sheet open={sheet} onClose={() => setSheet(false)} title="Post an opportunity">

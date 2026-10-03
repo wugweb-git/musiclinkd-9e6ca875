@@ -239,7 +239,7 @@ export function ContactSupport({
         {!signedIn ? (
           <div className="space-y-4">
             <p className="text-1 text-muted-foreground">Sign in to send the team a request.</p>
-            <BtnLink to="/auth" className="w-full">
+            <BtnLink to="/welcome" className="w-full">
               Sign in
             </BtnLink>
           </div>

@@ -195,18 +195,20 @@ export function OpportunityCard({
   o,
   saved,
   onSave,
+  applicationLabel,
 }: {
   o: Opportunity;
   saved?: boolean;
   onSave?: () => void;
+  applicationLabel?: string | undefined;
 }) {
   const pay = payParts(o);
   // Who and when first, then what, then the terms as one quiet line. At most one label: Featured.
   const terms = [categoryLabel(o.categoryKey), o.workMode, o.city].filter(Boolean).join(" · ");
   return (
-    <article className="relative rounded-lg bg-subtle p-4">
+    <article className="relative overflow-hidden rounded-lg border border-border bg-card">
       <Link to="/opportunities/$id" params={{ id: o.id }} className="block">
-        <div className="flex items-center gap-2.5 pr-10">
+        <div className="flex items-center gap-2.5 border-b border-border px-4 py-3 pr-12">
           {o.poster.photo ? (
             <img
               src={sized(o.poster.photo, { width: 32 })}
@@ -221,29 +223,36 @@ export function OpportunityCard({
           {o.featured ? <span className="pill shrink-0 bg-background">Featured</span> : null}
         </div>
 
-        <h3 className="mt-3 line-clamp-2 text-2 font-semibold leading-snug">{o.title}</h3>
-        {terms ? <p className="mt-1 truncate text-1 text-muted-foreground">{terms}</p> : null}
-        {/* Why it is here, on the For you tab: what matched the viewer's profile. */}
-        {o.matchReasons.length ? (
-          <p className="mt-1 truncate text-1 text-muted-foreground">
-            {fitLine({ reasons: o.matchReasons })}
-          </p>
-        ) : null}
-
-        <div className="mt-4 flex items-end justify-between gap-3">
-          {pay ? (
-            <Price price={pay} amountClassName="text-sm font-semibold" />
-          ) : (
-            <span className="text-1 text-muted-foreground">Pay on enquiry</span>
-          )}
-          <p className="shrink-0 text-right text-1 text-muted-foreground">
-            {o.matchScore ? (
-              <span className="block text-sm font-semibold text-foreground">
-                {o.matchScore}% match
-              </span>
+        <div className="p-4">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="line-clamp-2 min-w-0 text-2 font-semibold leading-snug">{o.title}</h3>
+            {applicationLabel ? (
+              <StatusPill label={applicationLabel} tone="neutral" className="shrink-0" />
             ) : null}
-            {o.applicants} applied
-          </p>
+          </div>
+          {terms ? <p className="mt-1.5 text-1 text-muted-foreground">{terms}</p> : null}
+          {/* Why it is here, on the For you tab: what matched the viewer's profile. */}
+          {o.matchReasons.length ? (
+            <p className="mt-1 truncate text-1 text-muted-foreground">
+              {fitLine({ reasons: o.matchReasons })}
+            </p>
+          ) : null}
+
+          <div className="mt-3 flex items-end justify-between gap-3 border-t border-border pt-3">
+            {pay ? (
+              <Price price={pay} amountClassName="text-sm font-semibold" />
+            ) : (
+              <span className="text-1 text-muted-foreground">Pay on enquiry</span>
+            )}
+            <p className="shrink-0 text-right text-1 text-muted-foreground">
+              {o.matchScore ? (
+                <span className="block text-sm font-semibold text-foreground">
+                  {o.matchScore}% match
+                </span>
+              ) : null}
+              {o.applicants} applied
+            </p>
+          </div>
         </div>
       </Link>
       {onSave ? (

@@ -2,7 +2,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check } from "lucide-react";
 
-import { AccountTypeCard, OnboardingProvider, resumeTarget, useOnboarding } from "@/components/ml/onboarding";
+import {
+  AccountTypeCard,
+  OnboardingProvider,
+  resumeTarget,
+  useOnboarding,
+} from "@/components/ml/onboarding";
 import { Btn } from "@/components/ml/ui";
 import { visibleSteps } from "@/data/onboarding";
 import { beat, useArrival } from "@/lib/flow-motion";
@@ -83,7 +88,10 @@ function SelectScreen() {
         <h1 className={cn("text-4 font-bold text-foreground", rise)} style={beat(1)}>
           What brings you to MusicLinkd?
         </h1>
-        <p className={cn("mt-2 text-2 leading-relaxed text-muted-foreground", rise)} style={beat(2)}>
+        <p
+          className={cn("mt-2 text-2 leading-relaxed text-muted-foreground", rise)}
+          style={beat(2)}
+        >
           Choose the profile that best represents your work. You can add more later.
         </p>
 
@@ -107,11 +115,7 @@ function SelectScreen() {
               setKind("Business");
             }}
           />
-          <AccountTypeCard
-            title="Upcoming"
-            description="A new account type is on the way"
-            hollow
-          />
+          <AccountTypeCard title="Upcoming" description="A new account type is on the way" hollow />
         </div>
 
         <section className="mt-6 border-t border-border pt-4">

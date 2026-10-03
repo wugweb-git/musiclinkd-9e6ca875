@@ -6,13 +6,13 @@ import { LoginScreen } from "@/components/ml/login";
 export const Route = createFileRoute("/welcome")({
   head: () => ({
     meta: [
-      { title: "Log in to MusicLinkd — India's music industry network" },
+      { title: "Sign in to MusicLinkd — India's music industry network" },
       {
         name: "description",
         content:
           "Join MusicLinkd to showcase your work, find collaborators, book studios and hire music professionals across India.",
       },
-      { property: "og:title", content: "Log in to MusicLinkd" },
+      { property: "og:title", content: "Sign in to MusicLinkd" },
       {
         property: "og:description",
         content: "The professional network and marketplace for India's music industry.",

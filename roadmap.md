@@ -4,6 +4,11 @@
 
 - [x] Redesign `/welcome`, phone sign-in and verification, and onboarding Select.
 - [x] Verify at 412px and desktop widths; run TypeScript and preview diagnostics.
+- [x] Audit and standardize every reachable authentication and immediate onboarding state.
+- [x] Enhance every reachable authentication screen and state with one premium shared composition and remove passwordless email-code entry.
+- [ ] Verify the complete auth journey at 360px, 390px, 412px, and desktop widths.
+- [ ] Redesign onboarding Identity and Role, Business Review, and Opportunities at 412px.
+- [ ] Verify those four mobile routes without changing their existing flows or data contracts.
 
 ## 3 Oct 2026 — P1 convergence (one publish)
 

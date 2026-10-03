@@ -3,10 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ChevronRight, CircleCheck, Check } from "lucide-react";
+import { ChevronRight, CircleCheck, Check, MapPin } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { Dialog } from "@/components/ml/kit";
-import { BookableCard } from "@/components/ml/cards";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import {
@@ -320,7 +319,11 @@ function NewBusiness() {
             pending={!valid[step]}
             className={`w-full ${nudge ? "animate-shake" : ""}`}
           >
-            {step === "review" ? "Create Business" : step === "equipment" ? "Finish" : "Continue"}
+            {step === "review"
+              ? "Create Business Profile"
+              : step === "equipment"
+                ? "Finish"
+                : "Continue"}
           </Btn>
         }
       >
@@ -509,74 +512,91 @@ function NewBusiness() {
         ) : step === "equipment" ? (
           <EquipmentEditor />
         ) : (
-          <div className="space-y-4">
-            <div>
-              <p className="eyebrow mb-2 text-muted-foreground">Live Studio Card Preview</p>
-              <BookableCard
-                disabled
-                studio={{
-                  id: "preview-business",
-                  slug: "",
-                  username: "",
-                  name: name || "Your Business Name",
-                  location: city || "City",
-                  rating: null,
-                  reviewCount: 0,
-                  verified: false,
-                  rate: null,
-                  photo: "",
-                  gear: genres.slice(0, 3),
-                }}
-              />
-            </div>
-
-            <div className="rounded-lg bg-card border border-border/80 shadow-xs overflow-hidden">
-              <div className="p-4 border-b border-border/60 bg-subtle/40">
-                <h2 className="text-sm font-bold text-foreground">Summary Overview</h2>
-                <p className="text-1 text-muted-foreground">
-                  Tap any item to modify before creating.
-                </p>
+          <div className="space-y-3">
+            <section className="rounded-lg bg-ink p-4 text-ink-foreground">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-1 text-ink-foreground/70">{typeLabel}</p>
+                  <h2 className="mt-1 truncate text-2 font-semibold">{name}</h2>
+                  <p className="mt-0.5 truncate text-sm text-ink-foreground/70">@{username}</p>
+                </div>
+                <span className="pill shrink-0 bg-card text-foreground">Preview</span>
               </div>
-              <ul className="divide-y divide-border/60">
-                {(
+              {tagline.trim() ? (
+                <p className="mt-3 line-clamp-2 text-sm text-ink-foreground/80">{tagline}</p>
+              ) : null}
+              <p className="mt-3 flex items-center gap-1.5 text-1 text-ink-foreground/70">
+                <MapPin size={iconSize.sm} aria-hidden />
+                {[city, state].filter(Boolean).join(", ")}
+              </p>
+            </section>
+            {[
+              {
+                title: "Profile",
+                to: "basics" as const,
+                rows: [
+                  ["Business type", typeLabel],
+                  ["Name", name],
+                  ["Username", `@${username}`],
+                  ["Tagline", tagline.trim() || "Not added"],
+                ],
+              },
+              {
+                title: "Location",
+                to: "location" as const,
+                rows: [
+                  ["Place", [city, state].filter(Boolean).join(", ")],
+                  ["Google Maps", link ? "Connected" : "Not connected"],
+                ],
+              },
+              {
+                title: "What you offer",
+                to: "offer" as const,
+                rows: [
+                  ["Genres", labelsOf(tx.genres, genres)],
+                  ["Languages", labelsOf(tx.languages, languages)],
+                ],
+              },
+              {
+                title: "Policies",
+                to: "policies" as const,
+                rows: [
                   [
-                    ["Business Type", typeLabel, "type"],
-                    ["Google Maps", link ? "Linked" : "Not linked", "type"],
-                    ["Name", name, "basics"],
-                    ["Handle", `@${username}`, "basics"],
-                    ["Tagline", tagline.trim() || "None", "basics"],
-                    ["Location", [city, state].filter(Boolean).join(", "), "location"],
-                    ["Genres", labelsOf(tx.genres, genres), "offer"],
-                    ["Languages", labelsOf(tx.languages, languages), "offer"],
-                    [
-                      "Policies",
-                      `${policies.filter((p) => p.trim()).length} defined`,
-                      "policies",
-                    ] as const,
-                  ] as const
-                ).map(([k, v, to]) => (
-                  <li key={k}>
-                    <button
-                      type="button"
-                      onClick={() => go(to)}
-                      className="state-layer flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-subtle/50 active:bg-subtle"
+                    "Customer policies",
+                    policies.filter((p) => p.trim()).length
+                      ? policies.filter((p) => p.trim()).join(" · ")
+                      : "Not added",
+                  ],
+                ],
+              },
+            ].map((group) => (
+              <section
+                key={group.title}
+                className="overflow-hidden rounded-lg border border-border bg-card"
+              >
+                <button
+                  type="button"
+                  onClick={() => go(group.to)}
+                  className="state-layer grid min-h-touch w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3 text-left"
+                >
+                  <h2 className="text-sm font-semibold">{group.title}</h2>
+                  <span className="flex items-center gap-1 text-1 font-semibold text-muted-foreground">
+                    Edit <ChevronRight size={iconSize.sm} aria-hidden />
+                  </span>
+                </button>
+                <dl className="divide-y divide-border">
+                  {group.rows.map(([label, value]) => (
+                    <div
+                      key={label}
+                      className="grid grid-cols-[104px_minmax(0,1fr)] gap-3 px-4 py-2.5"
                     >
-                      <span className="w-28 shrink-0 text-sm font-semibold text-foreground">
-                        {k}
-                      </span>
-                      <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
-                        {v}
-                      </span>
-                      <ChevronRight
-                        size={iconSize.sm}
-                        className="shrink-0 text-muted-foreground"
-                        aria-hidden
-                      />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      <dt className="text-1 text-muted-foreground">{label}</dt>
+                      <dd className="line-clamp-2 text-sm font-medium text-foreground">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            ))}
           </div>
         )}
       </StepShell>

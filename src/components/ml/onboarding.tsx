@@ -967,6 +967,7 @@ export function UsernameField({
       value={value}
       onChange={(v) => onChange(v.toLowerCase().replace(/\s/g, ""))}
       placeholder="yourname"
+      maxLength={30}
       autoComplete="username"
       readOnly={locked}
       {...(locked
@@ -1400,7 +1401,7 @@ export function PrivateDetailsFields() {
   }, [dob, gender, signedIn, save, dobError]);
 
   return (
-    <div className="space-y-5">
+    <div className="grid grid-cols-2 gap-3">
       <DrawerField label="Date of birth" hint={dobError ?? "Only you can see this."}>
         <DateDrawerField title="Date of birth" value={dob} onChange={setDob} />
       </DrawerField>

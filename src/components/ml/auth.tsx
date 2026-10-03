@@ -23,7 +23,7 @@ import { ISD_CODE, MOBILE_DIGITS } from "@/lib/validation";
 
 /** Where Back lands when there is no history to return to (a deep link, an email link). */
 export type AuthBack =
-  { to: "/welcome" } | { to: "/auth/phone" } | { to: "/profile" } | { to: "/auth" };
+  { to: "/welcome" } | { to: "/auth/phone" } | { to: "/profile" } | { to: "/signup" };
 
 export function AuthScreen({
   children,
@@ -45,18 +45,23 @@ export function AuthScreen({
         className,
       )}
     >
-      <div className="flex flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6">
-        {back ? (
-          <div className="-ml-2 mb-2 flex h-10 shrink-0 items-center">
-            <AuthBackButton back={back} />
-          </div>
-        ) : brand ? (
-          <Brand compact className="mb-1.5 shrink-0" />
-        ) : null}
-        <div className="flex flex-1 flex-col">
-          {children}
-        </div>
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6">
+        <header className="grid min-h-12 grid-cols-[48px_minmax(0,1fr)_48px] items-center">
+          <div>{back ? <AuthBackButton back={back} /> : null}</div>
+          <BrandMark />
+          <div />
+        </header>
+        <div className="flex flex-1 flex-col">{children}</div>
       </div>
+    </div>
+  );
+}
+
+function BrandMark() {
+  return (
+    <div className="flex min-w-0 items-center justify-center gap-2" aria-label="MusicLinkd">
+      <LogoMark className="h-6 w-6 shrink-0 text-brand" />
+      <span className="truncate text-2 font-bold text-foreground">MusicLinkd</span>
     </div>
   );
 }
@@ -142,6 +147,42 @@ export function AuthHeading({
       {sub ? <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{sub}</p> : null}
     </div>
   );
+}
+
+/** Shared composition for every auth state: one focused surface and a quiet footer. */
+export function AuthComposition({
+  children,
+  footer,
+  className,
+}: {
+  children: ReactNode;
+  footer?: ReactNode | undefined;
+  className?: string | undefined;
+}) {
+  return (
+    <div className={cn("flex w-full flex-1 flex-col py-6 sm:py-10", className)}>
+      <div className="flex flex-col pt-3 sm:pt-6">{children}</div>
+      {footer ? <footer className="mt-auto shrink-0 pt-8 text-center">{footer}</footer> : null}
+    </div>
+  );
+}
+
+export function AuthSurface({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string | undefined;
+}) {
+  return (
+    <div className={cn("rounded-lg border border-border bg-card p-4 sm:p-5", className)}>
+      {children}
+    </div>
+  );
+}
+
+export function AuthFooter() {
+  return <LegalNote className="mt-0" />;
 }
 
 export function Divider({ label, className }: { label: string; className?: string | undefined }) {
@@ -527,6 +568,12 @@ export function CodeInput({
   }, []);
 
   useEffect(() => {
+    if (!shakeKey) return;
+    ref.current?.focus();
+    ref.current?.select();
+  }, [shakeKey]);
+
+  useEffect(() => {
     if (value.length !== length || tried.current === value) return;
     tried.current = value;
     onComplete?.(value);
@@ -535,16 +582,15 @@ export function CodeInput({
   }, [value, length]);
 
   return (
-    <>
-      <button
-        type="button"
+    <label className="relative mb-5 block cursor-text">
+      <span className="mb-2 block text-sm font-medium text-muted-foreground">{label}</span>
+      <span
         key={shakeKey}
-        onClick={() => ref.current?.focus()}
+        aria-hidden
         className={cn(
-          "mb-5 flex w-full justify-between gap-2 sm:gap-2.5",
+          "flex w-full justify-between gap-2 sm:gap-2.5",
           shakeKey ? "animate-shake" : "",
         )}
-        aria-label={label}
       >
         {Array.from({ length }, (_, i) => {
           const active = i === value.length && focused;
@@ -577,7 +623,7 @@ export function CodeInput({
             </span>
           );
         })}
-      </button>
+      </span>
       <input
         ref={ref}
         value={value}
@@ -591,10 +637,10 @@ export function CodeInput({
           if (next.length < length) tried.current = "";
           onChange(next);
         }}
-        className="sr-only"
+        className="absolute inset-x-0 bottom-0 h-12 w-full cursor-text opacity-0 sm:h-13"
         aria-label={label}
       />
-    </>
+    </label>
   );
 }
 
@@ -726,8 +772,8 @@ export function classifyAuthError(message: string): {
   )
     return {
       kind: "account_exists",
-      title: "This email already has an account",
-      body: "Sign in instead, or continue with Google if you joined with Google.",
+      title: "Check your email",
+      body: "If this address can be used, we’ll email the next step. You can also try signing in.",
     };
   if (m.includes("invalid login") || m.includes("invalid credentials"))
     return {
@@ -739,7 +785,7 @@ export function classifyAuthError(message: string): {
     return {
       kind: "unconfirmed",
       title: "Confirm your email first",
-      body: "We emailed you a 6-digit code. Enter it to finish creating your account.",
+      body: "Open the verification link in your email to finish creating your account.",
     };
   if (m.includes("rate limit") || m.includes("too many"))
     return {

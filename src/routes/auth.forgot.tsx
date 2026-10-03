@@ -4,12 +4,14 @@ import { Mail, Smartphone } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import {
   AuthHeading,
+  AuthComposition,
+  AuthFooter,
   AuthNotice,
   AuthScreen,
+  AuthSurface,
   AuthLink,
   EMAIL_PATTERN,
   LabeledInput,
-  LegalNote,
   PhoneField,
   useFieldErrors,
   TrustNote,
@@ -19,7 +21,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 
-import { MadeByWugweb, SegmentedField } from "@/components/ml/kit";
+import { SegmentedField } from "@/components/ml/kit";
 import { PhoneCodeStep } from "@/components/ml/phone-code";
 
 export const Route = createFileRoute("/auth/forgot")({
@@ -89,16 +91,7 @@ function ForgotPassword() {
     setBusy(false);
     if (err) {
       haptic("error");
-      const m = err.message.toLowerCase();
-      setError(
-        m.includes("signup") || m.includes("not found") || m.includes("not allowed")
-          ? {
-              ...classifyAuthError(err.message),
-              title: "No account uses this number",
-              body: "Reset by email instead, or check the number.",
-            }
-          : classifyAuthError(err.message),
-      );
+      setError(classifyAuthError(err.message));
       return;
     }
     haptic("confirm");
@@ -134,126 +127,116 @@ function ForgotPassword() {
         onChangeNumber={() => setCodeSentTo(null)}
         onVerified={() => void navigate({ to: "/reset-password", replace: true })}
         createUser={false}
-        useEmailLink={false}
       />
     );
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
-      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-        <div className="my-auto py-1">
-          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
-            <AuthHeading
-              title={sent ? "Check your email" : "Reset your password"}
-              sub={
-                sent
-                  ? `If an account exists for ${email.trim()}, a password reset link has been sent.`
-                  : method === "email"
-                    ? "Enter your registered email address and we'll send a secure reset link."
-                    : "Enter your registered mobile number and we'll text you a 6-digit code."
-              }
-            />
+      <AuthComposition footer={<AuthFooter />}>
+        <AuthSurface>
+          <AuthHeading
+            title={sent ? "Check your email" : "Reset your password"}
+            sub={
+              sent
+                ? `If an account exists for ${email.trim()}, a password reset link has been sent.`
+                : method === "email"
+                  ? "Enter your email address and we'll send a secure reset link if it can be used."
+                  : "Enter your mobile number and we'll send a 6-digit code if it can be used."
+            }
+          />
 
-            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+          {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-            {sent ? (
-              <div className="space-y-3">
-                <AuthNotice tone="success" title="Reset link dispatched">
-                  The link expires in 60 minutes and can be used once. Check your spam folder if you
-                  don't see it.
-                </AuthNotice>
-                <div className="space-y-2 pt-1">
-                  <Btn
-                    className="w-full h-12 text-sm font-semibold shadow-xs"
-                    onClick={() => void navigate({ to: "/welcome" })}
-                  >
-                    Back to Sign In
-                  </Btn>
-                  <Btn
-                    variant="outline"
-                    className="w-full h-12 text-sm font-medium"
-                    onClick={() => setSent(false)}
-                  >
-                    Send to a Different Email
-                  </Btn>
-                </div>
-              </div>
-            ) : (
-              <form
-                noValidate
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!busy) void send();
-                }}
-              >
-                <div className="mb-2">
-                  <SegmentedField
-                    value={method}
-                    options={METHODS}
-                    onChange={(m) => {
-                      setMethod(m);
-                      setError(null);
-                    }}
-                    label="Reset by"
-                    labels={{ email: "Email", mobile: "Mobile" }}
-                    icons={{ email: Mail, mobile: Smartphone }}
-                  />
-                </div>
-                {method === "email" ? (
-                  <LabeledInput
-                    label="Registered email"
-                    value={email}
-                    onChange={setEmail}
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    enterKeyHint="go"
-                    placeholder="name@example.com"
-                    onBlur={() => fields.touch("email")}
-                    error={fields.errorFor("email", emailProblem)}
-                  />
-                ) : (
-                  <PhoneField
-                    value={digits}
-                    onChange={setDigits}
-                    onBlur={() => fields.touch("phone")}
-                    error={fields.errorFor("phone", phoneProblem)}
-                  />
-                )}
+          {sent ? (
+            <div className="space-y-3">
+              <AuthNotice tone="success" title="Check your inbox">
+                If this address is linked to an account, the reset link will arrive shortly. It
+                expires in 60 minutes and can be used once.
+              </AuthNotice>
+              <div className="space-y-2 pt-1">
                 <Btn
-                  type="submit"
-                  className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
-                  loading={busy}
+                  className="w-full h-12 text-sm font-semibold shadow-xs"
+                  onClick={() => void navigate({ to: "/welcome" })}
                 >
-                  {method === "email" ? "Send Reset Link" : "Send Code"}
+                  Back to sign in
                 </Btn>
-                {method === "email" ? (
-                  <TrustNote>
-                    For your safety, we confirm receipt regardless of whether an account exists.
-                  </TrustNote>
-                ) : null}
-              </form>
-            )}
-          </div>
-
-          <p className="mt-4 text-center text-1 text-muted-foreground">
-            Remember your password?{" "}
-            <AuthLink
-              to="/welcome"
-              className="font-semibold text-foreground underline underline-offset-4"
+                <Btn
+                  variant="outline"
+                  className="w-full h-12 text-sm font-medium"
+                  onClick={() => setSent(false)}
+                >
+                  Change email
+                </Btn>
+              </div>
+            </div>
+          ) : (
+            <form
+              noValidate
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!busy) void send();
+              }}
             >
-              Sign In
-            </AuthLink>
-          </p>
-        </div>
+              <div className="mb-2">
+                <SegmentedField
+                  value={method}
+                  options={METHODS}
+                  onChange={(m) => {
+                    setMethod(m);
+                    setError(null);
+                  }}
+                  label="Reset by"
+                  labels={{ email: "Email", mobile: "Mobile" }}
+                  icons={{ email: Mail, mobile: Smartphone }}
+                />
+              </div>
+              {method === "email" ? (
+                <LabeledInput
+                  label="Email address"
+                  value={email}
+                  onChange={setEmail}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  enterKeyHint="go"
+                  placeholder="name@example.com"
+                  onBlur={() => fields.touch("email")}
+                  error={fields.errorFor("email", emailProblem)}
+                />
+              ) : (
+                <PhoneField
+                  value={digits}
+                  onChange={setDigits}
+                  onBlur={() => fields.touch("phone")}
+                  error={fields.errorFor("phone", phoneProblem)}
+                />
+              )}
+              <Btn
+                type="submit"
+                className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
+                loading={busy}
+              >
+                {method === "email" ? "Send reset link" : "Send verification code"}
+              </Btn>
+              {method === "email" ? (
+                <TrustNote>
+                  For your safety, we confirm receipt regardless of whether an account exists.
+                </TrustNote>
+              ) : null}
+            </form>
+          )}
+        </AuthSurface>
 
-        <div className="shrink-0 pt-1 text-center">
-          <LegalNote className="mt-0" />
-          <div className="mt-0.5">
-            <MadeByWugweb />
-          </div>
-        </div>
-      </div>
+        <p className="mt-4 text-center text-1 text-muted-foreground">
+          Remember your password?{" "}
+          <AuthLink
+            to="/welcome"
+            className="font-semibold text-foreground underline underline-offset-4"
+          >
+            Sign in
+          </AuthLink>
+        </p>
+      </AuthComposition>
     </AuthScreen>
   );
 }
