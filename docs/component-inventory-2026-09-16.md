@@ -1,5 +1,11 @@
 # Component inventory — tokens, primitives, components, blocks, widgets
 
+> **Superseded (4 Oct 2026, brief §7).** This file is a dated snapshot, not an authority. The
+> order of authority is **code → Storybook → Notion**: `src/styles.css`, `src/components/ml/*`,
+> `AGENTS.md`, and Storybook's Foundations pages. Where this file disagrees with them, it is wrong.
+> Kept for history only; nothing here should be built from.
+
+
 **16 Sep 2026 · audit only.** Nothing under `src/` was changed to produce this document. Counts
 were read directly from files on `main`, same method as `docs/inventory-2026-09-11.md`: grep/parse,
 not guesswork. This is the first pass — it identifies and maps what exists and what repeats; it

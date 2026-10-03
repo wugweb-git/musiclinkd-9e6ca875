@@ -333,7 +333,7 @@ talent edits in place, business hops between screens. Making `manage` the same s
 
 ### Talent ↔ business function map
 
-238 server functions. Mapped by capability, the asymmetry is visible: where the two cohorts share a
+242 server functions (4 Oct 2026; 238 when this was written). Mapped by capability, the asymmetry is visible: where the two cohorts share a
 function it is because the table is profile-shaped; where business has one and talent has none it is
 because the table is studio-shaped.
 

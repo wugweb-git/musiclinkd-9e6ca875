@@ -1,5 +1,11 @@
 # System rules — MusicLinkd, as built
 
+> **Superseded (4 Oct 2026, brief §7).** This file is a dated snapshot, not an authority. The
+> order of authority is **code → Storybook → Notion**: `src/styles.css`, `src/components/ml/*`,
+> `AGENTS.md`, and Storybook's Foundations pages. Where this file disagrees with them, it is wrong.
+> Kept for history only; nothing here should be built from.
+
+
 The owner's reference rules, rewritten against what this repository actually ships: our token
 names, our measured values, our component names, our groupings. Where the reference and the code
 disagree, the disagreement is named rather than smoothed over — a rule nobody can build from is

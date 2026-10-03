@@ -1,5 +1,21 @@
 # Token scale spec — MusicLinkd, as built
 
+> **Current (updated 4 Oct 2026).** This is the one repo doc kept current; `src/styles.css` still
+> wins on any disagreement. Changes since 23 Sep, from brief §3:
+>
+> - **Hit target:** `--spacing-touch` / `min-h-touch` is **48px** (owner, 29 Sep). 40–44px is only a
+>   drawn size inside a 48px `hit-area`. `control-sm` 40, `control` 48, `control-lg` 56 unchanged.
+> - **Radius:** app code uses only `sm` 8, `lg` 16, `3xl` 32 and `full`. The `rounded-md`,
+>   `rounded-2xl` and arbitrary `rounded-[…]` uses were moved onto those steps (vendor code aside).
+> - **Type:** the unused `display-*`, `body-*`, `label-*` utilities and `.headline-*`/`.title-*`
+>   aliases are gone; h1/h2 set at normal tracking. Sizes are the `text-*` steps only.
+> - **Removed tokens:** avatar sizes, `elevation-1`/`-4`, `--gradient-brand`/`brand-gradient`.
+>   `--shadow-ink` (a generic near-black, not a brand colour) tints `elevation-2`/`-3` and GearCta.
+> - **Primary vs Ink:** same colour; the usage list for the owner's decision is
+>   `Claude outputs/primary-vs-ink-2026-10-04.md`.
+> - **Contrast**, measured per state: `Claude outputs/contrast-2026-10-04.md`.
+
+
 Companion to [system-rules-2026-09-16.md](system-rules-2026-09-16.md). That file names the
 canonical components; this one names the scales underneath them, laid out as three layers —
 primitive, semantic, component — and audits our numbers against the owner's original reference

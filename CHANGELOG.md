@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — brief §7: stale repo docs (4 Oct)
+
+- `docs/component-inventory-2026-09-16.md`, `docs/db-map-2026-09-17.md` and
+  `docs/system-rules-2026-09-16.md` carry a Superseded banner: the order of authority is code →
+  Storybook → Notion.
+- `docs/token-scale-spec-2026-09-16.md` (the one doc kept current) records the §3 changes: 48px hit
+  target, four radius steps, removed type utilities and tokens, `--shadow-ink`, the Primary vs Ink
+  list, measured contrast.
+- AGENTS.md: the bookables paragraph says the `studio*` shims are gone and there are no rooms;
+  SCREEN-INVENTORY's server-function count is 242.
+- Storybook accessibility suite (`bun run test-storybook`): 20 files, 144 tests pass.
+
 ### Fixed — brief §4 and §5: verification and the rendering gate (4 Oct)
 
 - Route coverage (business, public and talent profiles, work form):
