@@ -180,75 +180,6 @@ export function EntityMetaRow({ b }: { b: Bookable }) {
   );
 }
 
-export function ResourceCard({
-  r,
-  selected,
-  onSelect,
-}: {
-  r: Resource;
-  selected?: boolean;
-  onSelect?: () => void;
-}) {
-  const from = lowestRate(r.tiers);
-  return (
-    <div
-      className={`overflow-hidden rounded-lg border-2 bg-background ${
-        selected ? "border-foreground bg-background" : "border-transparent bg-background"
-      }`}
-    >
-      <div className="flex gap-3 p-3">
-        {r.photo ? (
-          <img
-            src={sized(r.photo, { width: 80 })}
-            alt=""
-            className="h-20 w-20 shrink-0 rounded-lg object-cover"
-            loading="lazy"
-          />
-        ) : null}
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold">{r.name}</p>
-          {r.description ? (
-            <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{r.description}</p>
-          ) : null}
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-1 text-muted-foreground">
-            {r.capacity ? (
-              <span className="inline-flex items-center gap-1">
-                <Users size={iconSize.xs} /> Up to {r.capacity}
-              </span>
-            ) : null}
-            {r.availabilityNote ? (
-              <span className="inline-flex items-center gap-1">
-                <Calendar size={iconSize.xs} /> {r.availabilityNote}
-              </span>
-            ) : null}
-          </div>
-        </div>
-      </div>
-      {r.equipment.length ? (
-        <div className="flex flex-wrap gap-1.5 px-3 pb-3">
-          {r.equipment.slice(0, 3).map((e) => (
-            <span
-              key={e}
-              className="rounded-full bg-background px-2.5 py-1 text-1 text-muted-foreground"
-            >
-              {e}
-            </span>
-          ))}
-        </div>
-      ) : null}
-      <div className="flex items-center justify-between border-t border-border px-4 py-3">
-        <div className="min-w-0">
-          <Price price={from} amountClassName="text-sm font-semibold" />
-          <p className="text-1 text-muted-foreground">Request to book</p>
-        </div>
-        <Btn variant={selected ? "primary" : "outline"} onClick={onSelect ?? (() => undefined)}>
-          {selected ? "Selected" : "Select"}
-        </Btn>
-      </div>
-    </div>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 /* Availability calendar                                               */
 /* ------------------------------------------------------------------ */
@@ -505,7 +436,7 @@ export function DurationPicker({
               type="button"
               onClick={() => onChange(o.hours === 0 ? (customHours ?? 4) : o.hours)}
               aria-pressed={active}
-              className={`min-h-touch rounded-full border px-4 text-1 font-semibold ${
+              className={`min-h-control rounded-full border px-4 text-1 font-semibold ${
                 active
                   ? "border-transparent bg-selected-bg text-selected-text"
                   : "border-border bg-card"
@@ -564,7 +495,12 @@ export function AddOnCard({
             />
           )}
           {a.rentalListingId ? (
-            <TextLink to="/marketplace/rent" className="mt-1 gap-1">
+            // The listing itself, not the whole rental marketplace.
+            <TextLink
+              to="/marketplace/l/$id"
+              params={{ id: a.rentalListingId }}
+              className="mt-1 gap-1"
+            >
               Rental Marketplace <ChevronRight size={iconSize.xs} />
             </TextLink>
           ) : null}

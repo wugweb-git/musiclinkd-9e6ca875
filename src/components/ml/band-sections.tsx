@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { ChevronDown, ImagePlus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Btn, IconBtn, Sheet } from "@/components/ml/ui";
+import { Btn, IconBtn, Sheet, useConfirm } from "@/components/ml/ui";
 import { Card } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
 import { MediaEmbed } from "@/components/ml/media-embed";
@@ -68,6 +68,7 @@ export function BandLiveVideoList({
   const router = useRouter();
   const remove = useServerFn(removeBandLiveVideo);
   const [busy, setBusy] = useState<string | null>(null);
+  const confirm = useConfirm();
   const onRemove = async (videoId: string) => {
     setBusy(videoId);
     try {
@@ -81,6 +82,7 @@ export function BandLiveVideoList({
   };
   return (
     <div className="space-y-3">
+      {confirm.dialog}
       {videos.map((v) => (
         <Card key={v.id}>
           <div className="mb-3 flex items-center gap-2">
@@ -90,7 +92,11 @@ export function BandLiveVideoList({
                 label={`Remove ${v.title}`}
                 variant="ghost"
                 loading={busy === v.id}
-                onClick={() => void onRemove(v.id)}
+                onClick={() =>
+                  confirm.ask({ title: `Remove ${v.title}?`, confirmLabel: "Remove" }, () =>
+                    onRemove(v.id),
+                  )
+                }
               >
                 <Trash2 size={iconSize.sm} aria-hidden />
               </IconBtn>
@@ -327,6 +333,7 @@ export function BandStagePlotSheet({
   const [url, setUrl] = useState(plot?.url ?? "");
   const [note, setNote] = useState(plot?.note ?? "");
   const [saving, setSaving] = useState<"save" | "remove" | null>(null);
+  const confirm = useConfirm();
 
   const pick = async (_kind: "cover", file: File) => {
     try {
@@ -406,11 +413,16 @@ export function BandStagePlotSheet({
             className="w-full"
             loading={saving === "remove"}
             disabled={saving === "save"}
-            onClick={() => void write({ url: "", note: "" }, "remove")}
+            onClick={() =>
+              confirm.ask({ title: "Remove stage plot?", confirmLabel: "Remove" }, () =>
+                write({ url: "", note: "" }, "remove"),
+              )
+            }
           >
             Remove stage plot
           </Btn>
         ) : null}
+        {confirm.dialog}
       </div>
     </Sheet>
   );
@@ -552,25 +564,31 @@ export function RemoveReleaseButton({ releaseId, title }: { releaseId: string; t
   const router = useRouter();
   const remove = useServerFn(removeBandRelease);
   const [busy, setBusy] = useState(false);
+  const confirm = useConfirm();
   return (
-    <IconBtn
-      label={`Remove ${title}`}
-      variant="plain"
-      disabled={busy}
-      onClick={async () => {
-        setBusy(true);
-        try {
-          await remove({ data: { releaseId } });
-          await router.invalidate();
-        } catch (e) {
-          failed(e);
-        } finally {
-          setBusy(false);
+    <>
+      <IconBtn
+        label={`Remove ${title}`}
+        variant="plain"
+        disabled={busy}
+        onClick={() =>
+          confirm.ask({ title: `Remove ${title}?`, confirmLabel: "Remove" }, async () => {
+            setBusy(true);
+            try {
+              await remove({ data: { releaseId } });
+              await router.invalidate();
+            } catch (e) {
+              failed(e);
+            } finally {
+              setBusy(false);
+            }
+          })
         }
-      }}
-    >
-      <Trash2 size={iconSize.md} aria-hidden />
-    </IconBtn>
+      >
+        <Trash2 size={iconSize.md} aria-hidden />
+      </IconBtn>
+      {confirm.dialog}
+    </>
   );
 }
 

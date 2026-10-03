@@ -459,6 +459,10 @@ export function ImagePickButton<K extends string = ProfileImageKind>({
     setBusy(true);
     try {
       for (const file of files) await onPick(kind, file);
+    } catch (e) {
+      // Callers show their own message; this catches one that let an error through, so a failed
+      // upload is never silent.
+      toast.error(e instanceof Error ? e.message : "That upload didn't work. Try again.");
     } finally {
       setBusy(false);
     }
@@ -467,7 +471,9 @@ export function ImagePickButton<K extends string = ProfileImageKind>({
   return (
     <label
       className={cn(
-        "state-layer flex cursor-pointer items-center justify-center rounded-full",
+        // The input is visually hidden, so the ring shows on the label while the input has
+        // keyboard focus.
+        "state-layer hit-area flex cursor-pointer items-center justify-center rounded-full has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2",
         busy ? "pointer-events-none opacity-60" : "",
         className,
       )}
@@ -616,16 +622,25 @@ export function CoverHero({
         ) : (
           <CoverFallback name={name} />
         )}
+        {/* Below the status bar on an edge-to-edge phone: the top inset plus the old 20px. */}
         {back ? (
           <Link
             to={back}
             aria-label="Back"
-            className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
+            style={{ top: "calc(env(safe-area-inset-top) + 1.25rem)" }}
+            className="hit-area absolute left-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
           >
             <ArrowLeft size={iconSize.md} aria-hidden />
           </Link>
         ) : null}
-        {actions ? <div className="absolute right-5 top-5 flex gap-2">{actions}</div> : null}
+        {actions ? (
+          <div
+            style={{ top: "calc(env(safe-area-inset-top) + 1.25rem)" }}
+            className="absolute right-5 flex gap-2"
+          >
+            {actions}
+          </div>
+        ) : null}
       </div>
 
       <div className="-mt-16 px-5">
@@ -1154,7 +1169,7 @@ export function ServiceCard({
   const book = onBook ? (
     <Btn
       disabled={disabled}
-      className="min-h-control-sm shrink-0 px-5 text-sm active:scale-95"
+      className="hit-area min-h-control-sm shrink-0 px-5 text-sm active:scale-95"
       onClick={onBook}
     >
       Book
@@ -1164,16 +1179,17 @@ export function ServiceCard({
       to="/services/$id/enquiry"
       params={{ id: s.id }}
       className={cn(
-        "min-h-control-sm shrink-0 px-5 text-sm active:scale-95",
+        "hit-area min-h-control-sm shrink-0 px-5 text-sm active:scale-95",
         disabled && "pointer-events-none opacity-50",
       )}
     >
       Book
     </BtnLink>
   ) : (
+    // With nothing to open (a preview, a service not saved yet), Book is disabled, not dead.
     <Btn
-      disabled={disabled}
-      className="min-h-control-sm shrink-0 px-5 text-sm active:scale-95"
+      disabled={disabled || !onEnquire}
+      className="hit-area min-h-control-sm shrink-0 px-5 text-sm active:scale-95"
       {...(onEnquire ? { onClick: onEnquire } : {})}
     >
       Book
@@ -1226,11 +1242,11 @@ export function ServiceCard({
               onClick={() => setExpanded((e) => !e)}
               aria-expanded={expanded}
               aria-label={expanded ? "Collapse service details" : "Expand service details"}
-              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-semibold text-foreground hover:bg-subtle active:scale-95 transition-all"
+              className="hit-area inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-semibold text-foreground hover:bg-subtle active:scale-95 transition-all"
             >
               <span>{expanded ? "Less" : "Details"}</span>
               <ChevronDown
-                size={12}
+                size={iconSize.xs}
                 className={cn("transition-transform duration-200", expanded && "rotate-180")}
                 aria-hidden
               />
@@ -1392,7 +1408,7 @@ export function ReviewCard({
               haptic("select");
               setExpanded(!expanded);
             }}
-            className="mt-1 inline-block text-1 font-semibold text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+            className="hit-area mt-1 inline-block text-1 font-semibold text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
           >
             {expanded ? "Show less" : "Read more"}
           </button>

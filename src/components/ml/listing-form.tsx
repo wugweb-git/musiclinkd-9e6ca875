@@ -779,7 +779,7 @@ function PhotoSlots({
                 type="button"
                 aria-label="Remove photo"
                 onClick={() => remove(url)}
-                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white"
+                className="hit-area absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white"
               >
                 <X size={iconSize.sm} aria-hidden />
               </button>
@@ -912,7 +912,7 @@ export function TagListField({
                 type="button"
                 aria-label={`Remove ${x}`}
                 onClick={() => onChange(value.filter((y) => y !== x))}
-                className="flex h-5 w-5 items-center justify-center"
+                className="hit-area flex h-5 w-5 items-center justify-center"
               >
                 <X size={iconSize.xs} aria-hidden />
               </button>

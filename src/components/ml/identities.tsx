@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ChevronRight, KeyRound } from "lucide-react";
 import { toast } from "sonner";
-import { Btn, Sheet } from "@/components/ml/ui";
+import { Btn, Sheet, useConfirm } from "@/components/ml/ui";
 import {
   listMySignInMethods,
   removeMySignInMethod,
@@ -37,6 +37,7 @@ function labelFor(provider: string) {
 export function SignInMethodsRow() {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const confirm = useConfirm();
   const load = useServerFn(listMySignInMethods);
   const unlink = useServerFn(removeMySignInMethod);
   // A failed read is its own state: it never reads as "no methods" or "your only method".
@@ -61,6 +62,7 @@ export function SignInMethodsRow() {
 
   return (
     <>
+      {confirm.dialog}
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -106,7 +108,12 @@ export function SignInMethodsRow() {
                     variant="outline"
                     className="shrink-0"
                     loading={remove.isPending && remove.variables?.id === identity.id}
-                    onClick={() => remove.mutate(identity)}
+                    onClick={() =>
+                      confirm.ask(
+                        { title: `Remove ${labelFor(identity.provider)}?`, confirmLabel: "Remove" },
+                        () => remove.mutate(identity),
+                      )
+                    }
                   >
                     Remove
                   </Btn>

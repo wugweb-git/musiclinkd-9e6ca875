@@ -49,6 +49,12 @@ import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { useDismissable } from "@/hooks/use-dismissable";
 import { TabIcon, type SolidIcon } from "./tab-icon";
 import { sized } from "@/lib/image-url";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 /*
  * The app shell: centred, capped at the phone width, full viewport height. `100dvh` rather than
@@ -836,8 +842,13 @@ export function Sheet({
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        style={dy ? { transform: `translateY(${dy}px)` } : undefined}
-        className={`relative max-h-[88dvh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-3xl border border-border bg-card px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 outline-none no-scrollbar duration-300 ease-enter ${drag ? "" : "transition-transform"}`}
+        // Never under the status bar: at most 88% of the screen, and always clear of the top inset
+        // (edge-to-edge on Android 15+, the notch on iOS).
+        style={{
+          maxHeight: "min(88dvh, calc(100dvh - env(safe-area-inset-top) - 1rem))",
+          ...(dy ? { transform: `translateY(${dy}px)` } : {}),
+        }}
+        className={`relative animate-in slide-in-from-bottom overflow-y-auto rounded-t-3xl border border-border bg-card px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 outline-none no-scrollbar duration-300 ease-enter ${drag ? "" : "transition-transform"}`}
       >
         <div
           aria-hidden
@@ -884,4 +895,71 @@ export function SectionHeader({ title, action }: { title: string; action?: React
       ) : null}
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/* Confirm — every destructive action asks first                       */
+/* ------------------------------------------------------------------ */
+
+type ConfirmAsk = {
+  /** The question: "Remove this photo?". */
+  title: string;
+  /** What happens, when it isn't obvious from the title. */
+  body?: string | undefined;
+  /** The destructive button's label: "Remove", "Disconnect". */
+  confirmLabel: string;
+};
+
+/**
+ * One confirm for every destructive action (brief §2, 29 Sep), on the alert-dialog primitive:
+ * role alertdialog, focus held inside, Escape and the back button cancel, nothing happens behind
+ * it. `ask` opens it; the action runs only on the confirm button, and the dialog stays open with
+ * the button busy until the action settles. Render `dialog` once in the component.
+ */
+// eslint-disable-next-line react-refresh/only-export-components -- hook belongs with its dialog
+export function useConfirm() {
+  const [asked, setAsked] = useState<(ConfirmAsk & { run: () => unknown }) | null>(null);
+  const [busy, setBusy] = useState(false);
+  const close = () => {
+    if (!busy) setAsked(null);
+  };
+  useDismissable(Boolean(asked), close, { escape: false });
+
+  const dialog = (
+    <AlertDialog open={Boolean(asked)} onOpenChange={(next) => !next && close()}>
+      <AlertDialogContent className="z-sheet w-[calc(100%-3rem)] max-w-sm gap-0 rounded-lg border-0 bg-subtle p-5 shadow-none">
+        <AlertDialogTitle className="text-2 leading-tight">{asked?.title}</AlertDialogTitle>
+        <AlertDialogDescription
+          className={asked?.body ? "mt-2 text-1 text-muted-foreground" : "sr-only"}
+        >
+          {asked?.body ?? asked?.title}
+        </AlertDialogDescription>
+        <div className="mt-4 flex flex-col gap-2">
+          <Btn
+            loading={busy}
+            onClick={async () => {
+              if (!asked) return;
+              setBusy(true);
+              try {
+                await asked.run();
+              } finally {
+                setBusy(false);
+                setAsked(null);
+              }
+            }}
+          >
+            {asked?.confirmLabel}
+          </Btn>
+          <Btn variant="ghost" disabled={busy} onClick={close}>
+            Cancel
+          </Btn>
+        </div>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
+  return {
+    ask: (question: ConfirmAsk, run: () => unknown) => setAsked({ ...question, run }),
+    dialog,
+  };
 }

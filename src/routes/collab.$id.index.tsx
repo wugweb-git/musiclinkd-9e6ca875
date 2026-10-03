@@ -301,7 +301,9 @@ function CollabRoom() {
       await saveImage({ data: { id: c.id, kind: which, url } });
       await queryClient.invalidateQueries({ queryKey: ["collab", id] });
     } catch (e) {
-      toast.error(e instanceof Error && e.message ? e.message : "That didn't upload. Try again.");
+      toast.error(e instanceof Error && e.message ? e.message : "That didn't upload. Try again.", {
+        action: { label: "Try again", onClick: () => void pickImage(which, file) },
+      });
     }
   }
 

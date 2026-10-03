@@ -1045,7 +1045,7 @@ export function ActiveFilters({
         <button
           type="button"
           onClick={() => onChange(emptyMarketFilter)}
-          className="shrink-0 px-1 text-1 font-semibold text-foreground underline underline-offset-2"
+          className="hit-area shrink-0 px-1 text-1 font-semibold text-foreground underline underline-offset-2"
         >
           Clear all
         </button>
@@ -1067,7 +1067,7 @@ export function ActiveFilters({
                   },
             )
           }
-          className="state-layer inline-flex shrink-0 items-center gap-1.5 rounded-sm bg-card py-1.5 pl-2.5 pr-2 text-1 font-medium text-foreground"
+          className="state-layer hit-area inline-flex shrink-0 items-center gap-1.5 rounded-sm bg-card py-1.5 pl-2.5 pr-2 text-1 font-medium text-foreground"
         >
           {c.label}
           <X size={iconSize.xs} aria-hidden />
@@ -1085,7 +1085,7 @@ export function FilterButton({ count, onClick }: { count: number; onClick: () =>
       type="button"
       aria-label={count ? `Filters, ${count} applied` : "Filters"}
       onClick={onClick}
-      className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${count ? "border-foreground bg-ink text-background" : "border-border bg-card"}`}
+      className={`hit-area relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${count ? "border-foreground bg-ink text-background" : "border-border bg-card"}`}
     >
       <SlidersHorizontal size={iconSize.sm} aria-hidden />
       {count ? (
