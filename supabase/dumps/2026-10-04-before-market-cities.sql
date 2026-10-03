@@ -1,0 +1,13 @@
+-- Snapshot before 20261004160000_market_cities_in_taxonomy.sql. Taken read-only from the live
+-- database, 4 Oct 2026. Reference data only (taxonomy rows), no user data.
+--
+-- taxonomy_options, category_key = 'cities' (79 published; none has market_rank, lat or lng):
+--   maharashtra__mumbai   Mumbai     sort 1   {"app_key": "Mumbai", "state": "Maharashtra"}
+--   maharashtra__pune     Pune       sort 2   {"app_key": "Pune", "state": "Maharashtra"}
+--   delhi__new_delhi      New Delhi  sort 5   {"app_key": "New Delhi", "state": "Delhi"}
+--   karnataka__bengaluru  Bengaluru  sort 9   {"app_key": "Bengaluru", "state": "Karnataka"}
+--   tamil_nadu__chennai   Chennai    sort 12  {"app_key": "Chennai", "state": "Tamil Nadu"}
+--   goa__panaji           Panaji     sort 24  {"app_key": "Panaji", "state": "Goa"}
+--
+-- Undo: UPDATE public.taxonomy_options SET metadata = metadata - 'market_rank' - 'lat' - 'lng'
+--       WHERE category_key = 'cities';

@@ -1,0 +1,32 @@
+-- Snapshot before 20261004150000_drop_retired_rooms_and_services.sql (P2). Taken read-only from the
+-- live database, 4 Oct 2026. Definitions and counts only; no user data — so this is NOT an undo of
+-- the rows: the 25 rooms and the 15 places' service tags are not kept anywhere once dropped.
+--
+-- public.bookable_rooms_retired
+--   id uuid DEFAULT gen_random_uuid() NOT NULL
+--   bookable_id uuid NOT NULL
+--   name text NOT NULL
+--   capacity integer
+--   hourly_rate_paise bigint
+--   amenities text[] DEFAULT '{}'::text[] NOT NULL
+--   sort_order integer DEFAULT 0 NOT NULL
+--   kind text
+--   photo_url text
+--   gear text[] DEFAULT '{}'::text[] NOT NULL
+--   description text
+--   tiers jsonb DEFAULT '[]'::jsonb NOT NULL
+--   studio_rooms_pkey: PRIMARY KEY (id)
+--   studio_rooms_studio_id_fkey: FOREIGN KEY (bookable_id) REFERENCES bookables(id) ON DELETE CASCADE
+--   studio_rooms_capacity_check: CHECK ((capacity >= 0))
+--   studio_rooms_hourly_rate_paise_check: CHECK ((hourly_rate_paise >= 0))
+--   studio_rooms_tiers_array: CHECK ((jsonb_typeof(tiers) = 'array'::text))
+--   CREATE INDEX studio_rooms_studio_idx ON public.bookable_rooms_retired USING btree (bookable_id, sort_order)
+--   policy "Owners write their own" ALL using/check: the bookable's owner_profile_id = auth.uid()
+--   policy "Readable by everyone" SELECT using (true)
+--   grants: postgres ALL · service_role ALL · sandbox_exec SELECT, INSERT (anon/authenticated revoked in 20261004120000)
+--   triggers: none · foreign keys pointing at it: none (dropped in 20261004130000) · views/functions using it: none
+--
+-- public.bookables.services_retired text[] DEFAULT '{}'::text[] NOT NULL
+--   comment: 'Retired 4 Oct 2026: profile_services is what a business offers. Kept as it was; dropped in P2.'
+--
+-- Counts: bookable_rooms_retired 25 rows · bookables with services_retired tags 15
