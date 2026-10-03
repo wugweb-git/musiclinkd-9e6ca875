@@ -153,14 +153,36 @@ function MatchScreen() {
             {result.people.length ? (
               <section>
                 <SectionHeader title="People who fit" />
-                <ul className="mx-5 divide-y divide-border/70 overflow-hidden rounded-lg border border-border bg-card">
+                <ul className="space-y-3 px-5">
                   {result.people.map(({ person, reason }) => (
-                    <PersonRow
-                      key={person.id}
-                      person={person}
-                      roleLabels={options?.person_types}
-                      detail={reason}
-                    />
+                    <li key={person.id} className="lift reveal overflow-hidden rounded-lg bg-card">
+                      <PersonRow as="div" person={person} roleLabels={options?.person_types} />
+                      <div className="space-y-3 border-t border-border/70 px-4 pb-4 pt-3">
+                        <p className="text-sm">
+                          <span className="font-semibold">Why they fit: </span>
+                          {reason}
+                        </p>
+                        {person.username ? (
+                          <BtnLink
+                            to="/profile/$username"
+                            params={{ username: person.username }}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            View profile
+                          </BtnLink>
+                        ) : (
+                          <BtnLink
+                            to="/talent/$id"
+                            params={{ id: person.id }}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            View profile
+                          </BtnLink>
+                        )}
+                      </div>
+                    </li>
                   ))}
                 </ul>
               </section>
@@ -172,13 +194,24 @@ function MatchScreen() {
                   {result.opportunities.map(({ row, reason }) => {
                     const o = opportunityFromRow(row, labels.data ?? {});
                     return (
-                      <div key={row.id}>
+                      <div key={row.id} className="lift reveal space-y-2">
                         <OpportunityCard
                           o={o}
                           saved={saved.has(o.id)}
                           onSave={() => saved.toggle(o.id)}
                         />
-                        <p className="mt-1.5 px-1 text-1 text-muted-foreground">{reason}</p>
+                        <p className="px-1 text-sm">
+                          <span className="font-semibold">Why it fits: </span>
+                          {reason}
+                        </p>
+                        <BtnLink
+                          to="/opportunities/$id"
+                          params={{ id: row.id }}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          View opportunity
+                        </BtnLink>
                       </div>
                     );
                   })}

@@ -1505,3 +1505,37 @@ export function ListingStepFooter({
     </div>
   );
 }
+
+/**
+ * A category's branded banner: ink ground, a pool of brand light and the category name. No stock
+ * photo; the listings below carry the real media.
+ */
+export function CategoryBanner({
+  title,
+  count,
+  icon,
+}: {
+  title: string;
+  count: number;
+  icon?: ReactNode | undefined;
+}) {
+  return (
+    <div className="relative mx-5 overflow-hidden rounded-3xl bg-ink px-5 py-6 text-ink-foreground">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-brand/35 blur-3xl animate-breathe"
+      />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-1 w-1/3 bg-brand" />
+      <div className="relative flex items-end justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-1 text-ink-foreground/70">Market category</p>
+          <h2 className="mt-1 text-3 font-semibold">{title}</h2>
+          <p className="mt-1 text-sm text-ink-foreground/70">
+            {count === 0 ? "No listings yet" : `${count} listing${count === 1 ? "" : "s"}`}
+          </p>
+        </div>
+        {icon ? <span className="shrink-0 text-ink-foreground/80">{icon}</span> : null}
+      </div>
+    </div>
+  );
+}

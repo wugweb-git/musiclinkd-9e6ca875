@@ -28,7 +28,7 @@ function AcademyScreen() {
           title="Lessons are coming soon"
           body="Short guides on getting booked, pricing your work and building a portfolio will appear here. Until then, Help has answers to common questions."
         >
-          <BtnLink to="/help" variant="secondary" className="w-full">
+          <BtnLink to="/help" variant="outline" className="w-full">
             Open Help
           </BtnLink>
         </EmptyState>

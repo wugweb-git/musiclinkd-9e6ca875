@@ -1,10 +1,11 @@
 import { EmptyState } from "@/components/ml/kit";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowUpDown, X, SlidersHorizontal } from "lucide-react";
+import { ArrowUpDown, ShoppingBag, X, SlidersHorizontal } from "lucide-react";
 import { Screen, TopBar, Chip, IconBtn } from "@/components/ml/ui";
 import {
   ActiveFilters,
+  CategoryBanner,
   FilterButton,
   ListingGrid,
   MarketFilterSheet,
@@ -87,6 +88,13 @@ function CategoryScreen() {
           </div>
         }
       />
+      <div className="pt-4">
+        <CategoryBanner
+          title={cat?.label ?? "Market"}
+          count={inCategory.length}
+          icon={<ShoppingBag size={iconSize.lg} aria-hidden />}
+        />
+      </div>
       {/* Results, the filters in force and the sort when it isn't the default. */}
       <div className="pt-4">
         <ActiveFilters
