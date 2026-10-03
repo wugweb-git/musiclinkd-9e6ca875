@@ -9,13 +9,6 @@
 - [ ] Adapt Discover priorities for Talent versus Business without creating separate route architecture.
 - [ ] Verify signed-in role states, loading/empty/offline/error states, mobile widths, desktop, TypeScript, lint, tokens, and build.
 
-## 3 Oct 2026 — product-wide visual-system correction
-
-- [ ] Audit the supplied UI references against the shared MusicLinkd tokens, primitives, components, blocks, and representative production routes.
-- [ ] Strengthen the shared visual system centrally so spacing, hierarchy, surfaces, typography, actions, and states improve consistently without replacing established contracts.
-- [ ] Apply the corrected system across the remaining product in controlled route groups after Home and Discover establish the reference quality bar.
-- [ ] Verify each route group on production mobile widths and desktop before marking it complete.
-
 ## 3 Oct 2026 — authentication entry redesign
 
 - [x] Redesign `/welcome`, phone sign-in and verification, and onboarding Select.
