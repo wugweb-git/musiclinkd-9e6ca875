@@ -96,10 +96,12 @@ function HelpIndex() {
           />
         ) : q.trim() ? (
           results.length ? (
-            <div className="space-y-2">
+             <div className="divide-y divide-border/70 border-y border-border bg-card">
               {results.map((p) => (
                 <Row
                   key={p.slug}
+                   grouped
+                   flat
                   title={p.title}
                   subtitle={`${p.readTime} · ${p.summary}`}
                   to="/help/$slug"

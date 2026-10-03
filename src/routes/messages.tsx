@@ -117,7 +117,7 @@ function Connections() {
 
   return (
     <Screen>
-      <TopBar title="Messages" right={<NotificationsBell />} />
+       <TopBar title="Connections" right={<NotificationsBell />} />
 
       {!signedIn && !loading ? (
         <div className="px-5 pt-4">
@@ -145,7 +145,7 @@ function Connections() {
 
             {!busy && !failed && tab === "Chats" ? (
               chats.length ? (
-                <ul>
+                 <ul className="divide-y divide-border/70">
                   {chats.map((t) => {
                     const name = nameOf(t.person) || "Conversation";
                     const unreadRow = t.unread > 0;
@@ -154,7 +154,7 @@ function Connections() {
                         <Link
                           to="/conversation/$id"
                           params={{ id: t.id }}
-                          className="state-layer -mx-2 flex items-center gap-3 rounded-lg px-2 py-2.5"
+                           className="state-layer flex min-h-18 items-center gap-3 py-3"
                         >
                           <PersonAvatar
                             name={name}
@@ -334,7 +334,7 @@ function Connections() {
             <button
               type="button"
               onClick={() => setStarting(true)}
-              className="state-layer pointer-events-auto inline-flex h-14 items-center gap-2 rounded-lg bg-ink px-5 text-sm font-semibold text-background shadow-[0_6px_20px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-standard active:scale-97"
+               className="state-layer pointer-events-auto inline-flex h-14 items-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-ink-foreground shadow-elevation-3 transition-transform duration-200 ease-standard active:scale-97"
             >
               <SquarePen size={iconSize.md} aria-hidden />
               Start chat

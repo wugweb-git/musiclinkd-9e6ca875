@@ -140,11 +140,11 @@ export function TalentProfileExperience({
       {/* Owner only: the same one-line top bar every other main tab carries. The public profile
           (profile/$username) is a different screen and keeps its own back-arrow header. */}
       {owner ? (
-        <header className="flex items-center justify-between px-5 pb-4 pt-6">
+        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-5 pb-4 pt-6">
           {/* Not an <h1>: the hero below carries one for the person's name, and a page has one
               heading. This is a bar label, so it reads as a bar label. */}
-          <p className="text-3 leading-tight">Profile</p>
-          <div className="flex items-center gap-2">
+          <p className="min-w-0 truncate text-3 font-semibold leading-tight">Profile</p>
+          <div className="flex shrink-0 items-center gap-1">
             <NotificationsBell />
             <IconBtnLink to="/search" label="Search" variant="plain" className="h-10 w-10">
               <Search size={iconSize.md} aria-hidden />
