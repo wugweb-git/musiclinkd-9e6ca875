@@ -13,6 +13,26 @@ import { supabase } from "@/integrations/supabase/client";
  */
 const FORGET_KEY = "ml:forget-on-close";
 const ALIVE_KEY = "ml:session-alive";
+// Tabs opened on their own (typed URL, bookmark) have a fresh sessionStorage. Every open tab with
+// the marker refreshes this shared timestamp, so a new tab can tell "another tab is open" apart
+// from "the browser was closed".
+const BEAT_KEY = "ml:session-beat";
+const BEAT_MS = 5_000;
+let beating = false;
+
+function startHeartbeat() {
+  if (beating || typeof window === "undefined") return;
+  beating = true;
+  const beat = () => {
+    try {
+      if (sessionStorage.getItem(ALIVE_KEY) === "1") localStorage.setItem(BEAT_KEY, String(Date.now()));
+    } catch {
+      // Storage blocked: nothing to keep alive.
+    }
+  };
+  beat();
+  window.setInterval(beat, BEAT_MS);
+}
 
 export function setRememberMe(remember: boolean) {
   try {
@@ -22,6 +42,7 @@ export function setRememberMe(remember: boolean) {
     } else {
       localStorage.setItem(FORGET_KEY, "1");
       sessionStorage.setItem(ALIVE_KEY, "1");
+      startHeartbeat();
     }
   } catch {
     // Storage blocked: the sign-in simply persists, as it did before this option existed.
@@ -40,8 +61,17 @@ export function forgetsOnClose(): boolean {
 /** Signs out a "don't remember me" session left from before the browser or app was closed. */
 export async function endSessionIfClosed(): Promise<void> {
   try {
-    if (!forgetsOnClose() || sessionStorage.getItem(ALIVE_KEY) === "1") return;
+    if (!forgetsOnClose()) return;
+    const beat = Number(localStorage.getItem(BEAT_KEY) ?? 0);
+    if (sessionStorage.getItem(ALIVE_KEY) !== "1" && Date.now() - beat < BEAT_MS * 3) {
+      sessionStorage.setItem(ALIVE_KEY, "1"); // another tab is still open: join it
+    }
+    if (sessionStorage.getItem(ALIVE_KEY) === "1") {
+      startHeartbeat();
+      return;
+    }
     localStorage.removeItem(FORGET_KEY);
+    localStorage.removeItem(BEAT_KEY);
   } catch {
     return;
   }
