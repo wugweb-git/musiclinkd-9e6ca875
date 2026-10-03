@@ -5,17 +5,18 @@
 --   2. The amenity picker offers 12 options. The other 21 get metadata.picker = false: still
 --      published, so their labels keep showing wherever a profile already has them; nothing is
 --      deleted and no profile row changes.
---   3. `studio_services` folds into `service_categories`: its 7 options that aren't there yet are
+--   3. `studio_services` folds into `service_categories`: 6 options that aren't there yet are
 --      added with their existing labels, under the `studio` parent, offered to every person type
---      already offered `studio`. bookables.services is untouched. The studio_services rows stay
+--      already offered `studio`. Not `recording`: `studio_recording` ("Studio recording") is
+--      already under `studio`, and both would show in the picker. bookables.services is untouched,
+--      so a business tagged "Recording" still shows it. The studio_services rows stay
 --      (service_category_specialties still points at them); no screen reads that key.
 -- Ships with the code on p1/facility-to-amenity, which reads `amenities` and honours `picker`.
 -- Apply after 20261003150000, then publish. Between the two the live code still asks for
 -- `studio_amenities`: amenity names fall back to slugs and the amenity picker is empty.
 --
--- Snapshot before applying: supabase/dumps/2026-10-03-before-amenities-key.sql, the output of
--- supabase/checks/before-amenities-key.sql (the two category rows and every option row of
--- studio_amenities, studio_services and service_categories: taxonomy, no user data).
+-- Snapshot: supabase/dumps/2026-10-03-before-amenities-key.sql, taken read-only on 3 Oct with
+-- supabase/checks/before-amenities-key.sql (taxonomy only, no user data).
 --
 -- Rollback:
 --   INSERT INTO public.taxonomy_categories SELECT * FROM jsonb_populate_record(
@@ -25,10 +26,10 @@
 --     metadata = nullif(metadata - 'picker', '{}'::jsonb) WHERE category_key = 'amenities';
 --   DELETE FROM public.taxonomy_categories WHERE key = 'amenities';
 --   DELETE FROM public.person_type_service_categories WHERE service_category_category =
---     'service_categories' AND service_category_slug IN ('recording', 'resident_engineers',
+--     'service_categories' AND service_category_slug IN ('resident_engineers',
 --     'attended_sessions', 'stem_mastering', 'producer', 'same_day_audio', 'multicam_video');
 --   DELETE FROM public.taxonomy_options WHERE category_key = 'service_categories' AND slug IN
---     (the same 7);   -- only those this migration added: check the snapshot first.
+--     (the same 6);   -- none existed before (see the snapshot), so all 6 are this migration's.
 
 BEGIN;
 
@@ -68,9 +69,9 @@ BEGIN
 
   IF (SELECT count(*) FROM public.taxonomy_options
        WHERE category_key = 'studio_services'
-         AND slug IN ('recording', 'resident_engineers', 'attended_sessions', 'stem_mastering',
-                      'producer', 'same_day_audio', 'multicam_video')) <> 7 THEN
-    RAISE EXCEPTION 'studio_services does not have all 7 options to fold';
+         AND slug IN ('resident_engineers', 'attended_sessions', 'stem_mastering',
+                      'producer', 'same_day_audio', 'multicam_video')) <> 6 THEN
+    RAISE EXCEPTION 'studio_services does not have all 6 options to fold';
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.taxonomy_options
                   WHERE category_key = 'service_categories' AND slug = 'studio') THEN
@@ -109,7 +110,7 @@ SELECT 'service_categories', s.slug, s.label,
        jsonb_build_object('app_key', s.slug, 'parent', 'studio')
   FROM public.taxonomy_options s
  WHERE s.category_key = 'studio_services'
-   AND s.slug IN ('recording', 'resident_engineers', 'attended_sessions', 'stem_mastering',
+   AND s.slug IN ('resident_engineers', 'attended_sessions', 'stem_mastering',
                   'producer', 'same_day_audio', 'multicam_video')
 ON CONFLICT (category_key, slug) DO NOTHING;
 
@@ -117,7 +118,7 @@ INSERT INTO public.person_type_service_categories
   (person_type_category, person_type_slug, service_category_category, service_category_slug)
 SELECT m.person_type_category, m.person_type_slug, 'service_categories', child
   FROM public.person_type_service_categories m,
-       unnest(ARRAY['recording', 'resident_engineers', 'attended_sessions', 'stem_mastering',
+       unnest(ARRAY['resident_engineers', 'attended_sessions', 'stem_mastering',
                     'producer', 'same_day_audio', 'multicam_video']) AS child
  WHERE m.service_category_category = 'service_categories' AND m.service_category_slug = 'studio'
 ON CONFLICT DO NOTHING;
@@ -140,9 +141,9 @@ BEGIN
   END IF;
   IF (SELECT count(*) FROM public.taxonomy_options
        WHERE category_key = 'service_categories'
-         AND slug IN ('recording', 'resident_engineers', 'attended_sessions', 'stem_mastering',
-                      'producer', 'same_day_audio', 'multicam_video')) <> 7 THEN
-    RAISE EXCEPTION 'service_categories is missing one of the 7 folded options';
+         AND slug IN ('resident_engineers', 'attended_sessions', 'stem_mastering',
+                      'producer', 'same_day_audio', 'multicam_video')) <> 6 THEN
+    RAISE EXCEPTION 'service_categories is missing one of the 6 folded options';
   END IF;
   IF (SELECT count(*) FROM public.taxonomy_options) <> b.options
        + (SELECT count(*) FROM public.taxonomy_options WHERE category_key = 'service_categories')

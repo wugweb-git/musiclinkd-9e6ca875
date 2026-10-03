@@ -13,13 +13,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   & diner, lockers, cafe, AC, water, catering). The other 21 carry `metadata.picker = false`: still
   published, so a profile that already has one still shows it, and the editor still lists it so the
   owner can remove it. Nothing deleted.
-- `service_categories` gains studio_services' 7 missing options (`recording`, `resident_engineers`,
+- `service_categories` gains 6 of studio_services' options (`resident_engineers`,
   `attended_sessions`, `stem_mastering`, `producer`, `same_day_audio`, `multicam_video`) with their
   existing labels, under the `studio` parent, offered to every person type already offered `studio`.
+  Not `recording`: "Studio recording" is already there, and the picker would show both.
   No screen read `studio_services`; its rows stay because `service_category_specialties` points at
   them. `bookables.services` is untouched.
 - `20261003140000` (cleanup) compares row counts before and after instead of hard-coding 21 / 57;
   its snapshot, `supabase/dumps/2026-10-03-before-drop-bookables-compat.sql`, is committed.
+- Snapshots for `20261003150000` and `20261003160000` committed (`supabase/dumps/2026-10-03-before-
+  photo-subject-amenity.sql`, `…-before-amenities-key.sql`); `supabase/checks/before-amenities-key.sql`
+  wraps its `UNION` in a subquery so its `ORDER BY` runs.
 
 ### Changed — Edit profile edits every onboarding answer (3 Oct)
 
@@ -99,13 +103,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   before, `/` and `/discover` returned 500 with that error; after, `/`, `/discover`, a booking page,
   Market, Welcome, Help and a profile return 200.
 
-### Added — cleanup migration for the bookable rename (3 Oct) — not applied
+### Added — cleanup migration for the bookable rename (3 Oct) — applied 3 Oct
+
+- Applied to the live database by the owner's Claude on 3 Oct: every built-in check passed, the API
+  schema was reloaded; 22 bookables, their photos and the storage rules unchanged.
 
 - `20261003140000_bookables_drop_compat.sql` drops the old-name views (`studios`, `studio_rooms`,
   `studio_blocks`, `studio_equipment`, `studio_photos`) and wrapper functions (`studio_is_mine`,
   `can_review_studio`, `studio_busy`). No `CASCADE`: it first checks that no view, function or rule
-  still uses an old name, and rolls back if one does. It touches no data. Apply only once the code
-  on the new names (`main` at `161ca9c` or later) is published and confirmed live.
+  still uses an old name, and rolls back if one does. It touches no data.
 
 
 ### Changed — code names follow the bookable rename (3 Oct)

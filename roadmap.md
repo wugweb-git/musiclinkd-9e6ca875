@@ -5,7 +5,7 @@
 - Bookable tables renamed from `studio*` (`20261003130000`); old-name shims dropped (`20261003140000`).
 - `business-media` bucket (5 MB) replaces `studio-media`; public photos lose EXIF/GPS.
 - "facility" is "amenity" in code, data (`20261003150000`) and screens; taxonomy key `amenities`,
-  12-option picker, studio services folded into `service_categories` (`20261003160000`).
+  12-option picker, 6 studio services folded into `service_categories` (`20261003160000`).
 - Amenities & equipment in Edit profile for every business; Add service asks every business for
   them, optionally.
 - Edit profile edits every onboarding answer (business and talent).
