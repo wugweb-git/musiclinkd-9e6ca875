@@ -33,7 +33,7 @@ export default defineConfig({
     // leaving every client module request hanging so no screen became interactive. Scan only
     // what the app actually loads.
     optimizeDeps: {
-      entries: ["src/router.tsx", "src/routes/**/*.tsx", "src/routes/**/*.ts"],
+      entries: ["src/router.tsx"],
     },
     resolve: {
       alias: {
