@@ -38,7 +38,6 @@ import { AccountRow } from "@/components/ml/accounts";
 import { forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
 
 export type LoginMode = "signup" | "signin";
-const MODES = ["signin", "signup"] as const;
 
 /**
  * The login screen (`/welcome`, owner 4 Oct 2026: "rename welcome screen as login screen") and the
