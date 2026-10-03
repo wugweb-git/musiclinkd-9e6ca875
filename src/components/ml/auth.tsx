@@ -43,21 +43,19 @@ export function AuthScreen({
   return (
     <div
       className={cn(
-        "mx-auto flex min-h-[100dvh] w-full flex-col bg-background select-none",
-        wide ? "max-w-[1180px]" : "max-w-app sm:max-w-[760px]",
+        "flex min-h-[100dvh] w-full flex-col bg-card select-none",
         className,
       )}
     >
       <div
         className={cn(
-          "mx-auto flex w-full flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6",
-          wide ? "max-w-[1080px]" : "max-w-[560px]",
+          "mx-auto flex w-full flex-1 flex-col px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-8",
+          wide ? "max-w-[560px]" : "max-w-[520px]",
         )}
       >
-        <header className="grid min-h-12 grid-cols-[48px_minmax(0,1fr)_48px] items-center">
+        <header className="grid min-h-12 grid-cols-[48px_minmax(0,1fr)] items-center">
           <div>{back ? <AuthBackButton back={back} /> : null}</div>
           <BrandMark />
-          <div />
         </header>
         <div className="flex flex-1 flex-col">{children}</div>
       </div>
@@ -67,9 +65,11 @@ export function AuthScreen({
 
 function BrandMark() {
   return (
-    <div className="flex min-w-0 items-center justify-center gap-2" aria-label="MusicLinkd">
-      <LogoMark className="h-7 w-7 shrink-0 rounded-sm object-cover" />
-      <span className="truncate text-2 font-bold text-foreground">MusicLinkd</span>
+    <div className="flex min-w-0 items-center gap-2" aria-label="MusicLinkd">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-brand">
+        <LogoMark className="h-5 w-5 object-cover" />
+      </span>
+      <span className="truncate text-sm font-bold text-foreground">MusicLinkd</span>
     </div>
   );
 }
@@ -168,9 +168,9 @@ export function AuthComposition({
   className?: string | undefined;
 }) {
   return (
-    <div className={cn("flex w-full flex-1 flex-col py-5 sm:justify-center sm:py-8", className)}>
-      <div className="flex flex-col sm:py-6">{children}</div>
-      {footer ? <footer className="mt-auto shrink-0 pt-8 text-center">{footer}</footer> : null}
+    <div className={cn("flex w-full flex-1 flex-col py-8 sm:justify-center sm:py-12", className)}>
+      <div className="flex flex-col">{children}</div>
+      {footer ? <footer className="mt-auto shrink-0 pt-10 text-center">{footer}</footer> : null}
     </div>
   );
 }
@@ -183,7 +183,7 @@ export function AuthSurface({
   className?: string | undefined;
 }) {
   return (
-    <div className={cn("rounded-lg bg-card p-4 shadow-elevation-2 sm:p-5", className)}>
+    <div className={cn("bg-card", className)}>
       {children}
     </div>
   );
