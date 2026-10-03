@@ -1707,7 +1707,7 @@ export function MoreSheet({
   });
 
   const row =
-    "flex min-h-12 w-full items-center justify-between px-4 py-4 text-left text-sm font-medium disabled:text-muted-foreground";
+    "state-layer flex min-h-touch w-full items-center justify-between gap-3 px-2 py-3 text-left text-2 font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring disabled:text-muted-foreground";
   const close = () => {
     setReporting(false);
     onClose();
@@ -1726,7 +1726,7 @@ export function MoreSheet({
 
   return (
     <Sheet open={open} onClose={close} title="More">
-      <div className="divide-y divide-border rounded-lg bg-subtle">
+      <div className="divide-y divide-border/70 bg-card">
         {username ? (
           <button
             type="button"

@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { Check, Search, X, type LucideIcon } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
+import { IconBtn } from "./ui";
 
 /*
  * The one option list every bottom sheet uses (owner, 22 Sep 2026: "recycle blocks"): pickers in
@@ -43,15 +44,14 @@ export function DrawerSearchButton({
   label: string;
 }) {
   return (
-    <button
-      type="button"
+    <IconBtn
+      label={open ? "Close search" : label}
+      variant="plain"
       onClick={onToggle}
-      aria-label={open ? "Close search" : label}
       aria-expanded={open}
-      className="state-layer hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground"
     >
       {open ? <X size={iconSize.md} aria-hidden /> : <Search size={iconSize.md} aria-hidden />}
-    </button>
+    </IconBtn>
   );
 }
 
@@ -101,7 +101,7 @@ export function matching<T extends { label: string }>(options: readonly T[], que
 function OptionIcon({ option: o }: { option: DrawerOption }) {
   if (!o.iconNode && !o.icon) return null;
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip text-ink-foreground">
+    <span className="flex h-10 w-7 shrink-0 items-center justify-center text-foreground">
       {o.iconNode ?? (o.icon ? <o.icon size={iconSize.md} aria-hidden /> : null)}
     </span>
   );
@@ -126,11 +126,11 @@ export function DrawerOptionRow({
         aria-pressed={selected}
         disabled={disabled}
         onClick={onClick}
-        className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${selected ? "border-foreground" : "border-transparent"} ${disabled ? "opacity-50" : ""}`}
+        className={`state-layer flex min-h-touch w-full items-center gap-3 px-2 py-3 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring ${selected ? "bg-subtle" : "bg-card"} ${disabled ? "opacity-50" : ""}`}
       >
         <OptionIcon option={option} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold text-foreground">
+          <span className="block truncate text-2 font-medium text-foreground">
             {option.label}
           </span>
           {option.hint ? (
@@ -165,7 +165,7 @@ export function DrawerList({
         behind every picker sheet. The rows carry aria-pressed instead, which is what they are
         (audit B10, 29 Sep 2026).
       */}
-      <ul className="max-h-[50dvh] space-y-2 overflow-y-auto" aria-label={label}>
+      <ul className="max-h-[50dvh] divide-y divide-border/70 overflow-y-auto" aria-label={label}>
         {children}
       </ul>
       {!hasRows && empty ? <p className="px-4 py-3 text-1 text-foreground">{empty}</p> : null}

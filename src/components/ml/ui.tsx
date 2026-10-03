@@ -878,7 +878,7 @@ export function Sheet({
         </div>
         {title ? (
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="min-w-0 flex-1 truncate text-3">{title}</h2>
+            <h2 className="min-w-0 flex-1 truncate text-3 font-semibold">{title}</h2>
             {titleAction}
           </div>
         ) : null}
