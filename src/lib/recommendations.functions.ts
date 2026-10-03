@@ -217,13 +217,14 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
         id: string;
         owner_profile_id: string | null;
         location: string | null;
-        services: string[] | null;
         rating: number | string | null;
       }>(
         // Archived studios (a deleted business) are never suggested; before that column exists,
         // every studio is live.
         (async () => {
-          const columns = "id, owner_profile_id, location, services, rating";
+          // Not bookables.services: those tags are retired (owner, 3 Oct 2026); profile_services
+          // is what a business offers.
+          const columns = "id, owner_profile_id, location, rating";
           const live = await client.from("bookables").select(columns).is("archived_at", null);
           return live.error?.message.includes("archived_at")
             ? client.from("bookables").select(columns)
@@ -252,7 +253,6 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
     const saved = (type: string) =>
       new Set(savedRows.filter((r) => r.target_type === type).map((r) => r.target_id));
     const savedTalent = saved("talent");
-    const savedStudios = saved("studio");
     const savedListings = saved("listing");
     const applied = new Set(appliedRows.map((r) => r.opportunity_id));
     const viewed = new Set(viewedRows.map((r) => r.opportunity_id));
@@ -379,20 +379,12 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
 
     /* Studios -------------------------------------------------------------------------------- */
     const booked = new Set(bookedStudios.map((b) => b.bookable_id));
-    const bookedServices = new Set(
-      studios
-        .filter((st) => booked.has(st.id) || savedStudios.has(st.id))
-        .flatMap((st) => st.services ?? []),
-    );
     const studioPicks: RecommendedPick[] = [];
     for (const st of studios) {
       if (st.owner_profile_id === me) continue;
       if (!inReach(parsePlace(st.location).pin, st.location)) continue;
       const s = new Scored();
       if (booked.has(st.id)) s.add(2, "You booked here before");
-      const services = (st.services ?? []).filter((v) => bookedServices.has(v));
-      if (services.length && !booked.has(st.id) && !savedStudios.has(st.id))
-        s.add(2, `Offers ${listOf(services)}, like studios you used`);
       if (samePinArea(myPin, parsePlace(st.location).pin)) s.add(4, "Near you");
       else if (myCity && sameCity(myCity, st.location)) s.add(3, `In ${myCity}`);
       else if (wantedCity(st.location)) s.add(3, `In ${wantedCity(st.location)}`);
