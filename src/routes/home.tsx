@@ -111,7 +111,7 @@ function useHomeData() {
 
   const query = useQuery({
     queryKey: ["home", "workspace"],
-    enabled: signedIn && !offline,
+    enabled: !offline,
     queryFn: async (): Promise<HomeData> => {
       const [profileRow, work, businessRow] = await Promise.all([
         readOr(profile() as Promise<ProfileRow | null>, null),
