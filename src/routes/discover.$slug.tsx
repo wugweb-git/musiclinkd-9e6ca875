@@ -10,7 +10,7 @@ import { CollabKindSheet } from "@/components/ml/collab";
 import { categories } from "@/data/discover";
 import { workType } from "@/data/portfolio";
 import { listPeopleByRole } from "@/lib/profile-groups.functions";
-import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
+import { listNewWork, type NewWorkItem } from "@/lib/trending.functions";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { joinParts } from "@/lib/utils";
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/discover/$slug")({
     if (params.slug === "music") {
       return {
         kind: "music" as const,
-        tracks: await listTrendingWork().catch((): TrendingItem[] => []),
+        tracks: await listNewWork().catch((): NewWorkItem[] => []),
       };
     }
     if (params.slug === "projects") {
@@ -111,7 +111,7 @@ function PeopleList({ role, label }: { role: string; label: string | null }) {
 }
 
 /** Work published by people you can actually hire, not a chart. */
-function MusicList({ tracks }: { tracks: TrendingItem[] }) {
+function MusicList({ tracks }: { tracks: NewWorkItem[] }) {
   return (
     <Screen>
       <TopBar title="Music" subtitle="New work from the community" back="/discover" />
@@ -126,11 +126,7 @@ function MusicList({ tracks }: { tracks: TrendingItem[] }) {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{t.title}</p>
                       <p className="truncate text-1 text-muted-foreground">
-                        {joinParts(
-                          workType(t.kind).label,
-                          t.display_name,
-                          `${t.plays} ${t.plays === 1 ? "play" : "plays"}`,
-                        )}
+                        {joinParts(workType(t.kind).label, t.display_name)}
                       </p>
                     </div>
                   </div>

@@ -185,17 +185,25 @@ export const singers: Talent[] = [
   },
 ];
 
-export const quickCategories: { label: string; to: QuickCategoryTo }[] = [
+/*
+ * The shortcut row on Discover. A Discover shortcut carries its slug: the 28 Sep refactor (51144fa)
+ * turned "/discover/music" into the route pattern "/discover/$slug" and dropped the subject, so
+ * Music, Studios, Labels and Venues all opened the same empty page. The slugs are the ones
+ * discover.$slug.tsx and `categories` below already know.
+ */
+export type QuickCategory =
+  | { label: string; to: "/discover/$slug"; slug: string }
+  | { label: string; to: "/bands" | "/marketplace" | "/marketplace/rent" };
+
+export const quickCategories: QuickCategory[] = [
   { label: "Bands", to: "/bands" },
-  { label: "Music", to: "/discover/$slug" },
-  { label: "Studios", to: "/discover/$slug" },
+  { label: "Music", to: "/discover/$slug", slug: "music" },
+  { label: "Studios", to: "/discover/$slug", slug: "studios" },
   { label: "Marketplace", to: "/marketplace" },
   { label: "Rentals", to: "/marketplace/rent" },
-  { label: "Labels", to: "/discover/$slug" },
-  { label: "Venues", to: "/discover/$slug" },
+  { label: "Labels", to: "/discover/$slug", slug: "labels" },
+  { label: "Venues", to: "/discover/$slug", slug: "venues" },
 ];
-
-type QuickCategoryTo = "/discover/$slug" | "/bands" | "/marketplace" | "/marketplace/rent";
 
 /*
  * The persona-type filter on Discover. A type is a filter, not a screen of its own (owner,

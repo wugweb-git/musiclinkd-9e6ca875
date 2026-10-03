@@ -103,6 +103,73 @@ export const listTrendingWork = createServerFn({ method: "GET" }).handler(
   },
 );
 
+/** One piece of newly published work on Discover → Music. */
+export type NewWorkItem = Omit<TrendingItem, "plays">;
+
+/*
+ * Discover → Music: the newest published music and video from public profiles, newest first. Not a
+ * chart — the page is "New work from the community". It used the 7-day trending list, so a week
+ * without plays (or the 30 Sep play-counting cutoff) left it saying "Nothing published yet" over
+ * 145 published tracks.
+ */
+export const listNewWork = createServerFn({ method: "GET" }).handler(
+  async (): Promise<NewWorkItem[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const db = supabaseAdmin as unknown as SupabaseClient;
+    const { data: items, error } = await db
+      .from("portfolio_items")
+      .select("id, title, kind, cover_url, media_url, user_id")
+      .eq("published", true)
+      .in("kind", ["track", "album", "video", "reel", "performance"])
+      .order("created_at", { ascending: false })
+      .limit(120);
+    if (error) throw new Error(error.message);
+    const rows = (items ?? []) as {
+      id: string;
+      title: string;
+      kind: string;
+      cover_url: string | null;
+      media_url: string | null;
+      user_id: string;
+    }[];
+    const ownerIds = [...new Set(rows.map((r) => r.user_id))];
+    const { data: owners, error: ownersError } = ownerIds.length
+      ? await db
+          .from("profiles")
+          .select("id, display_name, username, visibility")
+          .in("id", ownerIds)
+      : { data: [], error: null };
+    if (ownersError) throw new Error(ownersError.message);
+    const publicOwner = new Map(
+      (
+        (owners ?? []) as {
+          id: string;
+          display_name: string | null;
+          username: string | null;
+          visibility: string | null;
+        }[]
+      )
+        .filter((o) => (o.visibility ?? "public") === "public")
+        .map((o) => [o.id, o]),
+    );
+    return rows
+      .filter((r) => publicOwner.has(r.user_id))
+      .slice(0, 40)
+      .map((r) => {
+        const o = publicOwner.get(r.user_id)!;
+        return {
+          id: r.id,
+          title: r.title,
+          kind: r.kind,
+          cover_url: r.cover_url,
+          media_url: r.media_url,
+          display_name: o.display_name,
+          username: o.username,
+        };
+      });
+  },
+);
+
 /*
  * Trending this week on Discover: people and studios ranked by what happened to them in the last
  * 7 days. Each signal is a stored row, counted here:
