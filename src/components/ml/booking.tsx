@@ -582,15 +582,15 @@ export function AddOnCard({
 export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: boolean }) {
   return (
     <div className="rounded-lg bg-subtle p-4">
-      <Row label={p.baseLabel} value={inr(p.base)} />
+      <PriceRow label={p.baseLabel} value={inr(p.base)} />
       {p.addOns.map((a) => (
-        <Row key={a.name} label={a.name} value={inr(a.price)} muted />
+        <PriceRow key={a.name} label={a.name} value={inr(a.price)} muted />
       ))}
       <div className="my-2 h-px bg-border" />
-      <Row label="Subtotal" value={inr(p.subtotal)} />
-      {p.taxPct ? <Row label={`Taxes (${p.taxPct}%)`} value={inr(p.tax)} muted /> : null}
+      <PriceRow label="Subtotal" value={inr(p.subtotal)} />
+      {p.taxPct ? <PriceRow label={`Taxes (${p.taxPct}%)`} value={inr(p.tax)} muted /> : null}
       <div className="my-2 h-px bg-border" />
-      <Row label={p.estimate ? "Estimated total" : "Total"} value={inr(p.total)} strong />
+      <PriceRow label={p.estimate ? "Estimated total" : "Total"} value={inr(p.total)} strong />
       {p.deposit ? (
         <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
           <div className="min-w-0">
@@ -617,7 +617,7 @@ export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: bo
   );
 }
 
-function Row({
+function PriceRow({
   label,
   value,
   muted,

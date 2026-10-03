@@ -35,6 +35,7 @@ import {
   SheetSelect,
   TagListField,
 } from "@/components/ml/listing-form";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { iconSize } from "@/lib/tokens";
 import { amenityIcon } from "@/lib/amenity-icons";
 import type { PortfolioItem } from "@/data/portfolio";
@@ -168,19 +169,20 @@ function NewService() {
   const [deliverables, setDeliverables] = useState<string[]>([]);
   const [requirements, setRequirements] = useState<string[]>([]);
   const [exampleIds, setExampleIds] = useState<string[]>([]);
-  // A studio's service shows what it uses (amenities, equipment) where a talent's shows portfolio
-  // examples (owner, 22 Sep 2026). The studio's own lists, with their photos.
+  // A business's service shows what it uses (amenities, equipment) where a talent's shows portfolio
+  // examples (owner, 22 Sep 2026). Every business type, both optional (owner, 3 Oct 2026). The
+  // business's own lists, with their photos.
+  const { allowed: isBusiness } = useRequireBusiness();
   const [amenitySlugs, setAmenitySlugs] = useState<string[]>([]);
   const [equipmentIds, setEquipmentIds] = useState<string[]>([]);
   const loadEquipment = useServerFn(getMyBookableEquipment);
   const studioEquipment = useQuery({
     queryKey: ["studio-equipment", "mine"],
     queryFn: () => loadEquipment(),
-    enabled: signedIn,
+    enabled: signedIn && isBusiness,
     retry: false,
   });
-  const studioPhotos = useMyBookablePhotos();
-  const isStudio = studioEquipment.isSuccess;
+  const studioPhotos = useMyBookablePhotos(isBusiness);
   const [price, setPrice] = useState("");
   const [turnaround, setTurnaround] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
@@ -306,7 +308,7 @@ function NewService() {
           title.trim() &&
           description.trim() &&
           deliverables.length &&
-          (isStudio ? amenitySlugs.length || equipmentIds.length : exampleIds.length),
+          (isBusiness || exampleIds.length),
         )
       : Boolean((pricePaise ?? 0) > 0 && turnaround && mode);
 
@@ -325,7 +327,7 @@ function NewService() {
           category: categories[0] ?? null,
           categories,
           example_ids: exampleIds,
-          ...(isStudio ? { amenity_slugs: amenitySlugs, equipment_ids: equipmentIds } : {}),
+          ...(isBusiness ? { amenity_slugs: amenitySlugs, equipment_ids: equipmentIds } : {}),
           // One universal price: a starting price, with no unit or pricing model.
           pricing_model: null,
           price_paise: pricePaise,
@@ -428,12 +430,12 @@ function NewService() {
                 value={deliverables}
                 onChange={setDeliverables}
               />
-              {isStudio ? (
+              {isBusiness ? (
                 <>
                   <Field
-                    label="Amenities it uses"
+                    label="Amenities it uses (optional)"
                     id="service-amenities"
-                    hint="Shown on the service with their photos. Pick amenities, equipment or both."
+                    hint="Shown on the service with their photos."
                   >
                     {amenityOptions.length ? (
                       <SheetMultiSelect
@@ -445,10 +447,10 @@ function NewService() {
                         max={amenityOptions.length}
                       />
                     ) : (
-                      <StudioSetupNote what="amenities" />
+                      <BookableSetupNote what="amenities" />
                     )}
                   </Field>
-                  <Field label="Equipment it uses" id="service-equipment">
+                  <Field label="Equipment it uses (optional)" id="service-equipment">
                     {equipmentOptions.length ? (
                       <SheetMultiSelect
                         title="Equipment it uses"
@@ -459,12 +461,12 @@ function NewService() {
                         max={equipmentOptions.length}
                       />
                     ) : (
-                      <StudioSetupNote what="equipment" />
+                      <BookableSetupNote what="equipment" />
                     )}
                   </Field>
                 </>
               ) : null}
-              {isStudio ? null : (
+              {isBusiness ? null : (
                 <Field
                   label="Examples from your portfolio"
                   id="service-examples"
@@ -581,12 +583,12 @@ function NewService() {
   );
 }
 
-/** A studio with no amenities or equipment yet: add them first, then pick them here. */
-function StudioSetupNote({ what }: { what: "amenities" | "equipment" }) {
+/** A business with no amenities or equipment yet: add them first, then pick them here. */
+function BookableSetupNote({ what }: { what: "amenities" | "equipment" }) {
   return (
     <div className="rounded-lg bg-card p-4">
       <p className="text-1 text-foreground">
-        No {what} on your studio yet. Add them with photos, then pick them here.
+        No {what} on your business yet. Add them with photos, then pick them here.
       </p>
       <BtnLink
         to="/profile/edit"

@@ -369,14 +369,14 @@ function SearchResults() {
       {!term && tab === "all" ? (
         <div className="space-y-5 px-5 pt-4">
           {saved.data?.length ? (
-            <ChipGroup
+            <SearchChipGroup
               title="Saved searches"
               items={saved.data.map((s) => s.query)}
               onPick={setQ}
             />
           ) : null}
           {popularItems.length ? (
-            <ChipGroup
+            <SearchChipGroup
               title={popular.data?.searched ? "Popular searches" : "Popular categories"}
               items={popularItems}
               onPick={setQ}
@@ -474,7 +474,7 @@ function SearchResults() {
 
 const hitKey = (h: SearchHit) => `${h.kind}:${h.id}`;
 
-function ChipGroup({
+function SearchChipGroup({
   title,
   items,
   onPick,

@@ -29,7 +29,7 @@ const isUrl = (v: string) => /^https?:\/\/[^\s.]+\.[^\s]{2,}/i.test(v.trim());
 
 type Panel = "role" | "genre" | "year" | "contributors" | "description" | null;
 
-function Row({
+function EditRow({
   label,
   value,
   onClick,
@@ -251,23 +251,23 @@ export function WorkForm({
 
       {/* Everything else: one list of rows. */}
       <div className="mt-6 divide-y divide-border overflow-hidden rounded-lg bg-subtle">
-        <Row
+        <EditRow
           label="Your role"
           value={roles.length ? roles.join(", ") : null}
           onClick={() => setPanel("role")}
         />
-        <Row
+        <EditRow
           label="Genre"
           value={genre.length ? genre.join(", ") : null}
           onClick={() => setPanel("genre")}
         />
-        <Row label="Year" value={year || null} onClick={() => setPanel("year")} />
-        <Row
+        <EditRow label="Year" value={year || null} onClick={() => setPanel("year")} />
+        <EditRow
           label="Contributors"
           value={collabList.length ? collabList.join(", ") : null}
           onClick={() => setPanel("contributors")}
         />
-        <Row
+        <EditRow
           label="Description"
           value={description.trim() || null}
           onClick={() => setPanel("description")}

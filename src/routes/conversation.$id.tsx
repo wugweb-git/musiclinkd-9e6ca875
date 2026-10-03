@@ -71,7 +71,7 @@ type Shown = Message & { pending?: boolean };
  * What the + shares into the message: a link to your profile, one of your live services, or one of
  * your published works. Picking one drops its link into the box; nothing sends until you do.
  */
-function ShareSheet({
+function ShareWorkSheet({
   open,
   onClose,
   onPick,
@@ -380,7 +380,7 @@ function Conversation() {
           </button>
         </form>
 
-        <ShareSheet
+        <ShareWorkSheet
           open={sharing}
           onClose={() => setSharing(false)}
           onPick={(url) => {

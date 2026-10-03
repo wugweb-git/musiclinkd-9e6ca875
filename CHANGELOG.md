@@ -5,6 +5,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — Add service asks every business, and only businesses, for amenities and equipment (3 Oct)
+
+- `services.new.tsx` decided "studio" from whether the equipment list loaded. Since every signed-in
+  account can now load it (empty when there's no bookable), talent accounts were shown amenities and
+  equipment instead of portfolio examples. It now keys off `useRequireBusiness()`: every business
+  type gets both fields, talent keeps examples.
+- Both fields are optional for a business (owner, 3 Oct); talent still needs at least one example.
+- `StudioSetupNote` → `BookableSetupNote`; its copy says "business", not "studio".
+
+### Changed — route-local components classified; duplicates removed (P1-9, P1-10, P1-12, 3 Oct)
+
+- **Availability on Home** puts the switch back when the save fails (it stayed flipped, looking
+  saved) and stores no value when off, not `""`. The unused second `AvailabilityToggle` in
+  `profile.tsx` is removed: it wrote a different value (`"Collaborations"`) for the same field.
+- **Names say one thing:** Search's tappable `ChipGroup` is `SearchChipGroup`, booking's price
+  `Row` is `PriceRow`, the work form's `Row` is `EditRow`, the conversation's `ShareSheet` (pick a
+  service or work to send) is `ShareWorkSheet`.
+- **Kept local, screen-specific:** `InviteLinkRow`, `EditCollabSheet`, `CollabRow`, `NewTierSheet`,
+  `NewAddOnSheet`, `MoneyRow`, `BlockRow`, `ProfileLinkRow`, `NotificationRow`, `RolesCard`,
+  `DetailRow`. `BusinessCard` and `SearchResults` are route screens. The four route `Field`s only
+  set an id and render the shared `InlineField` / `Field`.
+- **Destinations (P1-12):** Blocks link to their own entity's page; `ServiceCard` takes its Book and
+  Enquire actions from the screen. No Block needed a destination passed in.
+
 ### Changed — Edit profile edits everything onboarding asks (3 Oct)
 
 - **Every business** sees Edit profile → Facilities & equipment, not only one that already had a
