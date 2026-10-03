@@ -61,14 +61,28 @@ const OTHERS_CHOICES = ["Decline them", "Leave them waiting"] as const;
 
 function RequestReview() {
   const gate = useRequireBusiness();
+  const { ref } = Route.useParams();
+  const load = useServerFn(getBookingRequest);
+  const q = useQuery({
+    queryKey: ["booking", ref],
+    queryFn: () => load({ data: { id: ref } }),
+    enabled: gate.signedIn,
+  });
+  // Whoever offers the service answers here too: a talent has no business dashboard, and every
+  // service is bookable (owner, 3 Oct 2026). The server says whether this account was asked.
+  const askedOfMe = q.data?.asked_of_me === true;
   return (
-    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
-      <RequestReviewContent />
+    <BusinessOnlyGate
+      allowed={gate.allowed || askedOfMe}
+      loading={gate.loading || (gate.signedIn && !gate.allowed && q.isLoading)}
+      signedIn={gate.signedIn}
+    >
+      <RequestReviewContent business={gate.allowed} />
     </BusinessOnlyGate>
   );
 }
 
-function RequestReviewContent() {
+function RequestReviewContent({ business }: { business: boolean }) {
   const { ref } = Route.useParams();
   const queryClient = useQueryClient();
   const load = useServerFn(getBookingRequest);
@@ -78,6 +92,8 @@ function RequestReviewContent() {
     queryKey: ["booking", ref],
     queryFn: () => load({ data: { id: ref } }),
   });
+  // A talent has no business bookings screen to go back to.
+  const back = business ? "/business/bookings" : "/notifications";
   const [decision, setDecision] = useState<"none" | "declining" | "sending">("none");
   const [reply, setReply] = useState("");
   // Requests don't hold their slot: the others who asked for this time are answered here too.
@@ -115,7 +131,7 @@ function RequestReviewContent() {
   if (q.isError) {
     return (
       <Screen>
-        <TopBar title="Request" back="/business/bookings" />
+        <TopBar title="Request" back={back} />
         <div className="px-5 pt-6">
           <LoadError what="this request" />
         </div>
@@ -126,7 +142,7 @@ function RequestReviewContent() {
   if (q.isLoading) {
     return (
       <Screen>
-        <TopBar title="Request" back="/business/bookings" />
+        <TopBar title="Request" back={back} />
         <div className="px-5 pt-8">
           <Loading />
         </div>
@@ -138,12 +154,14 @@ function RequestReviewContent() {
   if (!bk || (bk.status !== "requested" && bk.status !== "reviewing" && decision !== "sending")) {
     return (
       <Screen>
-        <TopBar title="Request" back="/business/bookings" />
+        <TopBar title="Request" back={back} />
         <div className="px-5 pt-4">
           <EmptyState
             title={bk ? "This request was already handled" : "Request no longer available"}
             body={bk ? `Its status is now "${bk.status}".` : "It was withdrawn or already handled."}
-            action={<BtnLink to="/business/bookings">Back to Requests</BtnLink>}
+            action={
+              business ? <BtnLink to="/business/bookings">Back to Requests</BtnLink> : undefined
+            }
           />
         </div>
       </Screen>
@@ -157,8 +175,8 @@ function RequestReviewContent() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar
         title="Request"
-        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.bookable_name ?? "Studio"}
-        back="/business/bookings"
+        subtitle={bk.service?.name ?? bk.room?.name ?? bk.studio?.name ?? bk.bookable_name ?? ""}
+        back={back}
       />
       <main className="px-5 pt-4">
         <div className="rounded-lg bg-subtle p-4">

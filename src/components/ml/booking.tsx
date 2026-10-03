@@ -15,7 +15,10 @@ import {
   RefreshCw,
   type LucideIcon,
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { ActionBar, Btn, IconBtn, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { Price, StatusPill, type Tone } from "@/components/ml/kit";
 import {
@@ -35,7 +38,13 @@ import {
 } from "@/data/booking";
 import { formatDate, formatTime, isoDate } from "@/lib/when";
 import { joinParts } from "@/lib/utils";
-import type { BookingRequest, BookingStatus as DbBookingStatus } from "@/lib/bookings.functions";
+import {
+  askedName,
+  requestBooking,
+  type BookingRequest,
+  type BookingStatus as DbBookingStatus,
+} from "@/lib/bookings.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { inr } from "@/lib/price";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
@@ -701,6 +710,7 @@ export function BookingSummaryCard({
   start,
   end,
   people,
+  service,
 }: {
   b: Bookable;
   r: Resource;
@@ -708,6 +718,8 @@ export function BookingSummaryCard({
   start: string;
   end: string;
   people: number;
+  /** The service booked; the room's name stands in for older flows without one. */
+  service?: string | undefined;
 }) {
   return (
     <div className="rounded-lg bg-subtle p-4">
@@ -720,7 +732,7 @@ export function BookingSummaryCard({
         />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{b.name}</p>
-          <p className="truncate text-1 text-muted-foreground">{r.name}</p>
+          <p className="truncate text-1 text-muted-foreground">{service || r.name}</p>
           <p className="mt-1 truncate text-1 text-muted-foreground">{b.city}</p>
         </div>
       </div>
@@ -789,8 +801,9 @@ export function BookingRecord({
     b.hours ? `${b.hours} hrs` : "",
     side === "studio" && b.people ? `${b.people} people` : "",
   );
-  const studioName =
-    b.studio?.name ?? b.bookable_name ?? (side === "studio" ? "Your space" : "Studio");
+  const studioName = askedName(b) ?? (side === "studio" ? "Your space" : "Studio");
+  // What was booked: the service, or the room on older bookings.
+  const what = b.service?.name ?? b.room?.name ?? "";
   const pill = <StatusPill label={status.label} tone={status.tone} className="shrink-0" />;
 
   if (side === "requester") {
@@ -804,7 +817,7 @@ export function BookingRecord({
           <div className="min-w-0">
             <p className="truncate text-2 font-semibold">{studioName}</p>
             <p className="mt-0.5 truncate text-1 text-muted-foreground">
-              {joinParts(b.room?.name ?? "", b.studio?.location ?? "")}
+              {joinParts(what, b.studio?.location ?? "")}
             </p>
           </div>
           {pill}
@@ -834,7 +847,7 @@ export function BookingRecord({
             <p className="truncate text-2 font-semibold">{who}</p>
           )}
           <p className="mt-0.5 truncate text-1 text-muted-foreground">
-            {joinParts(studioName, b.room?.name ?? "")}
+            {joinParts(studioName, what)}
           </p>
         </div>
         {pill}
@@ -1015,4 +1028,192 @@ export function ProofPill({
       <span className="tabular-nums text-foreground">{photos.length}</span>
     </button>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/* Request a session — a dated request, with no calendar to pick from  */
+/* ------------------------------------------------------------------ */
+
+export type SessionRequest = {
+  date: string;
+  start: string;
+  hours: number;
+  people: number;
+  notes: string;
+};
+
+/**
+ * The date you want, and what for, when there is no calendar to pick a slot from: a business
+ * without weekly hours, or a talent's service (owner, 3 Oct 2026: every service is bookable). The
+ * one who is asked accepts or declines. `who` names them in the closing line.
+ */
+export function RequestSessionSheet({
+  open,
+  onClose,
+  onSend,
+  pending,
+  who,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSend: (request: SessionRequest) => void;
+  pending: boolean;
+  who: string;
+}) {
+  const [date, setDate] = useState("");
+  const [start, setStart] = useState("");
+  const [hours, setHours] = useState("3");
+  const [people, setPeople] = useState("2");
+  const [notes, setNotes] = useState("");
+  return (
+    <Sheet open={open} onClose={onClose} title="Request a session">
+      <form
+        className="space-y-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (date && !pending)
+            onSend({
+              date,
+              start,
+              hours: Number(hours),
+              people: Number(people),
+              notes: notes.trim(),
+            });
+        }}
+      >
+        <label className="block text-1 font-semibold" htmlFor="booking-date">
+          Date
+        </label>
+        <input
+          id="booking-date"
+          type="date"
+          min={earliestBookingDate()}
+          required
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+        />
+        <div className="flex gap-3">
+          <span className="flex-1">
+            <label className="block text-1 font-semibold" htmlFor="booking-start">
+              Start
+            </label>
+            <input
+              id="booking-start"
+              type="time"
+              value={start}
+              onChange={(e) => setStart(e.target.value)}
+              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+            />
+          </span>
+          <span className="w-24">
+            <label className="block text-1 font-semibold" htmlFor="booking-hours">
+              Hours
+            </label>
+            <input
+              id="booking-hours"
+              type="number"
+              min={1}
+              max={24}
+              value={hours}
+              onChange={(e) => setHours(e.target.value)}
+              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+            />
+          </span>
+          <span className="w-24">
+            <label className="block text-1 font-semibold" htmlFor="booking-people">
+              People
+            </label>
+            <input
+              id="booking-people"
+              type="number"
+              min={1}
+              max={200}
+              value={people}
+              onChange={(e) => setPeople(e.target.value)}
+              className="mt-1 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+            />
+          </span>
+        </div>
+        <label className="block text-1 font-semibold" htmlFor="booking-notes">
+          Anything they should know
+        </label>
+        <textarea
+          id="booking-notes"
+          rows={3}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="What you are recording, gear you need, who is coming."
+          className="w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none"
+        />
+        <Btn type="submit" className="w-full" disabled={!date} loading={pending}>
+          Send request
+        </Btn>
+        <p className="text-1 text-muted-foreground">
+          Nothing is charged here. {who} replies, and you settle payment with them.
+        </p>
+      </form>
+    </Sheet>
+  );
+}
+
+/**
+ * Book on a service with no booking flow of its own (a talent's, or a business without a place):
+ * the request sheet, sent as a booking of that service. Open with a service; close with null.
+ */
+export function ServiceRequestSheet({
+  service,
+  who,
+  onClose,
+}: {
+  service: { id: string; name: string } | null;
+  who: string;
+  onClose: () => void;
+}) {
+  const navigate = useNavigate();
+  const send = useServerFn(requestBooking);
+  const request = useMutation({
+    mutationFn: (r: SessionRequest) =>
+      send({
+        data: {
+          serviceId: service!.id,
+          purpose: service!.name,
+          date: r.date,
+          ...(r.start ? { startTime: r.start } : {}),
+          ...(r.hours ? { hours: r.hours } : {}),
+          ...(r.people ? { people: r.people } : {}),
+          ...(r.notes ? { notes: r.notes } : {}),
+        },
+      }),
+    onSuccess: ({ id }) => {
+      onClose();
+      void navigate({ to: "/booking/confirmed/$ref", params: { ref: id } });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't send. Try again."),
+  });
+  return (
+    <RequestSessionSheet
+      // A fresh form for each service.
+      key={service?.id ?? "none"}
+      open={Boolean(service)}
+      onClose={onClose}
+      onSend={(r) => request.mutate(r)}
+      pending={request.isPending}
+      who={who}
+    />
+  );
+}
+
+/** Book on a service card: signed in, open the request sheet; signed out, sign in first. */
+// eslint-disable-next-line react-refresh/only-export-components -- hook belongs with its sheet
+export function useServiceRequest() {
+  const { signedIn } = useAuth();
+  const navigate = useNavigate();
+  const [service, setService] = useState<{ id: string; name: string } | null>(null);
+  return {
+    service,
+    close: () => setService(null),
+    book: (s: { id: string; name: string }) =>
+      signedIn ? setService({ id: s.id, name: s.name }) : void navigate({ to: "/welcome" }),
+  };
 }

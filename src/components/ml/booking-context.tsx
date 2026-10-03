@@ -1,11 +1,19 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Navigate } from "@tanstack/react-router";
-import { getResource, priceFor, type Bookable, type Resource } from "@/data/booking";
+import {
+  getResource,
+  priceForService,
+  type Bookable,
+  type PriceLines,
+  type Resource,
+} from "@/data/booking";
 import { BtnLink, Screen, TopBar } from "./ui";
 import { EmptyState } from "./kit";
 
 export type BookingDraft = {
   resourceId: string;
+  /** The service booked (profile_services id); purpose carries its name. */
+  serviceId?: string | undefined;
   date?: string | undefined;
   start?: string | undefined;
   hours: number;
@@ -17,13 +25,18 @@ export type BookingDraft = {
   acknowledged: boolean;
 };
 
+type Service = NonNullable<Bookable["services"]>[number];
+
 type Ctx = {
   bookable: Bookable;
   resource: Resource;
+  /** The service picked, once one is. */
+  service: Service | undefined;
   draft: BookingDraft;
   set: (patch: Partial<BookingDraft>) => void;
   toggleAddOn: (id: string) => void;
-  price: ReturnType<typeof priceFor>;
+  /** Null when the service picked has no price: nothing is quoted. */
+  price: PriceLines | null;
   endTime: string;
 };
 
@@ -51,18 +64,22 @@ export function BookingDraftProvider({
   children,
 }: {
   id: string;
-  /** A service picked before the flow opened (Book on a service card). */
+  /** A service picked before the flow opened (Book on a service card): its id or its name. */
   service?: string | undefined;
   /** The database studio for this id, or null when there is none. */
   studio?: Bookable | null;
   children: ReactNode;
 }) {
   const bookable = studio ?? undefined;
+  const picked = service
+    ? bookable?.services?.find((s) => s.id === service || s.name === service)
+    : undefined;
   const [draft, setDraft] = useState<BookingDraft>(() => ({
     resourceId: bookable?.resources[0]?.id ?? "",
+    serviceId: picked?.id,
     hours: 2,
     people: 2,
-    purpose: service ?? "",
+    purpose: picked?.name ?? service ?? "",
     notes: "",
     requirements: "",
     addOnIds: [],
@@ -79,6 +96,7 @@ export function BookingDraftProvider({
     }));
 
   const resource = getResource(bookable, draft.resourceId);
+  const chosen = bookable?.services?.find((s) => s.id === draft.serviceId);
 
   const value = useMemo<Ctx | null>(() => {
     if (!bookable || !resource) return null;
@@ -87,13 +105,14 @@ export function BookingDraftProvider({
     return {
       bookable,
       resource,
+      service: chosen,
       draft,
       set,
       toggleAddOn,
-      price: priceFor(bookable, resource, draft.hours, draft.addOnIds),
+      price: priceForService(bookable, chosen, draft.hours, draft.addOnIds),
       endTime: `${String(endHour).padStart(2, "0")}:00`,
     };
-  }, [bookable, resource, draft]);
+  }, [bookable, resource, chosen, draft]);
 
   /*
    * A real screen, not a bare centred div. This branch is reached by a bad slug *and* by a genuine

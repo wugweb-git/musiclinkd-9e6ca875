@@ -34,7 +34,12 @@ import {
   type LucideIcon,
   UserRound,
 } from "lucide-react";
-import { profileIdByUsername, type TalentProfile, type profileInsights } from "@/data/profile";
+import {
+  profileIdByUsername,
+  type ServiceItem,
+  type TalentProfile,
+  type profileInsights,
+} from "@/data/profile";
 import { ListingTile } from "./market";
 import { OpportunityCard } from "./opportunity";
 import type { WorkKind } from "@/data/portfolio";
@@ -76,7 +81,7 @@ import {
   type ConnectionState,
 } from "@/lib/connections.functions";
 import { BottomCta } from "./marketing";
-import { PhotoSheet } from "./booking";
+import { PhotoSheet, ServiceRequestSheet, useServiceRequest } from "./booking";
 import { useAuth } from "@/hooks/use-auth";
 import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
@@ -121,6 +126,9 @@ export function TalentProfileExperience({
   const [shareOpen, setShareOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [hireOpen, setHireOpen] = useState(false);
+  // Book on a service is a dated request the talent accepts or declines (owner, 3 Oct 2026).
+  const serviceRequest = useServiceRequest();
+  const onBook = owner ? undefined : serviceRequest.book;
   const { signedIn, loading } = useAuth();
 
   const toggleTrack = (id: string) => setPlayingId((current) => (current === id ? null : id));
@@ -180,6 +188,7 @@ export function TalentProfileExperience({
             playingId={playingId}
             onToggleTrack={toggleTrack}
             onHire={() => setHireOpen(true)}
+            onBook={onBook}
             owner={owner}
             onTab={setTab}
           />
@@ -193,7 +202,9 @@ export function TalentProfileExperience({
             onGalleryChange={onGalleryChange}
           />
         ) : null}
-        {tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
+        {tab === "Services" ? (
+          <Services p={p} onHire={() => setHireOpen(true)} onBook={onBook} />
+        ) : null}
         {tab === "About" ? <About p={p} /> : null}
         {tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
         {/* A shared profile link is most people's first sight of MusicLinkd, so a signed-out visitor
@@ -221,6 +232,11 @@ export function TalentProfileExperience({
         onClose={() => setHireOpen(false)}
         profileId={p.profileId}
         subject={{ name: p.name, detail: [p.primaryRole, p.location].filter(Boolean).join(" · ") }}
+      />
+      <ServiceRequestSheet
+        service={serviceRequest.service}
+        who={p.name}
+        onClose={serviceRequest.close}
       />
     </Screen>
   );
@@ -508,6 +524,7 @@ function Overview({
   playingId,
   onToggleTrack,
   onHire,
+  onBook,
   owner,
   onTab,
 }: {
@@ -515,6 +532,7 @@ function Overview({
   playingId: string | null;
   onToggleTrack: (id: string) => void;
   onHire: () => void;
+  onBook: ((s: ServiceItem) => void) | undefined;
   owner: boolean;
   onTab: (tab: ProfileTab) => void;
 }) {
@@ -604,7 +622,11 @@ function Overview({
           action="Services"
           onAction={() => onTab("Services")}
         >
-          <ServiceCard s={p.services[0]!} onEnquire={onHire} />
+          <ServiceCard
+            s={p.services[0]!}
+            onEnquire={onHire}
+            onBook={bookable(p.services[0]!, onBook)}
+          />
         </ProfileSection>
       ) : null}
 
@@ -728,13 +750,31 @@ function Portfolio({
   );
 }
 
-function Services({ p, onHire }: { p: TalentProfile; onHire: () => void }) {
+/** Book opens the dated request for a real service; a visitor's own preview keeps the default. */
+function bookable(s: ServiceItem, onBook: ((s: ServiceItem) => void) | undefined) {
+  return onBook && /^[0-9a-f-]{36}$/i.test(s.id) ? () => onBook(s) : undefined;
+}
+
+function Services({
+  p,
+  onHire,
+  onBook,
+}: {
+  p: TalentProfile;
+  onHire: () => void;
+  onBook: ((s: ServiceItem) => void) | undefined;
+}) {
   return (
     <ProfileSection title="Services">
       <div className="space-y-3">
         {p.services.length ? (
           p.services.map((service) => (
-            <ServiceCard key={service.id} s={service} onEnquire={onHire} />
+            <ServiceCard
+              key={service.id}
+              s={service}
+              onEnquire={onHire}
+              onBook={bookable(service, onBook)}
+            />
           ))
         ) : (
           // No owner button: the new-service flow does not save a service yet.

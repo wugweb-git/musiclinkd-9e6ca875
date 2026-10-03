@@ -17,7 +17,12 @@ import { Screen, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { BookingStatusPill, Detail } from "@/components/ml/booking";
 import { Dialog, Loading } from "@/components/ml/kit";
 import { formatDate, formatTime } from "@/lib/when";
-import { cancelBooking, getBookingRequest, rescheduleBooking } from "@/lib/bookings.functions";
+import {
+  askedName,
+  cancelBooking,
+  getBookingRequest,
+  rescheduleBooking,
+} from "@/lib/bookings.functions";
 import { addToCalendar, shareLink } from "@/lib/booking-actions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
@@ -128,14 +133,14 @@ function Confirmed() {
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {confirmed
-            ? `${b?.studio?.name ?? b?.bookable_name ?? "The studio"} has confirmed your session. Settle payment with them directly.`
+            ? `${(b ? askedName(b) : null) ?? "The studio"} has confirmed your session. Settle payment with them directly.`
             : b?.status === "cancelled"
               ? "You cancelled this request."
               : b?.status === "declined"
-                ? `${b?.studio?.name ?? b?.bookable_name ?? "The studio"} declined this request.`
+                ? `${(b ? askedName(b) : null) ?? "The studio"} declined this request.`
                 : b?.status === "completed"
                   ? "This session has already happened."
-                  : `${b?.studio?.name ?? b?.bookable_name ?? "The studio"} will review your request and reply. Nothing is confirmed yet.`}
+                  : `${(b ? askedName(b) : null) ?? "The studio"} will review your request and reply. Nothing is confirmed yet.`}
         </p>
 
         {q.isLoading ? (
@@ -145,9 +150,7 @@ function Confirmed() {
         ) : b ? (
           <div className="mt-5 rounded-lg bg-subtle p-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="truncate font-semibold">
-                {b.studio?.name ?? b.bookable_name ?? "Studio"}
-              </p>
+              <p className="truncate font-semibold">{askedName(b) ?? "Studio"}</p>
               <BookingStatusPill status={b.status === "declined" ? "rejected" : b.status} />
             </div>
             <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
@@ -187,16 +190,13 @@ function Confirmed() {
                 addToCalendar({
                   uid: b.id,
                   title: joinParts(
-                    b.studio?.name ?? b.bookable_name ?? "Session",
-                    b.room?.name ?? "",
+                    askedName(b) ?? "Session",
+                    b.service?.name ?? b.room?.name ?? "",
                   ),
                   date: b.session_date,
                   start: (b.start_time ?? "10:00").slice(0, 5),
                   end: (b.end_time ?? "14:00").slice(0, 5),
-                  location: joinParts(
-                    b.studio?.name ?? b.bookable_name ?? "",
-                    b.studio?.location ?? "",
-                  ),
+                  location: joinParts(askedName(b) ?? "", b.studio?.location ?? ""),
                   description: b.purpose ?? "",
                 })
               }
@@ -207,7 +207,7 @@ function Confirmed() {
               variant="outline"
               onClick={() =>
                 void shareLink({
-                  title: b.studio?.name ?? b.bookable_name ?? "Studio session",
+                  title: askedName(b) ?? "Studio session",
                   // The studio booked, not a stub: /booking/<slug> is its bookable page.
                   url: shareUrl(b.studio?.slug ? `/booking/${b.studio.slug}` : "/discover/studios"),
                 })

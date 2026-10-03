@@ -54,14 +54,19 @@ function AddOns() {
           ))}
         </div>
 
-        <h2 className="mt-7 text-2">Running total</h2>
-        <div className="mt-3">
-          <PriceBreakdownCard p={price} />
-        </div>
+        {/* A service with no price quotes nothing; the business names it in its reply. */}
+        {price ? (
+          <>
+            <h2 className="mt-7 text-2">Running total</h2>
+            <div className="mt-3">
+              <PriceBreakdownCard p={price} />
+            </div>
+          </>
+        ) : null}
       </main>
 
       <StickyBar
-        price={inr(price.total)}
+        price={price ? inr(price.total) : undefined}
         hint={`${draft.addOnIds.length} add-on${draft.addOnIds.length === 1 ? "" : "s"}`}
         primaryLabel="Review booking"
         onPrimary={() => navigate({ to: "/booking/$id/review", params: { id: b.id } })}

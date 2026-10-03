@@ -5,7 +5,32 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Added — bookings can point at a service (M1 of booking by service, 4 Oct) — not applied
+### Changed — C1: a booking is for a service; every service can be booked (4 Oct)
+
+- The booking flow carries the service picked (`serviceId`) and sends it; the summary, the request
+  screen, the booking lists and the calendar show the service where they showed the room.
+- Price (owner, 4 Oct: option 1, the 22 Sep starting-price decision stands): the service's own
+  price — times the hours, with its minimum, only if a unit "hour" is ever stored — plus add-ons,
+  shown as an estimate with the existing "the provider confirms the final amount" line. A service
+  with no price quotes nothing. Room rates no longer price a booking.
+- Book on a service with no booking flow of its own (a talent's, or a business without a place)
+  opens the "Request a session" sheet, now a shared Block (`RequestSessionSheet`,
+  `ServiceRequestSheet` in `ml/booking.tsx`), and sends a dated request for that service. Enquire is
+  untouched.
+- `/business/bookings/requests/$ref` opens to whoever owns the service booked, not only business
+  accounts (the server says whether the account was asked); a talent goes back to Notifications.
+- `requestBooking` takes a service with or without a bookable; `answerBooking` checks the asker
+  owns the bookable or the service; `listBookableBookings` includes requests for the account's
+  services.
+- `20261004110000_service_owner_notice_link.sql` (not applied; apply after this is published): a
+  talent's booking notice opens the request too.
+
+### Added — bookings can point at a service (M1 of booking by service, 4 Oct) — applied 4 Oct
+
+- Applied to the live database by the owner's Claude, unchanged from `0cc98fd` (SHA-256 checked):
+  10 bookings, 6 linked to a service; both "Service owner" rules present; schema reloaded. New
+  live fingerprints: `booking_requests_guard` `e7ef6fcc0b404335f8c16ad3394b98ac`, `notify_booking`
+  `8d77693645c8450bc1fb18e24f0a44d1`.
 
 - `20261004100000_bookings_point_at_services.sql`: `booking_requests.service_id` (→ `profile_services`,
   cleared if the service is deleted). Existing bookings are linked only where `purpose` is exactly
