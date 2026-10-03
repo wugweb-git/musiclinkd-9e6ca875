@@ -292,9 +292,11 @@ function WelcomeScreen() {
           </div>
 
           <div className="pt-0.5 pb-0.5">
-            <h1 className="sr-only">
+            {/* What the site is, for screen readers; the page's heading is the form's own title
+                below (one visible h1). Search engines read the meta description. */}
+            <p className="sr-only">
               MusicLinkd — India&apos;s professional network for musicians, producers and studios
-            </h1>
+            </p>
             <div className="flex items-center justify-between gap-2">
               <div
                 className={cn(
@@ -363,9 +365,9 @@ function WelcomeScreen() {
             className="rounded-lg bg-card p-2.5 sm:p-3.5 border border-border/80 shadow-xs"
           >
             <div className="mb-1.5">
-              <h2 className="text-1 sm:text-2 font-bold text-foreground">
+              <h1 className="text-3 font-bold leading-tight text-foreground">
                 {signup ? "Create your account" : "Welcome back"}
-              </h2>
+              </h1>
               <p className="text-1 text-muted-foreground">
                 {signup
                   ? "Join musicians, producers and studios across India."
