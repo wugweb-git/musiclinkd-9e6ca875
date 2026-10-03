@@ -1,5 +1,27 @@
 # MusicLinkd roadmap
 
+## 3 Oct 2026 — P1 convergence (one publish)
+
+- Bookable tables renamed from `studio*` (`20261003130000`); old-name shims dropped (`20261003140000`).
+- `business-media` bucket (5 MB) replaces `studio-media`; public photos lose EXIF/GPS.
+- "facility" is "amenity" in code, data (`20261003150000`) and screens; taxonomy key `amenities`,
+  12-option picker, 6 studio services folded into `service_categories` (`20261003160000`).
+- Amenities & equipment in Edit profile for every business; Add service asks every business for
+  them, optionally.
+- Edit profile edits every onboarding answer (business and talent).
+
+## Later
+
+- Room types as real rooms (a room kind is a label today, not a bookable space).
+- The duplicate `bookable_rooms.gear` field (equipment also lives in `bookable_equipment`).
+- `live_room` is both an amenity option and a room type.
+- The opening-hours options (24x7 Access, Open Till 2 AM) are amenity options; they are hours.
+- `bookables.services` vs `profile_services`: two lists of what a business offers.
+- Create business still creates a bookable and asks for amenities only for type `studio`
+  (`business.new.tsx`, `profile-groups.functions.ts`).
+- `studio_services` rows and other persona-named keys, columns and files (report, 3 Oct).
+- The Storybook accessibility suite (`bun run test-storybook`) was not run for this batch.
+
 ## Done
 - FLOW 03 (Discover) — discover home, categories, search, filters, profiles
 - Dashboard / returning-user home

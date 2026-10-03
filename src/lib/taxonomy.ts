@@ -25,8 +25,8 @@ const CATEGORIES = [
   "genders",
   "indian_states",
   "cities",
-  // Business setup (Create business, step 4).
-  "studio_amenities",
+  // What a place has (Edit profile → Amenities & equipment).
+  "amenities",
   "equipment_categories",
   "business_policies",
   // Service cards name their category.
@@ -55,6 +55,11 @@ export type TaxonomyOption = {
     description?: string;
     /** cities: the state the city is in. */
     state?: string;
+    /**
+     * false: published, so a stored value keeps its label, but no longer offered in the picker
+     * (amenities, owner 3 Oct 2026).
+     */
+    picker?: boolean;
   } | null;
 };
 

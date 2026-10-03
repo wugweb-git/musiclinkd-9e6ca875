@@ -433,7 +433,7 @@ function isVerifiedTier(tier: TalentProfile["verification"]) {
 /**
  * The owner's photo and cover buttons. Picking a file uploads it to the person's own storage folder
  * and writes the URL to the profile, so the change is done here rather than on another screen.
- * The studio's facility and equipment photos use the same button with their own kind.
+ * The studio's amenity and equipment photos use the same button with their own kind.
  */
 export function ImagePickButton<K extends string = ProfileImageKind>({
   kind,

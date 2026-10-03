@@ -1,0 +1,64 @@
+-- Snapshot before 20261003160000_amenities_key_and_service_fold.sql. Taken read-only from the live
+-- database on 2026-10-03 (the query in supabase/checks/before-amenities-key.sql, which needs its
+-- ORDER BY wrapped in a subquery to run). Taxonomy only, no user data.
+-- Columns: category_key | slug | label | sort_order | is_published | metadata
+--
+-- Counts: service_categories 49 options · all taxonomy_options 612
+--
+-- taxonomy_categories:
+--   studio_amenities  "Studio Amenities"  published  (description: feeds StudioDoc.amenities)
+--   studio_services   "Studio Services"   published  (description: Studio Discovery filter chips)
+--   service_categories "Service Categories" published
+--   amenities: does not exist
+--
+-- studio_amenities (33):
+--   dolby_atmos | Dolby Atmos | 1 | false | null
+--   vocal_booth | Vocal Booth | 2 | true | null
+--   live_room | Live Room | 3 | true | null
+--   valet_parking | Valet Parking | 4 | true | null
+--   resident_engineers | Resident Engineers | 5 | false | null
+--   private_lounge | Private Lounge | 6 | true | null
+--   access_24x7 | 24x7 Access | 7 | true | null
+--   rehearsal_room | Rehearsal Room | 8 | true | null
+--   chill_lounge | Chill Lounge | 9 | true | null
+--   drums_included | Drums Included | 10 | false | null
+--   parking_space | Parking Space | 11 | true | null
+--   instruments_support | Instruments Support | 12 | true | null
+--   acoustics_optimized | Acoustics Optimized | 13 | true | null
+--   fiber_internet | Fiber Internet | 14 | true | null
+--   stage_monitors | Stage Monitors | 15 | false | null
+--   bar_and_diner_access | Bar & Diner Access | 16 | true | null
+--   green_room | Green Room | 17 | true | null
+--   wifi | Wi-Fi | 18 | true | null
+--   attended_sessions | Attended Sessions | 19 | false | null
+--   stem_mastering | Stem Mastering | 20 | false | null
+--   analogue_chain | Analogue Chain | 21 | false | null
+--   reference_library | Reference Library | 22 | true | null
+--   backline_included | Backline Included | 23 | false | null
+--   open_till_2am | Open Till 2 AM | 24 | true | null
+--   lockers | Lockers | 25 | true | null
+--   cafe | Cafe | 26 | true | null
+--   four_mic_positions | 4 Mic Positions | 27 | false | null
+--   multicam_video | Multicam Video | 28 | false | null
+--   producer | Producer | 29 | false | null
+--   same_day_audio | Same-Day Audio | 30 | false | null
+--   air_conditioning | AC | 31 | true | null
+--   drinking_water | Water | 32 | true | null
+--   catering | Catering | 33 | true | null
+--
+-- studio_services (9, all published, metadata null):
+--   recording | Recording | 1 · mixing | Mixing | 2 · mastering | Mastering | 3
+--   resident_engineers | Resident Engineers | 4 · attended_sessions | Attended Sessions | 5
+--   stem_mastering | Stem Mastering | 6 · producer | Producer | 7 · same_day_audio | Same-Day Audio | 8
+--   multicam_video | Multicam Video | 9
+--
+-- service_categories, the studio parent and its children (before the fold):
+--   studio | Studio | 8 | true | {"app_key":"studio"}
+--   studio_recording | Studio recording | 130 | true | {"app_key":"studio_recording","parent":"studio"}
+--   rehearsal_space | Rehearsal space | 131 | true | {"app_key":"rehearsal_space","parent":"studio"}
+--   studio_rental | Studio rental | 132 | true | {"app_key":"studio_rental","parent":"studio"}
+--   none of recording, resident_engineers, attended_sessions, stem_mastering, producer,
+--   same_day_audio, multicam_video exist in service_categories.
+--
+-- person_type_service_categories rows offering service_categories/studio:
+--   person_types/other · person_types/rental_provider · person_types/studio

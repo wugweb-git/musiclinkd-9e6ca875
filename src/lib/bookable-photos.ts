@@ -4,7 +4,7 @@ import { downscale, downscaleImage } from "@/lib/image-downscale";
 import { BUSINESS_MEDIA_BUCKET } from "@/lib/bookable-photos.functions";
 
 /*
- * Photo uploads for a studio's facilities and equipment, the same way profile photos upload
+ * Photo uploads for a studio's amenities and equipment, the same way profile photos upload
  * (src/lib/profile-images.ts): a public bucket, a fresh file name per upload, and storage RLS that
  * refuses writes outside the owner's own folder — here `<studio id>/<file>`.
  * The row that shows the photo is written by addMyBookablePhoto (src/lib/bookable-photos.functions.ts).

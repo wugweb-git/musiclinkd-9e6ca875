@@ -1,4 +1,4 @@
-// A line icon for each studio amenity (taxonomy studio_amenities), so a place's amenities read at a
+// A line icon for each amenity (taxonomy amenities), so a place's amenities read at a
 // glance. Black line icons only; an amenity the map doesn't know gets the generic one.
 
 import {

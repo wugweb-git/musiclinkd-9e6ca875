@@ -932,7 +932,7 @@ export function StepDots({ step, total }: { step: number; total: number }) {
 }
 
 /**
- * Photos a studio added as proof of one facility or equipment item, each at full width in a sheet.
+ * Photos a studio added as proof of one amenity or equipment item, each at full width in a sheet.
  * Open while `photos` has any; the studio page and the owner's editor both use it.
  */
 export function PhotoSheet({
@@ -962,7 +962,7 @@ export function PhotoSheet({
 }
 
 /**
- * A facility or equipment pill. With photos it becomes a button showing the first one as a small
+ * An amenity or equipment pill. With photos it becomes a button showing the first one as a small
  * thumbnail and the count, and opens them; without, it stays a plain label.
  */
 export function ProofPill({

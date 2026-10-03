@@ -1,4 +1,5 @@
 import { OfflineBanner } from "./kit";
+import { SheetSelect } from "./listing-form";
 // FLOW-02 — Onboarding UI kit. Extends Gestalt; no new tokens.
 
 import {
@@ -38,6 +39,12 @@ import {
 } from "@/lib/portfolio.functions";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
+import {
+  GENDERS,
+  getMyPrivateDetails,
+  readDeviceContext,
+  saveMyPrivateDetails,
+} from "@/lib/profile-private.functions";
 import { deleteProfileImage, PROFILE_IMAGE_ACCEPT, uploadProfileImage } from "@/lib/profile-images";
 import { draftToProfile, profileToDraft } from "@/lib/profile-map";
 import {
@@ -48,7 +55,9 @@ import {
 } from "@/data/onboarding";
 import type { UsernameStatus } from "@/lib/username";
 import {
+  choicesFor,
   loadPersonaBucket,
+  useTaxonomy,
   type LoadState,
   type PersonaBucket,
   type TaxonomyOption,
@@ -1340,6 +1349,71 @@ export function HandoffCard({
           </AuthTextButton>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------- private details */
+
+/**
+ * Date of birth and gender. Saved to the owner-only profile_private table as they change, never
+ * into the draft, and hidden from everyone else by default. In dev preview (no account) they stay on
+ * the screen only. Onboarding asks them; Edit profile → Identity edits them.
+ */
+export function PrivateDetailsFields() {
+  const { signedIn } = useAuth();
+  const load = useServerFn(getMyPrivateDetails);
+  const save = useServerFn(saveMyPrivateDetails);
+  const [dob, setDob] = useState("");
+  const [gender, setGender] = useState<string | null>(null);
+  const genders = useTaxonomy();
+  const loaded = useRef(false);
+  const today = new Date().toISOString().slice(0, 10);
+  const dobError =
+    dob && (dob > today || dob < "1900-01-01") ? "Enter your real date of birth." : undefined;
+
+  useEffect(() => {
+    if (!signedIn) return;
+    load()
+      .then((p) => {
+        setDob(p.dateOfBirth ?? "");
+        setGender(p.gender);
+      })
+      .catch(() => {})
+      .finally(() => {
+        loaded.current = true;
+      });
+  }, [signedIn, load]);
+
+  useEffect(() => {
+    if (!signedIn || !loaded.current || dobError) return;
+    const t = window.setTimeout(() => {
+      void save({
+        data: {
+          dateOfBirth: dob || null,
+          gender: (gender as (typeof GENDERS)[number]["value"] | null) ?? null,
+          // Time zone and device come from the browser, with no permission prompt.
+          ...readDeviceContext(),
+        },
+      }).catch(() => {});
+    }, 600);
+    return () => window.clearTimeout(t);
+  }, [dob, gender, signedIn, save, dobError]);
+
+  return (
+    <div className="space-y-5">
+      <DrawerField label="Date of birth" hint={dobError ?? "Only you can see this."}>
+        <DateDrawerField title="Date of birth" value={dob} onChange={setDob} />
+      </DrawerField>
+      <DrawerField label="Gender" hint="Only you can see this.">
+        <SheetSelect
+          title="Gender"
+          value={gender}
+          options={choicesFor(genders.options?.genders)}
+          placeholder="Choose"
+          onChange={setGender}
+        />
+      </DrawerField>
     </div>
   );
 }

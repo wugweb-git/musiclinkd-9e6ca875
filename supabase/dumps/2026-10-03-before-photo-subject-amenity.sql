@@ -1,0 +1,9 @@
+-- Snapshot before 20261003150000_photo_subject_amenity.sql. Taken read-only from the live database
+-- on 2026-10-03. Definitions and counts only, no user data.
+--
+-- Check constraints on public.bookable_photos (names still from the studio_photos era):
+--   studio_photos_subject_id_check   CHECK (((length(subject_id) >= 1) AND (length(subject_id) <= 80)))
+--   studio_photos_subject_type_check CHECK ((subject_type = ANY (ARRAY['equipment'::text, 'facility'::text])))
+--   studio_photos_url_check          CHECK (((url ~ '^https://'::text) AND (length(url) <= 1000)))
+--
+-- Rows per subject_type: facility 15 · equipment 46 · total 61

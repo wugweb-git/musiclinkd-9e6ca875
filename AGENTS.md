@@ -129,7 +129,7 @@ are the same profile cover. Media buckets, by job:
 | `covers` | Profile covers, any persona |
 | `gallery` | Profile and band gallery photos |
 | `listing-media` | Anything listed in Market: gear for sale or rent, any persona |
-| `business-media` | Equipment and facilities of a bookable space, as proof of what it offers; never for sale (5 MB) |
+| `business-media` | Equipment and amenities of a bookable space, as proof of what it offers; never for sale (5 MB) |
 | `verification-documents` | Private, owner-only |
 
 Equipment for sale or rent belongs in `listing-media`; the two buckets are not merged. A

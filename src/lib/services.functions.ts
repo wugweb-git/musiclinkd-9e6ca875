@@ -35,7 +35,7 @@ export type ServiceRow = {
   requirements: string[];
   /** portfolio_items ids shown as examples, in order. */
   example_ids: string[];
-  /** A studio's service: the amenities (studio_amenities slugs) and equipment ids it uses. */
+  /** A studio's service: the amenities (amenities slugs) and equipment ids it uses. */
   amenity_slugs: string[];
   equipment_ids: string[];
   status: ServiceStatus;
@@ -168,7 +168,7 @@ async function serviceUses(
       ? client
           .from("taxonomy_options")
           .select("slug, label")
-          .eq("category_key", "studio_amenities")
+          .eq("category_key", "amenities")
           .in("slug", amenitySlugs)
       : { data: [] },
     equipmentIds.length
@@ -200,7 +200,7 @@ async function serviceUses(
   return {
     amenities: amenitySlugs
       .filter((a) => label.has(a))
-      .map((a) => ({ slug: a, label: label.get(a)!, photos: photosOf("facility", a) })),
+      .map((a) => ({ slug: a, label: label.get(a)!, photos: photosOf("amenity", a) })),
     equipment: equipmentIds
       .filter((e) => items.has(e))
       .map((e) => ({ id: e, name: items.get(e)!, photos: photosOf("equipment", e) })),
@@ -384,7 +384,7 @@ export const listPublicServices = createServerFn({ method: "GET" })
         ? client
             .from("taxonomy_options")
             .select("slug, label")
-            .eq("category_key", "studio_amenities")
+            .eq("category_key", "amenities")
             .in("slug", slugs)
         : { data: [] },
       ids.length

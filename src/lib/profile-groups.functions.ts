@@ -69,7 +69,7 @@ export type BusinessRecord = {
     categories?: string[] | null;
     deliverables?: string[] | null;
     turnaround?: string | null;
-    /** A studio's service: what it uses (studio_amenities slugs, bookable_equipment ids). */
+    /** A studio's service: what it uses (amenities slugs, bookable_equipment ids). */
     amenity_slugs?: string[] | null;
     equipment_ids?: string[] | null;
     status: "active" | "paused" | "draft";
@@ -102,7 +102,7 @@ export type BusinessRecord = {
     slug?: string;
     rating: number | null;
     review_count: number;
-    /** studio_amenities slugs: what the place has. */
+    /** amenities slugs: what the place has. */
     amenities: string[];
     /** Its gear: type is an equipment category or an instrument slug. */
     equipment: {
@@ -112,8 +112,8 @@ export type BusinessRecord = {
       quantity: number | null;
       included: boolean;
     }[];
-    /** Proof photos, by amenity slug (facility) or equipment id. */
-    photos: { subject_type: "facility" | "equipment"; subject_id: string; url: string }[];
+    /** Proof photos, by amenity slug or equipment id. */
+    photos: { subject_type: "amenity" | "equipment"; subject_id: string; url: string }[];
     rooms: {
       id: string;
       name: string;
@@ -694,7 +694,7 @@ export const createMyBusiness = createServerFn({ method: "POST" })
           .refine((v) => (INDIAN_STATES as readonly string[]).includes(v))
           .optional(),
         mapsUrl: z.string().trim().max(500).regex(GOOGLE_MAPS).optional(),
-        /** Taxonomy slugs: languages, genres, studio_amenities and equipment_categories. */
+        /** Taxonomy slugs: languages, genres, amenities and equipment_categories. */
         policies: z.array(z.string().trim().min(1).max(200)).min(1).max(12),
         genres: z
           .array(z.string().regex(/^[a-z0-9_]{2,40}$/))

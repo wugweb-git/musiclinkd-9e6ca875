@@ -5,6 +5,51 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one name for amenities; the picker offers 12; studio services fold into service categories (owner, 3 Oct)
+
+- `20261003150000` and `20261003160000` applied to the live database by the owner's Claude on 3 Oct,
+  unchanged from `ba11e89` (hashes checked); every built-in check passed and the API schema was
+  reloaded. Photos: 15 `amenity`, 46 `equipment`, none `facility`. `amenities`: 33 options, 12 in
+  the picker; `studio_amenities` gone. `service_categories`: 55; 18 new person-type rows.
+
+- Taxonomy key `studio_amenities` is `amenities` (`20261003160000_amenities_key_and_service_fold.sql`).
+  Same options and slugs; no stored selection changes.
+- The amenity picker offers 12 options (parking, valet parking, lounges, Wi-Fi, fiber internet, bar
+  & diner, lockers, cafe, AC, water, catering). The other 21 carry `metadata.picker = false`: still
+  published, so a profile that already has one still shows it, and the editor still lists it so the
+  owner can remove it. Nothing deleted.
+- `service_categories` gains 6 of studio_services' options (`resident_engineers`,
+  `attended_sessions`, `stem_mastering`, `producer`, `same_day_audio`, `multicam_video`) with their
+  existing labels, under the `studio` parent, offered to every person type already offered `studio`.
+  Not `recording`: "Studio recording" is already there, and the picker would show both.
+  No screen read `studio_services`; its rows stay because `service_category_specialties` points at
+  them. `bookables.services` is untouched.
+- `20261003140000` (cleanup) compares row counts before and after instead of hard-coding 21 / 57;
+  its snapshot, `supabase/dumps/2026-10-03-before-drop-bookables-compat.sql`, is committed.
+- Snapshots for `20261003150000` and `20261003160000` committed (`supabase/dumps/2026-10-03-before-
+  photo-subject-amenity.sql`, `…-before-amenities-key.sql`); `supabase/checks/before-amenities-key.sql`
+  wraps its `UNION` in a subquery so its `ORDER BY` runs.
+
+### Changed — Edit profile edits every onboarding answer (3 Oct)
+
+- Date of birth and gender: onboarding's `PrivateDetailsFields` (moved from the step route to
+  `ml/onboarding.tsx`) in Edit profile → Identity, talent only. They were not editable after
+  onboarding.
+- "Available for": onboarding's `available_for` picker instead of a free-text field (talent; a
+  business keeps the text field, which business setup never asks).
+- "Where you work": onboarding's `work_modes` picker from the taxonomy instead of a hardcoded list
+  in `src/data/onboarding.ts`.
+
+### Changed — "facility" is "amenity" everywhere (owner, 3 Oct)
+
+- The photo subject type `facility` is `amenity`: `BookablePhotoSubject`, the `addMyBookablePhoto`
+  enum, every `photosOf`/`photosBy` lookup (`20261003150000_photo_subject_amenity.sql`, applied
+  3 Oct).
+- `MyBookablePhotos.facilities` → `amenities`; the booking page's `facilities`/`facilitySlugs`/
+  `facilityPhotos` → `amenities`/`amenityLabelSlugs`/`amenityPhotos`.
+- Edit profile's section is "Amenities & equipment", opened by `?section=amenities` / `#amenities`
+  (the Availability screen and Add service link there).
+
 ### Fixed — Add service asks every business, and only businesses, for amenities and equipment (3 Oct)
 
 - `services.new.tsx` decided "studio" from whether the equipment list loaded. Since every signed-in
@@ -62,6 +107,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - Reproduced and verified under Cloudflare's own runtime (`wrangler dev` on the production build):
   before, `/` and `/discover` returned 500 with that error; after, `/`, `/discover`, a booking page,
   Market, Welcome, Help and a profile return 200.
+
+### Added — cleanup migration for the bookable rename (3 Oct) — applied 3 Oct
+
+- Applied to the live database by the owner's Claude on 3 Oct: every built-in check passed, the API
+  schema was reloaded; 22 bookables, their photos and the storage rules unchanged.
+
+- `20261003140000_bookables_drop_compat.sql` drops the old-name views (`studios`, `studio_rooms`,
+  `studio_blocks`, `studio_equipment`, `studio_photos`) and wrapper functions (`studio_is_mine`,
+  `can_review_studio`, `studio_busy`). No `CASCADE`: it first checks that no view, function or rule
+  still uses an old name, and rolls back if one does. It touches no data.
+
 
 ### Changed — code names follow the bookable rename (3 Oct)
 

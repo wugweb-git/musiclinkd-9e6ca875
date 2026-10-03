@@ -273,7 +273,7 @@ function NewService() {
   }));
 
   // A studio's amenities and equipment, each row showing its first photo when it has one.
-  const photoOf = (type: "facility" | "equipment", id: string) =>
+  const photoOf = (type: "amenity" | "equipment", id: string) =>
     studioPhotos.data?.photos.find((p) => p.subject_type === type && p.subject_id === id)?.url;
   const thumb = (url: string | undefined, fallback: ReactNode) =>
     url ? (
@@ -281,12 +281,12 @@ function NewService() {
     ) : (
       fallback
     );
-  const amenityOptions = (studioPhotos.data?.facilities ?? []).map((f) => {
-    const FacilityIcon = amenityIcon(f.slug);
+  const amenityOptions = (studioPhotos.data?.amenities ?? []).map((f) => {
+    const AmenityIcon = amenityIcon(f.slug);
     return {
       value: f.slug,
       label: f.label,
-      iconNode: thumb(photoOf("facility", f.slug), <FacilityIcon size={iconSize.md} aria-hidden />),
+      iconNode: thumb(photoOf("amenity", f.slug), <AmenityIcon size={iconSize.md} aria-hidden />),
     };
   });
   const equipmentOptions = (studioEquipment.data?.items ?? []).map((e) => ({
@@ -592,8 +592,8 @@ function BookableSetupNote({ what }: { what: "amenities" | "equipment" }) {
       </p>
       <BtnLink
         to="/profile/edit"
-        search={{ section: "facilities" }}
-        hash={what === "amenities" ? "facilities" : "equipment"}
+        search={{ section: "amenities" }}
+        hash={what === "amenities" ? "amenities" : "equipment"}
         variant="outline"
         className="mt-3 w-full"
       >
