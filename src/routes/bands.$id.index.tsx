@@ -197,7 +197,7 @@ function BandProfile() {
             <Link
               to="/identity/qr"
               aria-label="Band QR"
-              className="grid h-10 w-10 place-items-center rounded-full bg-card/90"
+              className="hit-area grid h-10 w-10 place-items-center rounded-full bg-card/90"
             >
               <QrCode size={iconSize.sm} aria-hidden />
             </Link>

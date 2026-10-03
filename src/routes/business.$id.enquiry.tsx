@@ -7,6 +7,7 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, SegmentedField } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { sendEnquiry } from "@/lib/enquiries.functions";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/$id/enquiry")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -30,7 +31,8 @@ export const Route = createFileRoute("/business/$id/enquiry")({
   component: BusinessEnquiry,
 });
 
-const intents = ["Room", "Mixing", "Live", "Other"];
+// "Room" is gone: there are no rooms, people book a service (owner, 3 Oct 2026).
+const intents = ["Mixing", "Live", "Other"];
 
 function BusinessEnquiry() {
   const b = businessView(Route.useLoaderData());
@@ -77,7 +79,7 @@ function BusinessEnquiry() {
         <TopBar title="Enquiry sent" back={`/profile/${b.id}`} />
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
-            <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
+            <CheckCircle2 size={iconSize.lg} className="mx-auto text-primary" aria-hidden />
             <h2 className="mt-3 text-3 leading-tight">Your enquiry is with {b.name}</h2>
             <p className="mt-2 text-1 text-muted-foreground">
               {conversationId
@@ -130,7 +132,7 @@ function BusinessEnquiry() {
             onChange={(e) => setMessage(e.target.value)}
             rows={5}
             placeholder="Dates, how many people, what you need from the room."
-            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
+            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           <p className="mt-2 text-1 text-muted-foreground">
             Sharing rough dates gets a faster answer than "are you free?".

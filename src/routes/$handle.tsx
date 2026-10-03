@@ -1,5 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import {
+  PublicProfileError,
   PublicProfileScreen,
   loadPublicProfile,
   publicProfileHead,
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/$handle")({
   },
   head: ({ params, loaderData }) =>
     publicProfileHead(handleOf(decodeURIComponent(params.handle)) ?? params.handle, loaderData),
+  errorComponent: PublicProfileError,
   component: HandleRoute,
 });
 

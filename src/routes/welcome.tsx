@@ -415,7 +415,7 @@ function WelcomeScreen() {
 
             <Btn
               type="submit"
-              className="w-full h-10 sm:h-11 text-xs sm:text-sm font-semibold shadow-xs"
+              className="w-full h-10 sm:h-11 text-1 font-semibold shadow-xs"
               loading={busy === "email"}
             >
               {signup ? "Create Account" : "Sign In"}
@@ -427,7 +427,7 @@ function WelcomeScreen() {
           <div className={`grid gap-1.5 ${showLinkedIn ? "grid-cols-3" : "grid-cols-2"}`}>
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
+              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-1 font-medium shadow-xs px-1.5"
               icon={<GoogleIcon />}
               loading={busy === "google"}
               onClick={() => void google()}
@@ -437,7 +437,7 @@ function WelcomeScreen() {
             {showLinkedIn ? (
               <Btn
                 variant="outline"
-                className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
+                className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-1 font-medium shadow-xs px-1.5"
                 icon={<Linkedin size={iconSize.sm} aria-hidden />}
                 loading={busy === "linkedin"}
                 onClick={() => void linkedin()}
@@ -447,7 +447,7 @@ function WelcomeScreen() {
             ) : null}
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
+              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-1 font-medium shadow-xs px-1.5"
               icon={<Smartphone size={iconSize.sm} aria-hidden />}
               onClick={() => void navigate({ to: "/auth/phone" })}
             >
@@ -455,14 +455,14 @@ function WelcomeScreen() {
             </Btn>
           </div>
 
-          <p className="mt-1.5 text-center text-xs sm:text-sm text-muted-foreground">
+          <p className="mt-1.5 text-center text-1 text-muted-foreground">
             {signup ? (
               <>
                 Already have an account?{" "}
                 <button
                   type="button"
                   onClick={() => switchMode("signin")}
-                  className="font-semibold text-foreground underline underline-offset-4"
+                  className="hit-area font-semibold text-foreground underline underline-offset-4"
                 >
                   Sign in
                 </button>
@@ -473,7 +473,7 @@ function WelcomeScreen() {
                 <button
                   type="button"
                   onClick={() => switchMode("signup")}
-                  className="font-semibold text-foreground underline underline-offset-4"
+                  className="hit-area font-semibold text-foreground underline underline-offset-4"
                 >
                   Create an account
                 </button>

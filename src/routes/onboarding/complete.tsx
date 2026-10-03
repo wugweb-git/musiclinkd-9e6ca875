@@ -133,7 +133,7 @@ function Complete() {
               {...(r.cta && r.to
                 ? {
                     action: (
-                      <BtnLink to={r.to} variant="outline" className="text-xs h-8 px-3">
+                      <BtnLink to={r.to} variant="outline" className="h-8 px-3 text-1">
                         {r.cta}
                       </BtnLink>
                     ),

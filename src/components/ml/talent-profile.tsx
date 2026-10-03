@@ -256,7 +256,8 @@ function ViewerActions({
   username?: string | undefined;
   onHire?: (() => void) | undefined;
 }) {
-  const profileId = rawProfileId || (username ? profileIdByUsername[username] : undefined);
+  // The live profile id only: a hardcoded username → id map must never stand in for a real row.
+  const profileId = rawProfileId;
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
   const readConnection = useServerFn(connectionWith);
@@ -281,6 +282,8 @@ function ViewerActions({
   const act = useMutation({
     mutationFn: async (what: "ask" | "accept" | "remove" | "follow" | "unfollow") => {
       if (!profileId) return;
+      // Without the current state a tap could send a second request; say so instead.
+      if (q.isError) throw new Error("We couldn't load this connection. Try again.");
       if (what === "ask") {
         await ask({ data: { profileId } });
         return;
@@ -304,11 +307,10 @@ function ViewerActions({
       else if (what === "follow") toast.success("Now following");
       else if (what === "unfollow") toast.success("Unfollowed");
     },
-    onError: (_, what) => {
-      if (what === "ask") toast.success("Connection request sent!");
-      else if (what === "follow") toast.success("Now following");
-      else if (what === "unfollow") toast.success("Unfollowed");
-      else toast.error("That didn't save. Try again.");
+    // A failure is shown as one, never as the success it wasn't.
+    onError: (e) => {
+      void q.refetch();
+      toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again.");
     },
   });
 
@@ -990,7 +992,7 @@ function BentoCard({
     >
       <div className="flex items-center justify-between gap-2 text-1 font-semibold text-foreground">
         <span className="flex items-center gap-1.5">
-          <Icon size={15} className="text-foreground" aria-hidden />
+          <Icon size={iconSize.sm} className="text-foreground" aria-hidden />
           <span>{label}</span>
         </span>
         {count ? (

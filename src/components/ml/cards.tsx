@@ -141,7 +141,7 @@ export function PersonRow({
         <Link
           to="/profile/$username"
           params={{ username: person.username }}
-          className="state-layer flex min-w-0 flex-1 items-center gap-3 active:scale-[0.99]"
+          className="state-layer flex min-h-touch min-w-0 flex-1 items-center gap-3 active:scale-[0.99]"
         >
           {body}
         </Link>

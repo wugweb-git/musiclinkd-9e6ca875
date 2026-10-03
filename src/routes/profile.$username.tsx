@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  PublicProfileError,
   PublicProfileScreen,
   loadPublicProfile,
   publicProfileHead,
@@ -9,6 +10,7 @@ import {
 export const Route = createFileRoute("/profile/$username")({
   loader: ({ params }) => loadPublicProfile(params.username),
   head: ({ params, loaderData }) => publicProfileHead(params.username, loaderData),
+  errorComponent: PublicProfileError,
   component: ProfileRoute,
 });
 

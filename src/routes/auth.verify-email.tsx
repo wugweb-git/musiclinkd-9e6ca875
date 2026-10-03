@@ -124,7 +124,7 @@ function VerifyEmail() {
             />
 
             <Btn
-              className="w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
+              className="w-full h-12 text-sm font-semibold shadow-xs"
               loading={busy}
               disabled={code.length !== 6 || !email}
               onClick={() => void verify(code)}
@@ -151,7 +151,7 @@ function VerifyEmail() {
             <TrustNote>Not there? Check spam and promotions.</TrustNote>
           </div>
 
-          <p className="mt-3.5 flex justify-center text-xs sm:text-sm">
+          <p className="mt-3.5 flex justify-center text-1">
             <AuthLink
               to="/auth"
               icon={<Pencil size={iconSize.sm} />}

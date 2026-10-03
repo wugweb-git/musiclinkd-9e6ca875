@@ -1,5 +1,7 @@
 import { useEffect } from "react";
-import { notFound, redirect } from "@tanstack/react-router";
+import { notFound, redirect, useRouter } from "@tanstack/react-router";
+import { Btn, Screen, TopBar } from "@/components/ml/ui";
+import { LoadError } from "@/components/ml/kit";
 import { BusinessProfileExperience } from "@/components/ml/business-profile";
 import { TalentProfileExperience } from "@/components/ml/talent-profile";
 import { businessViewFromRecord } from "@/lib/business-view";
@@ -28,25 +30,35 @@ export type PublicProfileData = Awaited<ReturnType<typeof loadPublicProfile>>;
 export async function loadPublicProfile(username: string) {
   // "me" is the owner's own profile, which has its own screen.
   if (username === "me") throw redirect({ to: "/profile" });
+  // A failed read is an error, never "no such profile": both reads failing throws, so the route's
+  // error screen says it couldn't load (with Try again) instead of a 404.
+  let failed = 0;
   const [row, business, labels] = await Promise.all([
     getPublicProfile({ data: { username } })
-      .catch(() => null)
+      .catch(() => {
+        failed += 1;
+        return null;
+      })
       .then((r) => (r ?? null) as ProfileRow | null),
-    getPublicBusiness({ data: { username } }).catch(() => null),
+    getPublicBusiness({ data: { username } }).catch(() => {
+      failed += 1;
+      return null;
+    }),
     // Without labels the chips fall back to slugs; the page still renders.
     getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
   ]);
+  if (failed === 2) throw new Error("This profile didn't load");
+  // A business's works come from the same portfolio as a talent's. A failed read throws rather
+  // than showing "no work yet".
   if (business) {
-    // A business's works come from the same portfolio as a talent's.
     const sections = await getPublicProfileSections({
       data: { profileId: business.profile.id },
-    }).catch(() => null);
+    });
     return { row, business, labels, sections };
   }
   if (!row) throw notFound();
-  // Without sections the profile shows its empty states.
   const sections: ProfileSections | null = row.id
-    ? await getPublicProfileSections({ data: { profileId: row.id } }).catch(() => null)
+    ? await getPublicProfileSections({ data: { profileId: row.id } })
     : null;
   return { row, business: null, labels, sections };
 }
@@ -172,5 +184,25 @@ export function PublicProfileScreen({
         <TalentProfileExperience p={person!} />
       )}
     </>
+  );
+}
+
+/** The profile routes' error screen: the read failed, so say so and offer Try again. */
+export function PublicProfileError() {
+  const router = useRouter();
+  return (
+    <Screen>
+      <TopBar title="Profile" back="/discover" />
+      <div className="px-5 pt-6">
+        <LoadError
+          what="this profile"
+          action={
+            <Btn variant="outline" onClick={() => void router.invalidate()}>
+              Try again
+            </Btn>
+          }
+        />
+      </div>
+    </Screen>
   );
 }

@@ -127,7 +127,7 @@ function OtpScreen() {
             />
 
             <Btn
-              className="w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
+              className="w-full h-12 text-sm font-semibold shadow-xs"
               loading={busy}
               disabled={code.length !== 6 || !phone}
               onClick={() => void verify(code)}
@@ -152,7 +152,7 @@ function OtpScreen() {
             </p>
           </div>
 
-          <p className="mt-3.5 flex items-center justify-center gap-6 text-xs sm:text-sm">
+          <p className="mt-3.5 flex items-center justify-center gap-6 text-1">
             <AuthLink
               to="/auth/phone"
               icon={<Pencil size={iconSize.sm} />}

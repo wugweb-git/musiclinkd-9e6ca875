@@ -178,7 +178,7 @@ function AccountScreen() {
               New {field?.label.toLowerCase()}
             </span>
             {field?.key === "phone" ? (
-              <span className="mt-1.5 flex min-h-control items-center rounded-lg border border-border bg-background focus-within:border-primary">
+              <span className="mt-1.5 flex min-h-control items-center rounded-lg border border-border bg-background focus-within:border-primary has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
                 <span className="pl-3 text-1 text-muted-foreground">+91</span>
                 <input
                   value={input}
@@ -186,7 +186,7 @@ function AccountScreen() {
                   autoComplete="tel-national"
                   onChange={(e) => setInput(e.target.value.replace(/[^\d]/g, "").slice(0, 10))}
                   placeholder="98xxxxxxxx"
-                  className="min-h-control w-full bg-transparent px-2 text-1 outline-none"
+                  className="min-h-control w-full bg-transparent px-2 text-2 outline-none"
                 />
               </span>
             ) : (

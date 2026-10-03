@@ -136,7 +136,7 @@ function MarketHome() {
           <div className="flex items-center gap-2">
             <Link
               to="/marketplace/mine"
-              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
+              className="hit-area inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
             >
               <Plus size={iconSize.sm} aria-hidden /> List
             </Link>

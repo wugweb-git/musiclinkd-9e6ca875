@@ -107,7 +107,7 @@ export function SearchField({
           placeholder={placeholder}
           aria-label={placeholder}
           enterKeyHint="search"
-          className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          className="w-full min-w-0 bg-transparent text-2 outline-none placeholder:text-muted-foreground"
         />
       </label>
     </form>
