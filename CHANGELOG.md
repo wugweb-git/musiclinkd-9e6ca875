@@ -5,6 +5,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — C2 and C3: one calendar per place; rooms and the services tags no longer read (4 Oct)
+
+- C2: the booking draft has no room; every busy time and closure takes the whole place
+  (`bookable-slots`, `booking-overlaps`); any duration can be picked. A place with no services takes
+  no bookings ("This space is unavailable"); its "from" price is its lowest service price. Pricing
+  loses room rates and price tiers (base rate and add-ons stay); closed times lose the room picker.
+  Rooms are no longer read by the booking page, the business profile, `getMyBookable` or booking
+  requests; `updateBookableRoomRate` / `updateBookableRoomTiers` are removed.
+- C3: `bookables.services` is no longer read (`catalog.functions.ts`; `recommendations.functions.ts`
+  loses the "Offers <slugs>, like studios you used" reason).
+- Wording trimmed where it named rooms: booking page and step descriptions; "This room has no open
+  dates" → "No open dates in the next month."; "Only durations this room supports are shown."
+  removed; "Room capacity N" removed; "prepare the room" → "prepare"; "Block or Adjust This Room's
+  Calendar" → "Block or Adjust the Calendar"; Pricing's description; the confirmed and session
+  screens' Room line.
+- Migrations, not applied: `20261004120000_retire_rooms.sql` (M2: `bookable_busy()` without
+  `room_id`, room closures to the whole place, `bookable_rooms` → `bookable_rooms_retired` with
+  access revoked), `20261004130000_drop_room_ids.sql` (held for the owner's yes),
+  `20261004140000_retire_bookable_services.sql` (M3: `services` → `services_retired`). Snapshot
+  query: `supabase/checks/before-retire-rooms.sql`.
+
 ### Changed — C1: a booking is for a service; every service can be booked (4 Oct)
 
 - The booking flow carries the service picked (`serviceId`) and sends it; the summary, the request
