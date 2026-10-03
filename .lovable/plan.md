@@ -1,17 +1,47 @@
-# Mobile-first MusicLinkd UI pass from Lovable references
+# Finishing pass: brand, media, business accounts, hiring posts, full audit
 
-## Goal
-Use the three supplied screenshots and the linked Lovable pages as visual references for MusicLinkd's **menu, profile, settings, Home, help, inbox, and conversation** screens first. Apply shared styling improvements to the rest of the product through the existing design system. Treat every reference as a phone-width view. Keep MusicLinkd's own content, account rules, five primary tabs, and live data; do not copy Lovable branding or invent credits, followers, activity, or features.
+The work runs in waves. Each wave ends with checks that actually run (code checks, build, phone-size screenshots, signed-in tap tests). Anything that can't be checked is named in the reply.
 
-## What will change
-1. **Shared mobile language.** Refine global colours, type hierarchy, spacing, rows, borders, elevation, icon alignment, interaction states, and sheets in the existing CSS and shared controls. Preserve MusicLinkd's ink/neutral ground/white surfaces, Inter, Lucide, and restrained pink signal. Make global changes safely so unlisted screens benefit without a separate screen-by-screen redesign.
-2. **Menu and settings.** Rework the existing bottom sheet around a real account identity header and clearer flat, grouped navigation rows, drawing from the supplied Lovable drawer and MusicLinkd menu screenshots. Keep only destinations that MusicLinkd actually supports; retain business-only visibility, current badges, switch-account behavior, and sign-out. Align Settings with the same row pattern while keeping its existing account, privacy, security, and support controls.
-3. **Profile.** Tighten the mobile cover/avatar/name/actions composition and empty sections using the public-profile screenshot's hierarchy, but show MusicLinkd's actual music portfolio, business/talent identity, and available actions rather than Lovable projects or fabricated social counts. Preserve edit/share and existing data loading/error flows.
-4. **Home, help, inbox, conversations.** Give these existing screens a coherent mobile hierarchy, flatter grouped content, useful empty/loading/error states, stronger composer and message readability, and consistent action placement. Retain their current server calls, permissions, navigation, and real records. Use the academy page only for its typography and content rhythm, not its promotional copy or bright gradients.
-5. **Mobile verification.** Check the referenced screens and shared styling at 360, 390, and 412px, including the drawer, long names, safe areas, keyboard, tap targets, focus, reduced motion, offline/error states, and scrolling. Verify the signed-in flow where possible, and run the existing project checks. Avoid regression in the already-updated authentication screens.
+## Wave 1 — Grounds, brand and type (whole app)
+- Three backgrounds, modelled on Lovable:
+  - **Auth ground:** warm light grey, for the sign-in screens.
+  - **Content ground:** the page behind the main screens.
+  - **Raised surface:** white, for cards, sheets and menus.
+- Each becomes its own colour setting, so every screen uses one of the three. Exact values are measured from lovable.dev before they are set.
+- Apply the new logo, Inter type scale and ink/pink rules to Home, Discover, Portfolio, Market, Profile and Settings. Reviewed card by card at phone width.
+- Banners on the main Market page: the same dark branded banner as the category pages, with real listing counts only.
+- Restyle the conversation list and conversation screen in the flat drawer style.
 
-## Reference access and boundaries
-The public Lovable profile and academy page can be inspected at phone width; the linked Lovable settings and dashboard redirect to sign-in in this environment, and the linked conversation does not expose its private contents. Use the screenshots and accessible public elements for those patterns rather than claiming an exact import of private Lovable components. MusicLinkd already has a bottom-nav menu sheet, grouped row primitives, profile views, settings, Home, help, inbox, and conversations; adapt these rather than creating a parallel component system.
+## Wave 2 — Real people, real media
+- Profiles without a photo show clear initials, never a broken image or a placeholder face.
+- Stock photos from Unsplash fill empty states and banners only. They are never shown as a member's own profile picture or work: that would be fake content.
+- Business profiles: edit profile asks for the business name instead of first and last name. The other screens that show a name get the same check.
 
-## Technical approach
-Work within `src/styles.css`, existing shared UI in `src/components/ml/`, and the relevant route files under `src/routes/`. Reuse `Sheet`, `Row`/`RowGroup`, `Btn`, `Screen`, and `TopBar`; preserve route metadata and all existing data/auth boundaries. Global CSS changes should be token-scoped, not a blanket override that breaks unrelated screens. Capture before/after phone-width screenshots and report any private-reference or authenticated-test limitations honestly.
+## Wave 3 — Business accounts and hiring posts
+- Business accounts use the business account type that exists today; nothing new is added unless the check finds a gap.
+- A hiring post page lets anyone post a job: role, city, dates, pay and details. It saves through the existing opportunities system, so posts show up in Opportunities and in matching. It links back to the match page.
+- The "Describe a hiring need" card on business Home shows real open hiring posts as well as people.
+- One real hiring post is created through the app's own form, by a real signed-in account, to prove the flow end to end. It is not seeded from code.
+
+## Wave 4 — Android features
+- Use what the native app already includes: the back button (done), share sheet, haptics on press, status bar colour, and the camera or gallery for profile photos.
+- Phone notifications through Firebase, only if the app's notification set-up checks out. Otherwise they are listed as blocked.
+
+## Wave 5 — Fix tap testing, then verify everything
+- Find out why the test preview never makes buttons work. Fall back to testing a production build locally, signed in as a talent account and as a business account.
+- Tap through every bottom menu, Profile, Settings, Portfolio, the match form (type a need, see results, open a profile and an opportunity), the business Home card, and the back gesture with a menu open.
+
+## Wave 6 — Audit every module and user type
+- Covers onboarding, profile, edit profile, bookings, messages, notifications, opportunities, collaborations, bands, Market, rentals, verification, reviews, Home and Discover.
+- Covers talent and business accounts.
+- Re-read the earlier Home and Discover briefs and fix the gaps.
+- Search past chats for unfinished work and fix it, or list it.
+- Each issue found is fixed in the same wave. The final reply lists anything still blocked.
+
+## Technical details
+- Grounds: a token for each of the three grounds in `src/styles.css`. The current `--auth-ground` is kept, and `Screen`, `Card` and `Sheet` are mapped onto the tokens.
+- Business name: a check on `profiles.account_type` or the business type in edit profile and the onboarding identity step, with the form fields chosen by type rather than by display text.
+- Hiring posts: a new route that writes through the existing opportunity server functions. `findAiMatches` keeps returning opportunities when `intent=hire`, and the match page shows them.
+- No new tables. If one turns out to be needed, a migration plan comes to you first, as the project rules require.
+- Native features: the Capacitor plugins already installed are used first. Any new plugin is noted in the reply.
+- Testing: run `vite build` and `vite preview` on another port for Playwright, with sessions created through `lovable auth-session`.
