@@ -78,6 +78,10 @@ export type OpportunityRow = {
   id: string;
   slug: string;
   title: string;
+  summary?: string | null;
+  work_mode?: string | null;
+  date_window?: string | null;
+  requirements?: string[];
   role_required: string | null;
   genres: string[];
   budget_paise: number | null;
@@ -148,7 +152,7 @@ const STUDIO = `${STUDIO_FIELDS}, response_time, add_ons,
 /** The studio read before 20260918240000_missing_data.sql, while its columns are not there yet. */
 const STUDIO_BEFORE = `${STUDIO_FIELDS},
   reviews(id, author_name, rating, body, created_at)`;
-const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note,
+const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note, summary, work_mode, date_window, requirements,
   collaboration_type, location, status, applicant_count, created_at,
   creator:profiles!opportunities_creator_profile_id_fkey(${OWNER})`;
 const LISTING_FIELDS = `id, slug, title, category, item_category, item_category_kind, condition, price_paise,

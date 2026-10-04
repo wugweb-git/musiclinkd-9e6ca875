@@ -1486,14 +1486,18 @@ export type Database = {
           collaboration_type: string | null
           created_at: string
           creator_profile_id: string
+          date_window: string | null
           genres: string[]
           id: string
           location: string | null
+          requirements: string[]
           role_required: string | null
           slug: string
           status: string
+          summary: string | null
           title: string
           updated_at: string
+          work_mode: string | null
         }
         Insert: {
           applicant_count?: number
@@ -1503,14 +1507,18 @@ export type Database = {
           collaboration_type?: string | null
           created_at?: string
           creator_profile_id: string
+          date_window?: string | null
           genres?: string[]
           id?: string
           location?: string | null
+          requirements?: string[]
           role_required?: string | null
           slug: string
           status?: string
+          summary?: string | null
           title: string
           updated_at?: string
+          work_mode?: string | null
         }
         Update: {
           applicant_count?: number
@@ -1520,14 +1528,18 @@ export type Database = {
           collaboration_type?: string | null
           created_at?: string
           creator_profile_id?: string
+          date_window?: string | null
           genres?: string[]
           id?: string
           location?: string | null
+          requirements?: string[]
           role_required?: string | null
           slug?: string
           status?: string
+          summary?: string | null
           title?: string
           updated_at?: string
+          work_mode?: string | null
         }
         Relationships: [
           {

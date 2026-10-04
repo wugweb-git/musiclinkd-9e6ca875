@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ChevronRight, Link2, LoaderCircle } from "lucide-react";
+import { Camera, ChevronRight, Link2, LoaderCircle, Save, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Switch } from "@/components/ui/switch";
@@ -14,6 +14,8 @@ import { savePortfolioItem } from "@/lib/portfolio.functions";
 import { cn } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 import { imageWidth, sized } from "@/lib/image-url";
+import { uploadGalleryPhoto } from "@/lib/gallery";
+import { PROFILE_IMAGE_ACCEPT } from "@/lib/profile-images";
 
 /*
  * Add or edit a piece of work, link first. Pasting a YouTube, Spotify, SoundCloud or any page link
@@ -96,6 +98,22 @@ export function WorkForm({
   const [panel, setPanel] = useState<Panel>(null);
   const [busy, setBusy] = useState<"draft" | "publish" | null>(null);
   const [tried, setTried] = useState(false);
+  const photoInput = useRef<HTMLInputElement>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  async function pickPhoto(file?: File) {
+    if (!file) return;
+    setUploadingPhoto(true);
+    try {
+      setCover(await uploadGalleryPhoto(file));
+      haptic("confirm");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't add the photo. Try again.");
+    } finally {
+      setUploadingPhoto(false);
+      if (photoInput.current) photoInput.current.value = "";
+    }
+  }
 
   // Read the link once typing settles: fill the cover, and the title unless the person wrote one.
   useEffect(() => {
@@ -228,6 +246,25 @@ export function WorkForm({
           ) : null}
         </figure>
       ) : null}
+      <input
+        ref={photoInput}
+        type="file"
+        accept={PROFILE_IMAGE_ACCEPT}
+        className="sr-only"
+        aria-label="Choose a photo for this work"
+        onChange={(e) => void pickPhoto(e.target.files?.[0])}
+      />
+      <Btn
+        type="button"
+        variant="outline"
+        className="mt-4 w-full"
+        loading={uploadingPhoto}
+        disabled={!signedIn}
+        icon={<Camera size={iconSize.sm} aria-hidden />}
+        onClick={() => photoInput.current?.click()}
+      >
+        {cover ? "Change work photo" : "Add work photo"}
+      </Btn>
 
       {/* The title is written on the page, not in a box. */}
       <label htmlFor="work-title" className="sr-only">
@@ -347,6 +384,7 @@ export function WorkForm({
             className="flex-1"
             loading={busy === "draft"}
             disabled={busy === "publish"}
+            icon={<Save size={iconSize.sm} aria-hidden />}
             onClick={() => void submit(false)}
           >
             Save draft
@@ -357,6 +395,7 @@ export function WorkForm({
           className="flex-[1.4]"
           loading={busy === "publish"}
           disabled={busy === "draft"}
+          icon={<Send size={iconSize.sm} aria-hidden />}
           pending={!title.trim()}
         >
           {initial ? "Save changes" : "Publish"}

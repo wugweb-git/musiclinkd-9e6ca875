@@ -28,7 +28,6 @@ import {
   Rows3,
   Search,
   Share2,
-  Sparkles,
   Star,
   Users,
   type LucideIcon,
@@ -87,11 +86,10 @@ import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
 
-type ProfileTab = "Overview" | "Portfolio" | "Services" | "About" | "Reviews";
+type ProfileTab = "Portfolio" | "Services" | "About" | "Reviews";
 
 /** Each section carries an icon, so an unselected tab can be the icon alone. */
 const tabs: { key: ProfileTab; icon: LucideIcon; solid: SolidIcon; move: Move }[] = [
-  { key: "Overview", icon: Sparkles, solid: "sparkle", move: "spin" },
   { key: "About", icon: Info, solid: "info", move: "hop" },
   { key: "Portfolio", icon: Music, solid: "music", move: "dance" },
   { key: "Services", icon: BriefcaseBusiness, solid: "briefcase", move: "swing" },
@@ -121,7 +119,7 @@ export function TalentProfileExperience({
    */
   onGalleryChange?: (() => void) | undefined;
 }) {
-  const [tab, setTab] = useState<ProfileTab>("Overview");
+  const [tab, setTab] = useState<ProfileTab>("Portfolio");
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -182,17 +180,6 @@ export function TalentProfileExperience({
       <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Profile sections" />
 
       <main className="px-5 pb-8">
-        {tab === "Overview" ? (
-          <Overview
-            p={p}
-            playingId={playingId}
-            onToggleTrack={toggleTrack}
-            onHire={() => setHireOpen(true)}
-            onBook={onBook}
-            owner={owner}
-            onTab={setTab}
-          />
-        ) : null}
         {tab === "Portfolio" ? (
           <Portfolio
             p={p}

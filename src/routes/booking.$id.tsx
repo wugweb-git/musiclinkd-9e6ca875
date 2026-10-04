@@ -14,7 +14,7 @@ export const Route = createFileRoute("/booking/$id")({
   // The id is a database studio slug; an unknown slug shows "unavailable".
   loader: async ({ params }) => {
     const [row, labels, calendar] = await Promise.all([
-      getBookableBySlug({ data: { slug: params.id } }).catch(() => null),
+      getBookableBySlug({ data: { slug: params.id } }),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
       // Weekly hours turn the date and time steps on; without them the studio is asked directly.
       getBookableCalendar({ data: { slug: params.id } }).catch(() => null),
@@ -30,7 +30,24 @@ export const Route = createFileRoute("/booking/$id")({
     return { studio: studio ? { ...studio, services } : null };
   },
   component: BookingLayout,
+  errorComponent: BookingLoadError,
 });
+
+function BookingLoadError({ reset }: { reset: () => void }) {
+  return (
+    <div role="alert" className="mx-auto max-w-app px-5 py-10 text-sm text-foreground">
+      <h1 className="text-3 font-semibold">Booking could not load</h1>
+      <p className="mt-2 text-muted-foreground">Check your connection and try again.</p>
+      <button
+        type="button"
+        onClick={reset}
+        className="state-layer mt-5 min-h-touch rounded-lg bg-ink px-5 font-semibold text-ink-foreground"
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
 
 function BookingLayout() {
   const { id } = Route.useParams();
