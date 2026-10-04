@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — calendar subscription (4 Oct, queue item 5d)
+
+- Settings → Integrations → Calendar: "Get my calendar link", then Google Calendar (its own
+  add-by-URL screen), Apple Calendar (`webcal://`) or Outlook (add from web). Subscribe once and
+  confirmed bookings and rentals appear and stay up to date; nothing is downloaded. "Reset link"
+  makes a new one and the old one stops working.
+- `/cal/<token>.ics`, answered in `src/server.ts` before the app renders: confirmed bookings with a
+  date on either side (requester, place, service owner, band manager) and confirmed or active
+  rentals on either side — only what both sides already see. India time; a booking with no time is
+  a whole-day event.
+- The token is random and stored only as its SHA-256 hash, on the owner-only `profile_private`
+  row: migration `20261004210000_calendar_feed.sql` (committed, **not applied**; snapshot
+  `2026-10-04-before-calendar-feed.sql`). No new table. Until it's applied the Settings button
+  fails with "Couldn't make your calendar link" and every feed link is a 404.
+- Not checked end to end: making a link needs an account; subscribing needs the live server.
+- New copy: "Calendar", "Your bookings in your calendar app", the sheet's two lines, "Get my
+  calendar link", "Reset link".
+
 ### Changed — Add to calendar uses the system calendar, never a file (4 Oct, queue item 5a + web link)
 
 - Android app: "Add to calendar" opens the phone calendar's own new-event screen, pre-filled

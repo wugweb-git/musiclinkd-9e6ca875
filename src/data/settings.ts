@@ -96,6 +96,13 @@ export const settingsGroups: SettingsGroup[] = [
         icon: "key",
       },
       {
+        key: "calendar",
+        label: "Calendar",
+        hint: "Your bookings in your calendar app",
+        to: "/settings",
+        icon: "calendar",
+      },
+      {
         key: "spotify",
         label: "Spotify",
         hint: "Connect your account",

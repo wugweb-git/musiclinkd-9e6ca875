@@ -1,4 +1,5 @@
 import { createFileRoute, type LinkProps } from "@tanstack/react-router";
+import { CalendarFeedRow } from "@/components/ml/calendar-feed";
 import { Copy } from "lucide-react";
 import { useMyTalentIdentity } from "@/hooks/use-my-talent-identity";
 import {
@@ -188,6 +189,13 @@ function SettingsScreen() {
                   return (
                     <li key={r.key}>
                       <SpotifyRow />
+                    </li>
+                  );
+                }
+                if (r.key === "calendar") {
+                  return (
+                    <li key={r.key}>
+                      <CalendarFeedRow />
                     </li>
                   );
                 }
