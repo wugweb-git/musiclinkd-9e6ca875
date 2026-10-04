@@ -63,9 +63,7 @@ import {
   SocialLinks,
   VideoCard,
   InfoRow,
-  isOpenForWork,
 } from "./profile";
-import { HireModal } from "./hire-modal";
 import { GalleryEditor, GalleryView } from "./gallery";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -123,7 +121,6 @@ export function TalentProfileExperience({
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [hireOpen, setHireOpen] = useState(false);
   // Book on a service is a dated request the talent accepts or declines (owner, 3 Oct 2026).
   const serviceRequest = useServiceRequest();
   const onBook = owner ? undefined : serviceRequest.book;
@@ -168,11 +165,7 @@ export function TalentProfileExperience({
           {owner ? (
             <OwnerActions username={p.username} onShare={share} />
           ) : (
-            <ViewerActions
-              profileId={p.profileId}
-              username={p.username}
-              onHire={isOpenForWork(p.availability) ? () => setHireOpen(true) : undefined}
-            />
+            <ViewerActions profileId={p.profileId} username={p.username} />
           )}
         </div>
       </div>
@@ -189,9 +182,7 @@ export function TalentProfileExperience({
             onGalleryChange={onGalleryChange}
           />
         ) : null}
-        {tab === "Services" ? (
-          <Services p={p} onHire={() => setHireOpen(true)} onBook={onBook} />
-        ) : null}
+        {tab === "Services" ? <Services p={p} onBook={onBook} /> : null}
         {tab === "About" ? <About p={p} /> : null}
         {tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
         {/* A shared profile link is most people's first sight of MusicLinkd, so a signed-out visitor
@@ -214,12 +205,6 @@ export function TalentProfileExperience({
         username={p.username}
         profileId={p.profileId}
       />
-      <HireModal
-        open={hireOpen}
-        onClose={() => setHireOpen(false)}
-        profileId={p.profileId}
-        subject={{ name: p.name, detail: [p.primaryRole, p.location].filter(Boolean).join(" · ") }}
-      />
       <ServiceRequestSheet
         service={serviceRequest.service}
         who={p.name}
@@ -231,17 +216,15 @@ export function TalentProfileExperience({
 
 /**
  * What a visitor can do about this profile, read from the database: connect (asked for, then
- * accepted), message, hire, follow. A signed-out visitor is sent to Welcome; a seed-only profile
+ * accepted), message, follow. A signed-out visitor is sent to Welcome; a seed-only profile
  * that has no database row keeps the buttons but cannot connect.
  */
 function ViewerActions({
   profileId: rawProfileId,
   username,
-  onHire,
 }: {
   profileId?: string | undefined;
   username?: string | undefined;
-  onHire?: (() => void) | undefined;
 }) {
   // The live profile id only: a hardcoded username → id map must never stand in for a real row.
   const profileId = rawProfileId;
@@ -366,11 +349,6 @@ function ViewerActions({
         >
           Message
         </BtnLink>
-        {onHire ? (
-          <IconBtnLink label="Hire" to="/welcome" variant="outline" className="h-12 w-12">
-            <BriefcaseBusiness size={iconSize.md} aria-hidden />
-          </IconBtnLink>
-        ) : null}
         <IconBtnLink label="Follow" to="/welcome" variant="outline" className="h-12 w-12">
           <Plus size={iconSize.md} aria-hidden />
         </IconBtnLink>
@@ -399,21 +377,6 @@ function ViewerActions({
       >
         Message
       </Btn>
-      {/* Hire stays an icon until you are connected; then it earns its word. */}
-      {onHire && shown === "connected" ? (
-        <Btn
-          variant="outline"
-          className="min-w-0 flex-1 px-3"
-          icon={<BriefcaseBusiness size={iconSize.sm} aria-hidden />}
-          onClick={onHire}
-        >
-          Hire
-        </Btn>
-      ) : onHire ? (
-        <IconBtn label="Hire" variant="outline" className="h-12 w-12" onClick={onHire}>
-          <BriefcaseBusiness size={iconSize.md} aria-hidden />
-        </IconBtn>
-      ) : null}
       <CallBtn profileId={profileId} />
       <IconBtn
         label={followOn ? "Following" : "Follow"}
@@ -511,7 +474,6 @@ function Overview({
   p,
   playingId,
   onToggleTrack,
-  onHire,
   onBook,
   owner,
   onTab,
@@ -519,7 +481,6 @@ function Overview({
   p: TalentProfile;
   playingId: string | null;
   onToggleTrack: (id: string) => void;
-  onHire: () => void;
   onBook: ((s: ServiceItem) => void) | undefined;
   owner: boolean;
   onTab: (tab: ProfileTab) => void;
@@ -610,11 +571,7 @@ function Overview({
           action="Services"
           onAction={() => onTab("Services")}
         >
-          <ServiceCard
-            s={p.services[0]!}
-            onEnquire={onHire}
-            onBook={bookable(p.services[0]!, onBook)}
-          />
+          <ServiceCard s={p.services[0]!} onBook={bookable(p.services[0]!, onBook)} />
         </ProfileSection>
       ) : null}
 
@@ -745,11 +702,9 @@ function bookable(s: ServiceItem, onBook: ((s: ServiceItem) => void) | undefined
 
 function Services({
   p,
-  onHire,
   onBook,
 }: {
   p: TalentProfile;
-  onHire: () => void;
   onBook: ((s: ServiceItem) => void) | undefined;
 }) {
   return (
@@ -757,12 +712,7 @@ function Services({
       <div className="space-y-3">
         {p.services.length ? (
           p.services.map((service) => (
-            <ServiceCard
-              key={service.id}
-              s={service}
-              onEnquire={onHire}
-              onBook={bookable(service, onBook)}
-            />
+            <ServiceCard key={service.id} s={service} onBook={bookable(service, onBook)} />
           ))
         ) : (
           // No owner button: the new-service flow does not save a service yet.

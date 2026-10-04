@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed — the generic Hire sheet on the talent profile (4 Oct, queue item 9, §4)
+
+- `HireModal` ("Contact professional") and its Hire button are gone from the talent profile. The
+  action row was Connect · Message · Hire · Call · Follow and is now Connect · Message · Call ·
+  Follow; nothing else in it changed.
+- Booking starts only from a Service Card (Profile → Services → Service → Book / Request), one
+  booking per Service. Open-ended asks go through Message. A real service's Book already opened its
+  own request; an unsaved (preview) service's Book is now disabled instead of opening the Hire sheet.
+- `sendEnquiry` stays: the service and business enquiry screens use it.
+
 ### Changed — no price on profile cards or profiles (4 Oct, queue item 8, §3)
 
 - Business cards (`BookableCard` both sizes, `BookableRow`; Search, Directory, Discover, Home) no
