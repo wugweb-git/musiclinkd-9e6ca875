@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { removeMember, setMemberRole, transferCollab } from "@/lib/collabs.functions";
 import { deleteBand } from "@/lib/bands.functions";
+import { listBandServicesToManage, type ServiceStatus } from "@/lib/services.functions";
+import { useQuery } from "@tanstack/react-query";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
   BandRiderSheet,
@@ -191,6 +193,7 @@ function ManageBand() {
               subtitle={band.stagePlot ? "Image added" : "An image of your stage layout"}
               onClick={() => setEditing("stage-plot")}
             />
+            {band.owner ? <BandServicesCard bandId={band.dbId} /> : null}
             {band.owner ? (
               <Card>
                 <h2 className="text-sm">Showcase</h2>
@@ -344,6 +347,44 @@ function RolesCard() {
             <p className="text-1 text-muted-foreground">{bandRoleCopy[r].blurb}</p>
           </div>
         ))}
+      </div>
+    </Card>
+  );
+}
+
+const SERVICE_STATUS: Record<ServiceStatus, string> = {
+  active: "Active",
+  paused: "Paused",
+  draft: "Draft",
+};
+
+/**
+ * The band's services (queue item 13): what people book the band for — the same Service Card and
+ * request flow as a talent's, owned by the band. Added and edited in the one service form, in its
+ * band mode. Empty until 20261004180000 is applied.
+ */
+function BandServicesCard({ bandId }: { bandId: string }) {
+  const load = useServerFn(listBandServicesToManage);
+  const services = useQuery({
+    queryKey: ["services", "band", bandId],
+    queryFn: () => load({ data: { bandId } }),
+  });
+  return (
+    <Card>
+      <h2 className="text-sm">Services</h2>
+      <div className="mt-3 space-y-2">
+        {(services.data ?? []).map((sv) => (
+          <Row
+            key={sv.id}
+            title={sv.name}
+            subtitle={SERVICE_STATUS[sv.status]}
+            to="/services/new"
+            search={{ id: sv.id, band: bandId }}
+          />
+        ))}
+        <BtnLink to="/services/new" search={{ band: bandId }} variant="outline" className="w-full">
+          Add service
+        </BtnLink>
       </div>
     </Card>
   );

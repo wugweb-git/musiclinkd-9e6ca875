@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — managing a band's services (4 Oct, queue item 13, part 3b)
+
+- Band → Manage → Settings: a "Services" card for the band's managers — each service with its
+  status (Active / Paused / Draft), opening the service form to edit it, and "Add service".
+- The one service form has a band mode (`/services/new?band=<band id>`): no portfolio examples, no
+  place amenities/equipment (those belong to a person or a place); saves the service under the band
+  (`saveService` with `bandId`) and returns to the band. `deleteService` takes a `bandId` too.
+- The service page no longer assumes a person owner: for a band's service it skips the person's
+  profile, place, examples and studio uses instead of querying with a null id.
+- Everything band-service is inert until `20261004180000` is applied (the column doesn't exist
+  yet); the shared service query doesn't name `collab_id`, so talent and business services are
+  unaffected either way.
+- Not checked on screen: managing needs a signed-in band admin.
+
 ### Added — bands own services (4 Oct, queue item 13, parts 1 and 3)
 
 - Migration `20261004180000_collab_owned_services.sql` (committed, **not applied**; apply after

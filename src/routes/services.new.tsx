@@ -88,14 +88,19 @@ const modeIcons: Record<string, LucideIcon> = {
 };
 
 export const Route = createFileRoute("/services/new")({
-  validateSearch: (search: Record<string, unknown>): { step?: Step; id?: string } => {
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { step?: Step; id?: string; band?: string } => {
     const raw = typeof search["step"] === "string" ? search["step"] : "";
     const step = (steps as readonly string[]).includes(raw) ? (raw as Step) : legacySteps[raw];
     const id = search["id"];
-    // `id` edits one of your services; without it the flow adds a new one.
+    const band = search["band"];
+    // `id` edits one of your services; without it the flow adds a new one. `band` makes it the
+    // band's service (queue item 13), managed by the band's owners/admins.
     return {
       ...(step ? { step } : {}),
       ...(typeof id === "string" && /^[0-9a-f-]{36}$/i.test(id) ? { id } : {}),
+      ...(typeof band === "string" && /^[0-9a-f-]{36}$/i.test(band) ? { band } : {}),
     };
   },
   head: () => ({
@@ -131,6 +136,7 @@ const categoryIcons: Record<string, LucideIcon> = {
 function NewService() {
   const search = Route.useSearch();
   const id = search.id;
+  const band = search.band;
   const step: Step = search.step ?? "details";
   const navigate = useNavigate();
   const idx = steps.indexOf(step);
@@ -141,6 +147,7 @@ function NewService() {
       search: {
         ...(s === steps[0] ? {} : { step: s }),
         ...(id ? { id } : {}),
+        ...(band ? { band } : {}),
       },
     });
 
@@ -191,7 +198,10 @@ function NewService() {
   const [filled, setFilled] = useState<string | null>(null);
 
   // Editing: start from the stored service once it arrives.
-  const source: ServiceDetail | null = id && editing.owner ? editing.service : null;
+  // A band's service is edited by the band's managers: the database only lets them read its draft
+  // and update it (RLS), so having it here is enough.
+  const source: ServiceDetail | null =
+    id && (editing.owner || (band && editing.service)) ? editing.service : null;
   useEffect(() => {
     if (!source || filled === source.id) return;
     setFilled(source.id);
@@ -308,7 +318,7 @@ function NewService() {
           title.trim() &&
           description.trim() &&
           deliverables.length &&
-          (isBusiness || exampleIds.length),
+          (isBusiness || band || exampleIds.length),
         )
       : Boolean((pricePaise ?? 0) > 0 && turnaround && mode);
 
@@ -326,8 +336,11 @@ function NewService() {
           description: description.trim() || null,
           category: categories[0] ?? null,
           categories,
-          example_ids: exampleIds,
-          ...(isBusiness ? { amenity_slugs: amenitySlugs, equipment_ids: equipmentIds } : {}),
+          example_ids: band ? [] : exampleIds,
+          ...(isBusiness && !band
+            ? { amenity_slugs: amenitySlugs, equipment_ids: equipmentIds }
+            : {}),
+          ...(band ? { bandId: band } : {}),
           // One universal price: a starting price, with no unit or pricing model.
           pricing_model: null,
           price_paise: pricePaise,
@@ -344,7 +357,11 @@ function NewService() {
       });
       haptic("confirm");
       await refresh();
-      if (status === "active") {
+      if (band) {
+        // Back to the band the service belongs to.
+        toast.success(status === "active" ? "Service published" : "Draft saved");
+        window.history.back();
+      } else if (status === "active") {
         setPublished(true);
       } else {
         toast.success("Draft saved");
@@ -430,7 +447,7 @@ function NewService() {
                 value={deliverables}
                 onChange={setDeliverables}
               />
-              {isBusiness ? (
+              {isBusiness && !band ? (
                 <>
                   <Field
                     label="Amenities it uses (optional)"
@@ -466,7 +483,7 @@ function NewService() {
                   </Field>
                 </>
               ) : null}
-              {isBusiness ? null : (
+              {isBusiness || band ? null : (
                 <Field
                   label="Examples from your portfolio"
                   id="service-examples"
