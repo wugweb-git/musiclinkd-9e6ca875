@@ -250,7 +250,6 @@ export function WorkForm({
         ref={photoInput}
         type="file"
         accept={PROFILE_IMAGE_ACCEPT}
-        capture="environment"
         className="sr-only"
         aria-label="Choose a photo for this work"
         onChange={(e) => void pickPhoto(e.target.files?.[0])}

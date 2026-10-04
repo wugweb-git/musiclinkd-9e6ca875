@@ -120,10 +120,10 @@ function CreateOpportunity() {
   });
 
   // Rupees in the box, paise in the database. A budget that is not a number is kept as the note.
-  const budgetPaise = (() => {
-    const digits = budget.replace(/[^0-9]/g, "");
-    return payType === "Paid" && digits ? Number(digits) * 100 : undefined;
-  })();
+  const budgetPaise =
+    payType === "Paid" && /^\s*₹?\s*\d[\d,]*(?:\.\d{1,2})?\s*$/.test(budget)
+      ? Math.round(Number(budget.replace(/[₹,\s]/g, "")) * 100)
+      : undefined;
 
   // Stored rows hold the label a person reads ("Cello Player"), not the category key.
   const payload = (status: "draft" | "open") => ({
@@ -133,8 +133,11 @@ function CreateOpportunity() {
       ? { roleRequired: opportunityCategories.find((c) => c.key === cat)?.label ?? cat }
       : {}),
     ...(budgetPaise === undefined ? {} : { budgetPaise }),
-    ...(payType === "Paid" ? {} : { budgetNote: payType }),
-    // The type column holds the kind of work; the work mode has no column of its own.
+    ...(payType === "Paid"
+      ? budget.trim() && budgetPaise === undefined
+        ? { budgetNote: budget.trim() }
+        : {}
+      : { budgetNote: payType }),
     ...(workType ? { collaborationType: workType } : {}),
     ...(city.trim() ? { location: city.trim() } : {}),
     ...(approvedCopy ? { summary: approvedCopy } : {}),
