@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Wand2 } from "lucide-react";
+import { Wand2, BriefcaseBusiness, ArrowRight } from "lucide-react";
 
 import { PersonRow } from "@/components/ml/cards";
 import { EmptyState } from "@/components/ml/kit";
@@ -95,7 +95,7 @@ function MatchScreen() {
             <textarea
               id="brief"
               value={brief}
-              onChange={(e) => setBrief(e.target.value)}
+              onChange={(e) => { setBrief(e.target.value); match.reset(); }}
               maxLength={600}
               rows={4}
               placeholder={
@@ -174,6 +174,7 @@ function MatchScreen() {
                             params={{ username: person.username }}
                             variant="outline"
                             className="w-full"
+                            icon={<ArrowRight size={iconSize.sm} aria-hidden />}
                           >
                             View profile
                           </BtnLink>
@@ -183,6 +184,7 @@ function MatchScreen() {
                             params={{ id: person.id }}
                             variant="outline"
                             className="w-full"
+                            icon={<ArrowRight size={iconSize.sm} aria-hidden />}
                           >
                             View profile
                           </BtnLink>
@@ -217,6 +219,7 @@ function MatchScreen() {
                           params={{ id: row.id }}
                           variant="outline"
                           className="w-full"
+                          icon={<ArrowRight size={iconSize.sm} aria-hidden />}
                         >
                           View opportunity
                         </BtnLink>
@@ -228,7 +231,7 @@ function MatchScreen() {
             ) : null}
             {hiring ? (
               <div className="px-5">
-                <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
+                <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full" icon={<BriefcaseBusiness size={iconSize.sm} aria-hidden />}>
                   Post this as a hiring post
                 </BtnLink>
               </div>
