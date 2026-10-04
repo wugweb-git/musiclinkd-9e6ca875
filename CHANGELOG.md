@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — the phone's own calendar, opt-in (4 Oct, queue item 5b + 5c, Android app)
+
+- Settings → Calendar, in the Android app only: "Keep my bookings in my calendar" (5b) asks for
+  write access, creates a calendar named MusicLinkd, and writes confirmed bookings and rentals
+  into it — updated and removed to match on app open and whenever the app comes back to the
+  front. Turning it off removes that calendar. Event ids stay on the phone (localStorage); nothing
+  is read back. The app has no foreground push listener yet, so sync runs on open/resume rather than
+  on a booking notification.
+- "Show my busy times when booking" (5c) asks for read access; the request form then shows
+  "Busy in your calendar: 10:00–12:00, …" for the chosen day. Never uploaded or stored; the
+  server's check → confirm still decides.
+- The feed (5d) and the sync share one list of items (`calendarItemsOf`), so both show the same
+  thing. Android manifest: READ_CALENDAR and WRITE_CALENDAR, asked only when a switch is turned on —
+  declare them in the Play Data safety form with this build (versionCode 2).
+- Not checked: needs a device build in Android Studio.
+- New copy: "Keep my bookings in my calendar", "Show my busy times when booking", the sheet's
+  note, "Busy in your calendar: …", "Calendar access wasn't allowed".
+
 ### Added — calendar subscription (4 Oct, queue item 5d)
 
 - Settings → Integrations → Calendar: "Get my calendar link", then Google Calendar (its own

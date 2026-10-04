@@ -1,6 +1,7 @@
 import { CoverHero } from "./profile";
+import { busyTimesOn } from "@/lib/device-calendar";
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   ChevronLeft,
@@ -1003,6 +1004,21 @@ export function RequestSessionSheet({
   const [hours, setHours] = useState("3");
   const [people, setPeople] = useState("2");
   const [notes, setNotes] = useState("");
+  // 5c (Android, opt-in): the person's own busy times that day, as a hint only.
+  const [busyTimes, setBusyTimes] = useState<string[]>([]);
+  useEffect(() => {
+    if (!date) {
+      setBusyTimes([]);
+      return;
+    }
+    let live = true;
+    void busyTimesOn(date).then((t) => {
+      if (live) setBusyTimes(t);
+    });
+    return () => {
+      live = false;
+    };
+  }, [date]);
   return (
     <Sheet
       open={open}
@@ -1037,6 +1053,11 @@ export function RequestSessionSheet({
               onChange={(e) => setDate(e.target.value)}
               className="min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
+            {busyTimes.length ? (
+              <p className="text-1 text-muted-foreground">
+                Busy in your calendar: {busyTimes.join(", ")}
+              </p>
+            ) : null}
             <div className="flex gap-3">
               <span className="flex-1">
                 <label className="block text-1 font-semibold" htmlFor="booking-start">

@@ -1,9 +1,22 @@
 import { useState } from "react";
+import {
+  autoSyncOn,
+  busyHintsOn,
+  deviceCalendarAvailable,
+  disableAutoSync,
+  enableAutoSync,
+  setBusyHints,
+} from "@/lib/device-calendar";
+import { Switch } from "@/components/ml/kit";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, Sheet } from "@/components/ml/ui";
-import { createCalendarFeed, type CalendarFeedLinks } from "@/lib/calendar-feed.functions";
+import {
+  createCalendarFeed,
+  listMyCalendarItems,
+  type CalendarFeedLinks,
+} from "@/lib/calendar-feed.functions";
 import { openExternal } from "@/lib/download";
 import { iconSize } from "@/lib/tokens";
 
@@ -18,6 +31,29 @@ export function CalendarFeedRow() {
   const [open, setOpen] = useState(false);
   const [links, setLinks] = useState<CalendarFeedLinks | null>(null);
   const [busy, setBusy] = useState(false);
+  // In the Android app only: the phone's own calendar, both opt-in (5b, 5c).
+  const onDevice = deviceCalendarAvailable();
+  const loadItems = useServerFn(listMyCalendarItems);
+  const [syncing, setSyncing] = useState(autoSyncOn);
+  const [hints, setHints] = useState(busyHintsOn);
+
+  const toggleSync = async (on: boolean) => {
+    try {
+      if (!on) {
+        await disableAutoSync();
+        setSyncing(false);
+        return;
+      }
+      if (await enableAutoSync(await loadItems())) setSyncing(true);
+      else toast.error("Calendar access wasn't allowed");
+    } catch {
+      toast.error("Couldn't reach your calendar. Try again.");
+    }
+  };
+  const toggleHints = async (on: boolean) => {
+    if (await setBusyHints(on)) setHints(on);
+    else toast.error("Calendar access wasn't allowed");
+  };
 
   const make = async () => {
     setBusy(true);
@@ -78,6 +114,30 @@ export function CalendarFeedRow() {
               Get my calendar link
             </Btn>
           )}
+          {onDevice ? (
+            <div className="space-y-3 border-t border-border pt-3">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm">Keep my bookings in my calendar</span>
+                <Switch
+                  checked={syncing}
+                  onChange={(on) => void toggleSync(on)}
+                  label="Keep my bookings in my calendar"
+                />
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm">Show my busy times when booking</span>
+                <Switch
+                  checked={hints}
+                  onChange={(on) => void toggleHints(on)}
+                  label="Show my busy times when booking"
+                />
+              </div>
+              <p className="text-1 text-muted-foreground">
+                Bookings go into a calendar named MusicLinkd on this phone. Busy times stay on this
+                phone and are only a hint; a booking is confirmed by the other person.
+              </p>
+            </div>
+          ) : null}
         </div>
       </Sheet>
     </>

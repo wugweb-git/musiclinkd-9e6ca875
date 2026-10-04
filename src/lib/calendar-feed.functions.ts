@@ -54,3 +54,12 @@ export const createCalendarFeed = createServerFn({ method: "POST" })
       outlook: `https://outlook.live.com/calendar/0/addfromweb?url=${encodeURIComponent(https)}&name=MusicLinkd`,
     };
   });
+
+/** The signed-in person's confirmed bookings and rentals, for the device calendar sync (5b). */
+export const listMyCalendarItems = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { calendarItemsOf } = await import("@/lib/calendar-feed.server");
+    return calendarItemsOf(supabaseAdmin as unknown as SupabaseClient, context.userId);
+  });

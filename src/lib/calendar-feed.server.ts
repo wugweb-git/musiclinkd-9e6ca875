@@ -15,76 +15,21 @@ type Row = Record<string, unknown>;
 const esc = (t: string) =>
   t.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 
-/** "20261005T043000Z" from a date and an India-time "HH:MM". */
-function utc(date: string, time: string, addMs = 0) {
-  const ms = new Date(`${date}T${time}:00+05:30`).getTime() + addMs;
-  return new Date(ms)
-    .toISOString()
-    .replace(/[-:]/g, "")
-    .replace(/\.\d{3}/, "");
-}
-
-const ymd = (date: string, addDays = 0) => {
-  const d = new Date(`${date}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + addDays);
-  return d.toISOString().slice(0, 10).replace(/-/g, "");
+/** One confirmed booking or rental, as both the feed and the device calendar sync carry it. */
+export type CalendarItem = {
+  /** "booking-<id>" or "rental-<id>": stable, so an update replaces rather than duplicates. */
+  key: string;
+  title: string;
+  /** Epoch ms. */
+  start: number;
+  end: number;
+  allDay: boolean;
+  location: string;
+  url: string;
 };
 
-function bookingEvent(b: Row, stamp: string): string[] {
-  const date = String(b["session_date"]);
-  const start = (b["start_time"] as string | null)?.slice(0, 5);
-  const end = (b["end_time"] as string | null)?.slice(0, 5);
-  const hours = (b["hours"] as number | null) ?? 1;
-  const title = [b["bookable_name"], b["purpose"]].filter(Boolean).join(" · ") || "Session";
-  let when: string[];
-  if (!start) {
-    when = [`DTSTART;VALUE=DATE:${ymd(date)}`, `DTEND;VALUE=DATE:${ymd(date, 1)}`];
-  } else {
-    const from = utc(date, start);
-    let to = end ? utc(date, end) : utc(date, start, hours * 3_600_000);
-    if (end && end <= start) to = utc(date, end, 86_400_000);
-    when = [`DTSTART:${from}`, `DTEND:${to}`];
-  }
-  return [
-    "BEGIN:VEVENT",
-    `UID:booking-${String(b["id"])}@musiclinkd`,
-    `DTSTAMP:${stamp}`,
-    ...when,
-    `SUMMARY:${esc(String(title))}`,
-    `URL:${PUBLIC_ORIGIN}/booking/confirmed/${String(b["id"])}`,
-    "END:VEVENT",
-  ];
-}
-
-function rentalEvent(r: Row, stamp: string): string[] {
-  const listing = (r["listing"] as Row | null) ?? null;
-  return [
-    "BEGIN:VEVENT",
-    `UID:rental-${String(r["id"])}@musiclinkd`,
-    `DTSTAMP:${stamp}`,
-    `DTSTART;VALUE=DATE:${ymd(String(r["start_date"]))}`,
-    `DTEND;VALUE=DATE:${ymd(String(r["end_date"]), 1)}`,
-    `SUMMARY:${esc(`Rental · ${String(listing?.["title"] ?? "Gear")}`)}`,
-    ...(listing?.["pickup_location"]
-      ? [`LOCATION:${esc(String(listing["pickup_location"]))}`]
-      : []),
-    "END:VEVENT",
-  ];
-}
-
-/** The feed for a token, or null when no link has that token (or it was replaced). */
-export async function calendarFeed(token: string): Promise<string | null> {
-  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const db = supabaseAdmin as unknown as SupabaseClient;
-  const { data: owner } = await db
-    .from("profile_private")
-    .select("id")
-    .eq("calendar_feed_token_hash", await sha256Hex(token))
-    .maybeSingle();
-  const me = (owner as { id: string } | null)?.id;
-  if (!me) return null;
-
+/** Raw rows of a profile's confirmed bookings (either side) and confirmed or active rentals. */
+async function confirmedRows(db: SupabaseClient, me: string) {
   const [places, services, bands, listings] = await Promise.all([
     db.from("bookables").select("id").eq("owner_profile_id", me),
     db.from("profile_services").select("id").eq("profile_id", me),
@@ -129,10 +74,77 @@ export async function calendarFeed(token: string): Promise<string | null> {
       .in("status", ["confirmed", "active"]),
   ]);
 
-  const stamp = new Date()
+  return { bookings: (bookings.data ?? []) as Row[], rentals: (rentals.data ?? []) as Row[] };
+}
+
+const IST = 19_800_000;
+
+function bookingItem(b: Row): CalendarItem {
+  const date = String(b["session_date"]);
+  const start = (b["start_time"] as string | null)?.slice(0, 5);
+  const end = (b["end_time"] as string | null)?.slice(0, 5);
+  const hours = (b["hours"] as number | null) ?? 1;
+  const day = new Date(`${date}T00:00:00+05:30`).getTime();
+  let from = day;
+  let to = day + 86_400_000;
+  if (start) {
+    from = new Date(`${date}T${start}:00+05:30`).getTime();
+    to = end ? new Date(`${date}T${end}:00+05:30`).getTime() : from + hours * 3_600_000;
+    if (to <= from) to += 86_400_000;
+  }
+  return {
+    key: `booking-${String(b["id"])}`,
+    title: [b["bookable_name"], b["purpose"]].filter(Boolean).join(" · ") || "Session",
+    start: from,
+    end: to,
+    allDay: !start,
+    location: "",
+    url: `${PUBLIC_ORIGIN}/booking/confirmed/${String(b["id"])}`,
+  };
+}
+
+function rentalItem(r: Row): CalendarItem {
+  const listing = (r["listing"] as Row | null) ?? null;
+  const from = new Date(`${String(r["start_date"])}T00:00:00+05:30`).getTime();
+  const to = new Date(`${String(r["end_date"])}T00:00:00+05:30`).getTime() + 86_400_000;
+  return {
+    key: `rental-${String(r["id"])}`,
+    title: `Rental · ${String(listing?.["title"] ?? "Gear")}`,
+    start: from,
+    end: to,
+    allDay: true,
+    location: String(listing?.["pickup_location"] ?? ""),
+    url: PUBLIC_ORIGIN,
+  };
+}
+
+/** A profile's calendar items: confirmed bookings and rentals, either side. */
+export async function calendarItemsOf(db: SupabaseClient, me: string): Promise<CalendarItem[]> {
+  const { bookings, rentals } = await confirmedRows(db, me);
+  return [...bookings.map(bookingItem), ...rentals.map(rentalItem)];
+}
+
+const icsStamp = (ms: number) =>
+  new Date(ms)
     .toISOString()
     .replace(/[-:]/g, "")
     .replace(/\.\d{3}/, "");
+const icsDate = (ms: number) => new Date(ms + IST).toISOString().slice(0, 10).replace(/-/g, "");
+
+/** The feed for a token, or null when no link has that token (or it was replaced). */
+export async function calendarFeed(token: string): Promise<string | null> {
+  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const db = supabaseAdmin as unknown as SupabaseClient;
+  const { data: owner } = await db
+    .from("profile_private")
+    .select("id")
+    .eq("calendar_feed_token_hash", await sha256Hex(token))
+    .maybeSingle();
+  const me = (owner as { id: string } | null)?.id;
+  if (!me) return null;
+
+  const stamp = icsStamp(Date.now());
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -141,8 +153,18 @@ export async function calendarFeed(token: string): Promise<string | null> {
     "METHOD:PUBLISH",
     "X-WR-CALNAME:MusicLinkd",
     "X-WR-TIMEZONE:Asia/Kolkata",
-    ...((bookings.data ?? []) as Row[]).flatMap((b) => bookingEvent(b, stamp)),
-    ...((rentals.data ?? []) as Row[]).flatMap((r) => rentalEvent(r, stamp)),
+    ...(await calendarItemsOf(db, me)).flatMap((i) => [
+      "BEGIN:VEVENT",
+      `UID:${i.key}@musiclinkd`,
+      `DTSTAMP:${stamp}`,
+      ...(i.allDay
+        ? [`DTSTART;VALUE=DATE:${icsDate(i.start)}`, `DTEND;VALUE=DATE:${icsDate(i.end)}`]
+        : [`DTSTART:${icsStamp(i.start)}`, `DTEND:${icsStamp(i.end)}`]),
+      `SUMMARY:${esc(i.title)}`,
+      ...(i.location ? [`LOCATION:${esc(i.location)}`] : []),
+      `URL:${i.url}`,
+      "END:VEVENT",
+    ]),
     "END:VCALENDAR",
   ];
   return lines.join("\r\n") + "\r\n";
