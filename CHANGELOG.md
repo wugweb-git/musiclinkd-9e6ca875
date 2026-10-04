@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — no generic band rate (4 Oct, queue item 13, part 2)
+
+- The band page no longer shows the band's rate (About card and the Booking cell, which now reads
+  "Booking · On enquiry"). A band's prices belong on its Services (item 13). The view no longer
+  works the rate out; `collabs.rate_paise` / `rate_unit` stay in the database.
+
 ### Fixed — /portfolio/new, and the camera on Add work (4 Oct)
 
 - `/portfolio/new` (no type) redirects to Portfolio with the add-work drawer open instead of
