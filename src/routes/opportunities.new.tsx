@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check } from "lucide-react";
+import { Check, Plus, Trash2, Save, ArrowLeft, ArrowRight, Send } from "lucide-react";
 import { ActionBar, Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
@@ -119,11 +119,15 @@ function CreateOpportunity() {
     // The type column holds the kind of work; the work mode has no column of its own.
     ...(workType ? { collaborationType: workType } : {}),
     ...(city.trim() ? { location: city.trim() } : {}),
+    ...(summary.trim() ? { summary: summary.trim() } : {}),
+    workMode: mode as "On-site" | "Remote" | "Hybrid",
+    ...(dates.trim() ? { dateWindow: dates.trim() } : {}),
+    requirements: reqs,
   });
 
   const publish = useMutation({
     mutationFn: () => post({ data: payload("open") }),
-    onSuccess: () => void nav({ to: "/opportunities/new", search: { step: "published" } }),
+    onSuccess: (row) => void nav({ to: "/opportunities/$id", params: { id: row.slug } }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't post. Try again."),
   });
 
@@ -315,6 +319,7 @@ function CreateOpportunity() {
                   className={`${inputClass} min-w-0 flex-1`}
                 />
                 <Btn
+                  icon={<Plus size={iconSize.sm} aria-hidden />}
                   onClick={() => {
                     if (req.trim()) {
                       setReqs((p) => [...p, req.trim()]);
@@ -338,10 +343,11 @@ function CreateOpportunity() {
                     <span className="min-w-0 flex-1 truncate text-1">{r}</span>
                     <button
                       type="button"
-                      className="text-1 font-semibold text-foreground"
+                      aria-label={`Remove ${r}`}
+                      className="state-layer flex min-h-touch items-center gap-1 text-1 font-semibold text-foreground"
                       onClick={() => setReqs((p) => p.filter((_, j) => j !== i))}
                     >
-                      Remove
+                      <Trash2 size={iconSize.sm} aria-hidden /> Remove
                     </button>
                   </div>
                 ))
@@ -393,12 +399,13 @@ function CreateOpportunity() {
       <ActionBar>
         <div className="flex gap-2">
           {idx > 0 ? (
-            <Btn variant="outline" className="flex-1" onClick={() => go(order[idx - 1]!)}>
+            <Btn variant="outline" className="flex-1" icon={<ArrowLeft size={iconSize.sm} aria-hidden />} onClick={() => go(order[idx - 1]!)}>
               Back
             </Btn>
           ) : (
             <Btn
               variant="outline"
+              icon={<Save size={iconSize.sm} aria-hidden />}
               className="flex-1"
               disabled={title.trim().length < 3 || !signedIn || saveDraft.isPending}
               loading={saveDraft.isPending}
@@ -409,6 +416,7 @@ function CreateOpportunity() {
           )}
           <Btn
             className="flex-1"
+            icon={step === "preview" ? <Send size={iconSize.sm} aria-hidden /> : <ArrowRight size={iconSize.sm} aria-hidden />}
             disabled={!canContinue || (step === "preview" && !signedIn)}
             loading={publish.isPending}
             onClick={() => (step === "preview" ? publish.mutate() : go(order[idx + 1]!))}

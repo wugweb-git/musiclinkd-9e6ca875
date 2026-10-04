@@ -74,23 +74,20 @@ export function opportunityFromRow(row: OpportunityRow, labels: TaxonomyLabels):
       hires: 0,
     },
     city: row.location ?? "",
-    workMode: "",
+    workMode: row.work_mode === "On-site" || row.work_mode === "Remote" || row.work_mode === "Hybrid" ? row.work_mode : "",
     // The stored timestamp; the card formats it. Never "3 weeks ago" in the data.
     postedAt: row.created_at,
     closesAt: "",
     compensation: compensationFromRow(row),
-    summary: "",
+    summary: row.summary ?? "",
     brief: [],
-    requirements: (row.role_required ?? "")
-      .split(",")
-      .map((r) => r.trim())
-      .filter(Boolean)
-      .map((label) => ({ label, must: true })),
+    requirements: (row.requirements?.length ? row.requirements : (row.role_required ?? "").split(","))
+      .map((r) => r.trim()).filter(Boolean).map((label) => ({ label, must: true })),
     genres: row.genres.map((g) => taxonomyLabel(labels, "genres", g)),
     genreKeys: row.genres,
     collaborationType: row.collaboration_type,
     languages: [],
-    dates: "",
+    dates: row.date_window ?? "",
     applicants: row.applicant_count,
     views: 0,
     saved: false,

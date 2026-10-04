@@ -244,6 +244,10 @@ export const createOpportunity = createServerFn({ method: "POST" })
         budgetNote: z.string().max(200).optional(),
         collaborationType: z.string().max(60).optional(),
         location: z.string().max(120).optional(),
+        summary: z.string().max(2000).optional(),
+        workMode: z.enum(["On-site", "Remote", "Hybrid"]).optional(),
+        dateWindow: z.string().max(180).optional(),
+        requirements: z.array(z.string().trim().min(1).max(160)).max(20).optional(),
         status: z.enum(["draft", "open"]).default("open"),
       })
       .parse(d),
@@ -262,6 +266,10 @@ export const createOpportunity = createServerFn({ method: "POST" })
         budget_note: data.budgetNote ?? null,
         collaboration_type: data.collaborationType ?? null,
         location: data.location ?? null,
+        summary: data.summary ?? null,
+        work_mode: data.workMode ?? null,
+        date_window: data.dateWindow ?? null,
+        requirements: data.requirements ?? [],
         status: data.status,
       } as never)
       .select("id, slug")
