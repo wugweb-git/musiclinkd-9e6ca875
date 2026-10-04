@@ -385,3 +385,23 @@ Academy placeholder screen; Inbox screen in the menu; Market banners with counts
   admins (`collab_can_manage`) manage their collab's services. `booking_requests.service_id`
   already points at the service; queries that assume `profile_id` must handle a collab owner.
   Part 2 done: band rate removed from the band page (`e8a04b4`).
+
+## Status after "proceed with all pending" (Claude Code, 4 Oct, branch `review/pending-owner-items`)
+
+| Item | Commit | State |
+|---|---|---|
+| 12 time-based services + double-booking guard | `71455d9` | Built. Migration `20261004170000` not applied |
+| 13 bands own services | `adc35c8`, `6c03a6f` | Built (DB, band page Services, manage + form band mode, band admins' requests in the Inbox). Migration `20261004180000` not applied |
+| 7 collaboration types | `2a42d3b` | Built. Migration `20261004190000` not applied (deletes the 2 test project rows) |
+| 10 one Inbox | `829b2a1` | Built. Migration `20261004200000` not applied. Gap: no service block at the top of a service-originated thread (enquiries don't link to a conversation yet) |
+| 5a Add to calendar, system calendar | `c72fcfc` | Built; versionCode 2. Needs an Android Studio build |
+| 5d calendar subscription | `f8cd6ae` | Built. Migration `20261004210000` not applied |
+| 5b/5c device calendar sync, busy hints | `cf524d3` | Built (opt-in, Android app). Needs a device build; Play Data safety: READ/WRITE_CALENDAR |
+| Stale docs | this commit | `MIGRATION-bands-own-tables.md` removed (contradicted by items 7 and 13); `roadmap.md` and 14 notes were already removed by Lovable |
+
+**Apply order** (each guarded; stops on any drift): `20261004170000` → `20261004180000` → `20261004190000`
+→ `20261004200000` → `20261004210000`. Deploy the branch's code only after they are live.
+
+**Still blocked:** every signed-in check in Waves A–E (needs accounts; the dev server never hydrates);
+a real hiring post (needs the owner's genuine need); the Lovable background-colour conflict (owner
+said both "use three backgrounds" and "ignore it"); the create screen's tab title "Create a Band".
