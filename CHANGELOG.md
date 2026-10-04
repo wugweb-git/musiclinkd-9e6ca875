@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — bands own services (4 Oct, queue item 13, parts 1 and 3)
+
+- Migration `20261004180000_collab_owned_services.sql` (committed, **not applied**; apply after
+  `20261004170000`; snapshot `2026-10-04-before-collab-owned-services.sql`):
+  `profile_services.collab_id` → collabs, `profile_id` nullable, exactly one owner; band
+  owners/admins manage their band's services, anyone who can see the band reads its non-draft ones;
+  `profile_service_is_mine` / `_is_readable` cover band services, so band admins read and answer
+  their band's booking requests through the existing policies; the double-booking guard treats a
+  band as one provider; booking notices for a band service go to the band's owner under the band's
+  name. Every replaced function is checked against its md5 first.
+- Band services carry no packages or add-ons (those tables key on a person owner; every service
+  uses one starting price).
+- Band page → Overview: a "Services" section with the same Service Card and Book → request sheet as
+  a talent's. Hidden while the band has none (and before the migration). `serviceCardFromRow` in
+  `profile-view.ts` is now the one row-to-card mapping for talent and band services.
+- Not built yet: creating and editing a band's services (part 3b), and a band admin's list of their
+  band's requests (they open from the notification meanwhile).
+
 ### Added — time-based services and double-booking protection for every provider (4 Oct, queue item 12)
 
 - The Service decides: a service done **in person, touring or hybrid** (or with no work mode set)

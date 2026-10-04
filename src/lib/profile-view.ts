@@ -204,6 +204,22 @@ function servicePrice(s: ProfileSections["services"][number]): PriceParts | unde
   );
 }
 
+/** One stored service as the Service Card shows it: a person's, a business's or a band's. */
+export function serviceCardFromRow(s: ProfileSections["services"][number]): ServiceItem {
+  return {
+    id: s.id,
+    name: s.name,
+    description: s.description ?? "",
+    from: servicePrice(s),
+    turnaround: s.turnaround ?? undefined,
+    mode: serviceModes.find((m) => m === s.mode) ?? modeFromWorkModes(s.work_modes),
+    availability: s.availability ?? undefined,
+    categories: s.categories?.length ? s.categories : s.category ? [s.category] : [],
+    deliverables: s.deliverables ?? [],
+    timeBased: isTimeBasedService(s.work_modes),
+  };
+}
+
 /** Portfolio items grouped into the profile's audio, video, release and project sections. */
 function portfolioSections(items: ProfileSections["portfolio"]) {
   const audio: AudioTrack[] = [];
@@ -384,21 +400,7 @@ export function mergeSections(
 
   return {
     ...base,
-    services: pick(
-      base.services,
-      sections.services.map((s) => ({
-        id: s.id,
-        name: s.name,
-        description: s.description ?? "",
-        from: servicePrice(s),
-        turnaround: s.turnaround ?? undefined,
-        mode: serviceModes.find((m) => m === s.mode) ?? modeFromWorkModes(s.work_modes),
-        availability: s.availability ?? undefined,
-        categories: s.categories?.length ? s.categories : s.category ? [s.category] : [],
-        deliverables: s.deliverables ?? [],
-        timeBased: isTimeBasedService(s.work_modes),
-      })),
-    ),
+    services: pick(base.services, sections.services.map(serviceCardFromRow)),
     experience: pick(
       base.experience,
       sections.experience.map((e) => ({

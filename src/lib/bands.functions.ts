@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { anonClient } from "@/lib/portfolio.functions";
+import { anonClient, type ProfileSections } from "@/lib/portfolio.functions";
 import {
   GALLERY_BUCKET,
   MAX_GALLERY_PHOTOS,
@@ -425,4 +425,29 @@ export const reorderBandGallery = createServerFn({ method: "POST" })
     if (failed?.error) throw new Error(failed.error.message);
     if (data.ids.length && !results.some((r) => r.data?.length)) throw new Error(NOT_ALLOWED);
     return { ordered: data.ids.length };
+  });
+
+/*
+ * A band's own services (queue item 13): Services are owned by Talent, Business or a
+ * Collaboration, with the same Service Card and request flow. Public read of the non-draft ones;
+ * the database decides who may see a band (collab_is_readable). Needs 20261004180000 applied — until
+ * then the column doesn't exist and this returns none rather than failing the band page.
+ */
+export const listBandServices = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ bandId: z.string().uuid() }).parse(d))
+  .handler(async ({ data }): Promise<ProfileSections["services"]> => {
+    const client = await anonClient();
+    const { data: rows, error } = await db(client)
+      .from("profile_services")
+      .select(
+        "id, name, description, price_paise, price_unit, price_note, turnaround, mode, availability, category, pricing_model, work_modes, categories, deliverables",
+      )
+      .eq("collab_id", data.bandId)
+      .neq("status", "draft")
+      .order("sort_order");
+    if (error) return [];
+    return ((rows ?? []) as ProfileSections["services"]).map((r) => ({
+      ...r,
+      work_modes: r.work_modes ?? [],
+    }));
   });

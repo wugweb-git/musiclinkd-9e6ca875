@@ -1,0 +1,19 @@
+-- Snapshot before 20261004180000_collab_owned_services.sql. Read-only, live, 4 Oct 2026.
+-- Definitions and counts only; no user data. Apply after 20261004170000.
+--
+-- public.profile_services.profile_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE
+--   UNIQUE (id, profile_id) — referenced by profile_service_packages and profile_service_addons
+--   (service_id, profile_id) ON DELETE CASCADE; no collab_id column.
+-- Policies: "Owners write their own" ALL using/check auth.uid() = profile_id
+--           "Readable with its profile" SELECT using profile_is_readable(profile_id) AND (status <> 'draft' OR profile_id = auth.uid())
+-- Functions (md5 of prosrc):
+--   profile_service_is_mine(uuid)      64fada16ed6ce34545af2004bf788aac
+--   profile_service_is_readable(uuid)  d4057e0a318222be42a625f58d5b04fc
+--   booking_requests_slot_guard()      27f8828519b077e072e1a06eb8c02d71 (as written by 20261004170000)
+--   notify_booking()                   b8f052ac2a1c10a7a2a888ba5c7ce796 (as written by 20261004170000)
+-- booking_requests policies use profile_service_is_mine(service_id) for the service owner.
+-- Counts: profile_services 251 · packages 2 · add-ons 2 · collabs: 4 bands, 2 projects.
+--
+-- Undo: DELETE band-owned services (collab_id IS NOT NULL) first; drop the two new policies; drop
+-- the CHECK, collab_id and its index; SET NOT NULL on profile_id; restore the four functions from
+-- 20261004170000 and the bodies recorded above.
