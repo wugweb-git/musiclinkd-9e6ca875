@@ -40,25 +40,15 @@ export const sendEnquiry = createServerFn({ method: "POST" })
         businessProfileId: z.string().uuid(),
         intent: z.string().trim().min(1).max(60),
         message: z.string().trim().min(8).max(2000),
+        // The service asked about, when the enquiry starts on one; its thread then opens with it.
+        serviceId: z.string().uuid().optional(),
       })
       .parse(d),
   )
   .handler(async ({ context, data }): Promise<{ id: string; conversationId: string | null }> => {
-    const { data: row, error } = await db(context.supabase)
-      .from("enquiries")
-      .insert({
-        business_profile_id: data.businessProfileId,
-        sender_profile_id: context.userId,
-        intent: data.intent,
-        message: data.message,
-      } as never)
-      .select("id")
-      .single();
-    if (error) throw new Error(error.message);
-
     // The enquiry also opens (or continues) the conversation with the business, so both sides
-    // carry on in Messages. The lead is already saved if this part fails.
-    let conversationId: string | null = null;
+    // carry on in Messages. Opened first so the enquiry can point at it; the lead is still saved
+    // if this part fails.
     const { data: convo, error: convoError } = await db(context.supabase).rpc(
       "start_conversation",
       {
@@ -66,17 +56,46 @@ export const sendEnquiry = createServerFn({ method: "POST" })
       },
     );
     if (convoError) console.error("enquiry: start_conversation failed", convoError.message);
-    if (typeof convo === "string") {
+    const conversation = typeof convo === "string" ? convo : null;
+
+    const row = {
+      business_profile_id: data.businessProfileId,
+      sender_profile_id: context.userId,
+      intent: data.intent,
+      message: data.message,
+    };
+    // service_id / conversation_id arrive with 20261004220000_enquiry_service_link.sql; until it
+    // is applied the insert without them still saves the lead.
+    let insert = await db(context.supabase)
+      .from("enquiries")
+      .insert({
+        ...row,
+        ...(data.serviceId ? { service_id: data.serviceId } : {}),
+        ...(conversation ? { conversation_id: conversation } : {}),
+      } as never)
+      .select("id")
+      .single();
+    if (insert.error && /service_id|conversation_id/.test(insert.error.message)) {
+      insert = await db(context.supabase)
+        .from("enquiries")
+        .insert(row as never)
+        .select("id")
+        .single();
+    }
+    if (insert.error) throw new Error(insert.error.message);
+
+    let conversationId: string | null = null;
+    if (conversation) {
       const { error: messageError } = await db(context.supabase)
         .from("messages")
         .insert({
-          conversation_id: convo,
+          conversation_id: conversation,
           sender_id: context.userId,
           body: `${data.intent}\n\n${data.message}`,
         } as never);
-      if (!messageError) conversationId = convo;
+      if (!messageError) conversationId = conversation;
     }
-    return { id: (row as { id: string }).id, conversationId };
+    return { id: (insert.data as { id: string }).id, conversationId };
   });
 
 /** The signed-in business's own leads inbox, newest first. */

@@ -52,6 +52,7 @@ function ServiceEnquiry() {
       await send({
         data: {
           businessProfileId: s.profile_id,
+          serviceId: s.id,
           intent: `${mode === "Custom quote" ? "Custom quote" : "Question"}: ${s.name}`.slice(
             0,
             60,

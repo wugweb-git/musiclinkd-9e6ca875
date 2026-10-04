@@ -3,14 +3,23 @@ import { PUBLIC_ORIGIN } from "@/lib/site";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ArrowLeft, BriefcaseBusiness, Music, Plus, SendHorizontal, UserRound } from "lucide-react";
+import {
+  ArrowLeft,
+  BriefcaseBusiness,
+  ChevronRight,
+  Music,
+  Plus,
+  SendHorizontal,
+  UserRound,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Screen, Sheet } from "@/components/ml/ui";
 import { DrawerList, DrawerOptionRow } from "@/components/ml/drawer-list";
 import { useViewer } from "@/components/ml/viewer";
 import { listMyServices } from "@/lib/services.functions";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
-import { Loading } from "@/components/ml/kit";
+import { Loading, Price } from "@/components/ml/kit";
+import { priceParts } from "@/lib/price";
 import { CallBtn } from "@/components/ml/talent-profile";
 import { PersonAvatar } from "@/components/ml/person-avatar";
 import { getConversation, sendMessage, type Message } from "@/lib/messages.functions";
@@ -313,6 +322,31 @@ function Conversation() {
             </button>
           ) : null}
 
+          {q.data?.service ? (
+            // Started from an enquiry about a service: the thread opens with what was asked about.
+            <Link
+              to="/services/$id"
+              params={{ id: q.data.service.id }}
+              className="state-layer mt-4 flex min-h-touch items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block text-1 text-muted-foreground">Enquiry about</span>
+                <span className="block truncate text-sm font-semibold">{q.data.service.name}</span>
+                <Price
+                  from
+                  inline
+                  price={priceParts(
+                    q.data.service.price_paise,
+                    q.data.service.price_unit,
+                    q.data.service.price_note,
+                  )}
+                  className="mt-0.5"
+                  amountClassName="text-1 font-semibold"
+                />
+              </span>
+              <ChevronRight size={iconSize.sm} className="text-muted-foreground" aria-hidden />
+            </Link>
+          ) : null}
           {q.data && messages.length === 0 ? (
             // First contact: who you're writing to, the way LinkedIn opens a new thread.
             <div className="flex flex-col items-center pt-10 text-center">

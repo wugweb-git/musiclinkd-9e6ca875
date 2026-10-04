@@ -1,0 +1,11 @@
+-- Snapshot before 20261004220000_enquiry_service_link.sql, 4 Oct 2026. Definitions only; no user
+-- data. Taken from the committed migrations, not read from the live database: the change only adds.
+--
+-- public.enquiries columns: id, business_profile_id, sender_profile_id, intent, message, status,
+-- created_at (20260918200000_enquiries.sql; status CHECK narrowed by 20261004200000).
+-- No service_id, no conversation_id, no enquiries_check_links function or trigger.
+--
+-- Undo:
+--   DROP TRIGGER enquiries_check_links ON public.enquiries;
+--   DROP FUNCTION public.enquiries_check_links();
+--   ALTER TABLE public.enquiries DROP COLUMN service_id, DROP COLUMN conversation_id;
