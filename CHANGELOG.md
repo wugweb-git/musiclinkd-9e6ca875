@@ -5,6 +5,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — time-based services and double-booking protection for every provider (4 Oct, queue item 12)
+
+- The Service decides: a service done **in person, touring or hybrid** (or with no work mode set)
+  is booked for a date and time; a **remote-only** service is async — its request asks only what
+  it's for ("Request this service"), no date, start, hours or people. One rule, in
+  `src/lib/service-time.ts` and the database (`service_is_time_based`).
+- Migration `20261004170000_time_based_services.sql` (committed, **not applied**; snapshot
+  `supabase/dumps/2026-10-04-before-time-based-services.sql`): `session_date` becomes optional; a
+  new trigger refuses a time-based booking without a date, and on **confirm** takes a per-provider
+  lock and refuses an overlap with another confirmed or completed booking of the same provider
+  (the place, else the service's owner) — talent and band services included, not just places.
+  Requests still don't hold a slot (21 Sep); only confirming does. `notify_booking` says the
+  purpose when there's no date (replaced only if its live md5 matches).
+- Found while building: nothing stopped a provider confirming two overlapping bookings before —
+  not even for places; `bookable_busy` only greys out taken times in the picker.
+- Screens handle a booking with no date ("No date"; no Add to Calendar). Async confirmed work is
+  "upcoming" until completed. Account deletion now also waits on bookings of the person's own
+  services (it only counted bookings they made or of places they own) and on open undated work.
+- New copy: "Request this service", "No date", "Pick a date for this booking.",
+  "This time is already booked".
+- Deploy the code only after the migration is applied: until then an async request is refused by
+  the database (its date is still required there).
+
 ### Changed — no generic band rate (4 Oct, queue item 13, part 2)
 
 - The band page no longer shows the band's rate (About card and the Booking cell, which now reads

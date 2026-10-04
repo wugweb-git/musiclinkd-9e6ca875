@@ -72,6 +72,8 @@ export type BusinessRecord = {
     /** A studio's service: what it uses (amenities slugs, bookable_equipment ids). */
     amenity_slugs?: string[] | null;
     equipment_ids?: string[] | null;
+    /** work_modes slugs: whether it is booked for a time (isTimeBasedService). */
+    work_modes?: string[] | null;
     status: "active" | "paused" | "draft";
   }[];
   team: {
@@ -155,7 +157,7 @@ async function businessRecord(
     client
       .from("profile_services")
       .select(
-        "id, name, description, price_paise, price_unit, price_note, category, categories, deliverables, turnaround, amenity_slugs, equipment_ids, status",
+        "id, name, description, price_paise, price_unit, price_note, category, categories, deliverables, turnaround, amenity_slugs, equipment_ids, work_modes, status",
       )
       .eq("profile_id", profile.id)
       .order("sort_order"),

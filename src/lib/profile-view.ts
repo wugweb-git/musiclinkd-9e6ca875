@@ -2,6 +2,7 @@
 // answers captured during onboarding show up on /me and public profiles.
 
 import { opportunityFromRow } from "@/lib/opportunity-view";
+import { isTimeBasedService } from "@/lib/service-time";
 import {
   emptySections,
   type AudioTrack,
@@ -395,6 +396,7 @@ export function mergeSections(
         availability: s.availability ?? undefined,
         categories: s.categories?.length ? s.categories : s.category ? [s.category] : [],
         deliverables: s.deliverables ?? [],
+        timeBased: isTimeBasedService(s.work_modes),
       })),
     ),
     experience: pick(

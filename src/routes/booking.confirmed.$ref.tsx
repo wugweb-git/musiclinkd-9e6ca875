@@ -154,7 +154,10 @@ function Confirmed() {
               <BookingStatusPill status={b.status === "declined" ? "rejected" : b.status} />
             </div>
             <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
-              <Detail label="Date" value={formatDate(b.session_date)} />
+              <Detail
+                label="Date"
+                value={b.session_date ? formatDate(b.session_date) : "No date"}
+              />
               {b.start_time ? (
                 <Detail
                   label="Time"
@@ -182,23 +185,26 @@ function Confirmed() {
         )}
 
         {b ? (
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Btn
-              variant="outline"
-              onClick={() =>
-                addToCalendar({
-                  uid: b.id,
-                  title: joinParts(askedName(b) ?? "Session", b.service?.name ?? ""),
-                  date: b.session_date,
-                  start: (b.start_time ?? "10:00").slice(0, 5),
-                  end: (b.end_time ?? "14:00").slice(0, 5),
-                  location: joinParts(askedName(b) ?? "", b.studio?.location ?? ""),
-                  description: b.purpose ?? "",
-                })
-              }
-            >
-              <CalendarPlus size={iconSize.sm} className="mr-1.5" /> Add to Calendar
-            </Btn>
+          <div className={`mt-3 grid gap-2 ${b.session_date ? "grid-cols-2" : "grid-cols-1"}`}>
+            {/* Async work has no date to put in a calendar. */}
+            {b.session_date ? (
+              <Btn
+                variant="outline"
+                onClick={() =>
+                  addToCalendar({
+                    uid: b.id,
+                    title: joinParts(askedName(b) ?? "Session", b.service?.name ?? ""),
+                    date: b.session_date!,
+                    start: (b.start_time ?? "10:00").slice(0, 5),
+                    end: (b.end_time ?? "14:00").slice(0, 5),
+                    location: joinParts(askedName(b) ?? "", b.studio?.location ?? ""),
+                    description: b.purpose ?? "",
+                  })
+                }
+              >
+                <CalendarPlus size={iconSize.sm} className="mr-1.5" /> Add to Calendar
+              </Btn>
+            ) : null}
             <Btn
               variant="outline"
               onClick={() =>

@@ -199,7 +199,10 @@ function RequestReviewContent({ business }: { business: boolean }) {
 
         <div className="mt-3 rounded-lg bg-subtle p-4">
           <dl className="grid grid-cols-2 gap-3 text-1">
-            <Detail label="Date" value={formatDate(bk.session_date)} />
+            <Detail
+              label="Date"
+              value={bk.session_date ? formatDate(bk.session_date) : "No date"}
+            />
             <Detail
               label="Time"
               value={

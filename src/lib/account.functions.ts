@@ -99,17 +99,27 @@ export async function upcomingBookingsOf(client: Client, me: string): Promise<nu
   const today = new Date().toISOString().slice(0, 10);
   const { data: studios } = await client.from("bookables").select("id").eq("owner_profile_id", me);
   const ids = ((studios ?? []) as { id: string }[]).map((s) => s.id);
-  const who = ids.length
-    ? `requester_profile_id.eq.${me},bookable_id.in.(${ids.join(",")})`
-    : `requester_profile_id.eq.${me}`;
+  // Their own services count too: a talent's bookings have no place (queue item 12).
+  const { data: services } = await client
+    .from("profile_services")
+    .select("id")
+    .eq("profile_id", me);
+  const serviceIds = ((services ?? []) as { id: string }[]).map((s) => s.id);
+  const who = [
+    `requester_profile_id.eq.${me}`,
+    ...(ids.length ? [`bookable_id.in.(${ids.join(",")})`] : []),
+    ...(serviceIds.length ? [`service_id.in.(${serviceIds.join(",")})`] : []),
+  ].join(",");
   const { data, error } = await client
     .from("booking_requests")
-    .select("id")
+    .select("id, session_date")
     .or(who)
-    .in("status", ["requested", "reviewing", "confirmed"])
-    .gte("session_date", today);
+    .in("status", ["requested", "reviewing", "confirmed"]);
   if (error) throw new Error(error.message);
-  return data?.length ?? 0;
+  // Still to come: dated today or later, or async work with no date that is still open.
+  return ((data ?? []) as { session_date: string | null }[]).filter(
+    (b) => b.session_date === null || b.session_date >= today,
+  ).length;
 }
 
 export const deactivateMyAccount = createServerFn({ method: "POST" })

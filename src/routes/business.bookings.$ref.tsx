@@ -164,7 +164,10 @@ function ProviderBookingDetailContent() {
             ) : null}
           </div>
           <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
-            <Detail label="Date" value={formatDate(bk.session_date)} />
+            <Detail
+              label="Date"
+              value={bk.session_date ? formatDate(bk.session_date) : "No date"}
+            />
             <Detail
               label="Time"
               value={
