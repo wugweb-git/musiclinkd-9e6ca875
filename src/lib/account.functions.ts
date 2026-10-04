@@ -180,6 +180,80 @@ export const reactivateMyAccount = createServerFn({ method: "POST" })
 export type DeleteAccountResult = { status: "deleted" } | { status: "upcoming"; count: number };
 
 /** Deletes the sign-in itself; the profile and everything it owns go with it. */
+/*
+ * Uploaded files go with the account (Play policy: an ID document must not outlive it). Every
+ * bucket keeps a person's files in a folder named after them — `<profile id>/…`
+ * (src/lib/profile-images.ts, gallery.ts, listing-photos.ts, verification-documents.ts, the last
+ * one a level deeper: `<profile id>/<request>/…`) — except business-media, whose folder is the
+ * bookable's id (src/lib/bookable-photos.ts). Removed with the service role, before the user.
+ */
+const PERSON_BUCKETS = [
+  "avatars",
+  "covers",
+  "gallery",
+  "listing-media",
+  "verification-documents",
+] as const;
+
+type Storage = {
+  from: (bucket: string) => {
+    list: (
+      path: string,
+      opts: { limit: number; offset: number },
+    ) => Promise<{
+      data: { name: string; id: string | null }[] | null;
+      error: { message: string } | null;
+    }>;
+    remove: (paths: string[]) => Promise<{ error: { message: string } | null }>;
+  };
+};
+
+/** Every file under `prefix`, folders followed. */
+async function filesUnder(storage: Storage, bucket: string, prefix: string): Promise<string[]> {
+  const out: string[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await storage.from(bucket).list(prefix, { limit: 1000, offset });
+    if (error) throw new Error(`Couldn't list ${bucket}/${prefix}: ${error.message}`);
+    const rows = data ?? [];
+    for (const row of rows) {
+      const path = `${prefix}/${row.name}`;
+      // A folder comes back with no id.
+      if (row.id === null) out.push(...(await filesUnder(storage, bucket, path)));
+      else out.push(path);
+    }
+    if (rows.length < 1000) break;
+  }
+  return out;
+}
+
+async function removeFolder(storage: Storage, bucket: string, prefix: string): Promise<number> {
+  const files = await filesUnder(storage, bucket, prefix);
+  for (let i = 0; i < files.length; i += 100) {
+    const { error } = await storage.from(bucket).remove(files.slice(i, i + 100));
+    if (error) throw new Error(`Couldn't delete files in ${bucket}: ${error.message}`);
+  }
+  return files.length;
+}
+
+/** Deletes every uploaded file of these profiles and of the places they own. Throws on any failure. */
+async function removeUploads(
+  admin: { storage: unknown; from: (t: string) => unknown },
+  profileIds: string[],
+): Promise<void> {
+  const storage = admin.storage as Storage;
+  for (const id of profileIds) {
+    for (const bucket of PERSON_BUCKETS) await removeFolder(storage, bucket, id);
+  }
+  const { data, error } = await (admin as unknown as Client)
+    .from("bookables")
+    .select("id")
+    .in("owner_profile_id", profileIds);
+  if (error) throw new Error(error.message);
+  for (const b of (data ?? []) as { id: string }[]) {
+    await removeFolder(storage, "business-media", b.id);
+  }
+}
+
 export const deleteMyAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<DeleteAccountResult> => {
@@ -197,6 +271,8 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       (await upcomingBookingsOf(client, me)) +
       (pageId ? await upcomingBookingsOf(supabaseAdmin as unknown as Client, pageId) : 0);
     if (count) return { status: "upcoming", count };
+    // Files first: if any can't be removed, stop here and leave the account as it is.
+    await removeUploads(supabaseAdmin, pageId ? [me, pageId] : [me]);
     if (pageId) {
       const { error: pageError } = await supabaseAdmin.auth.admin.deleteUser(pageId);
       if (pageError) throw new Error(pageError.message);

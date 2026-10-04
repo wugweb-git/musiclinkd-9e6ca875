@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — deleting an account deletes its uploaded files (4 Oct, queue item 1a)
+
+- `deleteMyAccount` now removes the person's files from avatars, covers, gallery, listing-media and
+  verification-documents (their `<profile id>/…` folders, followed down), the same for the business
+  page they own, and business-media for every place either owns — before the account is deleted.
+  If any file can't be listed or removed, it stops with an error and deletes nothing.
+- Not run: the throwaway-account test (it would mean creating an account on the live database).
+
 ### Removed — the generic Hire sheet on the talent profile (4 Oct, queue item 9, §4)
 
 - `HireModal` ("Contact professional") and its Hire button are gone from the talent profile. The
