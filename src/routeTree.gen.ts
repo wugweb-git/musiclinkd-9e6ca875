@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DeleteAccountRouteImport } from './routes/delete-account'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as LeadsRouteImport } from './routes/leads'
@@ -184,6 +185,11 @@ const AccountsRoute = AccountsRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeleteAccountRoute = DeleteAccountRouteImport.update({
+  id: '/delete-account',
+  path: '/delete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -904,6 +910,7 @@ export interface FileRoutesByFullPath {
   '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
@@ -1052,6 +1059,7 @@ export interface FileRoutesByTo {
   '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
@@ -1200,6 +1208,7 @@ export interface FileRoutesById {
   '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
@@ -1350,6 +1359,7 @@ export interface FileRouteTypes {
     | '/academy'
     | '/accounts'
     | '/contact'
+    | '/delete-account'
     | '/home'
     | '/inbox'
     | '/leads'
@@ -1498,6 +1508,7 @@ export interface FileRouteTypes {
     | '/academy'
     | '/accounts'
     | '/contact'
+    | '/delete-account'
     | '/home'
     | '/inbox'
     | '/leads'
@@ -1645,6 +1656,7 @@ export interface FileRouteTypes {
     | '/academy'
     | '/accounts'
     | '/contact'
+    | '/delete-account'
     | '/home'
     | '/inbox'
     | '/leads'
@@ -1794,6 +1806,7 @@ export interface RootRouteChildren {
   AcademyRoute: typeof AcademyRoute
   AccountsRoute: typeof AccountsRoute
   ContactRoute: typeof ContactRoute
+  DeleteAccountRoute: typeof DeleteAccountRoute
   HomeRoute: typeof HomeRoute
   InboxRoute: typeof InboxRoute
   LeadsRoute: typeof LeadsRoute
@@ -1972,6 +1985,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delete-account': {
+      id: '/delete-account'
+      path: '/delete-account'
+      fullPath: '/delete-account'
+      preLoaderRoute: typeof DeleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -2986,6 +3006,7 @@ const rootRouteChildren: RootRouteChildren = {
   AcademyRoute: AcademyRoute,
   AccountsRoute: AccountsRoute,
   ContactRoute: ContactRoute,
+  DeleteAccountRoute: DeleteAccountRoute,
   HomeRoute: HomeRoute,
   InboxRoute: InboxRoute,
   LeadsRoute: LeadsRoute,

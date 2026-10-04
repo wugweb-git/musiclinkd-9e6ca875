@@ -46,6 +46,13 @@ export const settingsGroups: SettingsGroup[] = [
         to: "/verification",
         icon: "badge-check",
       },
+      {
+        key: "qr",
+        label: "QR Code & Digital ID",
+        hint: "Your code and profile link",
+        to: "/identity/qr",
+        icon: "qr",
+      },
     ],
   },
   {
@@ -121,6 +128,13 @@ export const settingsGroups: SettingsGroup[] = [
         hint: "Channels and quiet hours",
         to: "/notifications/settings",
         icon: "bell",
+      },
+      {
+        key: "delete-info",
+        label: "Deleting your data",
+        hint: "What is deleted and what is kept",
+        to: "/delete-account",
+        icon: "file-text",
       },
     ],
   },

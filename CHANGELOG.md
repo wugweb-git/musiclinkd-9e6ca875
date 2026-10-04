@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — public "Delete your account" page for Google Play (4 Oct, queue item 1b)
+
+- `/delete-account`, no sign-in: how to delete (app and web, with a button to Settings → Delete
+  account), what is deleted, what is kept without your name, how to delete some data and keep the
+  account (`#some-data`), and Contact support for anyone who can't sign in. Draft copy in
+  `src/data/delete-account.ts`, for the owner to edit; same screen as the About and legal pages.
+- Linked from the Help footer and from Settings → Privacy & security ("Deleting your data").
+- Settings → Account gains the missing "QR Code & Digital ID" row (`/identity/qr`).
+- Play Console fields: `https://app.musiclinkd.com/delete-account` and
+  `https://app.musiclinkd.com/delete-account#some-data`.
+
 ### Fixed — deleting an account deletes its uploaded files (4 Oct, queue item 1a)
 
 - `deleteMyAccount` now removes the person's files from avatars, covers, gallery, listing-media and
