@@ -2,7 +2,8 @@ import { createFileRoute, Link, type LinkProps } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Bell, ChevronRight, Inbox, MessageCircle, Megaphone, type LucideIcon } from "lucide-react";
-import { Screen, TopBar } from "@/components/ml/ui";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { LoadError, Loading } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { listConversations } from "@/lib/messages.functions";
 import { iconSize } from "@/lib/tokens";
@@ -56,6 +57,7 @@ function InboxScreen() {
     queryFn: () => load(),
     enabled: signedIn,
     staleTime: 15_000,
+    refetchInterval: signedIn ? 30_000 : false,
   });
   const unread = (threads.data ?? []).reduce((n, t) => n + t.unread, 0);
   const unreadThreads = (threads.data ?? []).filter((t) => t.unread > 0).length;
@@ -63,6 +65,8 @@ function InboxScreen() {
   return (
     <Screen>
       <TopBar title="Inbox" back="/home" />
+      {signedIn && threads.isPending ? <div className="px-5 pt-5"><Loading rows={2} /></div> : null}
+      {signedIn && threads.isError ? <div className="px-5 pt-5"><LoadError what="your inbox" /><Btn variant="outline" className="mt-3 w-full" onClick={() => void threads.refetch()}>Retry</Btn></div> : null}
       {threads.data ? (
         <Link
           to="/messages"

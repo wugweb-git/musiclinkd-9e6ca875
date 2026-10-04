@@ -99,6 +99,7 @@ function Connections() {
     queryFn: () => loadConversations(),
     enabled: signedIn,
     staleTime: 15_000,
+    refetchInterval: signedIn ? 30_000 : false,
   });
 
   const act = useMutation({
@@ -142,7 +143,7 @@ function Connections() {
 
           <div className="px-5 pt-2">
             {busy ? <Loading rows={3} /> : null}
-            {failed ? <LoadError what="your messages" /> : null}
+            {failed ? <><LoadError what="your messages" /><button type="button" onClick={() => { void q.refetch(); void threads.refetch(); }} className="state-layer min-h-touch w-full rounded-lg border border-border bg-card text-sm font-semibold">Retry</button></> : null}
 
             {!busy && !failed && tab === "Chats" ? (
               chats.length ? (

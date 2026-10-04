@@ -152,6 +152,7 @@ function Conversation() {
     queryFn: () => read({ data: { id } }),
     enabled: signedIn,
     staleTime: 15_000,
+    refetchInterval: signedIn ? 15_000 : false,
   });
 
   // Older pages, read as the reader scrolls to the top of the thread.
@@ -282,14 +283,15 @@ function Conversation() {
         >
           {q.isError ? (
             <div role="alert" className="py-6 text-sm text-muted-foreground">
-              This conversation couldn't load. Return to Connections and try again.
+              This conversation couldn't load. Check your connection and try again.
+              <button type="button" onClick={() => void q.refetch()} className="state-layer mt-3 flex min-h-touch w-full items-center justify-center rounded-lg border border-border bg-card font-semibold text-foreground">Retry</button>
             </div>
           ) : null}
           {q.isLoading ? <Loading rows={3} /> : null}
           {hasMore ? (
-            <p className="py-3 text-center text-1 text-muted-foreground" aria-live="polite">
-              {loadingOlder ? "Loading earlier messages…" : "Scroll up for earlier messages"}
-            </p>
+            <button type="button" disabled={loadingOlder} onClick={() => void loadOlder()} className="state-layer min-h-touch w-full py-3 text-center text-1 font-semibold text-foreground disabled:text-muted-foreground" aria-live="polite">
+              {loadingOlder ? "Loading earlier messages…" : "Load earlier messages"}
+            </button>
           ) : null}
 
           {q.data && messages.length === 0 ? (
