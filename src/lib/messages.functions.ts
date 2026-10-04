@@ -90,7 +90,9 @@ const PAGE = 50;
 export const getConversation = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
-    z.object({ id: z.string().uuid(), before: z.string().datetime({ offset: true }).optional() }).parse(d),
+    z
+      .object({ id: z.string().uuid(), before: z.string().datetime({ offset: true }).optional() })
+      .parse(d),
   )
   .handler(
     async ({
