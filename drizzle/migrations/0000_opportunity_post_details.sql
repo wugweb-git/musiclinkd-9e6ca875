@@ -1,0 +1,1 @@
+ALTER TABLE public.opportunities ADD COLUMN IF NOT EXISTS summary text, ADD COLUMN IF NOT EXISTS work_mode text, ADD COLUMN IF NOT EXISTS date_window text, ADD COLUMN IF NOT EXISTS requirements text[] NOT NULL DEFAULT '{}';
