@@ -65,8 +65,19 @@ function InboxScreen() {
   return (
     <Screen>
       <TopBar title="Inbox" back="/home" />
-      {signedIn && threads.isPending ? <div className="px-5 pt-5"><Loading rows={2} /></div> : null}
-      {signedIn && threads.isError ? <div className="px-5 pt-5"><LoadError what="your inbox" /><Btn variant="outline" className="mt-3 w-full" onClick={() => void threads.refetch()}>Retry</Btn></div> : null}
+      {signedIn && threads.isPending ? (
+        <div className="px-5 pt-5">
+          <Loading rows={2} />
+        </div>
+      ) : null}
+      {signedIn && threads.isError ? (
+        <div className="px-5 pt-5">
+          <LoadError what="your inbox" />
+          <Btn variant="outline" className="mt-3 w-full" onClick={() => void threads.refetch()}>
+            Retry
+          </Btn>
+        </div>
+      ) : null}
       {threads.data ? (
         <Link
           to="/messages"
@@ -76,7 +87,10 @@ function InboxScreen() {
             aria-hidden
             className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-brand/35 blur-3xl animate-breathe"
           />
-          <span aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-1 w-1/3 bg-brand" />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 left-0 h-1 w-1/3 bg-brand"
+          />
           <span className="relative block">
             <span className="block text-1 text-ink-foreground/70">Messages</span>
             <span className="mt-1 block text-3 font-semibold">
@@ -103,7 +117,10 @@ function InboxScreen() {
                 <span className="block truncate text-1 text-muted-foreground">{hint}</span>
               </span>
               {label === "Conversations" && unread > 0 ? (
-                <span aria-label={`${unread} unread`} className="h-2.5 w-2.5 rounded-full bg-brand" />
+                <span
+                  aria-label={`${unread} unread`}
+                  className="h-2.5 w-2.5 rounded-full bg-brand"
+                />
               ) : null}
               <ChevronRight size={iconSize.sm} className="text-muted-foreground" aria-hidden />
             </Link>

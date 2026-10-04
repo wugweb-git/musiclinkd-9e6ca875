@@ -22,7 +22,8 @@ export const draftHiringCopy = createServerFn({ method: "POST" })
   .inputValidator((input) => facts.parse(input))
   .handler(async ({ data }) => {
     const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey) throw new Error("AI writing is unavailable right now. You can write your own copy.");
+    if (!apiKey)
+      throw new Error("AI writing is unavailable right now. You can write your own copy.");
     const provider = createOpenAI({
       baseURL: "https://ai.gateway.lovable.dev/v1",
       apiKey,
@@ -42,6 +43,7 @@ export const draftHiringCopy = createServerFn({ method: "POST" })
       providerOptions: { openai: { store: false } },
     });
     const copy = text.trim();
-    if (!copy || copy.length > 2000) throw new Error("Couldn't prepare the copy. Try a shorter brief.");
+    if (!copy || copy.length > 2000)
+      throw new Error("Couldn't prepare the copy. Try a shorter brief.");
     return { copy };
   });

@@ -95,7 +95,10 @@ function MatchScreen() {
             <textarea
               id="brief"
               value={brief}
-              onChange={(e) => { setBrief(e.target.value); match.reset(); }}
+              onChange={(e) => {
+                setBrief(e.target.value);
+                match.reset();
+              }}
               maxLength={600}
               rows={4}
               placeholder={
@@ -231,7 +234,12 @@ function MatchScreen() {
             ) : null}
             {hiring ? (
               <div className="px-5">
-                <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full" icon={<BriefcaseBusiness size={iconSize.sm} aria-hidden />}>
+                <BtnLink
+                  to="/opportunities/new"
+                  search={{ step: "basics" }}
+                  className="w-full"
+                  icon={<BriefcaseBusiness size={iconSize.sm} aria-hidden />}
+                >
                   Post this as a hiring post
                 </BtnLink>
               </div>

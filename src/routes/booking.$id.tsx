@@ -34,11 +34,19 @@ export const Route = createFileRoute("/booking/$id")({
 });
 
 function BookingLoadError({ reset }: { reset: () => void }) {
-  return <div role="alert" className="mx-auto max-w-app px-5 py-10 text-sm text-foreground">
-    <h1 className="text-3 font-semibold">Booking could not load</h1>
-    <p className="mt-2 text-muted-foreground">Check your connection and try again.</p>
-    <button type="button" onClick={reset} className="state-layer mt-5 min-h-touch rounded-lg bg-ink px-5 font-semibold text-ink-foreground">Retry</button>
-  </div>;
+  return (
+    <div role="alert" className="mx-auto max-w-app px-5 py-10 text-sm text-foreground">
+      <h1 className="text-3 font-semibold">Booking could not load</h1>
+      <p className="mt-2 text-muted-foreground">Check your connection and try again.</p>
+      <button
+        type="button"
+        onClick={reset}
+        className="state-layer mt-5 min-h-touch rounded-lg bg-ink px-5 font-semibold text-ink-foreground"
+      >
+        Retry
+      </button>
+    </div>
+  );
 }
 
 function BookingLayout() {

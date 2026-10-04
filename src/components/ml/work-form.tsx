@@ -246,8 +246,24 @@ export function WorkForm({
           ) : null}
         </figure>
       ) : null}
-      <input ref={photoInput} type="file" accept={PROFILE_IMAGE_ACCEPT} capture="environment" className="sr-only" aria-label="Choose a photo for this work" onChange={(e) => void pickPhoto(e.target.files?.[0])} />
-      <Btn type="button" variant="outline" className="mt-4 w-full" loading={uploadingPhoto} disabled={!signedIn} icon={<Camera size={iconSize.sm} aria-hidden />} onClick={() => photoInput.current?.click()}>
+      <input
+        ref={photoInput}
+        type="file"
+        accept={PROFILE_IMAGE_ACCEPT}
+        capture="environment"
+        className="sr-only"
+        aria-label="Choose a photo for this work"
+        onChange={(e) => void pickPhoto(e.target.files?.[0])}
+      />
+      <Btn
+        type="button"
+        variant="outline"
+        className="mt-4 w-full"
+        loading={uploadingPhoto}
+        disabled={!signedIn}
+        icon={<Camera size={iconSize.sm} aria-hidden />}
+        onClick={() => photoInput.current?.click()}
+      >
         {cover ? "Change work photo" : "Add work photo"}
       </Btn>
 
