@@ -268,3 +268,96 @@ For items 2 and 3, as for everything in this file: run tsc, lint, build, the wor
 
 Cowork Claude couldn't fetch from GitHub on the Mac (no login there). If `main` on GitHub has moved past 9adfefa, re-check these against it before fixing. The local clone is now at 27665f4.
 
+
+---
+
+# Added 4 Oct evening — owner's finishing pass (Waves A–E) and the Lovable session's open items
+
+Source: the owner's messages of 4 Oct evening, which include the Lovable agent's own reports. Lovable's
+"done" items below are **its claims, not verified here**; validate before relying on them. Same ground
+rule as the top of this file: branch `review/pending-owner-items`, no merge to `main` without the owner.
+
+## Status of this file's items on `review/pending-owner-items` (Claude Code, 4 Oct)
+
+| Item | State |
+|---|---|
+| 1a files deleted with the account | Done (`f399397`); throwaway-account test not run (would create a live account) |
+| 1b `/delete-account` page | Done with draft copy (`e3a9c3b`), linked from Help footer and Settings → Privacy & security; QR row added under Settings → Account |
+| 2 Remember me across tabs | Done (`c0489dc`); both paths pass, `scripts/remember-me-tabs.mjs` |
+| 3 Discover trending | Done (`50a0c8a`): Lovable's redesign had removed all trending work, so one "Trending work" rail for every kind |
+| 8 no price on profile cards | Done (`a73d495`) |
+| 9 Hire sheet removed | Done (`c2e4dac`) |
+| Help footer legal links (`/legal/undefined`) | Fixed (`f0dd9c0`) |
+| Select screen back to owner's version | Done (`0b0345f`) |
+| 4, 5, 7, 10, 11, 12, 13 | Open — owner: decide with the queue's own rules, don't ask again |
+
+## Blocker for every tap test: the dev server never hydrates
+
+Pages render server HTML but React never attaches, so no tap works in the Vite dev preview. Tried
+`optimizeDeps.holdUntilCrawlEnd: false` + pre-bundling react/react-dom/router: **did not fix it**
+(not hydrated after 245 s; Lovable reports the same) — reverted (`e0560e4`). Still undiagnosed: the
+preview logs a failed dynamically imported client module. Workaround that works: `bun run build` +
+`wrangler dev` on `.output/server` (production bundle hydrates), signed-out screens only, because
+local has no accounts.
+
+## Navigation and links (owner's list)
+- [x] Settings → "QR Code & Digital ID" row → `/identity/qr`
+- [ ] `/portfolio/new` route that redirects to `/portfolio?add=1`
+- [ ] Settings: link `/settings/security/` exactly; "Sign-in methods" row points at `/settings` (self-loop) — open the sign-in methods sheet instead
+- [ ] Profile action bar: a QR / Digital ID button (from the Lovable audit; owner listed it once)
+- [ ] Camera on Add work: put back `capture="environment"` on the hidden file input in `src/components/ml/work-form.tsx`
+
+## Wave A — Inbox and conversations
+Validate (not rebuild) the Inbox banner, unread indicator, conversation list, thread, optimistic send,
+older-message loading without scroll jump, keyboard-safe composer, back navigation; loading / empty /
+offline / send-failure / retry states; initials when a member has no photo. Lovable says it restyled
+Inbox (dark banner, unread count, grouped list, white bubbles, 50-message pages) — unverified.
+Conversation screen restyle still open.
+
+## Wave B — Hiring and full professional profiles
+A hiring brief matches real talent, eligible business profiles and open opportunities; every result
+opens its full page and shows only contact methods the owner made public. Business Home's hiring
+entry, the multi-step posting form, draft/publish errors, return to matching. **No fabricated job,
+no posting on someone's behalf**: a genuine owner-provided need, or clearly marked disposable test
+data removed afterwards. Blockers: no business test account; no real hiring post.
+
+## Wave C — Mobile UI and flow corrections
+Screen-by-screen review: onboarding, edit profile, bookings, scheduling, booking messages, Academy,
+Portfolio Add work, Profile, Settings — grounds, typography, safe areas, icon-labelled inputs,
+primary actions, motion + reduced motion, 48px taps. Owner profile: remove the redundant Overview tab,
+one primary Edit. Market: branded banners on category pages **and** the main Market page, with
+verified live counts (including zero and failed-count states). Business profiles: one "Business name",
+never first/last name (Lovable says done in edit profile — unverified).
+
+## Wave D — Android and full audit
+Native share, press feedback (vibration), status bar, camera/gallery for Portfolio and profile images
+(existing plugins first); message notifications only after checking registration, permission timing,
+token ownership, foreground behaviour, delivery. Full route/workflow audit for talent and business:
+auth/onboarding, Home, Discover, search/saved/history, identity/QR, profiles/edit, portfolio, services,
+bookings/schedule/messages, opportunities/applications/hiring, Market/rentals, collaborations/bands,
+verification/reviews, notifications, settings, Academy/help, analytics — dead links, duplicate
+actions, missing icons, bad handoffs, stale data, misleading counts, missing states.
+
+## Wave E — Verify, then publish
+Signed-in talent and business sessions at 412px: drawers open/close/back and run their action,
+Profile/Edit/Share, Settings, Portfolio/Add work/photo, Inbox/thread/reply, booking messages,
+onboarding handoff, hiring post and match. Market category counts against live eligible listings.
+Publish only after these pass; the owner then checks the Android back gesture with the menu open.
+
+## Docs and design (owner)
+- Remove stale `.md` files and `roadmap.md`; update AGENTS.md. (Lovable says it deleted 14 notes and the
+  roadmap and moved AGENTS.md sections into folders — check what's actually on `main`.)
+- Animations: screen transitions, scroll reveals, hover lift, tap feedback; all off under reduced motion.
+- Lovable's three backgrounds: auth screens (light grey), content ground (warm off-white), cards/menus
+  (white). **Conflict:** the owner also wrote "updating css … background colour … please do ignore it".
+  Resolve before touching `src/styles.css`.
+
+## Conflicts with standing rules — resolve before doing
+- "Use Unsplash … a user profile to have a human DP": AGENTS.md and Wave text both forbid photos that
+  impersonate a member. Stock imagery only for empty states and banners, never as someone's avatar.
+- "Create a real hiring post": only with genuine owner-provided details (Wave B).
+
+## Lovable-built features to validate (not rebuild)
+AI hiring match (`/discover/match`, linked from Discover and business Home; matches real profiles and
+open posts, "View profile / View opportunity"); AI-drafted hiring copy on `/opportunities/new`;
+Academy placeholder screen; Inbox screen in the menu; Market banners with counts.
