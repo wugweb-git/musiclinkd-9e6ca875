@@ -63,7 +63,8 @@ export function availabilityConflicts(
   const hasHours = hasWeeklyHours(cal.weeklyHours);
   const out: AvailabilityConflict[] = [];
   for (const b of bookings) {
-    if (!ACTIVE.includes(b.status) || b.session_date < today) continue;
+    // Async work (no date) can't clash with anything.
+    if (!ACTIVE.includes(b.status) || !b.session_date || b.session_date < today) continue;
     if (isBlackout(b.session_date, cal.blackouts)) {
       out.push({ booking: b, kind: "No availability", detail: "on a day you've blacked out" });
       continue;

@@ -224,7 +224,11 @@ async function serviceDetail(
   if (error) throw new Error(error.message);
   if (!row) return null;
 
-  const serviceRow = row as { profile_id: string } & Record<string, unknown>;
+  const serviceRow = row as { profile_id: string | null } & Record<string, unknown>;
+  // A band's service has no person owner (queue item 13): skip the person's profile, place,
+  // portfolio examples and studio uses rather than querying with a null id.
+  const personId = serviceRow.profile_id;
+  const none = Promise.resolve({ data: null, error: null });
   const [packages, addons, owner, place] = await Promise.all([
     client
       .from("profile_service_packages")
@@ -232,42 +236,44 @@ async function serviceDetail(
       .eq("service_id", id)
       .order("sort_order"),
     client.from("profile_service_addons").select(ADDON).eq("service_id", id).order("sort_order"),
-    client
-      .from("profiles")
-      .select(
-        "availability, display_name, username, avatar_url, roles, genres, instruments, languages",
-      )
-      .eq("id", serviceRow.profile_id)
-      .maybeSingle(),
-    client
-      .from("bookables")
-      .select("slug")
-      .eq("owner_profile_id", serviceRow.profile_id)
-      .is("archived_at", null)
-      .limit(1)
-      .maybeSingle(),
+    personId
+      ? client
+          .from("profiles")
+          .select(
+            "availability, display_name, username, avatar_url, roles, genres, instruments, languages",
+          )
+          .eq("id", personId)
+          .maybeSingle()
+      : none,
+    personId
+      ? client
+          .from("bookables")
+          .select("slug")
+          .eq("owner_profile_id", personId)
+          .is("archived_at", null)
+          .limit(1)
+          .maybeSingle()
+      : none,
   ]);
   const exampleIds = ((serviceRow["example_ids"] as string[] | null) ?? []).filter(Boolean);
-  const exampleRows = exampleIds.length
-    ? await client
-        .from("portfolio_items")
-        .select("id, title, kind, cover_url, media_url")
-        .in("id", exampleIds)
-        .eq("user_id", serviceRow.profile_id)
-        .eq("published", true)
-    : { data: [], error: null };
+  const exampleRows =
+    exampleIds.length && personId
+      ? await client
+          .from("portfolio_items")
+          .select("id, title, kind, cover_url, media_url")
+          .in("id", exampleIds)
+          .eq("user_id", personId)
+          .eq("published", true)
+      : { data: [], error: null };
   if (exampleRows.error) throw new Error(exampleRows.error.message);
   const byId = new Map(((exampleRows.data ?? []) as ServiceExample[]).map((e) => [e.id, e]));
   if (packages.error) throw new Error(packages.error.message);
   if (addons.error) throw new Error(addons.error.message);
   if (owner.error) throw new Error(owner.error.message);
   const service = serviceFrom(serviceRow);
-  const uses = await serviceUses(
-    client,
-    serviceRow.profile_id,
-    service.amenity_slugs,
-    service.equipment_ids,
-  );
+  const uses = personId
+    ? await serviceUses(client, personId, service.amenity_slugs, service.equipment_ids)
+    : { amenities: [], equipment: [] };
 
   return {
     uses,
@@ -463,6 +469,8 @@ const saveSchema = z.object({
   deliverables: lines,
   requirements: lines,
   status: z.enum(["draft", "active"]),
+  /** A band's service (queue item 13): owned by the band, managed by its owners/admins (RLS). */
+  bandId: z.string().uuid().optional(),
   /** Replaces the service's packages when given; left as they are when omitted. */
   packages: z.array(packageSchema).max(10).optional(),
   /** Replaces the service's add-ons when given; left as they are when omitted. */
@@ -502,8 +510,33 @@ export const saveService = createServerFn({ method: "POST" })
   .inputValidator((d) => saveSchema.parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
-    const { id, packages, addons, ...fields } = data;
+    const { id, packages, addons, bandId, ...fields } = data;
     const payload = { ...fields, description: fields.description || null };
+
+    if (bandId) {
+      // A band's service has no portfolio examples, place amenities/equipment or packages: those
+      // belong to a person or a place. One starting price, like every service.
+      const bandPayload = { ...payload, example_ids: [], amenity_slugs: [], equipment_ids: [] };
+      if (id) {
+        const { data: row, error } = await client
+          .from("profile_services")
+          .update(bandPayload)
+          .eq("id", id)
+          .eq("collab_id", bandId)
+          .select("id")
+          .maybeSingle();
+        if (error) throw new Error(error.message);
+        if (!row) throw new Error("Service not found");
+        return { id };
+      }
+      const { data: row, error } = await client
+        .from("profile_services")
+        .insert({ ...bandPayload, collab_id: bandId, profile_id: null })
+        .select("id")
+        .single();
+      if (error) throw new Error(error.message);
+      return { id: (row as { id: string }).id };
+    }
 
     let serviceId = id;
     if (serviceId) {
@@ -589,15 +622,36 @@ export const duplicateService = createServerFn({ method: "POST" })
 /** Deletes one of the signed-in profile's services; its packages and add-ons go with it. */
 export const deleteService = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => idInput.parse(d))
+  .inputValidator((d) => idInput.extend({ bandId: z.string().uuid().optional() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
-    const { data: rows, error } = await (context.supabase as unknown as SupabaseClient)
+    const base = (context.supabase as unknown as SupabaseClient)
       .from("profile_services")
       .delete()
-      .eq("id", data.id)
-      .eq("profile_id", context.userId)
-      .select("id");
+      .eq("id", data.id);
+    const { data: rows, error } = await (
+      data.bandId ? base.eq("collab_id", data.bandId) : base.eq("profile_id", context.userId)
+    ).select("id");
     if (error) throw new Error(error.message);
     if (!rows?.length) throw new Error("Service not found");
     return { ok: true };
   });
+
+/**
+ * A band's services for its managers, drafts included (queue item 13). RLS limits writes to the
+ * band's owners/admins; this read shows what they manage. Empty before 20261004180000 is applied.
+ */
+export const listBandServicesToManage = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ bandId: z.string().uuid() }).parse(d))
+  .handler(
+    async ({ context, data }): Promise<{ id: string; name: string; status: ServiceStatus }[]> => {
+      const { data: rows, error } = await (context.supabase as unknown as SupabaseClient)
+        .from("profile_services")
+        .select("id, name, status")
+        .eq("collab_id", data.bandId)
+        .order("sort_order")
+        .order("created_at", { ascending: false });
+      if (error) return [];
+      return (rows ?? []) as { id: string; name: string; status: ServiceStatus }[];
+    },
+  );

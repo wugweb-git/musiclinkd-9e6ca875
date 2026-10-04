@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { COLLAB_TYPES, type CollabType } from "@/lib/collab-types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -43,7 +44,8 @@ export type Collab = {
   genres: string[];
   cover_url: string | null;
   avatar_url: string | null;
-  type: "band" | "project";
+  /** A collaboration type; "project" only on rows from before 20261004190000 (none after it). */
+  type: CollabType | "project";
   /** A taxonomy slug from project_types. Null for a band, and for a project that has not said. */
   project_type: string | null;
   visibility: "public" | "private";
@@ -132,7 +134,7 @@ export const createCollab = createServerFn({ method: "POST" })
         bio: z.string().max(2000).optional(),
         city: z.string().max(80).optional(),
         visibility: z.enum(["public", "private"]).default("private"),
-        type: z.enum(["project", "band"]).default("project"),
+        type: z.enum(COLLAB_TYPES).default("band"),
         projectType: z.string().trim().max(60).optional(),
         endsOn: z
           .string()

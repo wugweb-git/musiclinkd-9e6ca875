@@ -277,7 +277,7 @@ function OpportunityDetail() {
           <Btn variant="outline" className="w-full">
             Copy Link
           </Btn>
-          <BtnLink to="/messages" variant="outline" className="w-full">
+          <BtnLink to="/inbox" search={{ tab: "messages" }} variant="outline" className="w-full">
             Send in a Conversation
           </BtnLink>
           <BtnLink to="/identity/qr" variant="ghost" className="w-full">

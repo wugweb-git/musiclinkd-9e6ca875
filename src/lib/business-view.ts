@@ -10,6 +10,7 @@ import { priceParts, type PriceParts } from "@/lib/price";
 import { asLinkMap } from "@/lib/profile-map";
 import { getPublicBusiness, type BusinessRecord } from "@/lib/profile-groups.functions";
 import { joinParts } from "@/lib/utils";
+import { isTimeBasedService } from "@/lib/service-time";
 
 export type BusinessView = {
   /** The account's username: the id in /business/$id. */
@@ -194,6 +195,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
           categories: s.categories?.length ? s.categories : s.category ? [s.category] : [],
           deliverables: s.deliverables ?? [],
           ...(uses.length ? { uses } : {}),
+          timeBased: isTimeBasedService(s.work_modes),
         },
       };
     }),

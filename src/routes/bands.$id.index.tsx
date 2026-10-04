@@ -42,13 +42,17 @@ import {
   IconBtnLink,
   VerifiedBadge,
 } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Price, Row } from "@/components/ml/kit";
-import { CoverHero, ImagePickButton, StackSection } from "@/components/ml/profile";
+import { Card, StatusPill, EmptyState, Row } from "@/components/ml/kit";
+import { CoverHero, ImagePickButton, ServiceCard, StackSection } from "@/components/ml/profile";
+import { ServiceRequestSheet, useServiceRequest } from "@/components/ml/booking";
+import { serviceCardFromRow } from "@/lib/profile-view";
+import { useQuery } from "@tanstack/react-query";
 import { GalleryView } from "@/components/ml/gallery";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "@/components/ml/tab-icon";
 import { bandRoleCopy } from "@/data/band";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
+import { listBandServices } from "@/lib/bands.functions";
 import { setCollabImage } from "@/lib/collabs.functions";
 import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
 import { shareLink } from "@/lib/booking-actions";
@@ -104,6 +108,14 @@ function BandProfile() {
   const navigate = useNavigate();
   const router = useRouter();
   const saveImage = useServerFn(setCollabImage);
+  // The band's own services (queue item 13): same Service Card and request flow as a talent's.
+  const loadServices = useServerFn(listBandServices);
+  const services = useQuery({
+    queryKey: ["band-services", band?.dbId],
+    queryFn: () => loadServices({ data: { bandId: band!.dbId } }),
+    enabled: Boolean(band?.dbId),
+  });
+  const serviceRequest = useServiceRequest();
 
   if (!band) {
     return (
@@ -326,24 +338,38 @@ function BandProfile() {
         <div className="mt-4 space-y-3 pb-4">
           {tab === "Overview" ? (
             <>
-              {band.bio || band.availability || band.rate ? (
+              {band.bio || band.availability ? (
                 <Card>
                   <h2 className="text-sm">About</h2>
                   {band.bio ? (
                     <p className="mt-2 text-1 text-muted-foreground">{band.bio}</p>
                   ) : null}
-                  {band.availability || band.rate ? (
+                  {/* No band rate (owner, 4 Oct 2026, §3): a band's prices live on its Services. */}
+                  {band.availability ? (
                     <div className="mt-3 flex flex-wrap items-center gap-3">
-                      {band.availability ? (
-                        <StatusPill
-                          label={band.availability}
-                          tone={band.availability === "Available" ? "good" : "warn"}
-                        />
-                      ) : null}
-                      <Price price={band.rate} amountClassName="text-sm font-semibold" />
+                      <StatusPill
+                        label={band.availability}
+                        tone={band.availability === "Available" ? "good" : "warn"}
+                      />
                     </div>
                   ) : null}
                 </Card>
+              ) : null}
+              {services.data?.length ? (
+                <StackSection title="Services">
+                  <div className="space-y-3">
+                    {services.data.map((row) => {
+                      const s = serviceCardFromRow(row);
+                      return (
+                        <ServiceCard
+                          key={s.id}
+                          s={s}
+                          {...(owner ? {} : { onBook: () => serviceRequest.book(s) })}
+                        />
+                      );
+                    })}
+                  </div>
+                </StackSection>
               ) : null}
               {/* The band's photos: visitors see them once there are some; managers edit them. */}
               {owner ? (
@@ -360,7 +386,13 @@ function BandProfile() {
                   <h2 className="text-sm">Open seats</h2>
                   <div className="mt-3 space-y-2">
                     {band.lookingFor.map((l) => (
-                      <Row key={l} title={l} subtitle="Apply through Messaging" to="/messages" />
+                      <Row
+                        key={l}
+                        title={l}
+                        subtitle="Apply through Messaging"
+                        to="/inbox"
+                        search={{ tab: "messages" }}
+                      />
                     ))}
                   </div>
                 </Card>
@@ -423,15 +455,11 @@ function BandProfile() {
                   </div>
                 </button>
 
-                {/* Cell 3: Booking & Rate */}
+                {/* Cell 3: Booking. No band rate (owner, 4 Oct 2026, §3); prices live on Services. */}
                 <div className="rounded-lg border border-border/80 bg-card p-3.5">
-                  <span className="text-1 font-semibold text-foreground">Booking rate</span>
+                  <span className="text-1 font-semibold text-foreground">Booking</span>
                   <div className="mt-2">
-                    {band.rate ? (
-                      <Price price={band.rate} amountClassName="text-2 font-bold text-foreground" />
-                    ) : (
-                      <span className="text-sm font-bold text-foreground">On enquiry</span>
-                    )}
+                    <span className="text-sm font-bold text-foreground">On enquiry</span>
                   </div>
                   {band.availability ? (
                     <div className="mt-1.5">
@@ -702,6 +730,11 @@ function BandProfile() {
       {sheet === "live" ? (
         <BandLiveVideoSheet bandId={band.dbId} open onClose={() => setSheet(null)} />
       ) : null}
+      <ServiceRequestSheet
+        service={serviceRequest.service}
+        who={band.name}
+        onClose={serviceRequest.close}
+      />
     </Screen>
   );
 }

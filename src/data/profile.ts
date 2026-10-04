@@ -83,6 +83,8 @@ export type ServiceItem = {
   deliverables?: string[] | undefined;
   /** A studio's service: the amenities and equipment it uses, by name. */
   uses?: string[] | undefined;
+  /** Booked for a date and time (in person, touring); false for async remote work. */
+  timeBased?: boolean | undefined;
 };
 
 export type ExperienceItem = {

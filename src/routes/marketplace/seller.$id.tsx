@@ -107,7 +107,7 @@ function SellerProfile() {
           </div>
           {s.bio ? <p className="mt-3 text-sm text-muted-foreground">{s.bio}</p> : null}
           <div className="mt-4 flex gap-2">
-            <BtnLink to="/messages" className="flex-1 w-full">
+            <BtnLink to="/inbox" search={{ tab: "messages" }} className="flex-1 w-full">
               Message
             </BtnLink>
             <Btn

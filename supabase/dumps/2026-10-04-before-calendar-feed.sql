@@ -1,0 +1,7 @@
+-- Snapshot before 20261004210000_calendar_feed.sql. Read-only, live, 4 Oct 2026. Definitions only.
+--
+-- public.profile_private columns: id, date_of_birth, gender, updated_at, time_zone, device_platform,
+-- email, gstin, business_phone. Owner-only (RLS). No calendar_feed_token_hash.
+--
+-- Undo: ALTER TABLE public.profile_private DROP COLUMN calendar_feed_token_hash; (every feed link
+-- stops working).

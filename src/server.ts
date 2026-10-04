@@ -44,8 +44,31 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+// The calendar subscription feed (queue item 5d): answered here, before the app renders, as plain
+// text/calendar for calendar apps to poll. An unknown or replaced link is a 404.
+const CALENDAR_FEED = /^\/cal\/([A-Za-z0-9_-]{20,64})\.ics$/;
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const feed =
+      request.method === "GET" ? CALENDAR_FEED.exec(new URL(request.url).pathname) : null;
+    if (feed) {
+      try {
+        const { calendarFeed } = await import("./lib/calendar-feed.server");
+        const body = await calendarFeed(feed[1]!);
+        return body
+          ? new Response(body, {
+              headers: {
+                "content-type": "text/calendar; charset=utf-8",
+                "cache-control": "private, max-age=900",
+              },
+            })
+          : new Response("Not found", { status: 404 });
+      } catch (error) {
+        console.error(error);
+        return new Response("Calendar unavailable", { status: 503 });
+      }
+    }
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);

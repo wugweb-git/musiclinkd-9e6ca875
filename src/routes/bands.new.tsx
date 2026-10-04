@@ -1,4 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { collabTypeCopy } from "@/data/collab-types";
+import { isCollabType, type CollabType } from "@/lib/collab-types";
 import { useState, type ComponentProps } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -12,9 +14,18 @@ import { InlineField } from "@/components/ml/onboarding";
 import { createCollab, getCollab, addCollabMember } from "@/lib/collabs.functions";
 
 export const Route = createFileRoute("/bands/new")({
-  head: () => ({
+  // Which collaboration type to create (queue item 7); a band unless said otherwise.
+  validateSearch: (s: Record<string, unknown>): { type?: CollabType } =>
+    isCollabType(s["type"]) ? { type: s["type"] } : {},
+  head: ({ match }) => ({
     meta: [
-      { title: "Create a Band | MusicLinkd" },
+      {
+        // The tab names the type being created: "Create an Ensemble | MusicLinkd".
+        title: (() => {
+          const label = collabTypeCopy[match.search.type ?? "band"].label;
+          return `Create ${/^[aeiou]/i.test(label) ? "an" : "a"} ${label} | MusicLinkd`;
+        })(),
+      },
       {
         name: "description",
         content: "Create a band profile, set the line-up and invite members on MusicLinkd.",
@@ -30,6 +41,10 @@ export const Route = createFileRoute("/bands/new")({
 
 function CreateBand() {
   const navigate = useNavigate();
+  const type: CollabType = Route.useSearch().type ?? "band";
+  const label = collabTypeCopy[type].label;
+  const noun = label.toLowerCase();
+  const article = /^[aeiou]/.test(noun) ? "an" : "a";
   // Genres are the taxonomy's (taxonomy_options, category genres); the band stores their slugs.
   const genreOptions = useTaxonomy().options?.genres ?? [];
   const [step, setStep] = useState(0);
@@ -54,7 +69,7 @@ function CreateBand() {
           ...(tagline.trim() ? { bio: tagline.trim() } : {}),
           ...(city.trim() ? { city: city.trim() } : {}),
           visibility: "public",
-          type: "band",
+          type,
           ...(genres.length ? { genres } : {}),
         },
       });
@@ -90,7 +105,7 @@ function CreateBand() {
   return (
     <Screen bottomNav={false}>
       <TopBar
-        title="Create a band"
+        title={`Create ${article} ${noun}`}
         subtitle={`Step ${step + 1} of ${bandCreationSteps.length} · ${current}`}
         back="/bands"
       />
@@ -104,7 +119,12 @@ function CreateBand() {
 
         {current === "Identity" ? (
           <Card className="space-y-4">
-            <Field label="Band name" value={name} onChange={setName} placeholder="The Kite Notes" />
+            <Field
+              label={`${label} name`}
+              value={name}
+              onChange={setName}
+              placeholder="The Kite Notes"
+            />
             <Field
               label="One-line description"
               value={tagline}
@@ -112,7 +132,7 @@ function CreateBand() {
               placeholder="Indie-folk quartet with a brass habit"
             />
             <p className="text-1 text-muted-foreground">
-              The band name appears in Discover, Search and on shared QR cards.
+              The name appears in Discover, Search and on shared QR cards.
             </p>
           </Card>
         ) : null}
@@ -183,7 +203,7 @@ function CreateBand() {
 
         {current === "Preview" ? (
           <Card className="space-y-3">
-            <h2 className="text-3 leading-tight">{name || "Untitled band"}</h2>
+            <h2 className="text-3 leading-tight">{name || `Untitled ${noun}`}</h2>
             <p className="text-1 text-muted-foreground">{tagline || "No description yet"}</p>
             <p className="text-1 text-muted-foreground">
               {[genres.map((g) => labelFor(genreOptions, g)).join(" · "), city]
@@ -220,7 +240,7 @@ function CreateBand() {
 
       <Dialog
         open={done}
-        title="Band created"
+        title={`${label} created`}
         body="Your band profile is live and invitations are on their way."
         onClose={() => setDone(false)}
       >

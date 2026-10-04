@@ -51,7 +51,8 @@ function ServiceEnquiry() {
       if (!s) throw new Error("Service not found");
       await send({
         data: {
-          businessProfileId: s.profile_id,
+          // The server finds who answers: the person who offers it, or a band's owner.
+          serviceId: s.id,
           intent: `${mode === "Custom quote" ? "Custom quote" : "Question"}: ${s.name}`.slice(
             0,
             60,
@@ -106,7 +107,7 @@ function ServiceEnquiry() {
                 : "Replies land in Messages and as a notification."}
             </p>
           </Card>
-          <BtnLink to="/messages" className="w-full">
+          <BtnLink to="/inbox" search={{ tab: "messages" }} className="w-full">
             Open Connections
           </BtnLink>
         </div>

@@ -1,4 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { autoSyncOn, deviceCalendarAvailable, syncDeviceCalendar } from "@/lib/device-calendar";
+import { listMyCalendarItems } from "@/lib/calendar-feed.functions";
 import {
   HeadContent,
   Link,
@@ -191,6 +194,25 @@ function RootComponent() {
 
   // Android's hardware back: close the top overlay, else go back, else exit. A no-op in a browser.
   useEffect(() => startBackButton(), []);
+
+  // "Keep my bookings in my calendar" (Android, opt-in): bring the MusicLinkd calendar in line
+  // when the app opens and whenever it comes back to the front.
+  const loadCalendarItems = useServerFn(listMyCalendarItems);
+  useEffect(() => {
+    if (!userId || !deviceCalendarAvailable() || !autoSyncOn()) return;
+    const sync = () =>
+      void loadCalendarItems()
+        .then(syncDeviceCalendar)
+        .catch(() => undefined);
+    sync();
+    let remove: (() => void) | undefined;
+    void import("@capacitor/app").then(({ App }) =>
+      App.addListener("resume", sync).then((h) => {
+        remove = () => void h.remove();
+      }),
+    );
+    return () => remove?.();
+  }, [userId, loadCalendarItems]);
 
   // The splash no longer auto-hides (capacitor.config.ts): it waits for a mounted app rather than
   // a 500ms timer, so the shell's network fetch happens behind the brand ground instead of a bare

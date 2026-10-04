@@ -23,7 +23,7 @@ import {
   getBookingRequest,
   rescheduleBooking,
 } from "@/lib/bookings.functions";
-import { addToCalendar, shareLink } from "@/lib/booking-actions";
+import { addToCalendar, openInCalendar, shareLink } from "@/lib/booking-actions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
@@ -61,6 +61,21 @@ function Confirmed() {
     retry: false,
   });
   const b = q.data ?? null;
+  // What "Add to calendar" puts in the calendar: a confirmed booking with a date, at its own times
+  // (no time asked for → a whole-day event; never made-up hours).
+  const calendarEvent =
+    b && b.status === "confirmed" && b.session_date
+      ? {
+          uid: b.id,
+          title: joinParts(askedName(b) ?? "Session", b.service?.name ?? ""),
+          date: b.session_date,
+          start: b.start_time?.slice(0, 5),
+          end: b.end_time?.slice(0, 5),
+          hours: b.hours ?? undefined,
+          location: joinParts(askedName(b) ?? "", b.studio?.location ?? ""),
+          description: b.purpose ?? "",
+        }
+      : null;
   const confirmed = b?.status === "confirmed";
   const settled = b && ["declined", "cancelled", "completed"].includes(b.status);
   const cancellable = b && ["requested", "reviewing", "confirmed"].includes(b.status);
@@ -83,6 +98,7 @@ function Confirmed() {
   }
 
   const move = useServerFn(rescheduleBooking);
+  const [calendarOpened, setCalendarOpened] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [moveDate, setMoveDate] = useState("");
   const [moveStart, setMoveStart] = useState("");
@@ -154,7 +170,10 @@ function Confirmed() {
               <BookingStatusPill status={b.status === "declined" ? "rejected" : b.status} />
             </div>
             <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
-              <Detail label="Date" value={formatDate(b.session_date)} />
+              <Detail
+                label="Date"
+                value={b.session_date ? formatDate(b.session_date) : "No date"}
+              />
               {b.start_time ? (
                 <Detail
                   label="Time"
@@ -182,23 +201,27 @@ function Confirmed() {
         )}
 
         {b ? (
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Btn
-              variant="outline"
-              onClick={() =>
-                addToCalendar({
-                  uid: b.id,
-                  title: joinParts(askedName(b) ?? "Session", b.service?.name ?? ""),
-                  date: b.session_date,
-                  start: (b.start_time ?? "10:00").slice(0, 5),
-                  end: (b.end_time ?? "14:00").slice(0, 5),
-                  location: joinParts(askedName(b) ?? "", b.studio?.location ?? ""),
-                  description: b.purpose ?? "",
-                })
-              }
-            >
-              <CalendarPlus size={iconSize.sm} className="mr-1.5" /> Add to Calendar
-            </Btn>
+          <div className={`mt-3 grid gap-2 ${calendarEvent ? "grid-cols-2" : "grid-cols-1"}`}>
+            {/* Only a confirmed booking with a date goes in a calendar (queue item 5): the
+                calendar mirrors accepted bookings, nothing else. */}
+            {calendarEvent ? (
+              calendarOpened ? (
+                <Btn variant="outline" onClick={() => void openInCalendar(calendarEvent)}>
+                  <CalendarPlus size={iconSize.sm} className="mr-1.5" /> Open in calendar
+                </Btn>
+              ) : (
+                <Btn
+                  variant="outline"
+                  onClick={() =>
+                    void addToCalendar(calendarEvent).then((r) => {
+                      if (r === "app") setCalendarOpened(true);
+                    })
+                  }
+                >
+                  <CalendarPlus size={iconSize.sm} className="mr-1.5" /> Add to Calendar
+                </Btn>
+              )
+            ) : null}
             <Btn
               variant="outline"
               onClick={() =>
@@ -238,7 +261,7 @@ function Confirmed() {
         <BtnLink to="/bookings" className="w-full">
           View Bookings
         </BtnLink>
-        <BtnLink to="/messages" variant="outline" className="w-full">
+        <BtnLink to="/inbox" search={{ tab: "messages" }} variant="outline" className="w-full">
           <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message Provider
         </BtnLink>
       </div>

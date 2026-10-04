@@ -112,7 +112,9 @@ function ConflictsContent() {
                 <Card key={pairId}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold">{formatDate(c.a.session_date)}</p>
+                      <p className="text-sm font-semibold">
+                        {c.a.session_date ? formatDate(c.a.session_date) : "No date"}
+                      </p>
                       <p className="mt-1 text-1 text-muted-foreground">
                         {requesterName(c.a)}{" "}
                         {joinParts(
@@ -158,7 +160,9 @@ function ConflictsContent() {
               <Card key={`${kind}:${b.id}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold">{formatDate(b.session_date)}</p>
+                    <p className="text-sm font-semibold">
+                      {b.session_date ? formatDate(b.session_date) : "No date"}
+                    </p>
                     <p className="mt-1 text-1 text-muted-foreground">
                       {requesterName(b)}{" "}
                       {joinParts(

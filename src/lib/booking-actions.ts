@@ -1,62 +1,106 @@
 import { toast } from "sonner";
-import { DOWNLOAD_UNAVAILABLE, downloadBlob, openExternal } from "@/lib/download";
+import { openExternal } from "@/lib/download";
+import { isNativeApp } from "@/lib/native-auth";
 
 /*
  * What the booking screens hand off to the phone: the calendar, the maps app and the share sheet.
- * All three run in the browser and send nothing to our servers.
+ * None of them sends anything to our servers.
  */
 
 type CalendarEvent = {
-  /** Unique per booking, so adding it twice updates the same calendar entry. */
+  /** The booking's id. */
   uid: string;
   title: string;
   /** "2026-09-19" */
   date: string;
-  /** "16:00" */
-  start: string;
-  /** "20:00"; an end before the start runs past midnight. */
-  end: string;
+  /** "16:00"; absent for a whole-day booking (no time was asked for). */
+  start?: string | undefined;
+  /** "20:00"; an end before the start runs past midnight. Absent: the start plus `hours`. */
+  end?: string | undefined;
+  hours?: number | undefined;
   location: string;
   description?: string | undefined;
 };
 
-/** Floating local time ("20260919T160000"), so the session lands at the hour it was booked for. */
-function icsTime(date: string, time: string, addDays = 0) {
-  const d = new Date(`${date}T00:00:00`);
-  d.setDate(d.getDate() + addDays);
-  const ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  return `${ymd}T${time.replace(":", "")}00`;
+/*
+ * Add to calendar (owner, 4 Oct 2026, queue item 5): never a downloaded .ics file — the system's
+ * own calendar. In the Android app, the calendar app's own "new event" screen, pre-filled (no
+ * permission: it is the platform's insert intent); on the web, Google Calendar's own add-event page
+ * (which opens the Google Calendar app on Android). MusicLinkd stays the source of truth; this
+ * mirrors a confirmed booking for the person, nothing is read back.
+ */
+
+/** The booking's start and end as instants. Bookings are in India time; an end before the start runs past midnight. */
+function span(e: CalendarEvent) {
+  if (!e.start) {
+    const day = new Date(`${e.date}T00:00:00+05:30`).getTime();
+    return { start: day, end: day + 86_400_000, allDay: true };
+  }
+  const start = new Date(`${e.date}T${e.start}:00+05:30`).getTime();
+  let end = e.end
+    ? new Date(`${e.date}T${e.end}:00+05:30`).getTime()
+    : start + (e.hours ?? 1) * 3_600_000;
+  if (end <= start) end += 86_400_000;
+  return { start, end, allDay: false };
 }
 
-const escapeIcs = (text: string) =>
-  text.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
-
-/** Downloads a one-event .ics file, which phones and desktop calendars open as "Add event". */
-export function addToCalendar(e: CalendarEvent) {
-  const overnight = e.end <= e.start;
-  const stamp = new Date()
+/** "20260919T103000Z", as Google Calendar's add-event link takes it. */
+const utcStamp = (ms: number) =>
+  new Date(ms)
     .toISOString()
     .replace(/[-:]/g, "")
     .replace(/\.\d{3}/, "");
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//MusicLinkd//Bookings//EN",
-    "BEGIN:VEVENT",
-    `UID:${e.uid}@musiclinkd`,
-    `DTSTAMP:${stamp}`,
-    `DTSTART:${icsTime(e.date, e.start)}`,
-    `DTEND:${icsTime(e.date, e.end, overnight ? 1 : 0)}`,
-    `SUMMARY:${escapeIcs(e.title)}`,
-    `LOCATION:${escapeIcs(e.location)}`,
-    ...(e.description ? [`DESCRIPTION:${escapeIcs(e.description)}`] : []),
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ];
-  const blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
-  // It used to toast success whether or not anything was saved. In the Android wrap nothing was.
-  if (downloadBlob(`${e.uid}.ics`, blob)) toast.success("Calendar event downloaded");
-  else toast.error(DOWNLOAD_UNAVAILABLE);
+
+/**
+ * Opens the system calendar's add-event screen for a booking. Resolves "app" when the Android
+ * calendar's own screen opened (it doesn't say whether the person saved — so the caller offers
+ * "Open in calendar", never claims "Added"), "web" when Google Calendar's page opened, "failed"
+ * when neither could.
+ */
+export async function addToCalendar(e: CalendarEvent): Promise<"app" | "web" | "failed"> {
+  const { start, end, allDay } = span(e);
+  if (isNativeApp()) {
+    try {
+      const { CapacitorCalendar } = await import("@ebarooni/capacitor-calendar");
+      await CapacitorCalendar.createEventWithPrompt({
+        title: e.title,
+        location: e.location,
+        ...(e.description ? { description: e.description } : {}),
+        startDate: start,
+        endDate: end,
+        isAllDay: allDay,
+      });
+      return "app";
+    } catch {
+      toast.error("Couldn't open your calendar");
+      return "failed";
+    }
+  }
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: e.title,
+    // A whole day is two dates; a timed booking, two instants.
+    dates: allDay
+      ? `${e.date.replace(/-/g, "")}/${new Date(end + 19_800_000).toISOString().slice(0, 10).replace(/-/g, "")}`
+      : `${utcStamp(start)}/${utcStamp(end)}`,
+    location: e.location,
+    details: e.description ?? "",
+    ctz: "Asia/Kolkata",
+  });
+  openExternal(`https://calendar.google.com/calendar/render?${params.toString()}`);
+  return "web";
+}
+
+/** The phone's calendar app, at a booking's day (after "Add to calendar" in the Android app). */
+export async function openInCalendar(e: Pick<CalendarEvent, "date" | "start">) {
+  try {
+    const { CapacitorCalendar } = await import("@ebarooni/capacitor-calendar");
+    await CapacitorCalendar.openCalendar({
+      date: new Date(`${e.date}T${e.start ?? "00:00"}:00+05:30`).getTime(),
+    });
+  } catch {
+    toast.error("Couldn't open your calendar");
+  }
 }
 
 /** Opens directions to a place in Google Maps (the app on a phone that has it). */

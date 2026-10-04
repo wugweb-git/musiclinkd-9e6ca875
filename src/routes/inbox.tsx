@@ -1,14 +1,42 @@
-import { createFileRoute, Link, type LinkProps } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, type LinkProps } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Bell, ChevronRight, Inbox, MessageCircle, Megaphone, type LucideIcon } from "lucide-react";
+import {
+  Bell,
+  CalendarDays,
+  ChevronRight,
+  Inbox,
+  MessageCircle,
+  Megaphone,
+  type LucideIcon,
+} from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { LoadError, Loading } from "@/components/ml/kit";
+import { LoadError, Loading, Segmented } from "@/components/ml/kit";
+import { MessagesPanel } from "@/components/ml/inbox-messages";
+import { EnquiriesPanel } from "@/components/ml/inbox-enquiries";
+import { BookingRequestsPanel } from "@/components/ml/inbox-bookings";
 import { useAuth } from "@/hooks/use-auth";
 import { listConversations } from "@/lib/messages.functions";
 import { iconSize } from "@/lib/tokens";
 
+/*
+ * One Inbox (owner, 4 Oct 2026, queue item 10): open-ended communication and leads around what
+ * people offer. All · Messages · Enquiries · Booking Requests; /messages, /leads and
+ * /business/bookings/requests redirect here with their tab. Enquiry state and booking state are
+ * two separate machines, each shown in its own tab, never mapped into each other.
+ */
+const INBOX_TABS = ["all", "messages", "enquiries", "bookings"] as const;
+type InboxTab = (typeof INBOX_TABS)[number];
+const tabLabels: Record<InboxTab, string> = {
+  all: "All",
+  messages: "Messages",
+  enquiries: "Enquiries",
+  bookings: "Booking Requests",
+};
+
 export const Route = createFileRoute("/inbox")({
+  validateSearch: (s: Record<string, unknown>): { tab?: InboxTab } =>
+    (INBOX_TABS as readonly unknown[]).includes(s["tab"]) ? { tab: s["tab"] as InboxTab } : {},
   head: () => ({
     meta: [
       { title: "Inbox | MusicLinkd" },
@@ -25,30 +53,59 @@ export const Route = createFileRoute("/inbox")({
   component: InboxScreen,
 });
 
-const ROWS: { to: NonNullable<LinkProps["to"]>; label: string; hint: string; icon: LucideIcon }[] =
-  [
-    {
-      to: "/messages",
-      label: "Conversations",
-      hint: "Messages with your connections",
-      icon: MessageCircle,
-    },
-    {
-      to: "/notifications",
-      label: "Notifications",
-      hint: "Requests, replies and updates",
-      icon: Bell,
-    },
-    { to: "/leads", label: "Leads", hint: "Enquiries for your services", icon: Inbox },
-    {
-      to: "/opportunities/applications",
-      label: "Applications",
-      hint: "Work you've applied for",
-      icon: Megaphone,
-    },
-  ];
+// A row either switches the Inbox's tab or opens another screen.
+const ROWS: ({ label: string; hint: string; icon: LucideIcon } & (
+  { tab: InboxTab } | { to: NonNullable<LinkProps["to"]> }
+))[] = [
+  {
+    tab: "messages",
+    label: "Conversations",
+    hint: "Messages with your connections",
+    icon: MessageCircle,
+  },
+  {
+    to: "/notifications",
+    label: "Notifications",
+    hint: "Requests, replies and updates",
+    icon: Bell,
+  },
+  { tab: "enquiries", label: "Enquiries", hint: "Enquiries for your services", icon: Inbox },
+  {
+    tab: "bookings",
+    label: "Booking Requests",
+    hint: "Requests to book what you offer",
+    icon: CalendarDays,
+  },
+  {
+    to: "/opportunities/applications",
+    label: "Applications",
+    hint: "Work you've applied for",
+    icon: Megaphone,
+  },
+];
 
 function InboxScreen() {
+  const search = Route.useSearch();
+  const navigate = useNavigate();
+  const tab: InboxTab = search.tab ?? "all";
+  const setTab = (next: InboxTab) =>
+    void navigate({ to: "/inbox", search: next === "all" ? {} : { tab: next }, replace: true });
+
+  return (
+    <Screen>
+      <TopBar title="Inbox" back="/home" />
+      <div className="px-5 pt-4">
+        <Segmented value={tab} options={INBOX_TABS} labels={tabLabels} onChange={setTab} />
+      </div>
+      {tab === "messages" ? <MessagesPanel /> : null}
+      {tab === "enquiries" ? <EnquiriesPanel /> : null}
+      {tab === "bookings" ? <BookingRequestsPanel /> : null}
+      {tab === "all" ? <InboxAll onTab={setTab} /> : null}
+    </Screen>
+  );
+}
+
+function InboxAll({ onTab }: { onTab: (tab: InboxTab) => void }) {
   const { signedIn } = useAuth();
   const load = useServerFn(listConversations);
   // Shares its cache with Connections, so opening either after the other is instant.
@@ -63,8 +120,7 @@ function InboxScreen() {
   const unreadThreads = (threads.data ?? []).filter((t) => t.unread > 0).length;
 
   return (
-    <Screen>
-      <TopBar title="Inbox" back="/home" />
+    <>
       {signedIn && threads.isPending ? (
         <div className="px-5 pt-5">
           <Loading rows={2} />
@@ -79,9 +135,10 @@ function InboxScreen() {
         </div>
       ) : null}
       {threads.data ? (
-        <Link
-          to="/messages"
-          className="lift relative mx-5 mt-5 block overflow-hidden rounded-3xl bg-ink px-5 py-6 text-ink-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        <button
+          type="button"
+          onClick={() => onTab("messages")}
+          className="lift relative mx-5 mt-5 w-[calc(100%-2.5rem)] text-left block overflow-hidden rounded-3xl bg-ink px-5 py-6 text-ink-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <span
             aria-hidden
@@ -102,31 +159,44 @@ function InboxScreen() {
                 : `In ${unreadThreads} conversation${unreadThreads === 1 ? "" : "s"}`}
             </span>
           </span>
-        </Link>
+        </button>
       ) : null}
       <ul className="mx-5 mt-5 divide-y divide-border/70 overflow-hidden rounded-lg bg-card">
-        {ROWS.map(({ to, label, hint, icon: Icon }) => (
-          <li key={label}>
-            <Link
-              to={to}
-              className="state-layer flex min-h-touch items-center gap-3 px-4 py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-            >
+        {ROWS.map((row) => {
+          const { label, hint, icon: Icon } = row;
+          const cls =
+            "state-layer flex min-h-touch w-full items-center gap-3 px-4 py-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring";
+          const inner = (
+            <>
               <Icon size={iconSize.md} aria-hidden />
               <span className="min-w-0 flex-1">
                 <span className="block text-2 font-medium">{label}</span>
                 <span className="block truncate text-1 text-muted-foreground">{hint}</span>
               </span>
-              {label === "Conversations" && unread > 0 ? (
+              {"tab" in row && row.tab === "messages" && unread > 0 ? (
                 <span
                   aria-label={`${unread} unread`}
                   className="h-2.5 w-2.5 rounded-full bg-brand"
                 />
               ) : null}
               <ChevronRight size={iconSize.sm} className="text-muted-foreground" aria-hidden />
-            </Link>
-          </li>
-        ))}
+            </>
+          );
+          return (
+            <li key={label}>
+              {"tab" in row ? (
+                <button type="button" onClick={() => onTab(row.tab)} className={cls}>
+                  {inner}
+                </button>
+              ) : (
+                <Link to={row.to} className={cls}>
+                  {inner}
+                </Link>
+              )}
+            </li>
+          );
+        })}
       </ul>
-    </Screen>
+    </>
   );
 }

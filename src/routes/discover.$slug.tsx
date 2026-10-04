@@ -14,7 +14,7 @@ import { listNewWork, type NewWorkItem } from "@/lib/trending.functions";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { joinParts } from "@/lib/utils";
-import { WorkTypeIcon } from "@/components/ml/portfolio";
+import { WorkLinkRow } from "@/components/ml/portfolio";
 
 /*
  * One Discover slug, every subject. `/discover/<slug>` is the shareable form of a Discover filter
@@ -119,19 +119,7 @@ function MusicList({ tracks }: { tracks: NewWorkItem[] }) {
         {tracks.length ? (
           <div className="space-y-3">
             {tracks.map((t) => (
-              <Link key={t.id} to="/portfolio/$id" params={{ id: t.id }} className="block">
-                <Card>
-                  <div className="flex items-center gap-3">
-                    <WorkTypeIcon kind={t.kind} />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{t.title}</p>
-                      <p className="truncate text-1 text-muted-foreground">
-                        {joinParts(workType(t.kind).label, t.display_name)}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
+              <WorkLinkRow key={t.id} work={t} />
             ))}
           </div>
         ) : (

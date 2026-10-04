@@ -1,0 +1,19 @@
+-- Snapshot before 20261004170000_time_based_services.sql. Taken read-only from the live database,
+-- 4 Oct 2026. Definitions and counts only; no user data.
+--
+-- public.booking_requests.session_date date NOT NULL
+-- Triggers on booking_requests:
+--   booking_requests_guard           BEFORE UPDATE  (booking_requests_guard(), md5 e7ef6fcc0b404335f8c16ad3394b98ac) — who may edit what; no overlap check
+--   booking_requests_names           BEFORE INSERT  (md5 762040d0be3939adcafed6da4713f1b5)
+--   booking_requests_touch_updated_at BEFORE UPDATE
+--   notify_booking                   AFTER INSERT OR UPDATE OF status (notify_booking(), md5 83bedd07a14b51f0204a7cc60d26f37b) — uses to_char(NEW.session_date, 'DD Mon')
+-- bookable_busy(uuid, date, date) md5 cec470eb30c77f5e6d01680315cbd5dd (unchanged by this migration)
+-- No function service_is_time_based, no trigger booking_requests_slot_guard.
+--
+-- Counts: booking_requests 11 · confirmed 2 · service-only (no place) 0
+-- profile_services: 251 · remote-only work_modes 171
+--
+-- Undo: ALTER TABLE public.booking_requests ALTER COLUMN session_date SET NOT NULL (fails if any
+-- dateless row exists — delete or date those first); DROP TRIGGER booking_requests_slot_guard;
+-- DROP FUNCTION booking_requests_slot_guard(), service_is_time_based(uuid); restore notify_booking
+-- from 20260922320000_enquiry_notices.sql (or the md5 above).

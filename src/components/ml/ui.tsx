@@ -139,7 +139,7 @@ export const navItems: {
 }[] = [
   { to: "/home", label: "Home", icon: Home, solid: "home" },
   { to: "/discover", label: "Discover", icon: Compass, solid: "compass" },
-  { to: "/messages", label: "Connections", icon: MessageCircle, solid: "speech" },
+  { to: "/inbox", label: "Inbox", icon: MessageCircle, solid: "speech" },
   { to: "/marketplace", label: "Market", icon: ShoppingBag, solid: "bag" },
   { to: "/profile", label: "Profile", icon: User, solid: "person" },
 ];
@@ -187,7 +187,7 @@ const menuGroups: {
     title: "Business",
     items: [
       { to: "/business/bookings", label: "Booking requests", icon: CalendarClock },
-      { to: "/leads", label: "Leads", icon: Inbox },
+      { to: "/inbox", label: "Inbox", icon: Inbox },
     ],
   },
   {

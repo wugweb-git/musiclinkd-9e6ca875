@@ -90,7 +90,7 @@ export function flowTransitionTypes({
   return appTransition(from, to);
 }
 
-const TAB_ROOTS = new Set(["/discover", "/messages", "/marketplace", "/profile"]);
+const TAB_ROOTS = new Set(["/discover", "/inbox", "/marketplace", "/profile"]);
 
 /**
  * Everyday navigation, Android style: between tabs cross-fades; into a screen pushes forward;

@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DeleteAccountRouteImport } from './routes/delete-account'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as LeadsRouteImport } from './routes/leads'
@@ -136,6 +137,7 @@ import { Route as OpportunitiesApplicationsIndexRouteImport } from './routes/opp
 import { Route as OpportunitiesApplicationsAidRouteImport } from './routes/opportunities.applications.$aid'
 import { Route as PortfolioIdIndexRouteImport } from './routes/portfolio.$id.index'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
+import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
 import { Route as ReviewsIdEditRouteImport } from './routes/reviews.$id.edit'
 import { Route as ReviewsIdReplyRouteImport } from './routes/reviews.$id.reply'
@@ -184,6 +186,11 @@ const AccountsRoute = AccountsRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeleteAccountRoute = DeleteAccountRouteImport.update({
+  id: '/delete-account',
+  path: '/delete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -795,6 +802,11 @@ const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
   path: '/portfolio/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioNewIndexRoute = PortfolioNewIndexRouteImport.update({
+  id: '/portfolio/new/',
+  path: '/portfolio/new/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioNewKindRoute = PortfolioNewKindRouteImport.update({
   id: '/portfolio/new/$kind',
   path: '/portfolio/new/$kind',
@@ -904,6 +916,7 @@ export interface FileRoutesByFullPath {
   '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
@@ -1033,6 +1046,7 @@ export interface FileRoutesByFullPath {
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id/': typeof PortfolioIdIndexRoute
+  '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/services/$id/': typeof ServicesIdIndexRoute
   '/settings/security/': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1052,6 +1066,7 @@ export interface FileRoutesByTo {
   '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
@@ -1180,6 +1195,7 @@ export interface FileRoutesByTo {
   '/opportunities/$id': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id': typeof PortfolioIdIndexRoute
+  '/portfolio/new': typeof PortfolioNewIndexRoute
   '/services/$id': typeof ServicesIdIndexRoute
   '/settings/security': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1200,6 +1216,7 @@ export interface FileRoutesById {
   '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/leads': typeof LeadsRoute
@@ -1329,6 +1346,7 @@ export interface FileRoutesById {
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id/': typeof PortfolioIdIndexRoute
+  '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/services/$id/': typeof ServicesIdIndexRoute
   '/settings/security/': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1350,6 +1368,7 @@ export interface FileRouteTypes {
     | '/academy'
     | '/accounts'
     | '/contact'
+    | '/delete-account'
     | '/home'
     | '/inbox'
     | '/leads'
@@ -1479,6 +1498,7 @@ export interface FileRouteTypes {
     | '/opportunities/$id/'
     | '/opportunities/applications/'
     | '/portfolio/$id/'
+    | '/portfolio/new/'
     | '/services/$id/'
     | '/settings/security/'
     | '/business/bookings/requests/$ref'
@@ -1498,6 +1518,7 @@ export interface FileRouteTypes {
     | '/academy'
     | '/accounts'
     | '/contact'
+    | '/delete-account'
     | '/home'
     | '/inbox'
     | '/leads'
@@ -1626,6 +1647,7 @@ export interface FileRouteTypes {
     | '/opportunities/$id'
     | '/opportunities/applications'
     | '/portfolio/$id'
+    | '/portfolio/new'
     | '/services/$id'
     | '/settings/security'
     | '/business/bookings/requests/$ref'
@@ -1645,6 +1667,7 @@ export interface FileRouteTypes {
     | '/academy'
     | '/accounts'
     | '/contact'
+    | '/delete-account'
     | '/home'
     | '/inbox'
     | '/leads'
@@ -1774,6 +1797,7 @@ export interface FileRouteTypes {
     | '/opportunities/$id/'
     | '/opportunities/applications/'
     | '/portfolio/$id/'
+    | '/portfolio/new/'
     | '/services/$id/'
     | '/settings/security/'
     | '/business/bookings/requests/$ref'
@@ -1794,6 +1818,7 @@ export interface RootRouteChildren {
   AcademyRoute: typeof AcademyRoute
   AccountsRoute: typeof AccountsRoute
   ContactRoute: typeof ContactRoute
+  DeleteAccountRoute: typeof DeleteAccountRoute
   HomeRoute: typeof HomeRoute
   InboxRoute: typeof InboxRoute
   LeadsRoute: typeof LeadsRoute
@@ -1917,6 +1942,7 @@ export interface RootRouteChildren {
   OpportunitiesIdIndexRoute: typeof OpportunitiesIdIndexRoute
   OpportunitiesApplicationsIndexRoute: typeof OpportunitiesApplicationsIndexRoute
   PortfolioIdIndexRoute: typeof PortfolioIdIndexRoute
+  PortfolioNewIndexRoute: typeof PortfolioNewIndexRoute
   ServicesIdIndexRoute: typeof ServicesIdIndexRoute
   SettingsSecurityIndexRoute: typeof SettingsSecurityIndexRoute
   BusinessBookingsRequestsRefRoute: typeof BusinessBookingsRequestsRefRoute
@@ -1972,6 +1998,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delete-account': {
+      id: '/delete-account'
+      path: '/delete-account'
+      fullPath: '/delete-account'
+      preLoaderRoute: typeof DeleteAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -2821,6 +2854,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/new/': {
+      id: '/portfolio/new/'
+      path: '/portfolio/new'
+      fullPath: '/portfolio/new/'
+      preLoaderRoute: typeof PortfolioNewIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio/new/$kind': {
       id: '/portfolio/new/$kind'
       path: '/portfolio/new/$kind'
@@ -2986,6 +3026,7 @@ const rootRouteChildren: RootRouteChildren = {
   AcademyRoute: AcademyRoute,
   AccountsRoute: AccountsRoute,
   ContactRoute: ContactRoute,
+  DeleteAccountRoute: DeleteAccountRoute,
   HomeRoute: HomeRoute,
   InboxRoute: InboxRoute,
   LeadsRoute: LeadsRoute,
@@ -3109,6 +3150,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesIdIndexRoute: OpportunitiesIdIndexRoute,
   OpportunitiesApplicationsIndexRoute: OpportunitiesApplicationsIndexRoute,
   PortfolioIdIndexRoute: PortfolioIdIndexRoute,
+  PortfolioNewIndexRoute: PortfolioNewIndexRoute,
   ServicesIdIndexRoute: ServicesIdIndexRoute,
   SettingsSecurityIndexRoute: SettingsSecurityIndexRoute,
   BusinessBookingsRequestsRefRoute: BusinessBookingsRequestsRefRoute,

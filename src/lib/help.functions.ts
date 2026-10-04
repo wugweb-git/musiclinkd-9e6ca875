@@ -13,7 +13,8 @@ import { anonClient } from "@/lib/portfolio.functions";
 
 export type ContentBlock =
   | { type: "para"; text: string }
-  | { type: "heading"; text: string }
+  /** `id` makes the heading a link target (`#id`). */
+  | { type: "heading"; text: string; id?: string | undefined }
   | { type: "list"; items: string[] }
   | { type: "callout"; text: string }
   /** `link` is a router link as stored: an app path and, for a dynamic one, its params. */

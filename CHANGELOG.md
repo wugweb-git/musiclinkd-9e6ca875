@@ -5,6 +5,259 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — local dev server never hydrated; collaboration tab titles (4 Oct)
+
+- `vite.config.ts`: the `@supabase/realtime-js` alias pointed at the root-relative
+  `/src/integrations/supabase/realtime-stub.ts`. The production build understood it; the dev
+  dependency optimizer resolved it from inside `node_modules`, one folder too high, failed, and
+  never wrote `node_modules/.vite/deps`, so every page on `localhost:8080` stayed server-rendered
+  with dead taps. It is now an absolute file path. Checked: deps optimize, `/onboarding?preview`
+  hydrates and the Music Talent card opens the talent flow; `bun run build` passes with no realtime
+  socket code in the output. Live was never affected.
+- `/bands/new` names its tab after the type being created ("Create a Duo", "Create an Ensemble")
+  instead of always "Create a Band".
+
+### Added — the phone's own calendar, opt-in (4 Oct, queue item 5b + 5c, Android app)
+
+- Settings → Calendar, in the Android app only: "Keep my bookings in my calendar" (5b) asks for
+  write access, creates a calendar named MusicLinkd, and writes confirmed bookings and rentals
+  into it — updated and removed to match on app open and whenever the app comes back to the
+  front. Turning it off removes that calendar. Event ids stay on the phone (localStorage); nothing
+  is read back. The app has no foreground push listener yet, so sync runs on open/resume rather than
+  on a booking notification.
+- "Show my busy times when booking" (5c) asks for read access; the request form then shows
+  "Busy in your calendar: 10:00–12:00, …" for the chosen day. Never uploaded or stored; the
+  server's check → confirm still decides.
+- The feed (5d) and the sync share one list of items (`calendarItemsOf`), so both show the same
+  thing. Android manifest: READ_CALENDAR and WRITE_CALENDAR, asked only when a switch is turned on —
+  declare them in the Play Data safety form with this build (versionCode 2).
+- Not checked: needs a device build in Android Studio.
+- New copy: "Keep my bookings in my calendar", "Show my busy times when booking", the sheet's
+  note, "Busy in your calendar: …", "Calendar access wasn't allowed".
+
+### Added — calendar subscription (4 Oct, queue item 5d)
+
+- Settings → Integrations → Calendar: "Get my calendar link", then Google Calendar (its own
+  add-by-URL screen), Apple Calendar (`webcal://`) or Outlook (add from web). Subscribe once and
+  confirmed bookings and rentals appear and stay up to date; nothing is downloaded. "Reset link"
+  makes a new one and the old one stops working.
+- `/cal/<token>.ics`, answered in `src/server.ts` before the app renders: confirmed bookings with a
+  date on either side (requester, place, service owner, band manager) and confirmed or active
+  rentals on either side — only what both sides already see. India time; a booking with no time is
+  a whole-day event.
+- The token is random and stored only as its SHA-256 hash, on the owner-only `profile_private`
+  row: migration `20261004210000_calendar_feed.sql` (committed, **not applied**; snapshot
+  `2026-10-04-before-calendar-feed.sql`). No new table. Until it's applied the Settings button
+  fails with "Couldn't make your calendar link" and every feed link is a 404.
+- Not checked end to end: making a link needs an account; subscribing needs the live server.
+- New copy: "Calendar", "Your bookings in your calendar app", the sheet's two lines, "Get my
+  calendar link", "Reset link".
+
+### Changed — Add to calendar uses the system calendar, never a file (4 Oct, queue item 5a + web link)
+
+- Android app: "Add to calendar" opens the phone calendar's own new-event screen, pre-filled
+  (`@ebarooni/capacitor-calendar` 8.7.1, `createEventWithPrompt` — the platform's insert intent, no
+  calendar permission, no Play form change). Afterwards the button reads "Open in calendar"
+  (`openCalendar`): Android doesn't say whether the person saved, so nothing claims "Added".
+- Web: Google Calendar's own add-event page (opens the Google Calendar app on Android). The `.ics`
+  download is gone (it also saved nothing in the Android app).
+- Only a confirmed booking with a date offers it. A booking with no time is a whole-day event; it
+  used to be put in as 10:00–14:00, made-up hours. An end before the start runs past midnight;
+  no end → the start plus the booking's hours. Times are India time.
+- Android: plugin registered (`cap sync`); versionCode 2 / versionName 1.1 for the next Play
+  upload. Needs a rebuild in Android Studio; untested on a device.
+- Not built yet: 5b (automatic sync, WRITE_CALENDAR), 5c (busy times, READ_CALENDAR) and 5d (the
+  web subscription feed — its private token needs a place to live: a new table or a column, which
+  needs the owner's yes).
+
+### Changed — one Inbox (4 Oct, queue item 10)
+
+- `/inbox` is the one place: All · Messages · Enquiries · Booking Requests (`?tab=`). The Messages
+  screen (Chats, Requests, Connected), the Leads screen and the booking-requests queue moved into it
+  unchanged in substance (`ml/inbox-messages.tsx`, `ml/inbox-enquiries.tsx`,
+  `ml/inbox-bookings.tsx`); `/messages`, `/leads` and `/business/bookings/requests` redirect to their
+  tab. A single request still opens at `/business/bookings/requests/$ref`.
+- Two separate states, never mapped: **Enquiries** — New, Awaiting response, and Closed as an
+  archive; **Booking Requests** — Requested, Reviewing, Confirmed, Declined, Cancelled, Completed
+  (labels only; values unchanged). No Inbox-level status.
+- `booked` is gone as an enquiry state: removed from `EnquiryStatus`, `setLeadStatus`, the
+  "Mark booked" button and the hardcoded `businessLeads` rows (unused); migration
+  `20261004200000_enquiry_status.sql` (committed, **not applied**; stops if any row is `booked` —
+  live: 0 of 3) narrows the CHECK to new | replied | closed.
+- The requests queue had a business-only gate that hid a talent's own service bookings, which the
+  list already read; the tab has no gate. Band admins also get their band's service requests
+  (item 13's gap).
+- Bottom nav and menu: "Connections" (/messages) and "Leads" are "Inbox" (/inbox); 17 screens'
+  "Messages" buttons link to `/inbox?tab=messages`. Home and the bookings workspace keep their old
+  addresses (their link types allow no tab) and arrive through the redirects.
+- Not done: the service block at the top of a service-originated conversation — enquiries don't
+  link to a conversation yet (replying opens a plain conversation with the sender).
+- New copy: "Awaiting response", "Booking Requests", "Requests to book what you offer",
+  "N awaiting your reply", "Booking requests for your services appear in this queue."
+
+### Changed — collaboration types; `project` is Portfolio work (4 Oct, queue item 7)
+
+- Six collaboration types: Band, Duo, Collective, Ensemble, Production Team, Crew. Keys in
+  `src/lib/collab-types.ts`, labels in `src/data/collab-types.ts`. Every type uses the band screens.
+- Migration `20261004190000_collab_types.sql` (committed, **not applied**; snapshot
+  `2026-10-04-before-collab-types.sql`): deletes the two `project` test rows (ghvb-f1ed6,
+  jnb-e29f5; fails if anything else would go), the type CHECK takes the six types, and
+  `start_collab` / `join_collab_by_link` take them — every collaboration between talent accounts.
+- "Start a collaboration" lists the six types (→ `/bands/new?type=…`) and "One-off project", which
+  goes to Portfolio → add a project. `/collab/new` only redirects now (its project creator is gone);
+  `/bands/new` takes `?type=` ("Create an ensemble", "Ensemble name").
+- Band list, band page, search results, `/collab` and the collab room treat every collaboration type
+  as a group (they matched `type = 'band'` only).
+- Routes touched: `/collab/new` (redirect), `/bands/new`, `/collab`, `/collab/$id`; none orphaned.
+- New copy: the six labels and hints, "Start a collaboration", "One-off project", "A single, an EP,
+  a film score — add it to your Portfolio", "The name appears in Discover, Search and on shared QR
+  cards." Known leftover: the create screen's browser-tab title still says "Create a Band".
+- Note: this follows the queue's 4 Oct decision layer over the 3 Oct "keep collaboration as
+  projects at /collab"; the collab room and `/collab` stay for the groups.
+
+### Added — managing a band's services (4 Oct, queue item 13, part 3b)
+
+- Band → Manage → Settings: a "Services" card for the band's managers — each service with its
+  status (Active / Paused / Draft), opening the service form to edit it, and "Add service".
+- The one service form has a band mode (`/services/new?band=<band id>`): no portfolio examples, no
+  place amenities/equipment (those belong to a person or a place); saves the service under the band
+  (`saveService` with `bandId`) and returns to the band. `deleteService` takes a `bandId` too.
+- The service page no longer assumes a person owner: for a band's service it skips the person's
+  profile, place, examples and studio uses instead of querying with a null id.
+- Everything band-service is inert until `20261004180000` is applied (the column doesn't exist
+  yet); the shared service query doesn't name `collab_id`, so talent and business services are
+  unaffected either way.
+- Not checked on screen: managing needs a signed-in band admin.
+
+### Added — bands own services (4 Oct, queue item 13, parts 1 and 3)
+
+- Migration `20261004180000_collab_owned_services.sql` (committed, **not applied**; apply after
+  `20261004170000`; snapshot `2026-10-04-before-collab-owned-services.sql`):
+  `profile_services.collab_id` → collabs, `profile_id` nullable, exactly one owner; band
+  owners/admins manage their band's services, anyone who can see the band reads its non-draft ones;
+  `profile_service_is_mine` / `_is_readable` cover band services, so band admins read and answer
+  their band's booking requests through the existing policies; the double-booking guard treats a
+  band as one provider; booking notices for a band service go to the band's owner under the band's
+  name. Every replaced function is checked against its md5 first.
+- Band services carry no packages or add-ons (those tables key on a person owner; every service
+  uses one starting price).
+- Band page → Overview: a "Services" section with the same Service Card and Book → request sheet as
+  a talent's. Hidden while the band has none (and before the migration). `serviceCardFromRow` in
+  `profile-view.ts` is now the one row-to-card mapping for talent and band services.
+- Not built yet: creating and editing a band's services (part 3b), and a band admin's list of their
+  band's requests (they open from the notification meanwhile).
+
+### Added — time-based services and double-booking protection for every provider (4 Oct, queue item 12)
+
+- The Service decides: a service done **in person, touring or hybrid** (or with no work mode set)
+  is booked for a date and time; a **remote-only** service is async — its request asks only what
+  it's for ("Request this service"), no date, start, hours or people. One rule, in
+  `src/lib/service-time.ts` and the database (`service_is_time_based`).
+- Migration `20261004170000_time_based_services.sql` (committed, **not applied**; snapshot
+  `supabase/dumps/2026-10-04-before-time-based-services.sql`): `session_date` becomes optional; a
+  new trigger refuses a time-based booking without a date, and on **confirm** takes a per-provider
+  lock and refuses an overlap with another confirmed or completed booking of the same provider
+  (the place, else the service's owner) — talent and band services included, not just places.
+  Requests still don't hold a slot (21 Sep); only confirming does. `notify_booking` says the
+  purpose when there's no date (replaced only if its live md5 matches).
+- Found while building: nothing stopped a provider confirming two overlapping bookings before —
+  not even for places; `bookable_busy` only greys out taken times in the picker.
+- Screens handle a booking with no date ("No date"; no Add to Calendar). Async confirmed work is
+  "upcoming" until completed. Account deletion now also waits on bookings of the person's own
+  services (it only counted bookings they made or of places they own) and on open undated work.
+- New copy: "Request this service", "No date", "Pick a date for this booking.",
+  "This time is already booked".
+- Deploy the code only after the migration is applied: until then an async request is refused by
+  the database (its date is still required there).
+
+### Changed — no generic band rate (4 Oct, queue item 13, part 2)
+
+- The band page no longer shows the band's rate (About card and the Booking cell, which now reads
+  "Booking · On enquiry"). A band's prices belong on its Services (item 13). The view no longer
+  works the rate out; `collabs.rate_paise` / `rate_unit` stay in the database.
+
+### Fixed — /portfolio/new, and the camera on Add work (4 Oct)
+
+- `/portfolio/new` (no type) redirects to Portfolio with the add-work drawer open instead of
+  404ing; `/portfolio/new/$kind` is unchanged.
+- Add work: a "Take photo" button beside "Add work photo". Inside the Android app one file input
+  can't offer both — `capture` opens only the camera, its absence only the gallery — so the camera
+  has its own input (`capture="environment"`). Lovable had added `capture` to the single input and
+  then removed it (gallery lost, then camera lost).
+- Not changed, after checking: Settings "Sign-in methods" isn't a self-loop (the row is its own
+  component that opens the sheet; the `/settings` in the data is never used), and
+  `/settings/security` reaches `/settings/security/` already.
+
+### Added — Trending work on Discover (4 Oct, queue item 3)
+
+- Discover → For you shows "Trending work" (the section's own title before 23 Sep): every kind of
+  work with plays in the last 7 days — performances, projects, client work, case studies,
+  writing, images and links as well as audio and video — as rows that open the work. Lovable's
+  4 Oct Discover redesign had dropped trending work altogether. Shown only when there is some, so
+  it stays hidden until something is played (none since 30 Sep).
+- The row is the one Discover → Music already used, moved to `WorkLinkRow` in `ml/portfolio.tsx`
+  so both use one copy.
+
+### Added — public "Delete your account" page for Google Play (4 Oct, queue item 1b)
+
+- `/delete-account`, no sign-in: how to delete (app and web, with a button to Settings → Delete
+  account), what is deleted, what is kept without your name, how to delete some data and keep the
+  account (`#some-data`), and Contact support for anyone who can't sign in. Draft copy in
+  `src/data/delete-account.ts`, for the owner to edit; same screen as the About and legal pages.
+- Linked from the Help footer and from Settings → Privacy & security ("Deleting your data").
+- Settings → Account gains the missing "QR Code & Digital ID" row (`/identity/qr`).
+- Play Console fields: `https://app.musiclinkd.com/delete-account` and
+  `https://app.musiclinkd.com/delete-account#some-data`.
+
+### Fixed — deleting an account deletes its uploaded files (4 Oct, queue item 1a)
+
+- `deleteMyAccount` now removes the person's files from avatars, covers, gallery, listing-media and
+  verification-documents (their `<profile id>/…` folders, followed down), the same for the business
+  page they own, and business-media for every place either owns — before the account is deleted.
+  If any file can't be listed or removed, it stops with an error and deletes nothing.
+- Not run: the throwaway-account test (it would mean creating an account on the live database).
+
+### Removed — the generic Hire sheet on the talent profile (4 Oct, queue item 9, §4)
+
+- `HireModal` ("Contact professional") and its Hire button are gone from the talent profile. The
+  action row was Connect · Message · Hire · Call · Follow and is now Connect · Message · Call ·
+  Follow; nothing else in it changed.
+- Booking starts only from a Service Card (Profile → Services → Service → Book / Request), one
+  booking per Service. Open-ended asks go through Message. A real service's Book already opened its
+  own request; an unsaved (preview) service's Book is now disabled instead of opening the Hire sheet.
+- `sendEnquiry` stays: the service and business enquiry screens use it.
+
+### Changed — no price on profile cards or profiles (4 Oct, queue item 8, §3)
+
+- Business cards (`BookableCard` both sizes, `BookableRow`; Search, Directory, Discover, Home) no
+  longer show a rate; the row shows its chevron instead. Talent cards already showed none.
+- The talent profile's "Professional details" drops its generic Rate row, and its "Studio
+  connection" card drops the studio's hourly rate (and the code that worked it out).
+- Prices stay where the offer is concrete: Service Cards, opportunities, Market listings, rentals.
+  The band page's generic band rate is queue item 13 and is handled there.
+
+### Fixed — "Remember me" off: a second tab no longer signs every tab out (4 Oct, queue item 2)
+
+- A new tab with no marker of its own now asks the open tabs (BroadcastChannel `ml-session`, about
+  300 ms) before treating the browser as closed, on top of the shared heartbeat. Background tabs,
+  whose timers slow to about once a minute, still answer. Only silence signs the session out.
+- `scripts/remember-me-tabs.mjs` checks both paths on a running build: a second tab stays signed
+  in; reopening with no other tab signs out. Both pass.
+
+### Changed — the Select screen back to the owner's version (4 Oct)
+
+- `/onboarding` (Select): three stacked cards, Music Talent, Business and the hollow Upcoming;
+  a tap on a card continues; no Continue button, no "Why create a profile?" box, no pink selected
+  state (Lovable's redesign had put those back against the owner's 4 Oct instructions). The
+  username length limit and the two-column date of birth / gender row Lovable added stay.
+
+### Fixed — Help footer legal links (4 Oct)
+
+- The Privacy, Terms and Cookies links in the Help centre footer dropped their slug and all opened
+  `/legal/undefined` (404). They pass it now. Found by checking every internal link: the code's
+  links against the route list, 120 live pages, and the links stored on notifications; this was
+  the only broken one. No visual change.
+
 ### Changed — brand assets: every icon and splash from the one mark, pink on ink (4 Oct)
 
 - `scripts/brand-assets.mjs` generates every icon and splash from `LogoMark`'s path data

@@ -72,8 +72,13 @@ function ProviderBookingsContent() {
   const pending = all.filter((b) => ["requested", "reviewing"].includes(b.status));
   const cancelled = all.filter((b) => b.status === "cancelled");
   const todays = all.filter((b) => b.session_date === today && b.status !== "cancelled");
-  const upcoming = all.filter((b) => b.session_date > today && b.status === "confirmed");
-  const past = all.filter((b) => b.session_date < today || b.status === "completed");
+  // Async work (no date) stays upcoming while confirmed, and is past once completed.
+  const upcoming = all.filter(
+    (b) => b.status === "confirmed" && (b.session_date === null || b.session_date > today),
+  );
+  const past = all.filter(
+    (b) => (b.session_date !== null && b.session_date < today) || b.status === "completed",
+  );
 
   const list =
     tab === "requests" ? pending : tab === "today" ? todays : tab === "upcoming" ? upcoming : past;

@@ -78,6 +78,10 @@
     -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Calendar (queue item 5, Release 2): opt-in only, asked when the person turns the switch on.
+         Write: "Keep my bookings in my calendar"; read: "Show my busy times when booking". -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />

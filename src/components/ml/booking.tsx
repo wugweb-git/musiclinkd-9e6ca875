@@ -1,6 +1,7 @@
 import { CoverHero } from "./profile";
+import { busyTimesOn } from "@/lib/device-calendar";
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   ChevronLeft,
@@ -701,7 +702,9 @@ export function shownBookingStatus(
   b: Pick<BookingRequest, "status" | "session_date">,
   today = isoDate(new Date()),
 ): DbBookingStatus {
-  return b.status === "confirmed" && b.session_date < today ? "completed" : b.status;
+  return b.status === "confirmed" && b.session_date !== null && b.session_date < today
+    ? "completed"
+    : b.status;
 }
 
 /**
@@ -722,7 +725,7 @@ export function BookingRecord({
 }) {
   const status = STUDIO_BOOKING_STATUS[shownBookingStatus(b)];
   const when = joinParts(
-    formatDate(b.session_date),
+    b.session_date ? formatDate(b.session_date) : "No date",
     b.start_time ? formatTime(b.start_time.slice(0, 5)) : "",
     b.hours ? `${b.hours} hrs` : "",
     side === "studio" && b.people ? `${b.people} people` : "",
@@ -961,6 +964,7 @@ export function ProofPill({
 /* ------------------------------------------------------------------ */
 
 export type SessionRequest = {
+  /** Empty for async work (a remote-only service): no date step. */
   date: string;
   start: string;
   hours: number;
@@ -980,12 +984,18 @@ export function RequestSessionSheet({
   pending,
   who,
   error,
+  dated = true,
 }: {
   open: boolean;
   onClose: () => void;
   onSend: (request: SessionRequest) => void;
   pending: boolean;
   who: string;
+  /**
+   * False for a service that isn't booked for a time (remote-only, async): no date, start, hours
+   * or people — just what it's for (owner, 4 Oct 2026, queue item 12).
+   */
+  dated?: boolean | undefined;
   /** Why the last send failed, shown in the sheet itself as well as the toast. */
   error?: string | null | undefined;
 }) {
@@ -994,13 +1004,32 @@ export function RequestSessionSheet({
   const [hours, setHours] = useState("3");
   const [people, setPeople] = useState("2");
   const [notes, setNotes] = useState("");
+  // 5c (Android, opt-in): the person's own busy times that day, as a hint only.
+  const [busyTimes, setBusyTimes] = useState<string[]>([]);
+  useEffect(() => {
+    if (!date) {
+      setBusyTimes([]);
+      return;
+    }
+    let live = true;
+    void busyTimesOn(date).then((t) => {
+      if (live) setBusyTimes(t);
+    });
+    return () => {
+      live = false;
+    };
+  }, [date]);
   return (
-    <Sheet open={open} onClose={onClose} title="Request a session">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={dated ? "Request a session" : "Request this service"}
+    >
       <form
         className="space-y-3"
         onSubmit={(e) => {
           e.preventDefault();
-          if (date && !pending)
+          if ((date || !dated) && !pending)
             onSend({
               date,
               start,
@@ -1010,60 +1039,69 @@ export function RequestSessionSheet({
             });
         }}
       >
-        <label className="block text-1 font-semibold" htmlFor="booking-date">
-          Date
-        </label>
-        <input
-          id="booking-date"
-          type="date"
-          min={earliestBookingDate()}
-          required
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        />
-        <div className="flex gap-3">
-          <span className="flex-1">
-            <label className="block text-1 font-semibold" htmlFor="booking-start">
-              Start
+        {dated ? (
+          <>
+            <label className="block text-1 font-semibold" htmlFor="booking-date">
+              Date
             </label>
             <input
-              id="booking-start"
-              type="time"
-              value={start}
-              onChange={(e) => setStart(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              id="booking-date"
+              type="date"
+              min={earliestBookingDate()}
+              required
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
-          </span>
-          <span className="w-24">
-            <label className="block text-1 font-semibold" htmlFor="booking-hours">
-              Hours
-            </label>
-            <input
-              id="booking-hours"
-              type="number"
-              min={1}
-              max={24}
-              value={hours}
-              onChange={(e) => setHours(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </span>
-          <span className="w-24">
-            <label className="block text-1 font-semibold" htmlFor="booking-people">
-              People
-            </label>
-            <input
-              id="booking-people"
-              type="number"
-              min={1}
-              max={200}
-              value={people}
-              onChange={(e) => setPeople(e.target.value)}
-              className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </span>
-        </div>
+            {busyTimes.length ? (
+              <p className="text-1 text-muted-foreground">
+                Busy in your calendar: {busyTimes.join(", ")}
+              </p>
+            ) : null}
+            <div className="flex gap-3">
+              <span className="flex-1">
+                <label className="block text-1 font-semibold" htmlFor="booking-start">
+                  Start
+                </label>
+                <input
+                  id="booking-start"
+                  type="time"
+                  value={start}
+                  onChange={(e) => setStart(e.target.value)}
+                  className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </span>
+              <span className="w-24">
+                <label className="block text-1 font-semibold" htmlFor="booking-hours">
+                  Hours
+                </label>
+                <input
+                  id="booking-hours"
+                  type="number"
+                  min={1}
+                  max={24}
+                  value={hours}
+                  onChange={(e) => setHours(e.target.value)}
+                  className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </span>
+              <span className="w-24">
+                <label className="block text-1 font-semibold" htmlFor="booking-people">
+                  People
+                </label>
+                <input
+                  id="booking-people"
+                  type="number"
+                  min={1}
+                  max={200}
+                  value={people}
+                  onChange={(e) => setPeople(e.target.value)}
+                  className="mt-1 min-h-control w-full rounded-lg border border-input bg-card px-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </span>
+            </div>
+          </>
+        ) : null}
         <label className="block text-1 font-semibold" htmlFor="booking-notes">
           Anything they should know
         </label>
@@ -1080,7 +1118,7 @@ export function RequestSessionSheet({
             {error}
           </p>
         ) : null}
-        <Btn type="submit" className="w-full" disabled={!date} loading={pending}>
+        <Btn type="submit" className="w-full" disabled={dated && !date} loading={pending}>
           Send request
         </Btn>
         <p className="text-1 text-muted-foreground">
@@ -1100,7 +1138,7 @@ export function ServiceRequestSheet({
   who,
   onClose,
 }: {
-  service: { id: string; name: string } | null;
+  service: { id: string; name: string; timeBased?: boolean | undefined } | null;
   who: string;
   onClose: () => void;
 }) {
@@ -1112,10 +1150,10 @@ export function ServiceRequestSheet({
         data: {
           serviceId: service!.id,
           purpose: service!.name,
-          date: r.date,
-          ...(r.start ? { startTime: r.start } : {}),
-          ...(r.hours ? { hours: r.hours } : {}),
-          ...(r.people ? { people: r.people } : {}),
+          ...(r.date ? { date: r.date } : {}),
+          ...(r.date && r.start ? { startTime: r.start } : {}),
+          ...(r.date && r.hours ? { hours: r.hours } : {}),
+          ...(r.date && r.people ? { people: r.people } : {}),
           ...(r.notes ? { notes: r.notes } : {}),
         },
       }),
@@ -1134,6 +1172,7 @@ export function ServiceRequestSheet({
       onSend={(r) => request.mutate(r)}
       pending={request.isPending}
       who={who}
+      dated={service?.timeBased !== false}
       error={request.error instanceof Error ? request.error.message : null}
     />
   );
@@ -1144,11 +1183,17 @@ export function ServiceRequestSheet({
 export function useServiceRequest() {
   const { signedIn } = useAuth();
   const navigate = useNavigate();
-  const [service, setService] = useState<{ id: string; name: string } | null>(null);
+  const [service, setService] = useState<{
+    id: string;
+    name: string;
+    timeBased?: boolean | undefined;
+  } | null>(null);
   return {
     service,
     close: () => setService(null),
-    book: (s: { id: string; name: string }) =>
-      signedIn ? setService({ id: s.id, name: s.name }) : void navigate({ to: "/welcome" }),
+    book: (s: { id: string; name: string; timeBased?: boolean | undefined }) =>
+      signedIn
+        ? setService({ id: s.id, name: s.name, timeBased: s.timeBased })
+        : void navigate({ to: "/welcome" }),
   };
 }

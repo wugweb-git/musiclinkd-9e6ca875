@@ -41,6 +41,15 @@ export type Message = {
 
 const PERSON = "id, username, display_name, avatar_url, headline";
 
+/** The service a thread started from: the latest enquiry about one that opened this conversation. */
+export type ThreadService = {
+  id: string;
+  name: string;
+  price_paise: number | null;
+  price_unit: string | null;
+  price_note: string | null;
+};
+
 /** Every conversation this account is in, newest first, with the other person and the last line. */
 export const listConversations = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -98,7 +107,12 @@ export const getConversation = createServerFn({ method: "GET" })
     async ({
       context,
       data,
-    }): Promise<{ person: MessagePerson | null; messages: Message[]; hasMore: boolean }> => {
+    }): Promise<{
+      person: MessagePerson | null;
+      service: ThreadService | null;
+      messages: Message[];
+      hasMore: boolean;
+    }> => {
       const client = db(context.supabase);
       let page = client
         .from("messages")
@@ -107,12 +121,23 @@ export const getConversation = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false })
         .limit(PAGE + 1);
       if (data.before) page = page.lt("created_at", data.before);
-      const [members, messages] = await Promise.all([
+      const [members, messages, enquiry] = await Promise.all([
         client
           .from("conversation_members")
           .select(`profile_id, profile:profiles(${PERSON})`)
           .eq("conversation_id", data.id),
         page,
+        // Only on the first page. Errors (the columns arrive with 20261004220000) mean no block.
+        data.before
+          ? null
+          : client
+              .from("enquiries")
+              .select("service:profile_services(id, name, price_paise, price_unit, price_note)")
+              .eq("conversation_id", data.id)
+              .not("service_id", "is", null)
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle(),
       ]);
       if (members.error) throw new Error(members.error.message);
       if (messages.error) throw new Error(messages.error.message);
@@ -130,6 +155,11 @@ export const getConversation = createServerFn({ method: "GET" })
       const hasMore = rows.length > PAGE;
       return {
         person: other?.profile ?? null,
+        service:
+          enquiry && !enquiry.error
+            ? ((enquiry.data as unknown as { service: ThreadService | null } | null)?.service ??
+              null)
+            : null,
         hasMore,
         messages: rows
           .slice(0, PAGE)

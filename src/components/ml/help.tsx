@@ -32,7 +32,7 @@ export function ContentBlocks({ blocks }: { blocks: ContentBlock[] }) {
       {blocks.map((b, i) => {
         if (b.type === "heading")
           return (
-            <h2 key={i} className="pt-1 text-2">
+            <h2 key={i} id={b.id} className="pt-1 text-2">
               {b.text}
             </h2>
           );

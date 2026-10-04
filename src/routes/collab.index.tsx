@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { collabTypeCopy } from "@/data/collab-types";
+import { COLLAB_TYPES, isCollabType } from "@/lib/collab-types";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
@@ -51,10 +53,8 @@ type Tab = (typeof tabs)[number];
 
 const sorts = ["Recently updated", "Name"];
 
-const kinds = [
-  { value: "band", label: "Band" },
-  { value: "project", label: "Project" },
-];
+// Collaboration types (queue item 7); a one-off project is Portfolio work, not a collaboration.
+const kinds = COLLAB_TYPES.map((t) => ({ value: t, label: collabTypeCopy[t].label }));
 
 /** Where a collab stands, in a word, when it is not simply active. */
 const statusWord: Record<CollabStatus, string> = {
@@ -104,7 +104,7 @@ function CollabRow({ c, kindLabel }: { c: Collab; kindLabel: string }) {
   );
   const cls = "state-layer flex items-center gap-3 rounded-lg bg-subtle p-4";
   // A band has its own page (owner, 22 Sep 2026); an invitation is answered on the collab page.
-  return c.type === "band" && c.my_status !== "invited" ? (
+  return isCollabType(c.type) && c.my_status !== "invited" ? (
     <Link to="/bands/$id" params={{ id: c.slug }} className={cls}>
       {body}
     </Link>
@@ -141,8 +141,8 @@ function Collabs() {
     [types.data],
   );
   const kindLabel = (c: Collab) =>
-    c.type === "band"
-      ? "Band"
+    isCollabType(c.type)
+      ? collabTypeCopy[c.type].label
       : c.project_type
         ? (typeLabel.get(c.project_type) ?? "Project")
         : "Project";
@@ -165,7 +165,7 @@ function Collabs() {
         ? a.name.localeCompare(b.name)
         : (b.updated_at ?? b.created_at).localeCompare(a.updated_at ?? a.created_at),
     );
-  const bands = shown.filter((c) => c.type === "band");
+  const bands = shown.filter((c) => isCollabType(c.type));
   const projects = shown.filter((c) => c.type === "project");
   const filterCount = kind.length + projectType.length + (showArchived ? 1 : 0);
   const narrowing = Boolean(term) || filterCount > 0;

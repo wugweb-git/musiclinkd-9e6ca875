@@ -2,8 +2,6 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { PersonAvatar } from "./person-avatar";
 import { MapPin, Star, Building2, ChevronRight } from "lucide-react";
-import { Price } from "./kit";
-import type { PriceParts } from "@/lib/price";
 import { VerifiedBadge } from "./ui";
 import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
@@ -26,8 +24,8 @@ import { sized } from "@/lib/image-url";
 /*
  * Talent card and business card (owner, 22 Sep 2026: "redo the cards, all states, types" — one
  * design for each, used everywhere, real data only). Both share the same shape: a name row with
- * the verified badge, one line of place, a rating when there is one, and a rate in the shared
- * `Price` component (amount pink, unit small and grey, one line). Two sizes each: a Row for lists
+ * the verified badge, one line of place and a rating when there is one. No price: a profile card
+ * never shows one (owner, 4 Oct 2026, §3); prices live on Service Cards. Two sizes each: a Row for lists
  * (Search, Directory) and a Card for horizontal rails (Discover, Home, business search).
  */
 
@@ -300,9 +298,9 @@ function studioLink(studio: DiscoverBookable) {
 
 /**
  * One business or studio as a card, for a rail (Discover, Home "Studios to book", business
- * search). The same shape as PersonCard — verified name, one line of place, rating, then the
- * rate on its own line — so a talent card and a business card read as one family. `featured` is
- * the photo-led state (name, place and rate on the scrim) that replaces StudioMediaCard. A
+ * search). The same shape as PersonCard — verified name, one line of place, rating — so a talent
+ * card and a business card read as one family. `featured` is the photo-led state (name and place
+ * on the scrim) that replaces StudioMediaCard. A
  * business with nowhere to open, or a preview, is the same card with no link: nothing to focus.
  */
 export function BookableCard({
@@ -349,9 +347,6 @@ export function BookableCard({
             </>
           ) : null}
         </span>
-        {studio.rate ? (
-          <Price price={studio.rate} className="mt-1" amountClassName="text-1 font-semibold" />
-        ) : null}
       </span>
     </>
   ) : (
@@ -390,14 +385,6 @@ export function BookableCard({
             </>
           ) : null}
         </span>
-        {studio.rate ? (
-          <Price
-            price={studio.rate}
-            className="mt-2"
-            amountClassName="text-1 font-semibold"
-            unitClassName="text-1"
-          />
-        ) : null}
       </span>
     </>
   );
@@ -470,17 +457,8 @@ export function BookableRow({ studio }: { studio: DiscoverBookable }) {
           ) : null}
         </span>
       </span>
-      {studio.rate ? (
-        <Price
-          price={studio.rate}
-          align="end"
-          className="shrink-0"
-          amountClassName="text-1 font-semibold"
-          unitClassName="text-1"
-        />
-      ) : (
-        <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
-      )}
+      {/* No price on a profile card (owner, 4 Oct 2026, §3): prices live on Service Cards. */}
+      <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
     </>
   );
   return (

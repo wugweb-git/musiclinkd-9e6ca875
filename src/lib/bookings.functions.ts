@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { isTimeBasedService } from "@/lib/service-time";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -21,7 +22,8 @@ export type BookingStatus =
 
 export type BookingRequest = {
   id: string;
-  session_date: string;
+  /** Null for async work (a remote-only service): no date was asked for. */
+  session_date: string | null;
   start_time: string | null;
   end_time: string | null;
   hours: number | null;
@@ -93,7 +95,11 @@ export const requestBooking = createServerFn({ method: "POST" })
       .object({
         studioSlug: z.string().min(1).max(120).optional(),
         serviceId: z.string().uuid().optional(),
-        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        // Absent only for a service that isn't booked for a time (remote-only): checked below.
+        date: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/)
+          .optional(),
         startTime: z
           .string()
           .regex(/^\d{2}:\d{2}$/)
@@ -111,22 +117,33 @@ export const requestBooking = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }): Promise<{ id: string }> => {
-    if (data.date < earliestBookingDate()) throw new Error("Pick a day from tomorrow onwards.");
+    if (data.date && data.date < earliestBookingDate())
+      throw new Error("Pick a day from tomorrow onwards.");
     const client = db(context.supabase);
 
     let service: { id: string; name: string; profile_id: string } | null = null;
     if (data.serviceId) {
       const { data: row, error } = await client
         .from("profile_services")
-        .select("id, name, profile_id, status")
+        .select("id, name, profile_id, status, work_modes")
         .eq("id", data.serviceId)
         .maybeSingle();
       if (error) throw new Error(error.message);
-      const sv = row as { id: string; name: string; profile_id: string; status: string } | null;
+      const sv = row as {
+        id: string;
+        name: string;
+        profile_id: string;
+        status: string;
+        work_modes: string[] | null;
+      } | null;
       if (!sv || sv.status !== "active") throw new Error("This service isn't taking bookings.");
       if (sv.profile_id === context.userId) throw new Error("You can't book your own service.");
+      // The service decides (queue item 12): a time-based one needs a date; async work doesn't.
+      if (!data.date && isTimeBasedService(sv.work_modes))
+        throw new Error("Pick a date for this booking.");
       service = sv;
     }
+    if (!data.date && !service) throw new Error("Pick a date for this booking.");
 
     let studioId: string | null = null;
     if (data.studioSlug) {
@@ -141,6 +158,7 @@ export const requestBooking = createServerFn({ method: "POST" })
       if (service && service.profile_id !== found.owner_profile_id)
         throw new Error("That service isn't offered here.");
       studioId = found.id;
+      if (!data.date) throw new Error("Pick a date for this booking.");
       await assertBookableTakes(client, studioId, data.date, data.startTime);
     }
 
@@ -150,7 +168,7 @@ export const requestBooking = createServerFn({ method: "POST" })
         bookable_id: studioId,
         service_id: service?.id ?? null,
         requester_profile_id: context.userId,
-        session_date: data.date,
+        session_date: data.date ?? null,
         start_time: data.startTime ?? null,
         end_time: data.endTime ?? null,
         hours: data.hours ?? null,
@@ -196,14 +214,31 @@ export const listBookableBookings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<BookingRequest[]> => {
     const client = db(context.supabase);
-    const [studios, services] = await Promise.all([
+    const [studios, services, bands] = await Promise.all([
       client.from("bookables").select("id").eq("owner_profile_id", context.userId),
       client.from("profile_services").select("id").eq("profile_id", context.userId),
+      client
+        .from("collab_members")
+        .select("collab_id")
+        .eq("profile_id", context.userId)
+        .eq("status", "active")
+        .in("role", ["owner", "admin"]),
     ]);
     if (studios.error) throw new Error(studios.error.message);
     if (services.error) throw new Error(services.error.message);
     const ids = ((studios.data ?? []) as { id: string }[]).map((s) => s.id);
     const serviceIds = ((services.data ?? []) as { id: string }[]).map((s) => s.id);
+    // Services of bands this account manages (queue item 13). Before 20261004180000 the column
+    // doesn't exist: that read fails and adds nothing.
+    const bandIds = ((bands.data ?? []) as { collab_id: string }[]).map((b) => b.collab_id);
+    if (bandIds.length) {
+      const bandServices = await client
+        .from("profile_services")
+        .select("id")
+        .in("collab_id", bandIds);
+      if (!bandServices.error)
+        serviceIds.push(...((bandServices.data ?? []) as { id: string }[]).map((s) => s.id));
+    }
     if (!ids.length && !serviceIds.length) return [];
     const scope = [
       ids.length ? `bookable_id.in.(${ids.join(",")})` : "",

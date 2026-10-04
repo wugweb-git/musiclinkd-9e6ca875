@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { isTimeBasedService } from "@/lib/service-time";
 import {
   ChevronRight,
   FolderKanban,
@@ -405,7 +406,12 @@ function ServiceDetail() {
                   Book
                 </BtnLink>
               ) : (
-                <Btn className="w-full" onClick={() => serviceRequest.book(s)}>
+                <Btn
+                  className="w-full"
+                  onClick={() =>
+                    serviceRequest.book({ ...s, timeBased: isTimeBasedService(s.work_modes) })
+                  }
+                >
                   Book
                 </Btn>
               )}

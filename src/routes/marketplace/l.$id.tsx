@@ -473,7 +473,7 @@ function ListingDetail() {
           </div>
         ) : (
           <div className="flex gap-2">
-            <BtnLink to="/messages" variant="outline" className="flex-1">
+            <BtnLink to="/inbox" search={{ tab: "messages" }} variant="outline" className="flex-1">
               <MessageCircle size={iconSize.sm} aria-hidden />
               Message
             </BtnLink>
