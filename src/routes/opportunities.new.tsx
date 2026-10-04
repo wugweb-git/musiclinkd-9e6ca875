@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, Plus, Trash2, Save, ArrowLeft, ArrowRight, Send, Sparkles } from "lucide-react";
+import { Plus, Trash2, Save, ArrowLeft, ArrowRight, Send, Sparkles } from "lucide-react";
 import { ActionBar, Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
@@ -27,8 +27,7 @@ type Step =
   | "availability"
   | "compensation"
   | "requirements"
-  | "preview"
-  | "published";
+  | "preview";
 const order: Step[] = [
   "basics",
   "location",
@@ -36,7 +35,6 @@ const order: Step[] = [
   "compensation",
   "requirements",
   "preview",
-  "published",
 ];
 const labels: Record<Step, string> = {
   basics: "The basics",
@@ -45,7 +43,6 @@ const labels: Record<Step, string> = {
   compensation: "Compensation",
   requirements: "Requirements",
   preview: "Preview",
-  published: "Published",
 };
 
 export const Route = createFileRoute("/opportunities/new")({
@@ -139,7 +136,7 @@ function CreateOpportunity() {
     // The type column holds the kind of work; the work mode has no column of its own.
     ...(workType ? { collaborationType: workType } : {}),
     ...(city.trim() ? { location: city.trim() } : {}),
-    ...(approvedCopy ? { summary: approvedCopy } : summary.trim() ? { summary: summary.trim() } : {}),
+    ...(approvedCopy ? { summary: approvedCopy } : {}),
     workMode: mode as "On-site" | "Remote" | "Hybrid",
     ...(dates.trim() ? { dateWindow: dates.trim() } : {}),
     requirements: reqs,
@@ -160,33 +157,10 @@ function CreateOpportunity() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
   });
 
-  const go = (s: Step) => nav({ to: "/opportunities/new", search: { step: s } });
-
-  if (step === "published") {
-    return (
-      <Screen>
-        <TopBar title="Published" back="/opportunities/mine" />
-        <div className="space-y-4 px-5 pt-6">
-          <Card className="space-y-3 text-center">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ink text-ink-foreground">
-              <Check size={iconSize.lg} />
-            </span>
-            <h2 className="text-3 leading-tight">Your opportunity is live</h2>
-            <p className="text-1 text-muted-foreground">
-              It's now in Discover and in recommendations for matching professionals. You'll be
-              notified on every application.
-            </p>
-          </Card>
-          <BtnLink to="/opportunities/mine" className="w-full">
-            Manage It
-          </BtnLink>
-          <BtnLink to="/opportunities" variant="outline" className="w-full">
-            Back to Opportunities
-          </BtnLink>
-        </div>
-      </Screen>
-    );
-  }
+  const go = (s: Step) => {
+    if (s === "preview" && !approvedCopy) setApprovedCopy(summary);
+    void nav({ to: "/opportunities/new", search: { step: s } });
+  };
 
   const canContinue =
     step === "basics"
@@ -393,7 +367,7 @@ function CreateOpportunity() {
             </Btn>
             <Field label="Job copy" hint="Edit this text before publishing. Only the text below is saved as the published description.">
               <textarea
-                value={approvedCopy || summary}
+                value={approvedCopy}
                 onChange={(e) => { setApprovedCopy(e.target.value); setReviewed(false); }}
                 rows={10}
                 maxLength={2000}
@@ -421,7 +395,7 @@ function CreateOpportunity() {
                 <p className="text-1 text-muted-foreground">{workTypeLabel}</p>
               ) : null}
               <h3 className="text-2 leading-snug">{title || "Untitled opportunity"}</h3>
-              <p className="whitespace-pre-wrap text-1 text-muted-foreground">{approvedCopy || summary || "No description yet."}</p>
+              <p className="whitespace-pre-wrap text-1 text-muted-foreground">{approvedCopy || "No description yet."}</p>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-1 text-muted-foreground">
                 <span>{city || "City not set"}</span>
                 <span>{dates || "Dates not set"}</span>
@@ -463,7 +437,7 @@ function CreateOpportunity() {
           <Btn
             className="flex-1"
             icon={step === "preview" ? <Send size={iconSize.sm} aria-hidden /> : <ArrowRight size={iconSize.sm} aria-hidden />}
-            disabled={!canContinue || (step === "preview" && (!signedIn || !reviewed || !(approvedCopy || summary).trim()))}
+            disabled={!canContinue || (step === "preview" && (!signedIn || !reviewed || !approvedCopy.trim()))}
             loading={publish.isPending}
             onClick={() => (step === "preview" ? publish.mutate() : go(order[idx + 1]!))}
           >

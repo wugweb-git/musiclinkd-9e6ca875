@@ -115,7 +115,7 @@ function OpportunityDetail() {
             <StatusPill label={`${o.applicants} applied`} />
           </div>
           <h1 className="mt-2 text-3 leading-tight">{o.title}</h1>
-          {o.summary ? <p className="mt-2 text-sm text-muted-foreground">{o.summary}</p> : null}
+          {o.summary ? <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{o.summary}</p> : null}
         </div>
 
         <div className="grid grid-cols-3 gap-2">
