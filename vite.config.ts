@@ -29,6 +29,14 @@ export default defineConfig({
   },
   vite: {
     plugins: [serveGuidePlugin()],
+    optimizeDeps: {
+      // Dev server only. There is no static .html entry for Vite to crawl, so with the default
+      // (true) the dependency optimizer waited for a crawl that never settles and held the
+      // browser's requests for react / react-dom / the router: pages showed their server HTML and
+      // never hydrated, so every tap did nothing (4 Oct 2026). Serve deps as they are requested.
+      holdUntilCrawlEnd: false,
+      include: ["react", "react-dom", "react-dom/client", "@tanstack/react-router"],
+    },
     resolve: {
       alias: {
         // supabase-js constructs a RealtimeClient whether or not you use realtime, which put the
