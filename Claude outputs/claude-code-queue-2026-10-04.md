@@ -361,3 +361,27 @@ Publish only after these pass; the owner then checks the Android back gesture wi
 AI hiring match (`/discover/match`, linked from Discover and business Home; matches real profiles and
 open posts, "View profile / View opportunity"); AI-drafted hiring copy on `/opportunities/new`;
 Academy placeholder screen; Inbox screen in the menu; Market banners with counts.
+
+## Decisions taken by Claude Code (owner, 4 Oct: "decide, don't ask again")
+
+- **Item 4 — done in data already.** Live check: none of the 7 hardware amenities is used (0 places,
+  0 services). Six are already unpublished and out of the picker (`is_published = false`,
+  `picker: false`): stage_monitors, analogue_chain, drums_included, backline_included,
+  multicam_video, dolby_atmos — physical gear, listed as Equipment. `four_mic_positions` stays an
+  amenity (a room layout, not gear). The amenities + equipment steps stay for businesses with a
+  place only: `bookable_equipment` rows need a `bookable_id`, which a label or agency doesn't have.
+- **Item 11 — answer.** `follows.target_id` references `profiles`; a band is a `collabs` row, so the
+  current tables can't hold "follows a band". Following each member is not a substitute. It needs
+  one nullable `target_collab_id` on `follows` with an exactly-one-target CHECK — the same pattern
+  as item 13. Not built (this item forbids new columns).
+- **Item 12 — rule.** No column marks a service time-based cleanly: on live data every service has
+  no `price_unit`, no `pricing_model`, no `min_hours`. The meaning is in `work_modes`: a service is
+  **time-based if its work modes include `in_person` or `touring`** (date/time step + double-booking
+  guard); remote-only services (171 of 251) are async: no date step, no lock. To build: the request
+  flow reads that rule; the guard (`booking_requests_guard`, `bookable_busy`) is extended to
+  time-based talent/band services (migration file, md5 fingerprint pattern kept).
+- **Item 13 — schema, decided.** `profile_services.collab_id uuid NULL REFERENCES collabs(id)`,
+  `profile_id` becomes NULL-able, `CHECK (num_nonnulls(profile_id, collab_id) = 1)`, RLS: collab
+  admins (`collab_can_manage`) manage their collab's services. `booking_requests.service_id`
+  already points at the service; queries that assume `profile_id` must handle a collab owner.
+  Part 2 done: band rate removed from the band page (`e8a04b4`).
