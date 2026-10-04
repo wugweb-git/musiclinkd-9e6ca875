@@ -242,7 +242,7 @@ export type Database = {
           requester_name: string | null
           requester_profile_id: string | null
           service_id: string | null
-          session_date: string
+          session_date: string | null
           start_time: string | null
           status: string
           updated_at: string
@@ -261,7 +261,7 @@ export type Database = {
           requester_name?: string | null
           requester_profile_id?: string | null
           service_id?: string | null
-          session_date: string
+          session_date?: string | null
           start_time?: string | null
           status?: string
           updated_at?: string
@@ -280,7 +280,7 @@ export type Database = {
           requester_name?: string | null
           requester_profile_id?: string | null
           service_id?: string | null
-          session_date?: string
+          session_date?: string | null
           start_time?: string | null
           status?: string
           updated_at?: string
@@ -991,29 +991,35 @@ export type Database = {
       enquiries: {
         Row: {
           business_profile_id: string
+          conversation_id: string | null
           created_at: string
           id: string
           intent: string
           message: string
           sender_profile_id: string
+          service_id: string | null
           status: string
         }
         Insert: {
           business_profile_id: string
+          conversation_id?: string | null
           created_at?: string
           id?: string
           intent: string
           message: string
           sender_profile_id: string
+          service_id?: string | null
           status?: string
         }
         Update: {
           business_profile_id?: string
+          conversation_id?: string | null
           created_at?: string
           id?: string
           intent?: string
           message?: string
           sender_profile_id?: string
+          service_id?: string | null
           status?: string
         }
         Relationships: [
@@ -1025,10 +1031,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "enquiries_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "enquiries_sender_profile_id_fkey"
             columns: ["sender_profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "enquiries_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "profile_services"
             referencedColumns: ["id"]
           },
         ]
@@ -2071,6 +2091,7 @@ export type Database = {
       profile_private: {
         Row: {
           business_phone: string | null
+          calendar_feed_token_hash: string | null
           date_of_birth: string | null
           device_platform: string | null
           email: string | null
@@ -2082,6 +2103,7 @@ export type Database = {
         }
         Insert: {
           business_phone?: string | null
+          calendar_feed_token_hash?: string | null
           date_of_birth?: string | null
           device_platform?: string | null
           email?: string | null
@@ -2093,6 +2115,7 @@ export type Database = {
         }
         Update: {
           business_phone?: string | null
+          calendar_feed_token_hash?: string | null
           date_of_birth?: string | null
           device_platform?: string | null
           email?: string | null
@@ -2254,6 +2277,7 @@ export type Database = {
           categories: string[]
           category: string | null
           category_taxonomy: string
+          collab_id: string | null
           created_at: string
           deliverables: string[]
           description: string | null
@@ -2269,7 +2293,7 @@ export type Database = {
           price_unit: string | null
           pricing_model: string | null
           pricing_model_taxonomy: string
-          profile_id: string
+          profile_id: string | null
           requirements: string[]
           sort_order: number
           status: string
@@ -2283,6 +2307,7 @@ export type Database = {
           categories?: string[]
           category?: string | null
           category_taxonomy?: string
+          collab_id?: string | null
           created_at?: string
           deliverables?: string[]
           description?: string | null
@@ -2298,7 +2323,7 @@ export type Database = {
           price_unit?: string | null
           pricing_model?: string | null
           pricing_model_taxonomy?: string
-          profile_id: string
+          profile_id?: string | null
           requirements?: string[]
           sort_order?: number
           status?: string
@@ -2312,6 +2337,7 @@ export type Database = {
           categories?: string[]
           category?: string | null
           category_taxonomy?: string
+          collab_id?: string | null
           created_at?: string
           deliverables?: string[]
           description?: string | null
@@ -2327,7 +2353,7 @@ export type Database = {
           price_unit?: string | null
           pricing_model?: string | null
           pricing_model_taxonomy?: string
-          profile_id?: string
+          profile_id?: string | null
           requirements?: string[]
           sort_order?: number
           status?: string
@@ -2342,6 +2368,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "taxonomy_options"
             referencedColumns: ["category_key", "slug"]
+          },
+          {
+            foreignKeyName: "profile_services_collab_id_fkey"
+            columns: ["collab_id"]
+            isOneToOne: false
+            referencedRelation: "bands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_services_collab_id_fkey"
+            columns: ["collab_id"]
+            isOneToOne: false
+            referencedRelation: "collabs"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "profile_services_pricing_model_fkey"
@@ -3795,6 +3835,7 @@ export type Database = {
         Args: { p_listing_id: string }
         Returns: boolean
       }
+      service_is_time_based: { Args: { p_service: string }; Returns: boolean }
       start_collab: {
         Args: {
           p_bio?: string
