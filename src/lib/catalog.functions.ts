@@ -82,6 +82,10 @@ export type OpportunityRow = {
   id: string;
   slug: string;
   title: string;
+  summary?: string | null;
+  work_mode?: string | null;
+  date_window?: string | null;
+  requirements?: string[];
   role_required: string | null;
   genres: string[];
   budget_paise: number | null;
