@@ -6,6 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import type { Plugin } from "vite";
+import { fileURLToPath } from "node:url";
 import sirv from "sirv";
 
 // Dev-only: serves the static /guide design-system reference (guide/index.html etc.)
@@ -35,7 +36,11 @@ export default defineConfig({
         // whole websocket stack (55 KB gzip) on the critical path for a feature the app does not
         // have: no `.channel(` and no `postgres_changes` anywhere in src. The stub covers the
         // methods supabase-js calls itself and throws on anything that would open a socket.
-        "@supabase/realtime-js": "/src/integrations/supabase/realtime-stub.ts",
+        // An absolute file path: the dev dependency optimizer resolves a root-relative "/src/…"
+        // from inside node_modules, misses the file, and the page never hydrates.
+        "@supabase/realtime-js": fileURLToPath(
+          new URL("./src/integrations/supabase/realtime-stub.ts", import.meta.url),
+        ),
       },
     },
     build: {

@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — local dev server never hydrated; collaboration tab titles (4 Oct)
+
+- `vite.config.ts`: the `@supabase/realtime-js` alias pointed at the root-relative
+  `/src/integrations/supabase/realtime-stub.ts`. The production build understood it; the dev
+  dependency optimizer resolved it from inside `node_modules`, one folder too high, failed, and
+  never wrote `node_modules/.vite/deps`, so every page on `localhost:8080` stayed server-rendered
+  with dead taps. It is now an absolute file path. Checked: deps optimize, `/onboarding?preview`
+  hydrates and the Music Talent card opens the talent flow; `bun run build` passes with no realtime
+  socket code in the output. Live was never affected.
+- `/bands/new` names its tab after the type being created ("Create a Duo", "Create an Ensemble")
+  instead of always "Create a Band".
+
 ### Added — the phone's own calendar, opt-in (4 Oct, queue item 5b + 5c, Android app)
 
 - Settings → Calendar, in the Android app only: "Keep my bookings in my calendar" (5b) asks for

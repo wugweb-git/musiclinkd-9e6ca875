@@ -17,9 +17,15 @@ export const Route = createFileRoute("/bands/new")({
   // Which collaboration type to create (queue item 7); a band unless said otherwise.
   validateSearch: (s: Record<string, unknown>): { type?: CollabType } =>
     isCollabType(s["type"]) ? { type: s["type"] } : {},
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
-      { title: "Create a Band | MusicLinkd" },
+      {
+        // The tab names the type being created: "Create an Ensemble | MusicLinkd".
+        title: (() => {
+          const label = collabTypeCopy[match.search.type ?? "band"].label;
+          return `Create ${/^[aeiou]/i.test(label) ? "an" : "a"} ${label} | MusicLinkd`;
+        })(),
+      },
       {
         name: "description",
         content: "Create a band profile, set the line-up and invite members on MusicLinkd.",
