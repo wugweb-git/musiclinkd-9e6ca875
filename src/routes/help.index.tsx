@@ -129,11 +129,23 @@ function HelpIndex() {
         {centre.ready ? <ContactSupport categories={centre.categories} /> : null}
 
         <footer className="flex flex-wrap justify-center gap-x-5 gap-y-2 pb-8 pt-2">
-          {sitePages.map((p) => (
-            <TextLink key={p.to} to={p.to} className="text-1 text-muted-foreground">
-              {p.label}
-            </TextLink>
-          ))}
+          {sitePages.map((p) =>
+            // The legal pages need their slug; without it all three linked to /legal/undefined.
+            "params" in p ? (
+              <TextLink
+                key={p.label}
+                to={p.to}
+                params={p.params}
+                className="text-1 text-muted-foreground"
+              >
+                {p.label}
+              </TextLink>
+            ) : (
+              <TextLink key={p.label} to={p.to} className="text-1 text-muted-foreground">
+                {p.label}
+              </TextLink>
+            ),
+          )}
         </footer>
       </div>
     </Screen>

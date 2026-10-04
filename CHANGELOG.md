@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — Help footer legal links (4 Oct)
+
+- The Privacy, Terms and Cookies links in the Help centre footer dropped their slug and all opened
+  `/legal/undefined` (404). They pass it now. Found by checking every internal link: the code's
+  links against the route list, 120 live pages, and the links stored on notifications; this was
+  the only broken one. No visual change.
+
 ### Changed — brand assets: every icon and splash from the one mark, pink on ink (4 Oct)
 
 - `scripts/brand-assets.mjs` generates every icon and splash from `LogoMark`'s path data
