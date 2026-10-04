@@ -193,10 +193,16 @@ function Conversation() {
     } else el.scrollTop = el.scrollHeight;
   }, [messages.length, newestId]);
 
-  // Opened from a Message button, or a thread with nothing in it yet: ready to type.
+  /*
+   * Opened from a Message button, or a thread with nothing in it yet: ready to type — where there
+   * is a mouse. On a phone, focusing the box opens the keyboard over half the screen, so the chat
+   * arrived hidden behind a keypad nobody asked for (owner, 29 Sep 2026). Tapping the box still
+   * opens it.
+   */
   const fresh = q.data?.messages.length === 0;
   useEffect(() => {
-    if (compose || fresh) box.current?.focus();
+    if (!compose && !fresh) return;
+    if (window.matchMedia("(pointer: fine)").matches) box.current?.focus();
   }, [compose, fresh]);
 
   // The box grows with the message, up to five lines, then scrolls.
