@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { collabTypeCopy } from "@/data/collab-types";
+import { isCollabType } from "@/lib/collab-types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -241,14 +243,13 @@ async function collabs(
     kind: "collab",
     id: r.id,
     title: r.name,
-    subtitle: r.tagline ?? (r.type === "band" ? "Band" : "Collab"),
+    subtitle: r.tagline ?? (isCollabType(r.type) ? collabTypeCopy[r.type].label : "Collab"),
     place: r.city,
     photo: r.avatar_url,
     verified: Boolean(r.is_verified),
-    link:
-      r.type === "band"
-        ? { to: "/bands/$id", params: { id: r.slug } }
-        : { to: "/collab/$id", params: { id: r.id } },
+    link: isCollabType(r.type)
+      ? { to: "/bands/$id", params: { id: r.slug } }
+      : { to: "/collab/$id", params: { id: r.id } },
   }));
   return { items, total: count ?? items.length };
 }

@@ -1,0 +1,12 @@
+-- Snapshot before 20261004190000_collab_types.sql. Read-only, live, 4 Oct 2026. Definitions and
+-- counts only; no user data.
+--
+-- collabs_type_check: CHECK ((type = ANY (ARRAY['band'::text, 'project'::text])))
+-- collabs: 4 band, 2 project. The 2 project rows (slugs ghvb-f1ed6, jnb-e29f5): one member each
+-- (the creator), 0 messages — test data (queue item 7: delete, never convert).
+-- start_collab(p_name, p_bio, p_city, p_visibility, p_type, p_ends_on) md5 1aab2bfce1c5b2c02a07a37ee117591f
+--   accepts 'band' | 'project'; talent-only for 'band'.
+-- join_collab_by_link(p_token) md5 8bfdf6c7eaf4662aec4b8b42fd7d81e4 — talent-only for 'band'.
+--
+-- Undo: the 2 rows are not recoverable from this file (by design: test data). Restore the CHECK
+-- above and both functions from 20260921180000_collab_complete.sql / 20260922251000_collab_invite_links.sql.

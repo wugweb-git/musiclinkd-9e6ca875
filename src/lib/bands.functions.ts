@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { COLLAB_TYPES, type CollabType } from "@/lib/collab-types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -12,7 +13,8 @@ import {
 } from "@/lib/gallery.functions";
 
 /*
- * Bands read the collabs tables: a band is a collab of type 'band' (owner, 17 Sep 2026), the
+ * Bands read the collabs tables (every collaboration type: band, duo, collective, ensemble,
+ * production team, crew — queue item 7, 4 Oct 2026). Originally a band was a collab of type 'band' (17 Sep 2026), the
  * ongoing public kind, as against a project room. A collab is a group of existing talent profiles,
  * not an account, keyed by slug. Public reads with the anon key; members of private profiles are
  * hidden by RLS. Schema: supabase/migrations/20260917120000_collabs.sql.
@@ -36,7 +38,7 @@ export type BandRow = {
   rate_unit: string | null;
   is_verified: boolean;
   created_by: string | null;
-  type: "band" | "project";
+  type: CollabType;
   visibility: "public" | "private";
   status: "active" | "paused" | "completed" | "archived";
   /** Technical rider, one line each (backline, inputs, monitors, power…). */
@@ -122,7 +124,7 @@ export const listBands = createServerFn({ method: "GET" }).handler(async (): Pro
   const { data, error } = await client
     .from("collabs")
     .select(BAND)
-    .eq("type", "band")
+    .in("type", COLLAB_TYPES)
     .order("name");
   if (error) throw new Error(error.message);
   return ((data ?? []) as unknown as BandRow[]).map(shape);
@@ -135,7 +137,7 @@ export const getBandBySlug = createServerFn({ method: "GET" })
     const { data: row, error } = await client
       .from("collabs")
       .select(BAND)
-      .eq("type", "band")
+      .in("type", COLLAB_TYPES)
       .eq("slug", data.slug)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -174,7 +176,7 @@ export const saveBandRider = createServerFn({ method: "POST" })
       .from("collabs")
       .update({ rider: data.rider })
       .eq("id", data.id)
-      .eq("type", "band")
+      .in("type", COLLAB_TYPES)
       .select("id");
     if (error) throw new Error(error.message);
     if (!rows?.length) throw new Error(NOT_ALLOWED);
@@ -197,7 +199,7 @@ export const saveBandStagePlot = createServerFn({ method: "POST" })
       .from("collabs")
       .update({ stage_plot_url: data.url || null, stage_plot_note: data.note || null })
       .eq("id", data.id)
-      .eq("type", "band")
+      .in("type", COLLAB_TYPES)
       .select("id");
     if (error) throw new Error(error.message);
     if (!rows?.length) throw new Error(NOT_ALLOWED);
@@ -303,7 +305,7 @@ export const deleteBand = createServerFn({ method: "POST" })
       .from("collabs")
       .delete()
       .eq("id", data.id)
-      .eq("type", "band")
+      .in("type", COLLAB_TYPES)
       .select("id");
     if (error) throw new Error(error.message);
     if (!rows?.length) throw new Error(NOT_ALLOWED);

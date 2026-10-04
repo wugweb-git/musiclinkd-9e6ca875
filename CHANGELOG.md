@@ -5,6 +5,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — collaboration types; `project` is Portfolio work (4 Oct, queue item 7)
+
+- Six collaboration types: Band, Duo, Collective, Ensemble, Production Team, Crew. Keys in
+  `src/lib/collab-types.ts`, labels in `src/data/collab-types.ts`. Every type uses the band screens.
+- Migration `20261004190000_collab_types.sql` (committed, **not applied**; snapshot
+  `2026-10-04-before-collab-types.sql`): deletes the two `project` test rows (ghvb-f1ed6,
+  jnb-e29f5; fails if anything else would go), the type CHECK takes the six types, and
+  `start_collab` / `join_collab_by_link` take them — every collaboration between talent accounts.
+- "Start a collaboration" lists the six types (→ `/bands/new?type=…`) and "One-off project", which
+  goes to Portfolio → add a project. `/collab/new` only redirects now (its project creator is gone);
+  `/bands/new` takes `?type=` ("Create an ensemble", "Ensemble name").
+- Band list, band page, search results, `/collab` and the collab room treat every collaboration type
+  as a group (they matched `type = 'band'` only).
+- Routes touched: `/collab/new` (redirect), `/bands/new`, `/collab`, `/collab/$id`; none orphaned.
+- New copy: the six labels and hints, "Start a collaboration", "One-off project", "A single, an EP,
+  a film score — add it to your Portfolio", "The name appears in Discover, Search and on shared QR
+  cards." Known leftover: the create screen's browser-tab title still says "Create a Band".
+- Note: this follows the queue's 4 Oct decision layer over the 3 Oct "keep collaboration as
+  projects at /collab"; the collab room and `/collab` stay for the groups.
+
 ### Added — managing a band's services (4 Oct, queue item 13, part 3b)
 
 - Band → Manage → Settings: a "Services" card for the band's managers — each service with its

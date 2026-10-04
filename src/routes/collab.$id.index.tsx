@@ -1,4 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { collabTypeCopy } from "@/data/collab-types";
+import { isCollabType } from "@/lib/collab-types";
 import { shareUrl } from "@/lib/site";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -185,7 +187,7 @@ function CollabRoom() {
         return;
       }
       // A band has its own page (owner, 22 Sep 2026); once in, that is where they go.
-      if (c?.type === "band") {
+      if (isCollabType(c?.type)) {
         void navigate({ to: "/bands/$id", params: { id: c.slug }, replace: true });
         return;
       }
@@ -208,7 +210,7 @@ function CollabRoom() {
   // so wait until we know where this account stands before sending anyone on.
   const standingKnown = !signedIn || profile.isSuccess;
   useEffect(() => {
-    if (c?.type === "band" && standingKnown && !invited) {
+    if (isCollabType(c?.type) && standingKnown && !invited) {
       void navigate({ to: "/bands/$id", params: { id: c.slug }, replace: true });
     }
   }, [c?.type, c?.slug, standingKnown, invited, navigate]);
@@ -385,7 +387,7 @@ function CollabRoom() {
       >
         <p className="mt-1 text-1 text-muted-foreground">
           {joinParts(
-            c.type === "band" ? "Band" : kind || "Project",
+            isCollabType(c.type) ? collabTypeCopy[c.type].label : kind || "Project",
             c.visibility === "private" ? "Private" : "Public",
             c.city ?? "",
             c.ends_on ? `Wraps up ${formatDay(c.ends_on)}` : "",
