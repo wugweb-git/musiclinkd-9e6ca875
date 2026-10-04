@@ -98,6 +98,7 @@ function Connections() {
     queryKey: ["conversations", "mine"],
     queryFn: () => loadConversations(),
     enabled: signedIn,
+    staleTime: 15_000,
   });
 
   const act = useMutation({
@@ -145,7 +146,7 @@ function Connections() {
 
             {!busy && !failed && tab === "Chats" ? (
               chats.length ? (
-                <ul className="divide-y divide-border/70">
+                <ul className="divide-y divide-border/70 overflow-hidden rounded-lg bg-card">
                   {chats.map((t) => {
                     const name = nameOf(t.person) || "Conversation";
                     const unreadRow = t.unread > 0;
@@ -154,7 +155,7 @@ function Connections() {
                         <Link
                           to="/conversation/$id"
                           params={{ id: t.id }}
-                          className="state-layer flex min-h-18 items-center gap-3 py-3"
+                          className="state-layer flex min-h-18 items-center gap-3 px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                         >
                           <PersonAvatar
                             name={name}

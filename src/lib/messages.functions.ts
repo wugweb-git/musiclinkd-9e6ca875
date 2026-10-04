@@ -80,40 +80,61 @@ export const listConversations = createServerFn({ method: "GET" })
     });
   });
 
-/** One thread: the other person and every message, oldest first. Opening it marks it read. */
+/** Messages per page; older ones load as the reader scrolls up. */
+const PAGE = 50;
+
+/**
+ * One thread: the other person and the newest page of messages, oldest first. `before` reads the
+ * page older than that timestamp. Opening the newest page marks the thread read.
+ */
 export const getConversation = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .inputValidator((d) =>
+    z
+      .object({ id: z.string().uuid(), before: z.string().datetime({ offset: true }).optional() })
+      .parse(d),
+  )
   .handler(
-    async ({ context, data }): Promise<{ person: MessagePerson | null; messages: Message[] }> => {
+    async ({
+      context,
+      data,
+    }): Promise<{ person: MessagePerson | null; messages: Message[]; hasMore: boolean }> => {
       const client = db(context.supabase);
+      let page = client
+        .from("messages")
+        .select("id, body, created_at, sender_id")
+        .eq("conversation_id", data.id)
+        .order("created_at", { ascending: false })
+        .limit(PAGE + 1);
+      if (data.before) page = page.lt("created_at", data.before);
       const [members, messages] = await Promise.all([
         client
           .from("conversation_members")
           .select(`profile_id, profile:profiles(${PERSON})`)
           .eq("conversation_id", data.id),
-        client
-          .from("messages")
-          .select("id, body, created_at, sender_id")
-          .eq("conversation_id", data.id)
-          .order("created_at", { ascending: true }),
+        page,
       ]);
       if (members.error) throw new Error(members.error.message);
       if (messages.error) throw new Error(messages.error.message);
       const other = (
         (members.data ?? []) as unknown as { profile_id: string; profile: MessagePerson | null }[]
       ).find((m) => m.profile_id !== context.userId);
-      await client
-        .from("conversation_members")
-        .update({ last_read_at: new Date().toISOString() } as never)
-        .eq("conversation_id", data.id)
-        .eq("profile_id", context.userId);
+      if (!data.before) {
+        await client
+          .from("conversation_members")
+          .update({ last_read_at: new Date().toISOString() } as never)
+          .eq("conversation_id", data.id)
+          .eq("profile_id", context.userId);
+      }
+      const rows = (messages.data ?? []) as unknown as Omit<Message, "mine">[];
+      const hasMore = rows.length > PAGE;
       return {
         person: other?.profile ?? null,
-        messages: ((messages.data ?? []) as unknown as Omit<Message, "mine">[]).map((m) => ({
-          ...m,
-          mine: m.sender_id === context.userId,
-        })),
+        hasMore,
+        messages: rows
+          .slice(0, PAGE)
+          .reverse()
+          .map((m) => ({ ...m, mine: m.sender_id === context.userId })),
       };
     },
   );

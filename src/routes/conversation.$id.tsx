@@ -151,15 +151,46 @@ function Conversation() {
     queryKey: ["conversation", id],
     queryFn: () => read({ data: { id } }),
     enabled: signedIn,
+    staleTime: 15_000,
   });
 
-  const messages: Shown[] = [...(q.data?.messages ?? []), ...outbox];
+  // Older pages, read as the reader scrolls to the top of the thread.
+  const [older, setOlder] = useState<Message[]>([]);
+  const [olderMore, setOlderMore] = useState<boolean | null>(null);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const keepFromBottom = useRef<number | null>(null);
+  const hasMore = olderMore ?? q.data?.hasMore ?? false;
 
-  // Newest at the bottom, in view.
+  async function loadOlder() {
+    const first = older[0] ?? q.data?.messages[0];
+    if (!first || loadingOlder || !hasMore) return;
+    setLoadingOlder(true);
+    const el = list.current;
+    keepFromBottom.current = el ? el.scrollHeight - el.scrollTop : null;
+    try {
+      const page = await read({ data: { id, before: first.created_at } });
+      setOlder((o) => [...page.messages, ...o]);
+      setOlderMore(page.hasMore);
+    } catch {
+      keepFromBottom.current = null;
+      toast.error("Earlier messages couldn't load.");
+    } finally {
+      setLoadingOlder(false);
+    }
+  }
+
+  const messages: Shown[] = [...older, ...(q.data?.messages ?? []), ...outbox];
+  const newestId = messages[messages.length - 1]?.id;
+
+  // Newest at the bottom, in view; after loading older ones, stay where the reader was.
   useLayoutEffect(() => {
     const el = list.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages.length]);
+    if (!el) return;
+    if (keepFromBottom.current !== null) {
+      el.scrollTop = el.scrollHeight - keepFromBottom.current;
+      keepFromBottom.current = null;
+    } else el.scrollTop = el.scrollHeight;
+  }, [messages.length, newestId]);
 
   // Opened from a Message button, or a thread with nothing in it yet: ready to type.
   const fresh = q.data?.messages.length === 0;
@@ -242,13 +273,24 @@ function Conversation() {
           {person ? <CallBtn profileId={person.id} className="h-10 w-10" /> : null}
         </header>
 
-        <div ref={list} className="flex-1 overflow-y-auto px-5 pb-3">
+        <div
+          ref={list}
+          onScroll={(e) => {
+            if (e.currentTarget.scrollTop < 120) void loadOlder();
+          }}
+          className="flex-1 overflow-y-auto overscroll-contain px-5 pb-3"
+        >
           {q.isError ? (
             <div role="alert" className="py-6 text-sm text-muted-foreground">
               This conversation couldn't load. Return to Connections and try again.
             </div>
           ) : null}
           {q.isLoading ? <Loading rows={3} /> : null}
+          {hasMore ? (
+            <p className="py-3 text-center text-1 text-muted-foreground" aria-live="polite">
+              {loadingOlder ? "Loading earlier messages…" : "Scroll up for earlier messages"}
+            </p>
+          ) : null}
 
           {q.data && messages.length === 0 ? (
             // First contact: who you're writing to, the way LinkedIn opens a new thread.
@@ -312,7 +354,7 @@ function Conversation() {
                     ) : null}
                     <p
                       className={`max-w-[78%] whitespace-pre-wrap break-words rounded-lg px-4 py-2.5 text-sm leading-snug ${corners} ${
-                        m.mine ? "bg-ink text-background" : "bg-subtle text-foreground"
+                        m.mine ? "bg-ink text-background" : "bg-card text-foreground"
                       } ${m.pending ? "opacity-60" : ""}`}
                     >
                       {m.body}
