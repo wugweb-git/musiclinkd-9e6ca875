@@ -932,11 +932,6 @@ function RelationshipSections({ p }: { p: TalentProfile }) {
                   {p.studio.meta}
                 </span>
               ) : null}
-              <Price
-                price={p.studio.price}
-                className="mt-1"
-                amountClassName="text-sm font-semibold"
-              />
             </span>
             <ChevronRight
               size={iconSize.sm}

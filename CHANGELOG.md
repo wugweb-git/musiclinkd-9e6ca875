@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — no price on profile cards or profiles (4 Oct, queue item 8, §3)
+
+- Business cards (`BookableCard` both sizes, `BookableRow`; Search, Directory, Discover, Home) no
+  longer show a rate; the row shows its chevron instead. Talent cards already showed none.
+- The talent profile's "Professional details" drops its generic Rate row, and its "Studio
+  connection" card drops the studio's hourly rate (and the code that worked it out).
+- Prices stay where the offer is concrete: Service Cards, opportunities, Market listings, rentals.
+  The band page's generic band rate is queue item 13 and is handled there.
+
 ### Fixed — "Remember me" off: a second tab no longer signs every tab out (4 Oct, queue item 2)
 
 - A new tab with no marker of its own now asks the open tabs (BroadcastChannel `ml-session`, about

@@ -327,8 +327,8 @@ function professionalRows(sections: ProfileSections, labels: TaxonomyLabels | un
     ...[...rows].map(([label, values]) => ({ label, value: values.join(" · ") })),
     ...[...text].map(([label, value]) => ({ label, value })),
   ];
-  const rate = priceParts(sections.rate_paise, sections.rate_unit);
-  if (rate) out.push({ label: "Rate", value: rate });
+  // No generic Rate row: a price appears only on a concrete offer, a Service Card (owner, 4 Oct
+  // 2026, §3). sections.rate_paise / rate_unit stay stored; nothing on the profile shows them.
   if (sections.response_time) out.push({ label: "Response", value: sections.response_time });
   const persona = names["persona_badges"];
   const badges = sections.persona_badges
@@ -361,11 +361,9 @@ function storedMarket(sections: ProfileSections, labels: TaxonomyLabels | undefi
 function storedStudio(sections: ProfileSections): TalentProfile["studio"] {
   const studio = sections.studios[0];
   if (!studio) return undefined;
-  const price = priceParts(studio.hourly_rate_paise, "hr");
   return {
     name: studio.name,
     meta: shownPlace(studio.location),
-    ...(price ? { price } : {}),
     to: `/booking/${studio.slug}`,
   };
 }
