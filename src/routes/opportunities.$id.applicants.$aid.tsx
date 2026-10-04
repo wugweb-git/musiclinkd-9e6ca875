@@ -199,7 +199,7 @@ function ApplicantDetail() {
           </section>
         ) : null}
 
-        <BtnLink to="/messages" variant="outline" className="w-full">
+        <BtnLink to="/inbox" search={{ tab: "messages" }} variant="outline" className="w-full">
           <span className="inline-flex items-center gap-2">
             <MessageCircle size={iconSize.sm} /> Message {name.split(" ")[0]}
           </span>
@@ -261,7 +261,7 @@ function ApplicantDetail() {
           >
             Start a Collaboration
           </Btn>
-          <BtnLink to="/messages" variant="ghost" className="w-full">
+          <BtnLink to="/inbox" search={{ tab: "messages" }} variant="ghost" className="w-full">
             Keep Talking First
           </BtnLink>
         </div>

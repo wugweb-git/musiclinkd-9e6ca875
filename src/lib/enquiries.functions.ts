@@ -11,7 +11,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const db = (client: unknown) => client as unknown as SupabaseClient;
 
-export type EnquiryStatus = "new" | "replied" | "booked" | "closed";
+/** Enquiry (conversation) state; `booked` removed 4 Oct 2026 (queue item 10). */
+export type EnquiryStatus = "new" | "replied" | "closed";
 
 export type EnquiryRow = {
   id: string;
@@ -91,11 +92,11 @@ export const listMyLeads = createServerFn({ method: "GET" })
     return (data ?? []) as unknown as EnquiryRow[];
   });
 
-/** The business moves a lead along: replied, booked or closed. */
+/** The provider moves an enquiry along: replied or closed. */
 export const setLeadStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
-    z.object({ id: z.string().uuid(), status: z.enum(["replied", "booked", "closed"]) }).parse(d),
+    z.object({ id: z.string().uuid(), status: z.enum(["replied", "closed"]) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ status: EnquiryStatus }> => {
     const { error } = await db(context.supabase)

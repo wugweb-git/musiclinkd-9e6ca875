@@ -386,7 +386,13 @@ function BandProfile() {
                   <h2 className="text-sm">Open seats</h2>
                   <div className="mt-3 space-y-2">
                     {band.lookingFor.map((l) => (
-                      <Row key={l} title={l} subtitle="Apply through Messaging" to="/messages" />
+                      <Row
+                        key={l}
+                        title={l}
+                        subtitle="Apply through Messaging"
+                        to="/inbox"
+                        search={{ tab: "messages" }}
+                      />
                     ))}
                   </div>
                 </Card>

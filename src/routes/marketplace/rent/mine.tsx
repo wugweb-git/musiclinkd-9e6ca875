@@ -100,7 +100,7 @@ function MyRentals() {
                     <Link to="/marketplace/rent/active/$id" params={{ id: b.id }}>
                       <Chip>View</Chip>
                     </Link>
-                    <Link to="/messages">
+                    <Link to="/inbox" search={{ tab: "messages" }}>
                       <Chip>Message</Chip>
                     </Link>
                     {bucket === "Active" ? (

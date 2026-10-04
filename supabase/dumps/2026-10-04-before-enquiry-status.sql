@@ -1,0 +1,7 @@
+-- Snapshot before 20261004200000_enquiry_status.sql. Read-only, live, 4 Oct 2026. Definitions and
+-- counts only; no user data.
+--
+-- enquiries_status_check: CHECK ((status = ANY (ARRAY['new'::text, 'replied'::text, 'booked'::text, 'closed'::text])))
+-- enquiries: 3 rows, all 'new'; 0 'booked'.
+--
+-- Undo: restore the CHECK above.

@@ -214,14 +214,31 @@ export const listBookableBookings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<BookingRequest[]> => {
     const client = db(context.supabase);
-    const [studios, services] = await Promise.all([
+    const [studios, services, bands] = await Promise.all([
       client.from("bookables").select("id").eq("owner_profile_id", context.userId),
       client.from("profile_services").select("id").eq("profile_id", context.userId),
+      client
+        .from("collab_members")
+        .select("collab_id")
+        .eq("profile_id", context.userId)
+        .eq("status", "active")
+        .in("role", ["owner", "admin"]),
     ]);
     if (studios.error) throw new Error(studios.error.message);
     if (services.error) throw new Error(services.error.message);
     const ids = ((studios.data ?? []) as { id: string }[]).map((s) => s.id);
     const serviceIds = ((services.data ?? []) as { id: string }[]).map((s) => s.id);
+    // Services of bands this account manages (queue item 13). Before 20261004180000 the column
+    // doesn't exist: that read fails and adds nothing.
+    const bandIds = ((bands.data ?? []) as { collab_id: string }[]).map((b) => b.collab_id);
+    if (bandIds.length) {
+      const bandServices = await client
+        .from("profile_services")
+        .select("id")
+        .in("collab_id", bandIds);
+      if (!bandServices.error)
+        serviceIds.push(...((bandServices.data ?? []) as { id: string }[]).map((s) => s.id));
+    }
     if (!ids.length && !serviceIds.length) return [];
     const scope = [
       ids.length ? `bookable_id.in.(${ids.join(",")})` : "",

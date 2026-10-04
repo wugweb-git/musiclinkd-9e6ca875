@@ -167,7 +167,12 @@ function Schedule() {
               title="Availability not set"
               body="This studio hasn't added its opening hours yet. Message them to ask about a date."
               action={
-                <BtnLink to="/messages" variant="outline" className="w-full">
+                <BtnLink
+                  to="/inbox"
+                  search={{ tab: "messages" }}
+                  variant="outline"
+                  className="w-full"
+                >
                   Message Provider
                 </BtnLink>
               }
@@ -212,7 +217,12 @@ function Schedule() {
                           Go to {formatDate(next.date)}
                         </Btn>
                       ) : null}
-                      <BtnLink to="/messages" variant="outline" className="w-full">
+                      <BtnLink
+                        to="/inbox"
+                        search={{ tab: "messages" }}
+                        variant="outline"
+                        className="w-full"
+                      >
                         Message Provider
                       </BtnLink>
                       <BtnLink

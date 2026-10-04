@@ -93,7 +93,7 @@ function QrResult() {
                 <Btn
                   variant="outline"
                   className="flex-1"
-                  onClick={() => void nav({ to: "/messages" })}
+                  onClick={() => void nav({ to: "/inbox", search: { tab: "messages" } })}
                 >
                   <MessageCircle size={iconSize.sm} className="mr-2" /> Message
                 </Btn>

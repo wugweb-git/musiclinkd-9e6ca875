@@ -359,7 +359,12 @@ function RequestFlow() {
                 <Btn className="mt-5 w-full">View Rental</Btn>
               </Link>
             ) : null}
-            <BtnLink to="/messages" variant="outline" className="mt-2 w-full">
+            <BtnLink
+              to="/inbox"
+              search={{ tab: "messages" }}
+              variant="outline"
+              className="mt-2 w-full"
+            >
               Message Provider
             </BtnLink>
           </div>

@@ -511,7 +511,8 @@ export function ShareActions({
         icon={<Share2 size={iconSize.sm} />}
         label="Send via MusicLinkd"
         hint="Opens Connections"
-        to="/messages"
+        to="/inbox"
+        search={{ tab: "messages" }}
       />
       {onDownload ? (
         <ActionRow

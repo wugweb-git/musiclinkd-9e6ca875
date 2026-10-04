@@ -189,7 +189,12 @@ function RealRentalBooking({ id }: { id: string }) {
             <div className="mt-2 rounded-lg bg-subtle p-4">
               <ProviderSummary p={p} />
               <div className="mt-3 grid grid-cols-2 gap-2">
-                <BtnLink to="/messages" variant="outline" className="w-full">
+                <BtnLink
+                  to="/inbox"
+                  search={{ tab: "messages" }}
+                  variant="outline"
+                  className="w-full"
+                >
                   Message
                 </BtnLink>
                 <BtnLink

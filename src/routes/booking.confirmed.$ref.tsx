@@ -244,7 +244,7 @@ function Confirmed() {
         <BtnLink to="/bookings" className="w-full">
           View Bookings
         </BtnLink>
-        <BtnLink to="/messages" variant="outline" className="w-full">
+        <BtnLink to="/inbox" search={{ tab: "messages" }} variant="outline" className="w-full">
           <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message Provider
         </BtnLink>
       </div>

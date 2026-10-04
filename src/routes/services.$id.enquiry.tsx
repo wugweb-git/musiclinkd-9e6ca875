@@ -106,7 +106,7 @@ function ServiceEnquiry() {
                 : "Replies land in Messages and as a notification."}
             </p>
           </Card>
-          <BtnLink to="/messages" className="w-full">
+          <BtnLink to="/inbox" search={{ tab: "messages" }} className="w-full">
             Open Connections
           </BtnLink>
         </div>

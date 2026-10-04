@@ -11,7 +11,7 @@
 export type Stage = "beta" | "soon";
 
 export const release: Record<string, Stage> = {
-  "/messages": "beta",
+  "/inbox": "beta",
   "/notifications": "beta",
   "/collab": "soon",
   "/verification": "soon",

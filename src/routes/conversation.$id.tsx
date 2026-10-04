@@ -252,7 +252,8 @@ function Conversation() {
       <div className="flex h-[100dvh] flex-col">
         <header className="flex shrink-0 items-center gap-3 border-b border-border bg-card/95 px-5 py-3 pt-safe backdrop-blur">
           <Link
-            to="/messages"
+            to="/inbox"
+            search={{ tab: "messages" }}
             className="hit-area flex h-10 w-10 shrink-0 items-center justify-center transition-transform duration-200 ease-standard active:scale-97"
             aria-label="Back"
           >

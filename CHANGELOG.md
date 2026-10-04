@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one Inbox (4 Oct, queue item 10)
+
+- `/inbox` is the one place: All · Messages · Enquiries · Booking Requests (`?tab=`). The Messages
+  screen (Chats, Requests, Connected), the Leads screen and the booking-requests queue moved into it
+  unchanged in substance (`ml/inbox-messages.tsx`, `ml/inbox-enquiries.tsx`,
+  `ml/inbox-bookings.tsx`); `/messages`, `/leads` and `/business/bookings/requests` redirect to their
+  tab. A single request still opens at `/business/bookings/requests/$ref`.
+- Two separate states, never mapped: **Enquiries** — New, Awaiting response, and Closed as an
+  archive; **Booking Requests** — Requested, Reviewing, Confirmed, Declined, Cancelled, Completed
+  (labels only; values unchanged). No Inbox-level status.
+- `booked` is gone as an enquiry state: removed from `EnquiryStatus`, `setLeadStatus`, the
+  "Mark booked" button and the hardcoded `businessLeads` rows (unused); migration
+  `20261004200000_enquiry_status.sql` (committed, **not applied**; stops if any row is `booked` —
+  live: 0 of 3) narrows the CHECK to new | replied | closed.
+- The requests queue had a business-only gate that hid a talent's own service bookings, which the
+  list already read; the tab has no gate. Band admins also get their band's service requests
+  (item 13's gap).
+- Bottom nav and menu: "Connections" (/messages) and "Leads" are "Inbox" (/inbox); 17 screens'
+  "Messages" buttons link to `/inbox?tab=messages`. Home and the bookings workspace keep their old
+  addresses (their link types allow no tab) and arrive through the redirects.
+- Not done: the service block at the top of a service-originated conversation — enquiries don't
+  link to a conversation yet (replying opens a plain conversation with the sender).
+- New copy: "Awaiting response", "Booking Requests", "Requests to book what you offer",
+  "N awaiting your reply", "Booking requests for your services appear in this queue."
+
 ### Changed — collaboration types; `project` is Portfolio work (4 Oct, queue item 7)
 
 - Six collaboration types: Band, Duo, Collective, Ensemble, Production Team, Crew. Keys in

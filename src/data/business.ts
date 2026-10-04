@@ -197,54 +197,15 @@ export const businessDraftKey = "ml.business.draft";
 export const businessSteps = ["Type", "Basics", "Location", "Spaces", "Team", "Review"] as const;
 export type BusinessStep = (typeof businessSteps)[number];
 
-/** Leads inbox — enquiries that arrived on the business page. */
-export type BusinessLead = {
-  id: string;
-  name: string;
-  photo: string;
-  intent: string;
-  message: string;
-  at: string;
-  status: "new" | "replied" | "booked" | "closed";
+/** Enquiry state as the Inbox shows it (queue item 10): keys are `enquiries.status`. */
+export const enquiryStatusCopy: Record<
+  "new" | "replied" | "closed",
+  { label: string; tone: "brand" | "warn" | "good" | "neutral" }
+> = {
+  new: { label: "New", tone: "brand" },
+  replied: { label: "Awaiting response", tone: "warn" },
+  closed: { label: "Closed", tone: "neutral" },
 };
-
-export const businessLeads: BusinessLead[] = [
-  {
-    id: "ld-1",
-    name: "Meher Kapoor",
-    photo: img("photo-1544005313-94ddf0286df2", 120),
-    intent: "Studio A · 6 hours",
-    message: "Tracking a four-piece on the 18th, need a drum room and a house engineer.",
-    at: "2 hours ago",
-    status: "new",
-  },
-  {
-    id: "ld-2",
-    name: "Vikram Nair",
-    photo: img("photo-1500648767791-00dcc994a43e", 120),
-    intent: "Mixing · 3 songs",
-    message: "Have stems ready from a home session. What's your turnaround in September?",
-    at: "Yesterday",
-    status: "replied",
-  },
-  {
-    id: "ld-3",
-    name: "Sana Qureshi",
-    photo: img("photo-1534528741775-53994a69daeb", 120),
-    intent: "Studio B · vocals",
-    message: "Two vocal days, flexible on dates. Do you have a Sunday slot?",
-    at: "3 days ago",
-    status: "booked",
-  },
-];
-
-export const leadStatusTone: Record<BusinessLead["status"], "brand" | "warn" | "good" | "neutral"> =
-  {
-    new: "brand",
-    replied: "warn",
-    booked: "good",
-    closed: "neutral",
-  };
 
 export const businessAnalytics = {
   views: 2840,
