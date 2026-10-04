@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — "Remember me" off: a second tab no longer signs every tab out (4 Oct, queue item 2)
+
+- A new tab with no marker of its own now asks the open tabs (BroadcastChannel `ml-session`, about
+  300 ms) before treating the browser as closed, on top of the shared heartbeat. Background tabs,
+  whose timers slow to about once a minute, still answer. Only silence signs the session out.
+- `scripts/remember-me-tabs.mjs` checks both paths on a running build: a second tab stays signed
+  in; reopening with no other tab signs out. Both pass.
+
 ### Changed — the Select screen back to the owner's version (4 Oct)
 
 - `/onboarding` (Select): three stacked cards, Music Talent, Business and the hollow Upcoming;

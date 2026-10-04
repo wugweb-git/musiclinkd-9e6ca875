@@ -20,7 +20,47 @@ const BEAT_KEY = "ml:session-beat";
 const BEAT_MS = 5_000;
 let beating = false;
 
+/*
+ * Background tabs run timers about once a minute after a few minutes hidden, so the heartbeat can
+ * look stale while a tab is still open. A new tab therefore also asks: every tab holding the marker
+ * answers on this channel (messages still reach throttled tabs), and only silence means closed.
+ */
+const CHANNEL = "ml-session";
+const ASK_MS = 300;
+let answering = false;
+
+function startAnswering() {
+  if (answering || typeof BroadcastChannel === "undefined") return;
+  answering = true;
+  const channel = new BroadcastChannel(CHANNEL);
+  channel.onmessage = (e: MessageEvent) => {
+    if (e.data === "alive?" && sessionStorage.getItem(ALIVE_KEY) === "1") {
+      channel.postMessage("alive");
+    }
+  };
+}
+
+function anotherTabAnswers(): Promise<boolean> {
+  if (typeof BroadcastChannel === "undefined") return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const channel = new BroadcastChannel(CHANNEL);
+    const done = (alive: boolean) => {
+      channel.close();
+      resolve(alive);
+    };
+    const timer = window.setTimeout(() => done(false), ASK_MS);
+    channel.onmessage = (e: MessageEvent) => {
+      if (e.data === "alive") {
+        window.clearTimeout(timer);
+        done(true);
+      }
+    };
+    channel.postMessage("alive?");
+  });
+}
+
 function startHeartbeat() {
+  startAnswering();
   if (beating || typeof window === "undefined") return;
   beating = true;
   const beat = () => {
@@ -66,6 +106,9 @@ export async function endSessionIfClosed(): Promise<void> {
     const beat = Number(localStorage.getItem(BEAT_KEY) ?? 0);
     if (sessionStorage.getItem(ALIVE_KEY) !== "1" && Date.now() - beat < BEAT_MS * 3) {
       sessionStorage.setItem(ALIVE_KEY, "1"); // another tab is still open: join it
+    }
+    if (sessionStorage.getItem(ALIVE_KEY) !== "1" && (await anotherTabAnswers())) {
+      sessionStorage.setItem(ALIVE_KEY, "1"); // a background tab answered: join it
     }
     if (sessionStorage.getItem(ALIVE_KEY) === "1") {
       startHeartbeat();
