@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — the Select screen back to the owner's version (4 Oct)
+
+- `/onboarding` (Select): three stacked cards, Music Talent, Business and the hollow Upcoming;
+  a tap on a card continues; no Continue button, no "Why create a profile?" box, no pink selected
+  state (Lovable's redesign had put those back against the owner's 4 Oct instructions). The
+  username length limit and the two-column date of birth / gender row Lovable added stay.
+
 ### Fixed — Help footer legal links (4 Oct)
 
 - The Privacy, Terms and Cookies links in the Help centre footer dropped their slug and all opened
