@@ -39,10 +39,6 @@ export type BookableRow = {
   name: string;
   description: string | null;
   location: string | null;
-  summary?: string | null;
-  work_mode?: string | null;
-  date_window?: string | null;
-  requirements?: string[];
   hourly_rate_paise: number | null;
   rating: number | null;
   review_count: number;
