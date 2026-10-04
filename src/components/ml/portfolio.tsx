@@ -26,10 +26,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
-import { StatusPill as BaseStatusPill } from "@/components/ml/kit";
+import { Card, StatusPill as BaseStatusPill } from "@/components/ml/kit";
 import { MediaEmbed } from "./media-embed";
 import { playsCountedFromLabel } from "@/lib/plays-cutoff";
-import { cn } from "@/lib/utils";
+import { cn, joinParts } from "@/lib/utils";
 import {
   analyticsFor,
   FEATURED_LIMIT,
@@ -130,6 +130,32 @@ export function WorkTypeSheet({
         ))}
       </DrawerList>
     </Sheet>
+  );
+}
+
+/**
+ * Someone else's work as one row that opens it: type icon, title, "type · name". Used where work
+ * from the community is listed (Discover → Music, Discover's Trending work).
+ */
+export function WorkLinkRow({
+  work,
+}: {
+  work: { id: string; title: string; kind: string; display_name: string | null };
+}) {
+  return (
+    <Link to="/portfolio/$id" params={{ id: work.id }} className="block">
+      <Card>
+        <div className="flex items-center gap-3">
+          <WorkTypeIcon kind={work.kind} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold">{work.title}</p>
+            <p className="truncate text-1 text-muted-foreground">
+              {joinParts(workType(work.kind).label, work.display_name)}
+            </p>
+          </div>
+        </div>
+      </Card>
+    </Link>
   );
 }
 

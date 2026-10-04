@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — Trending work on Discover (4 Oct, queue item 3)
+
+- Discover → For you shows "Trending work" (the section's own title before 23 Sep): every kind of
+  work with plays in the last 7 days — performances, projects, client work, case studies,
+  writing, images and links as well as audio and video — as rows that open the work. Lovable's
+  4 Oct Discover redesign had dropped trending work altogether. Shown only when there is some, so
+  it stays hidden until something is played (none since 30 Sep).
+- The row is the one Discover → Music already used, moved to `WorkLinkRow` in `ml/portfolio.tsx`
+  so both use one copy.
+
 ### Added — public "Delete your account" page for Google Play (4 Oct, queue item 1b)
 
 - `/delete-account`, no sign-in: how to delete (app and web, with a button to Settings → Delete

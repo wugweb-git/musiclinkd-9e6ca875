@@ -16,6 +16,8 @@ import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportun
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { Chip, Screen, SectionHeader } from "@/components/ml/ui";
 import { listBookables, listOpportunities } from "@/lib/catalog.functions";
+import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
+import { WorkLinkRow } from "@/components/ml/portfolio";
 import { discoverBookableFromRow } from "@/lib/bookable-view";
 import { iconSize } from "@/lib/tokens";
 import { opportunityFromRow } from "@/lib/opportunity-view";
@@ -44,18 +46,20 @@ export const Route = createFileRoute("/discover/")({
     ],
   }),
   loader: async () => {
-    const [studioRows, opportunityRows, labels, people] = await Promise.all([
+    const [studioRows, opportunityRows, labels, people, trendingWork] = await Promise.all([
       listBookables().catch(() => []),
       listOpportunities().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
       searchPeople({ data: { limit: 20, withTotal: false } })
         .then((result) => result.people)
         .catch((): DirectoryPerson[] => []),
+      listTrendingWork().catch((): TrendingItem[] => []),
     ]);
     return {
       studios: studioRows.map((row) => discoverBookableFromRow(row, labels)),
       opportunities: opportunityRows.map((row) => opportunityFromRow(row, labels)),
       people,
+      trendingWork,
     };
   },
   // Coming back to Discover within a minute reuses what was read instead of waiting again.
@@ -231,6 +235,19 @@ function DiscoverScreen() {
             <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
               {studios.slice(0, 8).map((studio) => (
                 <BookableCard key={studio.id} studio={studio} featured />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {/* Work of every kind with plays in the last 7 days (queue item 3): shown only when there
+            is some, so a quiet week leaves no empty heading. */}
+        {mode === "For you" && loaded.trendingWork.length ? (
+          <section>
+            <SectionHeader title="Trending work" />
+            <div className="space-y-3 px-5">
+              {loaded.trendingWork.map((work) => (
+                <WorkLinkRow key={work.id} work={work} />
               ))}
             </div>
           </section>
