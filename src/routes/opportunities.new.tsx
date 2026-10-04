@@ -3,11 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, Plus, Trash2, Save, ArrowLeft, ArrowRight, Send } from "lucide-react";
+import { Check, Plus, Trash2, Save, ArrowLeft, ArrowRight, Send, Sparkles } from "lucide-react";
 import { ActionBar, Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
 import { createOpportunity } from "@/lib/applications.functions";
+import { draftHiringCopy } from "@/lib/hiring-copy.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { categoryIcon } from "@/components/ml/opportunity";
 import {
@@ -82,6 +83,9 @@ function CreateOpportunity() {
   const [title, setTitle] = useState("");
   const [cat, setCat] = useState<string | null>(null);
   const [summary, setSummary] = useState("");
+  const [roughBrief, setRoughBrief] = useState("");
+  const [approvedCopy, setApprovedCopy] = useState("");
+  const [reviewed, setReviewed] = useState(false);
   const [city, setCity] = useState("");
   const [mode, setMode] = useState<string>("On-site");
   const [dates, setDates] = useState("");
@@ -100,6 +104,22 @@ function CreateOpportunity() {
   const [req, setReq] = useState("");
   const { signedIn } = useAuth();
   const post = useServerFn(createOpportunity);
+  const writeCopy = useServerFn(draftHiringCopy);
+  const aiDraft = useMutation({
+    mutationFn: () => writeCopy({ data: {
+      title: title.trim(),
+      ...(cat ? { role: opportunityCategories.find((c) => c.key === cat)?.label ?? cat } : {}),
+      ...(summary.trim() ? { summary: summary.trim() } : {}),
+      ...(city.trim() ? { city: city.trim() } : {}),
+      ...(dates.trim() ? { dates: dates.trim() } : {}),
+      ...(budget.trim() && payType === "Paid" ? { budget: budget.trim() } : {}),
+      ...(workTypeLabel ? { workType: workTypeLabel } : {}),
+      requirements: reqs,
+      roughBrief,
+    } }),
+    onSuccess: ({ copy }) => { setApprovedCopy(copy); setReviewed(false); },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Couldn't prepare the copy. Try again."),
+  });
 
   // Rupees in the box, paise in the database. A budget that is not a number is kept as the note.
   const budgetPaise = (() => {
@@ -119,7 +139,7 @@ function CreateOpportunity() {
     // The type column holds the kind of work; the work mode has no column of its own.
     ...(workType ? { collaborationType: workType } : {}),
     ...(city.trim() ? { location: city.trim() } : {}),
-    ...(summary.trim() ? { summary: summary.trim() } : {}),
+    ...(approvedCopy ? { summary: approvedCopy } : summary.trim() ? { summary: summary.trim() } : {}),
     workMode: mode as "On-site" | "Remote" | "Hybrid",
     ...(dates.trim() ? { dateWindow: dates.trim() } : {}),
     requirements: reqs,
@@ -358,6 +378,32 @@ function CreateOpportunity() {
 
         {step === "preview" ? (
           <>
+            <Field label="Rough hiring brief" hint="Optional. AI uses only what you write here and in the earlier steps.">
+              <textarea
+                value={roughBrief}
+                onChange={(e) => setRoughBrief(e.target.value)}
+                rows={4}
+                maxLength={2000}
+                placeholder="Describe the role in your own words"
+                className="w-full rounded-lg border border-input bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            </Field>
+            <Btn variant="outline" className="w-full" icon={<Sparkles size={iconSize.sm} aria-hidden />} loading={aiDraft.isPending} disabled={!signedIn || roughBrief.trim().length < 10} onClick={() => aiDraft.mutate()}>
+              Draft copy with AI
+            </Btn>
+            <Field label="Job copy" hint="Edit this text before publishing. Only the text below is saved as the published description.">
+              <textarea
+                value={approvedCopy || summary}
+                onChange={(e) => { setApprovedCopy(e.target.value); setReviewed(false); }}
+                rows={10}
+                maxLength={2000}
+                className="w-full rounded-lg border border-input bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            </Field>
+            <label className="flex min-h-touch items-center gap-3 text-1 font-semibold">
+              <input type="checkbox" checked={reviewed} onChange={(e) => setReviewed(e.target.checked)} className="h-5 w-5 accent-ink" />
+              I have reviewed and approve this copy
+            </label>
             <h2 className="text-3 leading-tight">This is what applicants see</h2>
             <Card className="space-y-2">
               <div className="flex flex-wrap gap-2">
@@ -375,7 +421,7 @@ function CreateOpportunity() {
                 <p className="text-1 text-muted-foreground">{workTypeLabel}</p>
               ) : null}
               <h3 className="text-2 leading-snug">{title || "Untitled opportunity"}</h3>
-              <p className="text-1 text-muted-foreground">{summary || "No summary yet."}</p>
+              <p className="whitespace-pre-wrap text-1 text-muted-foreground">{approvedCopy || summary || "No description yet."}</p>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-1 text-muted-foreground">
                 <span>{city || "City not set"}</span>
                 <span>{dates || "Dates not set"}</span>
@@ -417,7 +463,7 @@ function CreateOpportunity() {
           <Btn
             className="flex-1"
             icon={step === "preview" ? <Send size={iconSize.sm} aria-hidden /> : <ArrowRight size={iconSize.sm} aria-hidden />}
-            disabled={!canContinue || (step === "preview" && !signedIn)}
+            disabled={!canContinue || (step === "preview" && (!signedIn || !reviewed || !(approvedCopy || summary).trim()))}
             loading={publish.isPending}
             onClick={() => (step === "preview" ? publish.mutate() : go(order[idx + 1]!))}
           >
