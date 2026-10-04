@@ -3,6 +3,8 @@
 -- starts with the service). Two nullable columns on enquiries; no new table. Older enquiries and
 -- enquiries from a business page keep both empty and their threads show no block.
 --
+-- Needs 20261004180000 (profile_services.collab_id) applied first.
+--
 -- A trigger keeps the links honest, because the sender writes the row: a service that isn't the
 -- business's own, or a conversation the sender isn't in, is dropped to null rather than stored.
 --
@@ -22,7 +24,12 @@ CREATE FUNCTION public.enquiries_check_links() RETURNS trigger
 BEGIN
   IF NEW.service_id IS NOT NULL AND NOT EXISTS (
     SELECT 1 FROM public.profile_services s
-    WHERE s.id = NEW.service_id AND s.profile_id = NEW.business_profile_id
+    WHERE s.id = NEW.service_id
+      AND (s.profile_id = NEW.business_profile_id
+        -- A band's service: its enquiries go to the band's owner (20261004180000).
+        OR EXISTS (SELECT 1 FROM public.collab_members m
+                   WHERE m.collab_id = s.collab_id AND m.profile_id = NEW.business_profile_id
+                     AND m.role = 'owner' AND m.status = 'active'))
   ) THEN
     NEW.service_id := NULL;
   END IF;
