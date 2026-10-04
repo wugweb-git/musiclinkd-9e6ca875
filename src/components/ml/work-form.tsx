@@ -1,6 +1,14 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Camera, ChevronRight, Link2, LoaderCircle, Save, Send } from "lucide-react";
+import {
+  Camera,
+  ChevronRight,
+  Image as ImageIcon,
+  Link2,
+  LoaderCircle,
+  Save,
+  Send,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Switch } from "@/components/ui/switch";
@@ -99,6 +107,9 @@ export function WorkForm({
   const [busy, setBusy] = useState<"draft" | "publish" | null>(null);
   const [tried, setTried] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
+  // The camera needs its own input: inside the Android app, `capture` opens only the camera and
+  // its absence only the gallery, so one button can't offer both (owner, 4 Oct 2026: both).
+  const cameraInput = useRef<HTMLInputElement>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   async function pickPhoto(file?: File) {
@@ -112,6 +123,7 @@ export function WorkForm({
     } finally {
       setUploadingPhoto(false);
       if (photoInput.current) photoInput.current.value = "";
+      if (cameraInput.current) cameraInput.current.value = "";
     }
   }
 
@@ -254,17 +266,38 @@ export function WorkForm({
         aria-label="Choose a photo for this work"
         onChange={(e) => void pickPhoto(e.target.files?.[0])}
       />
-      <Btn
-        type="button"
-        variant="outline"
-        className="mt-4 w-full"
-        loading={uploadingPhoto}
-        disabled={!signedIn}
-        icon={<Camera size={iconSize.sm} aria-hidden />}
-        onClick={() => photoInput.current?.click()}
-      >
-        {cover ? "Change work photo" : "Add work photo"}
-      </Btn>
+      <input
+        ref={cameraInput}
+        type="file"
+        accept={PROFILE_IMAGE_ACCEPT}
+        capture="environment"
+        className="sr-only"
+        aria-label="Take a photo for this work"
+        onChange={(e) => void pickPhoto(e.target.files?.[0])}
+      />
+      <div className="mt-4 flex gap-2">
+        <Btn
+          type="button"
+          variant="outline"
+          className="min-w-0 flex-1"
+          loading={uploadingPhoto}
+          disabled={!signedIn}
+          icon={<ImageIcon size={iconSize.sm} aria-hidden />}
+          onClick={() => photoInput.current?.click()}
+        >
+          {cover ? "Change work photo" : "Add work photo"}
+        </Btn>
+        <Btn
+          type="button"
+          variant="outline"
+          className="min-w-0 flex-1"
+          disabled={!signedIn || uploadingPhoto}
+          icon={<Camera size={iconSize.sm} aria-hidden />}
+          onClick={() => cameraInput.current?.click()}
+        >
+          Take photo
+        </Btn>
+      </div>
 
       {/* The title is written on the page, not in a box. */}
       <label htmlFor="work-title" className="sr-only">

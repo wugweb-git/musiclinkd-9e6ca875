@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — /portfolio/new, and the camera on Add work (4 Oct)
+
+- `/portfolio/new` (no type) redirects to Portfolio with the add-work drawer open instead of
+  404ing; `/portfolio/new/$kind` is unchanged.
+- Add work: a "Take photo" button beside "Add work photo". Inside the Android app one file input
+  can't offer both — `capture` opens only the camera, its absence only the gallery — so the camera
+  has its own input (`capture="environment"`). Lovable had added `capture` to the single input and
+  then removed it (gallery lost, then camera lost).
+- Not changed, after checking: Settings "Sign-in methods" isn't a self-loop (the row is its own
+  component that opens the sheet; the `/settings` in the data is never used), and
+  `/settings/security` reaches `/settings/security/` already.
+
 ### Added — Trending work on Discover (4 Oct, queue item 3)
 
 - Discover → For you shows "Trending work" (the section's own title before 23 Sep): every kind of

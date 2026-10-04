@@ -137,6 +137,7 @@ import { Route as OpportunitiesApplicationsIndexRouteImport } from './routes/opp
 import { Route as OpportunitiesApplicationsAidRouteImport } from './routes/opportunities.applications.$aid'
 import { Route as PortfolioIdIndexRouteImport } from './routes/portfolio.$id.index'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
+import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
 import { Route as ReviewsIdEditRouteImport } from './routes/reviews.$id.edit'
 import { Route as ReviewsIdReplyRouteImport } from './routes/reviews.$id.reply'
@@ -801,6 +802,11 @@ const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
   path: '/portfolio/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioNewIndexRoute = PortfolioNewIndexRouteImport.update({
+  id: '/portfolio/new/',
+  path: '/portfolio/new/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioNewKindRoute = PortfolioNewKindRouteImport.update({
   id: '/portfolio/new/$kind',
   path: '/portfolio/new/$kind',
@@ -1040,6 +1046,7 @@ export interface FileRoutesByFullPath {
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id/': typeof PortfolioIdIndexRoute
+  '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/services/$id/': typeof ServicesIdIndexRoute
   '/settings/security/': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1188,6 +1195,7 @@ export interface FileRoutesByTo {
   '/opportunities/$id': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id': typeof PortfolioIdIndexRoute
+  '/portfolio/new': typeof PortfolioNewIndexRoute
   '/services/$id': typeof ServicesIdIndexRoute
   '/settings/security': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1338,6 +1346,7 @@ export interface FileRoutesById {
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id/': typeof PortfolioIdIndexRoute
+  '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/services/$id/': typeof ServicesIdIndexRoute
   '/settings/security/': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1489,6 +1498,7 @@ export interface FileRouteTypes {
     | '/opportunities/$id/'
     | '/opportunities/applications/'
     | '/portfolio/$id/'
+    | '/portfolio/new/'
     | '/services/$id/'
     | '/settings/security/'
     | '/business/bookings/requests/$ref'
@@ -1637,6 +1647,7 @@ export interface FileRouteTypes {
     | '/opportunities/$id'
     | '/opportunities/applications'
     | '/portfolio/$id'
+    | '/portfolio/new'
     | '/services/$id'
     | '/settings/security'
     | '/business/bookings/requests/$ref'
@@ -1786,6 +1797,7 @@ export interface FileRouteTypes {
     | '/opportunities/$id/'
     | '/opportunities/applications/'
     | '/portfolio/$id/'
+    | '/portfolio/new/'
     | '/services/$id/'
     | '/settings/security/'
     | '/business/bookings/requests/$ref'
@@ -1930,6 +1942,7 @@ export interface RootRouteChildren {
   OpportunitiesIdIndexRoute: typeof OpportunitiesIdIndexRoute
   OpportunitiesApplicationsIndexRoute: typeof OpportunitiesApplicationsIndexRoute
   PortfolioIdIndexRoute: typeof PortfolioIdIndexRoute
+  PortfolioNewIndexRoute: typeof PortfolioNewIndexRoute
   ServicesIdIndexRoute: typeof ServicesIdIndexRoute
   SettingsSecurityIndexRoute: typeof SettingsSecurityIndexRoute
   BusinessBookingsRequestsRefRoute: typeof BusinessBookingsRequestsRefRoute
@@ -2841,6 +2854,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/new/': {
+      id: '/portfolio/new/'
+      path: '/portfolio/new'
+      fullPath: '/portfolio/new/'
+      preLoaderRoute: typeof PortfolioNewIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio/new/$kind': {
       id: '/portfolio/new/$kind'
       path: '/portfolio/new/$kind'
@@ -3130,6 +3150,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesIdIndexRoute: OpportunitiesIdIndexRoute,
   OpportunitiesApplicationsIndexRoute: OpportunitiesApplicationsIndexRoute,
   PortfolioIdIndexRoute: PortfolioIdIndexRoute,
+  PortfolioNewIndexRoute: PortfolioNewIndexRoute,
   ServicesIdIndexRoute: ServicesIdIndexRoute,
   SettingsSecurityIndexRoute: SettingsSecurityIndexRoute,
   BusinessBookingsRequestsRefRoute: BusinessBookingsRequestsRefRoute,
