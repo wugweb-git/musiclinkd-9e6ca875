@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — Add to calendar uses the system calendar, never a file (4 Oct, queue item 5a + web link)
+
+- Android app: "Add to calendar" opens the phone calendar's own new-event screen, pre-filled
+  (`@ebarooni/capacitor-calendar` 8.7.1, `createEventWithPrompt` — the platform's insert intent, no
+  calendar permission, no Play form change). Afterwards the button reads "Open in calendar"
+  (`openCalendar`): Android doesn't say whether the person saved, so nothing claims "Added".
+- Web: Google Calendar's own add-event page (opens the Google Calendar app on Android). The `.ics`
+  download is gone (it also saved nothing in the Android app).
+- Only a confirmed booking with a date offers it. A booking with no time is a whole-day event; it
+  used to be put in as 10:00–14:00, made-up hours. An end before the start runs past midnight;
+  no end → the start plus the booking's hours. Times are India time.
+- Android: plugin registered (`cap sync`); versionCode 2 / versionName 1.1 for the next Play
+  upload. Needs a rebuild in Android Studio; untested on a device.
+- Not built yet: 5b (automatic sync, WRITE_CALENDAR), 5c (busy times, READ_CALENDAR) and 5d (the
+  web subscription feed — its private token needs a place to live: a new table or a column, which
+  needs the owner's yes).
+
 ### Changed — one Inbox (4 Oct, queue item 10)
 
 - `/inbox` is the one place: All · Messages · Enquiries · Booking Requests (`?tab=`). The Messages
