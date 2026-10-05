@@ -219,3 +219,48 @@ export const profileCounts = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return { followers: count ?? 0 };
   });
+
+/**
+ * A few of a profile's followers, for the overlapping faces a card shows once you follow it, plus
+ * the real follower count. Follows are public; private profiles stay out (RLS on profiles).
+ */
+export const followerFaces = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .handler(
+    async ({
+      data,
+    }): Promise<{
+      total: number;
+      faces: { id: string; name: string; avatarUrl: string | null }[];
+    }> => {
+      const client = await anonClient();
+      const {
+        data: rows,
+        count,
+        error,
+      } = await db(client)
+        .from("follows")
+        .select(
+          "follower:profiles!follows_follower_id_fkey(id, display_name, username, avatar_url)",
+          {
+            count: "exact",
+          },
+        )
+        .eq("target_id", data.profileId)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (error) throw new Error(error.message);
+      const faces = (rows ?? []).flatMap((r) => {
+        const f = (r as { follower: unknown }).follower as {
+          id: string;
+          display_name: string | null;
+          username: string | null;
+          avatar_url: string | null;
+        } | null;
+        return f
+          ? [{ id: f.id, name: f.display_name ?? f.username ?? "", avatarUrl: f.avatar_url }]
+          : [];
+      });
+      return { total: count ?? 0, faces };
+    },
+  );

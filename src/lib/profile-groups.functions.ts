@@ -38,6 +38,7 @@ type ProfileBase = {
   /** Kept from reviews by the database; null while there are none. */
   rating?: number | string | null;
   review_count?: number;
+  created_at?: string | null;
   /** The profile_business row: present only for a business account (one-to-one embed). */
   business?: { profile_id: string } | { profile_id: string }[] | null;
   followers_count?: number;
@@ -134,7 +135,7 @@ const isHidden = (visibility: string | null) =>
   visibility === "private" || visibility === "deactivated";
 
 const PROFILE =
-  "id, username, display_name, headline, bio, city, roles, genres, avatar_url, cover_url, is_verified, hourly_rate_paise, visibility, links, business:profile_business(profile_id)";
+  "id, username, display_name, headline, bio, city, roles, genres, avatar_url, cover_url, is_verified, hourly_rate_paise, visibility, links, created_at, business:profile_business(profile_id)";
 /** PROFILE with the missing-data columns; reads fall back to PROFILE until they exist. */
 const PROFILE_FULL = `${PROFILE}, pin_code, rating, review_count, followers_count`;
 
@@ -476,6 +477,8 @@ export type DirectoryPerson = {
   reviewCount: number;
   /** A business account (has a profile_business row): its card offers Follow, not Connect. */
   isBusiness?: boolean;
+  /** When the account was made; a card marks it "New" for its first 14 days. */
+  joinedAt?: string | null;
 };
 
 /**
@@ -500,6 +503,7 @@ function directoryPerson(r: ProfileBase): DirectoryPerson {
     pin_code: r.pin_code ?? null,
     rating: reviewCount && r.rating != null ? Number(r.rating) : null,
     reviewCount,
+    joinedAt: r.created_at ?? null,
     isBusiness: Array.isArray(r.business) ? r.business.length > 0 : Boolean(r.business),
   };
 }

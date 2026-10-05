@@ -36,6 +36,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - Card actions sit at the bottom of the card, inside its frame, beside the link (owner, 5 Oct);
   smaller cards (4:3 photo, tighter padding). Discover's People section shows talent only —
   business pages are filtered out.
+- Talent cards: no city (owner, 5 Oct). Glass labels on the photo from real data only: "New"
+  (joined in the last 14 days, `profiles.created_at`) and "Favourite" (you saved them).
+- The card CTA is a compact pill sized to its label, not full width.
+- A business card you already follow shows its latest followers' faces and the real count in
+  place of the button (`followerFaces` in `connections.functions.ts`; follows are public).
+  Unfollow stays on the profile page.
 - Bands: no Follow yet (`follows.target_id` points at profiles; a band is a `collabs` row).
 
 ### Changed — duplicate components merged, no visual change (5 Oct, phone plan P1)

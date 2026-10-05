@@ -8,13 +8,15 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import {
   answerConnection,
+  followerFaces,
   connectionWith,
   requestConnection,
   setFollowing,
   type ConnectionState,
 } from "@/lib/connections.functions";
+import { listMySavedIds } from "@/lib/saved.functions";
 import { Btn, BtnLink, IconBtn, IconBtnLink, VerifiedBadge } from "./ui";
-import { Rating } from "./kit";
+import { Rating, StatusPill } from "./kit";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
 import type { DiscoverBookable } from "@/lib/bookable-view";
 import { labelFor, type TaxonomyOption } from "@/lib/taxonomy";
@@ -90,10 +92,39 @@ function CardActions({
   return <div className={cn("flex items-center gap-2", className)}>{action}</div>;
 }
 
+/** Overlapping faces of a profile's latest followers and the real count; nothing without any. */
+function FollowerFaces({ profileId }: { profileId: string }) {
+  const load = useServerFn(followerFaces);
+  const q = useQuery({
+    queryKey: ["followers", "faces", profileId],
+    queryFn: () => load({ data: { profileId } }),
+  });
+  const faces = q.data?.faces ?? [];
+  if (!faces.length) return null;
+  const total = q.data?.total ?? faces.length;
+  return (
+    <span className="flex min-h-8 items-center gap-2" aria-label={`Following · ${total} followers`}>
+      <span className="flex -space-x-2" aria-hidden>
+        {faces.map((f) => (
+          <PersonAvatar
+            key={f.id}
+            name={f.name}
+            photo={f.avatarUrl ? sized(f.avatarUrl, { width: 32 }) : null}
+            className="h-7 w-7 border-2 border-card text-xs"
+          />
+        ))}
+      </span>
+      <span className="text-xs text-muted-foreground" aria-hidden>
+        {total.toLocaleString("en-IN")}
+      </span>
+    </span>
+  );
+}
+
 /** Looks 36px, takes a 48dp tap (hit-area). */
 const actionBtn = "hit-area min-h-9 h-9 px-3 text-1";
-/** On a card: a small full-width button at the card's bottom (looks 32px, taps at 48dp). */
-const cardFooterBtn = "hit-area !min-h-8 !h-8 w-full !gap-1 !px-3 !text-1";
+/** On a card: a compact pill at the card's bottom, sized to its label (looks 32px, taps at 48dp). */
+const cardFooterBtn = "hit-area !min-h-8 !h-8 !gap-1 !px-3 !text-1";
 
 function RelationButton({
   profileId,
@@ -149,6 +180,9 @@ function RelationButton({
           <StateIcon outline={Plus} solid="check" active={on} size={iconSize.md} move="stamp" />
         </IconBtn>
       );
+    // On a card you already follow, the button gives way to who else follows (owner, 5 Oct).
+    // Unfollow stays on the profile page.
+    if (on && !pending) return <FollowerFaces profileId={profileId} />;
     return (
       <Btn
         variant={on ? "outline" : "primary"}
@@ -219,7 +253,15 @@ export type PersonLike = Pick<DirectoryPerson, "id" | "name" | "headline" | "cit
   reviewCount?: number | undefined;
   /** A business account: Follow instead of Connect (owner, 5 Oct). */
   isBusiness?: boolean | undefined;
+  joinedAt?: string | null | undefined;
 };
+
+const NEW_FOR_MS = 14 * 24 * 60 * 60 * 1000;
+function joinedRecently(at: string | null | undefined) {
+  if (!at) return false;
+  const t = Date.parse(at);
+  return Number.isFinite(t) && Date.now() - t < NEW_FOR_MS;
+}
 
 function personDetail(person: PersonLike, roleLabels?: TaxonomyOption[]) {
   return (
@@ -358,6 +400,15 @@ export function PersonCard({
     .map((r) => labelFor(roleLabels, r))
     .join(" · ");
   const rating = person.rating ?? null;
+  const { signedIn } = useAuth();
+  const loadSaved = useServerFn(listMySavedIds);
+  const saved = useQuery({
+    queryKey: ["saved", "ids", "talent"],
+    queryFn: () => loadSaved({ data: { targetType: "talent" } }),
+    enabled: signedIn && !disabled,
+  });
+  const favourite = saved.data?.includes(person.id) ?? false;
+  const isNew = joinedRecently(person.joinedAt);
   const body = featured ? (
     <>
       {person.avatarUrl ? (
@@ -381,47 +432,45 @@ export function PersonCard({
         {detail ? (
           <span className="mt-0.5 block truncate text-1 text-background/80">{detail}</span>
         ) : null}
-        {person.city || rating != null ? (
-          <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-background/80">
-            {person.city ? <span className="truncate">{person.city}</span> : null}
-            {person.city && rating != null ? <span aria-hidden>·</span> : null}
-            {rating != null ? (
-              <span className="flex shrink-0 items-center gap-0.5">
-                <Star size={iconSize.xs} fill="currentColor" aria-hidden />
-                {rating.toFixed(1)}
-              </span>
-            ) : null}
+        {rating != null ? (
+          <span className="mt-0.5 flex items-center gap-0.5 text-1 text-background/80">
+            <Star size={iconSize.xs} fill="currentColor" aria-hidden />
+            {rating.toFixed(1)}
           </span>
         ) : null}
       </span>
     </>
   ) : (
-    // Reference 16: square photo inset in the card, name, role · specialty, place in small capitals.
+    // Reference 16: photo inset in the card, name, role · specialty. No city on a talent card (owner, 5 Oct).
     // No photo: the brand mark on a quiet tile, never initials.
     <>
-      {person.avatarUrl ? (
-        <img
-          src={sized(person.avatarUrl, { width: 412 })}
-          alt=""
-          loading="lazy"
-          className="aspect-[4/3] w-full rounded-md object-cover"
-        />
-      ) : (
-        <span className="flex aspect-[4/3] w-full items-center justify-center rounded-md bg-subtle">
-          <LogoMark className="h-auto w-1/4" />
-        </span>
-      )}
+      <span className="relative block">
+        {person.avatarUrl ? (
+          <img
+            src={sized(person.avatarUrl, { width: 412 })}
+            alt=""
+            loading="lazy"
+            className="aspect-[4/3] w-full rounded-md object-cover"
+          />
+        ) : (
+          <span className="flex aspect-[4/3] w-full items-center justify-center rounded-md bg-subtle">
+            <LogoMark className="h-auto w-1/4" />
+          </span>
+        )}
+        {/* Glass labels from real data only: New (joined in the last 14 days), Favourite (you saved them). */}
+        {isNew || favourite ? (
+          <span className="absolute left-1.5 top-1.5 flex gap-1">
+            {isNew ? <StatusPill label="New" tone="brand" onMedia /> : null}
+            {favourite ? <StatusPill label="Favourite" tone="good" onMedia /> : null}
+          </span>
+        ) : null}
+      </span>
       <span className="mt-2 flex min-w-0 items-center gap-1">
         <span className="truncate text-sm font-bold text-foreground">{person.name}</span>
         {person.verified ? <VerifiedBadge size={14} /> : null}
       </span>
       {roleLine ? (
         <span className="block truncate text-xs text-muted-foreground">{roleLine}</span>
-      ) : null}
-      {person.city ? (
-        <span className="mt-0.5 block truncate text-xs uppercase text-muted-foreground">
-          {person.city}
-        </span>
       ) : null}
     </>
   );
