@@ -46,7 +46,7 @@ import { StateIcon } from "./tab-icon";
 /* ------------------------------------------------------------------ */
 
 /*
- * The action band every profile card shares (owner, 5 Oct: cards get Connect / Follow). It sits
+ * The action every profile card shares (owner, 5 Oct: cards get Connect / Follow). It sits
  * next to the card's link, never inside it: a button inside a link is invalid HTML. A person gets
  * Connect, a business gets Follow (item 11); neither is needed before Message. Signed out, the
  * action goes to Welcome, as on the profile pages. Your own card shows no action. The state is
@@ -91,8 +91,8 @@ function CardActions({
 
 /** Looks 36px, takes a 48dp tap (hit-area). */
 const actionBtn = "hit-area min-h-9 h-9 px-3 text-1";
-/** On a rail card the action spans the card's width, so it reads as the card's footer. */
-const cardFooterBtn = "hit-area min-h-10 h-10 w-full px-3 text-1";
+/** On a rail card: a small pill in the card's top-right corner (looks 32px, taps at 48dp). */
+const cardFooterBtn = "hit-area !min-h-8 !h-8 !gap-1 !px-3 !text-1 shadow-xs";
 
 function RelationButton({
   profileId,
@@ -426,9 +426,9 @@ export function PersonCard({
     : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]";
   // A preview, or a person with no username, is the same card with nothing to open.
   if (disabled || !person.username) return <div className={shape}>{body}</div>;
-  // The footer sits beside the link, not inside it (no button inside a link).
+  // The action sits over the card but beside the link, not inside it (no button inside a link).
   return (
-    <div className="flex w-rail-sm shrink-0 flex-col gap-2">
+    <div className="relative w-rail-sm shrink-0">
       <Link
         to="/profile/$username"
         params={{ username: person.username }}
@@ -436,7 +436,11 @@ export function PersonCard({
       >
         {body}
       </Link>
-      <CardActions profileId={person.id} relation={person.isBusiness ? "follow" : "connect"} />
+      <CardActions
+        profileId={person.id}
+        relation={person.isBusiness ? "follow" : "connect"}
+        className="absolute right-3 top-3 z-10"
+      />
     </div>
   );
 }
@@ -561,9 +565,9 @@ export function BookableCard({
     ? "relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
     : "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs";
   if (!link) return <div className={shape}>{body}</div>;
-  // The footer sits beside the link, not inside it (no button inside a link).
+  // The action sits over the card but beside the link, not inside it (no button inside a link).
   return (
-    <div className="flex w-rail-md shrink-0 flex-col gap-2">
+    <div className="relative w-rail-md shrink-0">
       <Link
         {...link}
         className={cn(
@@ -575,7 +579,11 @@ export function BookableCard({
       >
         {body}
       </Link>
-      <CardActions profileId={studio.ownerId} relation="follow" />
+      <CardActions
+        profileId={studio.ownerId}
+        relation="follow"
+        className="absolute right-3 top-3 z-10"
+      />
     </div>
   );
 }
