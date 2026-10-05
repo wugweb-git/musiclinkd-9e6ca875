@@ -17,11 +17,16 @@ import { Chip, Screen, SearchBar, SectionHeader } from "@/components/ml/ui";
 import { listBookables, listOpportunities } from "@/lib/catalog.functions";
 import {
   listTrendingPages,
+  listNewWork,
   listTrendingWork,
+  type NewWorkItem,
   type TrendingItem,
   type TrendingPage,
 } from "@/lib/trending.functions";
 import { workType } from "@/data/portfolio";
+import { listBands, type BandRow } from "@/lib/bands.functions";
+import { joinParts } from "@/lib/utils";
+import { sized } from "@/lib/image-url";
 import { WorkLinkRow } from "@/components/ml/portfolio";
 import { discoverBookableFromRow } from "@/lib/bookable-view";
 import { iconSize } from "@/lib/tokens";
@@ -30,7 +35,7 @@ import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.function
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 import { useMyBusinessIdentity } from "@/hooks/use-my-business-identity";
-import { useTaxonomy } from "@/lib/taxonomy";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/discover/")({
   head: () => ({
@@ -51,23 +56,38 @@ export const Route = createFileRoute("/discover/")({
     ],
   }),
   loader: async () => {
-    const [studioRows, opportunityRows, labels, people, trendingWork, trendingPages] =
-      await Promise.all([
-        listBookables().catch(() => []),
-        listOpportunities().catch(() => []),
-        getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-        searchPeople({ data: { limit: 20, withTotal: false } })
-          .then((result) => result.people)
-          .catch((): DirectoryPerson[] => []),
-        listTrendingWork().catch((): TrendingItem[] => []),
-        listTrendingPages().catch((): TrendingPage[] => []),
-      ]);
+    const [
+      studioRows,
+      opportunityRows,
+      labels,
+      people,
+      trendingWork,
+      trendingPages,
+      bands,
+      newWork,
+    ] = await Promise.all([
+      listBookables().catch(() => []),
+      listOpportunities().catch(() => []),
+      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+      searchPeople({ data: { limit: 20, withTotal: false } })
+        .then((result) => result.people)
+        .catch((): DirectoryPerson[] => []),
+      listTrendingWork().catch((): TrendingItem[] => []),
+      listTrendingPages().catch((): TrendingPage[] => []),
+      listBands().catch((): BandRow[] => []),
+      listNewWork().catch((): NewWorkItem[] => []),
+    ]);
     return {
       studios: studioRows.map((row) => discoverBookableFromRow(row, labels)),
       opportunities: opportunityRows.map((row) => opportunityFromRow(row, labels)),
       people,
       trendingWork,
       trendingPages,
+      newWork,
+      // Collabs, newest first (owner, 5 Oct: no ranking, new to old).
+      collabs: [...bands]
+        .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""))
+        .slice(0, 8),
     };
   },
   // Coming back to Discover within a minute reuses what was read instead of waiting again.
@@ -99,25 +119,31 @@ function DiscoverScreen() {
     recommendations?.opportunities,
     (opportunity) => opportunity.id,
   );
-  const showPeople = mode === "For you" || mode === "People" || mode === "Talent";
-  const showStudios = mode === "For you" || mode === "Studios";
+  // On For you the trending rails (below) carry people and businesses; these lists are their tabs'.
+  const showPeople = mode === "People" || mode === "Talent";
+  const showStudios = mode === "Studios";
   const showOpportunities = mode === "For you" || mode === "Opportunities";
 
   // Trending (owner, 5 Oct): each section is real activity from the last 7 days, and a section
   // with nothing in it is left out rather than shown empty. Collabs have no trending signal yet.
-  const trendingTalent = loaded.trendingPages.flatMap((page) =>
+  const rankedTalent = loaded.trendingPages.flatMap((page) =>
     page.kind === "person" && !page.person.isBusiness ? [page.person] : [],
   );
+  // No activity this week: the talent the directory already loaded, so the rail still shows people.
+  const trendingTalent = rankedTalent.length ? rankedTalent : people;
   const studioById = new Map(loaded.studios.map((studio) => [studio.id, studio]));
   const trendingBusinesses = loaded.trendingPages.flatMap((page) => {
     const studio = page.kind === "studio" ? studioById.get(page.studioId) : undefined;
     return studio ? [studio] : [];
   });
-  const trendingAudio = loaded.trendingWork.filter((w) => workType(w.kind).media === "audio");
-  const trendingVideo = loaded.trendingWork.filter((w) => workType(w.kind).media === "video");
-  const trendingOpportunities = loaded.opportunities
-    .filter((o) => o.applicants > 0)
-    .sort((a, b) => b.applicants - a.applicants);
+  const trendingBusinessesShown = trendingBusinesses.length ? trendingBusinesses : loaded.studios;
+  // A quiet week falls back to the newest work of that kind, so a section is never empty.
+  const workPool = loaded.trendingWork.length ? loaded.trendingWork : loaded.newWork;
+  const trendingAudio = workPool.filter((w) => workType(w.kind).media === "audio");
+  const trendingVideo = workPool.filter((w) => workType(w.kind).media === "video");
+  const trendingOpportunities = [...loaded.opportunities].sort(
+    (a, b) => b.applicants - a.applicants,
+  );
 
   return (
     <Screen className="pb-nav-clear">
@@ -282,11 +308,11 @@ function DiscoverScreen() {
                 </div>
               </section>
             ) : null}
-            {trendingBusinesses.length ? (
+            {trendingBusinessesShown.length ? (
               <section>
                 <SectionHeader title="Trending businesses" />
                 <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
-                  {trendingBusinesses.slice(0, 8).map((studio) => (
+                  {trendingBusinessesShown.slice(0, 8).map((studio) => (
                     <BookableCard key={studio.id} studio={studio} featured />
                   ))}
                 </div>
@@ -309,6 +335,54 @@ function DiscoverScreen() {
                   {trendingVideo.slice(0, 5).map((work) => (
                     <WorkLinkRow key={work.id} work={work} />
                   ))}
+                </div>
+              </section>
+            ) : null}
+            {loaded.collabs.length ? (
+              <section>
+                <SectionHeader
+                  title="Collabs"
+                  action={
+                    <Link to="/bands" className="link-action text-sm font-semibold">
+                      See all
+                    </Link>
+                  }
+                />
+                <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
+                  {loaded.collabs.map((band) => {
+                    const photo = band.cover_url ?? band.avatar_url;
+                    return (
+                      <Link
+                        key={band.id}
+                        to="/bands/$id"
+                        params={{ id: band.slug }}
+                        className="state-layer block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs active:scale-[0.985]"
+                      >
+                        {photo ? (
+                          <img
+                            src={sized(photo, { width: 412 })}
+                            alt=""
+                            loading="lazy"
+                            className="h-28 w-full object-cover"
+                          />
+                        ) : (
+                          <span aria-hidden className="block h-28 w-full bg-subtle" />
+                        )}
+                        <span className="block p-3">
+                          <span className="block truncate text-sm font-bold">{band.name}</span>
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {joinParts(
+                              (band.genres ?? [])
+                                .slice(0, 2)
+                                .map((g) => labelFor(options?.genres, g))
+                                .join(" · "),
+                              band.city,
+                            )}
+                          </span>
+                        </span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </section>
             ) : null}

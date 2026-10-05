@@ -22,6 +22,7 @@ import {
 
 export type BandRow = {
   id: string;
+  created_at?: string | null;
   slug: string;
   name: string;
   tagline: string | null;
@@ -93,7 +94,7 @@ export type BandRow = {
 };
 
 const BAND = `id, slug, name, tagline, bio, genres, city, formed_year, avatar_url, cover_url, looking_for,
-  availability, rate_paise, rate_unit, is_verified, created_by, type, visibility, status,
+  availability, rate_paise, rate_unit, is_verified, created_by, created_at, type, visibility, status,
   rider, stage_plot_url, stage_plot_note,
   members:collab_members(profile_id, role, instrument, since_year, sort_order,
     profile:profiles!band_members_profile_id_fkey(username, display_name, avatar_url, is_verified)),

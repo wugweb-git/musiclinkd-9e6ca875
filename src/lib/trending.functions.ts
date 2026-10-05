@@ -192,7 +192,15 @@ export type TrendingPage =
   | { kind: "person"; score: number; person: DirectoryPerson }
   | { kind: "studio"; score: number; studioId: string };
 
-const WEIGHT = { view: 1, follow: 3, save: 3, enquiry: 4, booking: 4, review: 4 } as const;
+const WEIGHT = {
+  view: 1,
+  follow: 3,
+  connect: 3,
+  save: 3,
+  enquiry: 4,
+  booking: 4,
+  review: 4,
+} as const;
 
 async function rowsOf<T>(query: PromiseLike<{ data: unknown; error: unknown }>): Promise<T[]> {
   // A table not there yet is one missing signal, not a failure.
@@ -225,7 +233,7 @@ export const listTrendingPages = createServerFn({ method: "GET" }).handler(
     const db = supabaseAdmin as unknown as SupabaseClient;
     const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-    const [views, follows, saves, enquiries, bookings, reviews, studios, businesses] =
+    const [views, follows, saves, enquiries, bookings, reviews, studios, businesses, connections] =
       await Promise.all([
         rowsOf<{ kind: string; handle: string }>(
           db
@@ -271,6 +279,13 @@ export const listTrendingPages = createServerFn({ method: "GET" }).handler(
           })(),
         ),
         rowsOf<{ profile_id: string }>(db.from("profile_business").select("profile_id")),
+        rowsOf<{ requester_id: string; addressee_id: string }>(
+          db
+            .from("connections")
+            .select("requester_id, addressee_id")
+            .gte("created_at", since)
+            .limit(5000),
+        ),
       ]);
 
     // Views are stored by username; everything else by id.
@@ -289,6 +304,8 @@ export const listTrendingPages = createServerFn({ method: "GET" }).handler(
     };
     for (const v of views) add(byProfile, idOfHandle.get(v.handle), WEIGHT.view);
     for (const f of follows) add(byProfile, f.target_id, WEIGHT.follow);
+    // A connection request is activity for the person asked.
+    for (const c of connections) add(byProfile, c.addressee_id, WEIGHT.connect);
     for (const s of saves)
       add(s.target_type === "studio" ? byStudio : byProfile, s.target_id, WEIGHT.save);
     for (const e of enquiries) add(byProfile, e.business_profile_id, WEIGHT.enquiry);

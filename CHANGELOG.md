@@ -13,7 +13,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   `listTrendingPages` (views, follows, saves, enquiries, bookings, reviews in the last 7 days);
   audio and video from `listTrendingWork` (plays in the last 7 days). A section with nothing in it
   is left out. Replaces the single "Trending work" list.
-- Trending collabs: not added — bands have no activity signal to rank by yet.
+- Collabs (owner, 5 Oct): newest first, no ranking; `listBands` now reads `created_at`.
+- A quiet week never leaves a section empty: talent falls back to the directory, businesses to
+  the studios list, audio and video to the newest published work (`listNewWork`), opportunities
+  are ordered by applications. On For you the trending rails replace "People worth meeting" and
+  "Studios and spaces" (those stay on their tabs), so nothing shows twice.
+- Connection requests count as activity (weight 3, for the person asked) alongside views,
+  follows, saves, enquiries, bookings and reviews. Likes join once the likes table exists.
 
 ### Fixed — no eyebrow above the Discover title (5 Oct)
 
