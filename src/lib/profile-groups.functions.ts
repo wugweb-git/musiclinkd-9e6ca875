@@ -557,11 +557,14 @@ export const searchPeople = createServerFn({ method: "GET" })
         limit: z.number().int().min(1).max(60).optional(),
         /** Skip the exact count when the screen never shows it; the count is the slow part. */
         withTotal: z.boolean().optional(),
+        /** People means talent: leave business accounts out (owner, 5 Oct). */
+        talentOnly: z.boolean().optional(),
       })
       .parse(d),
   )
   .handler(async ({ data }): Promise<{ people: DirectoryPerson[]; total: number }> => {
     const client = await anonClient();
+    const businessIds = data.talentOnly ? await businessProfileIds(client) : [];
     // A comma or a bracket would be read as another condition, so neither survives the text.
     const text = (data.q ?? "").replace(/[,()]/g, " ").trim();
     const search = (columns: string) => {
@@ -580,6 +583,7 @@ export const searchPeople = createServerFn({ method: "GET" })
       if (data.role) query = query.contains("roles", [data.role]);
       if (data.genre) query = query.contains("genres", [data.genre]);
       if (data.verifiedOnly) query = query.eq("is_verified", true);
+      if (businessIds.length) query = query.not("id", "in", `(${businessIds.join(",")})`);
       return query.order("is_verified", { ascending: false }).limit(data.limit ?? 40);
     };
 
@@ -872,4 +876,37 @@ async function setUpBusiness(
       }
     }
   }
+}
+
+/**
+ * How many public people carry each role and genre, for the counts beside every option in the
+ * Search filters (plan §9). Counted from the stored profiles, never estimated.
+ */
+export const peopleFacets = createServerFn({ method: "GET" }).handler(
+  async (): Promise<{ roles: Record<string, number>; genres: Record<string, number> }> => {
+    const client = await anonClient();
+    const businessIds = await businessProfileIds(client);
+    let query = client
+      .from("profiles")
+      .select("roles, genres")
+      .eq("visibility", "public")
+      .or(APPEARS_IN_DISCOVER)
+      .limit(5000);
+    if (businessIds.length) query = query.not("id", "in", `(${businessIds.join(",")})`);
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+    const roles: Record<string, number> = {};
+    const genres: Record<string, number> = {};
+    for (const r of (data ?? []) as { roles: string[] | null; genres: string[] | null }[]) {
+      for (const x of r.roles ?? []) roles[x] = (roles[x] ?? 0) + 1;
+      for (const x of r.genres ?? []) genres[x] = (genres[x] ?? 0) + 1;
+    }
+    return { roles, genres };
+  },
+);
+
+/** Every business account's profile id (a profile_business row makes an account a business). */
+async function businessProfileIds(client: Awaited<ReturnType<typeof anonClient>>) {
+  const { data } = await client.from("profile_business").select("profile_id").limit(5000);
+  return ((data ?? []) as { profile_id: string }[]).map((r) => r.profile_id);
 }

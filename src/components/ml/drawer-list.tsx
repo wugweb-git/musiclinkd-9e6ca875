@@ -15,6 +15,8 @@ export type DrawerOption = {
   label: string;
   /** A second line under the label ("Studios, stages, sets"). */
   hint?: string | undefined;
+  /** A real count shown at the row's end (filters: how many results this option has). */
+  count?: number | undefined;
   icon?: LucideIcon;
   iconNode?: ReactNode;
 };
@@ -135,6 +137,11 @@ export function DrawerOptionRow({
             <span className="mt-0.5 block text-1 text-muted-foreground">{option.hint}</span>
           ) : null}
         </span>
+        {option.count !== undefined ? (
+          <span className="shrink-0 text-1 tabular-nums text-muted-foreground">
+            {option.count.toLocaleString("en-IN")}
+          </span>
+        ) : null}
         {selected ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
       </button>
     </li>

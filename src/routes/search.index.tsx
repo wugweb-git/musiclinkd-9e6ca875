@@ -3,7 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Bookmark, Info, MapPin } from "lucide-react";
+import { ArrowLeft, Bookmark, ChevronDown, Info, MapPin, X } from "lucide-react";
+import { DrawerList, DrawerOptionRow, DrawerSearch, matching } from "@/components/ml/drawer-list";
 import {
   Btn,
   Chip,
@@ -11,6 +12,7 @@ import {
   IconBtnLink,
   Screen,
   SearchBar,
+  Sheet,
   SectionHeader,
   VerifiedBadge,
 } from "@/components/ml/ui";
@@ -21,7 +23,7 @@ import { ListingGrid } from "@/components/ml/market";
 import { OpportunityCard } from "@/components/ml/opportunity";
 
 import { useAuth } from "@/hooks/use-auth";
-import { searchPeople } from "@/lib/profile-groups.functions";
+import { peopleFacets, searchPeople } from "@/lib/profile-groups.functions";
 import {
   listMySearchFeedback,
   searchEverything,
@@ -40,7 +42,7 @@ import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.function
 import { listingFromRow } from "@/lib/market-view";
 import { opportunityFromRow } from "@/lib/opportunity-view";
 import { useSearchRecorder } from "@/lib/search-events";
-import { talentTypes, useTaxonomy } from "@/lib/taxonomy";
+import { labelFor, talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
 
@@ -76,7 +78,7 @@ const TAB_LABEL: Record<Tab, string> = {
 };
 const tabOf = (label: string) => TABS.find((t) => TAB_LABEL[t] === label) ?? "all";
 
-type SearchParams = { q?: string; tab?: Tab; role?: string; verified?: true };
+type SearchParams = { q?: string; tab?: Tab; role?: string; genre?: string; verified?: true };
 
 export const Route = createFileRoute("/search/")({
   validateSearch: (search: Record<string, unknown>): SearchParams => {
@@ -87,6 +89,7 @@ export const Route = createFileRoute("/search/")({
       out.tab = tab as Tab;
     // Filters live in the address too, so Back and a shared link bring them back (plan §9).
     if (typeof search["role"] === "string" && search["role"]) out.role = search["role"];
+    if (typeof search["genre"] === "string" && search["genre"]) out.genre = search["genre"];
     if (search["verified"] === true || search["verified"] === "true") out.verified = true;
     return out;
   },
@@ -130,6 +133,8 @@ function SearchResults() {
   const navigate = useNavigate({ from: "/search/" });
   const [q, setQ] = useState(params.q ?? "");
   const role = params.role ?? "";
+  const genre = params.genre ?? "";
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const verifiedOnly = params.verified === true;
   const term = useSettled(q).trim();
   // The address follows the query once typing stops, and every filter as it changes.
@@ -164,13 +169,15 @@ function SearchResults() {
 
   const find = useServerFn(searchPeople);
   const people = useQuery({
-    queryKey: ["search", "people", term, role, verifiedOnly, limit],
+    queryKey: ["search", "people", term, role, genre, verifiedOnly, limit],
     queryFn: () =>
       find({
         data: {
           ...(term ? { q: term } : {}),
           ...(role ? { role } : {}),
+          ...(genre ? { genre } : {}),
           ...(verifiedOnly ? { verifiedOnly: true } : {}),
+          talentOnly: true,
           limit,
         },
       }),
@@ -272,8 +279,6 @@ function SearchResults() {
     onError: () => toast.error("That didn't save. Try again."),
   });
 
-  // A handful of roles to narrow people by; the full list is the categories screen.
-  const roles = talentTypes(options?.person_types ?? []).slice(0, 8);
   const toTab = (next: Tab) => {
     // Roles narrow people only, and only show on People; leaving it drops the role.
     void navigate({
@@ -281,6 +286,7 @@ function SearchResults() {
         ...(q.trim() ? { q: q.trim() } : {}),
         ...(next === "all" ? {} : { tab: next }),
         ...(next === "people" && role ? { role } : {}),
+        ...(next === "people" && genre ? { genre } : {}),
         ...(verifiedOnly ? { verified: true as const } : {}),
       },
       replace: true,
@@ -354,11 +360,27 @@ function SearchResults() {
       },
     ];
   const shown = sections.filter((s) => (tab === "all" || s.tab === tab) && s.count > 0);
-  const filtering = Boolean(term || role || verifiedOnly);
+  const filtering = Boolean(term || role || genre || verifiedOnly);
+  const activeFilters = (role ? 1 : 0) + (genre ? 1 : 0);
   const popularItems = popular.data?.items ?? [];
 
   return (
     <Screen>
+      {/* Outside the blurred sticky header: its backdrop-filter would trap the fixed sheet. */}
+      <PeopleFilters
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        term={term}
+        verifiedOnly={verifiedOnly}
+        role={role}
+        genre={genre}
+        roleOptions={talentTypes(options?.person_types ?? [])}
+        genreOptions={options?.genres ?? []}
+        onApply={(next) => {
+          setParams({ role: next.role || undefined, genre: next.genre || undefined });
+          setFiltersOpen(false);
+        }}
+      />
       <div className="pt-safe sticky top-0 z-bar bg-background/95 px-5 backdrop-blur">
         <div className="mb-3 flex items-center gap-3">
           <Link
@@ -375,18 +397,29 @@ function SearchResults() {
           <Chip active={verifiedOnly} onClick={() => setVerifiedOnly((v) => !v)}>
             Verified
           </Chip>
-          {tab === "people"
-            ? roles.map((o) => (
-                <Chip
-                  key={o.slug}
-                  active={role === o.slug}
-                  onClick={() => setRole(role === o.slug ? "" : o.slug)}
-                >
-                  {o.label}
-                </Chip>
-              ))
-            : null}
+          {tab === "people" ? (
+            <Chip active={activeFilters > 0} onClick={() => setFiltersOpen(true)}>
+              {activeFilters ? `Filters · ${activeFilters}` : "Filters"}
+            </Chip>
+          ) : null}
         </div>
+        {tab === "people" && activeFilters ? (
+          // Active filters as removable ink chips (plan §9).
+          <div className="mt-2 flex flex-wrap gap-2">
+            {role ? (
+              <ActiveFilterChip
+                label={labelFor(options?.person_types, role)}
+                onRemove={() => setRole("")}
+              />
+            ) : null}
+            {genre ? (
+              <ActiveFilterChip
+                label={labelFor(options?.genres, genre)}
+                onRemove={() => setParams({ genre: undefined })}
+              />
+            ) : null}
+          </div>
+        ) : null}
         <div className="mt-1">
           <Segmented
             value={TAB_LABEL[tab]}
@@ -611,5 +644,202 @@ function HitList({ hits, q }: { hits: SearchHit[]; q: string }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function ActiveFilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onRemove}
+      aria-label={`Remove filter: ${label}`}
+      className="hit-area state-layer inline-flex h-8 items-center gap-1 rounded-full bg-ink pl-3 pr-2 text-1 font-semibold text-ink-foreground"
+    >
+      {label}
+      <X size={iconSize.sm} aria-hidden />
+    </button>
+  );
+}
+
+const SHOWN_AT_FIRST = 8;
+
+/**
+ * The People filters panel (plan §9): Role and Genre, each searchable, a real count on every
+ * option, "Show N more", and a footer with Clear all and a live "Show N results". One role and
+ * one genre at a time — the people search narrows by one of each.
+ */
+function PeopleFilters({
+  open,
+  onClose,
+  term,
+  verifiedOnly,
+  role,
+  genre,
+  roleOptions,
+  genreOptions,
+  onApply,
+}: {
+  open: boolean;
+  onClose: () => void;
+  term: string;
+  verifiedOnly: boolean;
+  role: string;
+  genre: string;
+  roleOptions: TaxonomyOption[];
+  genreOptions: TaxonomyOption[];
+  onApply: (next: { role: string; genre: string }) => void;
+}) {
+  const [draft, setDraft] = useState({ role, genre });
+  const [openGroup, setOpenGroup] = useState<"Role" | "Genre" | "">("Role");
+  useEffect(() => {
+    if (open) setDraft({ role, genre });
+  }, [open, role, genre]);
+  const loadFacets = useServerFn(peopleFacets);
+  const facets = useQuery({
+    queryKey: ["search", "people", "facets"],
+    queryFn: () => loadFacets(),
+    enabled: open,
+    staleTime: 5 * 60_000,
+  });
+  const find = useServerFn(searchPeople);
+  const live = useQuery({
+    queryKey: ["search", "people", "count", term, draft.role, draft.genre, verifiedOnly],
+    queryFn: () =>
+      find({
+        data: {
+          ...(term ? { q: term } : {}),
+          ...(draft.role ? { role: draft.role } : {}),
+          ...(draft.genre ? { genre: draft.genre } : {}),
+          ...(verifiedOnly ? { verifiedOnly: true } : {}),
+          talentOnly: true,
+          limit: 1,
+          withTotal: true,
+        },
+      }),
+    enabled: open,
+  });
+  const total = live.data?.total;
+  return (
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Filters"
+      titleAction={
+        <button
+          type="button"
+          className="hit-area text-sm font-semibold underline-offset-4 hover:underline"
+          onClick={() => setDraft({ role: "", genre: "" })}
+        >
+          Clear all
+        </button>
+      }
+    >
+      <div className="divide-y divide-border">
+        <FilterGroup
+          title="Role"
+          open={openGroup === "Role"}
+          onToggle={() => setOpenGroup((g) => (g === "Role" ? "" : "Role"))}
+          picked={draft.role ? labelFor(roleOptions, draft.role) : ""}
+          options={roleOptions}
+          counts={facets.data?.roles}
+          value={draft.role}
+          onPick={(v) => setDraft((d) => ({ ...d, role: d.role === v ? "" : v }))}
+        />
+        <FilterGroup
+          title="Genre"
+          open={openGroup === "Genre"}
+          onToggle={() => setOpenGroup((g) => (g === "Genre" ? "" : "Genre"))}
+          picked={draft.genre ? labelFor(genreOptions, draft.genre) : ""}
+          options={genreOptions}
+          counts={facets.data?.genres}
+          value={draft.genre}
+          onPick={(v) => setDraft((d) => ({ ...d, genre: d.genre === v ? "" : v }))}
+        />
+      </div>
+      <div className="sticky bottom-0 mt-4 bg-card pt-3 pb-safe">
+        <Btn className="w-full" loading={live.isFetching} onClick={() => onApply(draft)}>
+          {total === undefined ? "Show results" : `Show ${total.toLocaleString("en-IN")} results`}
+        </Btn>
+      </div>
+    </Sheet>
+  );
+}
+
+function FilterGroup({
+  title,
+  open,
+  onToggle,
+  picked,
+  options,
+  counts,
+  value,
+  onPick,
+}: {
+  title: string;
+  /** Groups open in place, one at a time, so the panel stays short. */
+  open: boolean;
+  onToggle: () => void;
+  picked: string;
+  options: TaxonomyOption[];
+  counts: Record<string, number> | undefined;
+  value: string;
+  onPick: (slug: string) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [all, setAll] = useState(false);
+  // Only options someone actually has, most common first; the picked one always stays visible.
+  const withCounts = options
+    .map((o) => ({ value: o.slug, label: o.label, count: counts?.[o.slug] ?? 0 }))
+    .filter((o) => !counts || o.count > 0 || o.value === value)
+    .sort((a, b) => b.count - a.count);
+  const found = matching(withCounts, query);
+  const shown = all || query ? found : found.slice(0, SHOWN_AT_FIRST);
+  const more = found.length - shown.length;
+  return (
+    <section className="py-1">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={onToggle}
+        className="state-layer flex min-h-touch w-full items-center gap-3 text-left"
+      >
+        <span className="flex-1 text-2 font-semibold">{title}</span>
+        {picked ? <span className="truncate text-1 text-muted-foreground">{picked}</span> : null}
+        <ChevronDown
+          size={iconSize.md}
+          aria-hidden
+          className={`shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open ? (
+        <div className="pb-3">
+          <DrawerSearch
+            value={query}
+            onChange={setQuery}
+            label={`Search ${title.toLowerCase()}`}
+            placeholder={`Search ${title.toLowerCase()}`}
+          />
+          <DrawerList label={title} empty="Nothing matches that.">
+            {shown.map((o) => (
+              <DrawerOptionRow
+                key={o.value}
+                option={counts ? o : { value: o.value, label: o.label }}
+                selected={value === o.value}
+                onClick={() => onPick(o.value)}
+              />
+            ))}
+          </DrawerList>
+          {more > 0 ? (
+            <button
+              type="button"
+              className="hit-area mt-2 text-sm font-semibold underline-offset-4 hover:underline"
+              onClick={() => setAll(true)}
+            >
+              Show {more} more
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
   );
 }

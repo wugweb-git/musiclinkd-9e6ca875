@@ -17,6 +17,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   saved in the address, so Back and a shared link bring them back.
 - Nothing matched while filtering: the empty state offers "Clear filters". A failed search shows
   `LoadError` with Try again instead of a dead card.
+- People filters panel (`Sheet` + `DrawerList`): Role and Genre groups that open in place, search
+  inside each group, a real count on every option (`peopleFacets`), "Show N more", Clear all and a
+  live "Show N results". The Filters chip shows how many are on ("Filters · 1"); active filters
+  show as removable ink chips. Genre is saved in the address too.
+- People means talent: `searchPeople({ talentOnly })` leaves business accounts out, so the list
+  and every count match. `DrawerOption.count` shows a count at a row's end.
 - `ui.tsx` `SearchBar`: a round × (48dp tap area) clears the field whenever it has text.
 
 ### Added — public work card with Like and Share (5 Oct, phone plan P4/P5)
