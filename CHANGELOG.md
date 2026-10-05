@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — onboarding Select banners and step fields (6 Oct, owner)
+
+- Select screen (`/onboarding`): warm page, back button only, "How will you use MusicLinkd?".
+  Talent and Business are photo banners with a Market-style glass label, a large title, a round
+  ↗ button and a branded art cluster (rises on load, floats, fans on press; brand glow behind).
+  Academy is a frosted panel with a drawn 6px dashed edge (8/8) and a "Coming soon" sticker.
+  Step count, setup time, supporting copy and the "Live card preview" toggle are gone.
+- Branded artwork lives in `ml/select-art.tsx`; every piece carries `data-brand-id`
+  (`brand-0001`…`brand-0010`) for Storybook.
+- Onboarding fields: 44px, 8px corners, 16px text for inputs and pickers; the info note is a
+  bordered block, not a pill; the username shows `@` with the full link in the hint. Continue is
+  never greyed out — pressing it early marks missing fields inline. Onboarding screens use the
+  sign-in ground.
+- Removed legacy pages `/me`, `/singers`, `/academy`, `/identity/business`,
+  `/portfolio/analytics`. Rentals and listings are one page: the rental mine/listings/nearby
+  routes redirect to Market, saved rentals to Bookmarks. The menu's Market group is Sell or rent,
+  My listings, Nearby; Saved is now "Bookmarks".
+
 ### Fixed — one surface rule; back from every page (5 Oct, owner)
 
 - Surfaces: anything sitting on the page (cards, tiles, rows, panels, selected states) has a 1px

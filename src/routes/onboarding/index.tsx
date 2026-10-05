@@ -21,6 +21,19 @@ import {
 } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import {
+  ArtBooking,
+  ArtFader,
+  ArtMic,
+  ArtTicket,
+  ArtPlay,
+  ArtSetlist,
+  ArtSoon,
+  ArtVinyl,
+  ArtWave,
+} from "@/components/ml/select-art";
+import { EMPTY_ART } from "@/components/ml/kit";
+import { AuthBackButton, BrandMark } from "@/components/ml/auth";
+import {
   AccountTypeCard,
   OnboardingProvider,
   useOnboarding,
@@ -32,9 +45,6 @@ import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 import { haptic } from "@/lib/haptics";
-import { PersonCard, BookableCard } from "@/components/ml/cards";
-import type { DirectoryPerson } from "@/lib/profile-groups.functions";
-import type { DiscoverBookable } from "@/lib/bookable-view";
 
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({
@@ -64,51 +74,14 @@ export const Route = createFileRoute("/onboarding/")({
 const kindOrder = ["Talent", "Business"] as const;
 type AccountKind = (typeof kindOrder)[number];
 
-// The wizard's "what your card will look like" preview, in the exact shapes the real
-// PersonCard/BookableCard take — so the preview and the live card are always the same component.
-const demoTalent: DirectoryPerson = {
-  id: "preview-talent",
-  username: "you",
-  name: "Your Name",
-  headline: "Say what you do and where — this is your headline.",
-  city: "Mumbai",
-  roles: [],
-  genres: [],
-  avatarUrl: null,
-  // A preview of someone who has just signed up: nobody is verified yet.
-  verified: false,
-  pin_code: null,
-  rating: null,
-  reviewCount: 0,
-};
-
-// A preview of a business that has just signed up: no reviews, no rate, no photo and no badge yet.
-const demoStudio: DiscoverBookable = {
-  id: "preview-business",
-  slug: "",
-  username: "",
-  name: "Your Business Name",
-  location: "Mumbai",
-  rating: null,
-  reviewCount: 0,
-  verified: false,
-  rate: null,
-  photo: "",
-  gear: [],
-};
-
 const kindInfo: Record<
   AccountKind,
   {
-    estimate: string;
     goTo?: { to: "/business/new"; search: { step: "type" } };
   }
 > = {
-  Talent: {
-    estimate: "~2 mins · 8 quick questions",
-  },
+  Talent: {},
   Business: {
-    estimate: "~3 mins · Studio registration",
     goTo: { to: "/business/new", search: { step: "type" } },
   },
 };
@@ -126,8 +99,6 @@ function SelectScreen() {
   // `kind`), but the two cards below shouldn't look like one is already picked — `touched` gates
   // just the selected-card styling, so neither reads as the default (owner, 23 Sep).
   const [touched, setTouched] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const info = kindInfo[kind];
 
   /*
    * Tapping an account type is the choice and the next step at once (owner, 4 Oct 2026): this
@@ -173,91 +144,55 @@ function SelectScreen() {
     <div
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-8"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-warm px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]"
     >
       <div>
-        <div
-          className={cn(
-            "inline-flex items-center gap-2 text-1 font-semibold text-muted-foreground",
-            rise,
-          )}
-        >
-          <span className="h-2 w-2 rounded-full bg-ink animate-pulse" />
-          {kind === "Talent" ? `Quick setup · ${total} short questions (~2 mins)` : info.estimate}
-        </div>
-
-        <h1 className={cn("mt-4 text-4 font-bold text-foreground", rise)} style={beat(1)}>
-          Build your industry presence
+        {/* Back and the brand mark only (owner, 5 Oct 2026). */}
+        <header className="-ml-3 flex min-h-12 items-center gap-1">
+          <AuthBackButton back={{ to: "/welcome" }} />
+          <BrandMark />
+        </header>
+        <h1 className={cn("mt-4 text-3 font-bold text-foreground", rise)} style={beat(1)}>
+          How will you use MusicLinkd?
         </h1>
-        <p
-          className={cn("mt-2 text-2 leading-relaxed text-muted-foreground", rise)}
-          style={beat(2)}
-        >
-          Tell us about your craft so clients, collaborators, and gigs find you first.
+        <p className={cn("mt-1 text-sm text-muted-foreground", rise)} style={beat(2)}>
+          Pick one. You can add the other later.
         </p>
 
-        {/* Interactive Profile Kind Cards */}
-        <div className={cn("mt-6 space-y-3", rise)} style={beat(2.5)}>
-          <div className="flex items-center justify-between">
-            <p className="eyebrow text-muted-foreground">Choose account type</p>
-            <button
-              type="button"
-              onClick={() => {
-                haptic("select");
-                setShowPreview(!showPreview);
-              }}
-              className="inline-flex items-center gap-1 text-1 font-semibold text-muted-foreground hover:text-foreground active:scale-95"
-            >
-              <Eye size={12} />
-              <span>{showPreview ? "Hide preview" : "Live card preview"}</span>
-            </button>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <AccountTypeCard
-              title="Music Talent"
-              description="Musician, singer, producer, writer"
-              icon={Compass}
-              cluster={[Mic2, Guitar, Headphones, Music]}
-              onSelect={() => {
-                haptic("select");
-                continueAs("Talent");
-              }}
-            />
-            <AccountTypeCard
-              title="Business"
-              description="Studio, label, agency, venue"
-              icon={Sparkles}
-              cluster={[Building2, Disc3, Ticket, SlidersVertical]}
-              onSelect={() => {
-                haptic("select");
-                continueAs("Business");
-              }}
-            />
-            {/* A third account type is on the way (owner, 4 Oct 2026): shown, hollow, not tappable. */}
-            <AccountTypeCard
-              title="Upcoming"
-              description="A new account type is on the way"
-              icon={Clock}
-              cluster={[Plus, Sparkles, Plus]}
-              hollow
-            />
-          </div>
+        <div className={cn("mt-6 flex flex-col gap-4", rise)} style={beat(2.5)}>
+          <AccountTypeCard
+            title="Talent"
+            label="Create my profile"
+            tag={{ text: "Create profile" }}
+            tone="brand"
+            photo={EMPTY_ART.work}
+            art={[<ArtSetlist key="s" />, <ArtVinyl key="v" />, <ArtMic key="m" />]}
+            onSelect={() => {
+              haptic("select");
+              continueAs("Talent");
+            }}
+          />
+          <AccountTypeCard
+            title="Business"
+            label="Set up my business"
+            tag={{ text: "List or find" }}
+            photo="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=70"
+            art={[<ArtTicket key="t" />, <ArtBooking key="b" />, <ArtFader key="f" />]}
+            onSelect={() => {
+              haptic("select");
+              continueAs("Business");
+            }}
+          />
+          {/* Academy is on the way (owner, 5 Oct 2026): shown, frosted, not tappable. */}
+          <AccountTypeCard
+            title="Academy"
+            label="Coming soon"
+            tag={{ text: "Learn & grow" }}
+            art={[<ArtPlay key="p" />, <ArtWave key="w" />, <ArtSoon key="a" />]}
+            sticker="Coming soon"
+            hollow
+          />
         </div>
-
-        {/* Live card preview, on request. The feature pitch box under the cards is gone (owner, 4 Oct 2026). */}
-        {showPreview ? (
-          <div className={cn("mt-6", rise)} style={beat(3)}>
-            <p className="eyebrow mb-2 text-muted-foreground">
-              What your {kind.toLowerCase()} card looks like:
-            </p>
-            {kind === "Talent" ? (
-              <PersonCard person={demoTalent} disabled />
-            ) : (
-              <BookableCard studio={demoStudio} disabled />
-            )}
-          </div>
-        ) : null}
       </div>
     </div>
   );

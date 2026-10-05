@@ -55,7 +55,7 @@ function Done() {
   ].filter(Boolean) as string[];
 
   return (
-    <Screen bottomNav={false} className="pb-40">
+    <Screen tone="auth" bottomNav={false} className="pb-40">
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
@@ -135,7 +135,7 @@ function Done() {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-auth-ground/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >

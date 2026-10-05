@@ -66,7 +66,7 @@ export function AuthScreen({
   );
 }
 
-function BrandMark() {
+export function BrandMark() {
   return (
     // The owner-supplied icon (4 Oct 2026), drawn bare like the mark on lovable.dev/login.
     <img
@@ -79,7 +79,7 @@ function BrandMark() {
   );
 }
 
-function AuthBackButton({ back }: { back: AuthBack }) {
+export function AuthBackButton({ back }: { back: AuthBack }) {
   const router = useRouter();
   const navigate = useNavigate();
   return (

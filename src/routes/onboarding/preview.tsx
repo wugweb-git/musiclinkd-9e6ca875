@@ -91,7 +91,7 @@ function Preview() {
   const visibility = visibilityOptions.find((v) => v.key === d.visibility)?.label;
 
   return (
-    <Screen bottomNav={false} className="pb-36">
+    <Screen tone="auth" bottomNav={false} className="pb-36">
       <TopBar
         title="Review profile"
         subtitle="This is how other music professionals see you"

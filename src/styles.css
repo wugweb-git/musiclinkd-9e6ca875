@@ -120,6 +120,7 @@
   --color-background: var(--background);
   --color-warm: var(--surface-warm);
   --color-auth-ground: var(--auth-ground);
+  --color-banner: var(--banner);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -196,6 +197,8 @@
   /* `backwards`, not `both`: a transform animation still held after it ends makes the screen the
      containing block for position:fixed, which pushed every bottom sheet off screen. */
   --animate-rise: rise 480ms var(--easing-enter) backwards;
+  --animate-art-rise: art-rise 560ms var(--easing-spring) backwards;
+  --animate-art-float: art-float 4s ease-in-out infinite;
   /* The Soon label: a slow light passes across it, so a later feature reads as on its way. */
   --animate-soon: soon 2.4s ease-in-out infinite;
   /* Bottom-nav tab selected: each icon moves like the thing it is. Tap-only, never on load. */
@@ -213,7 +216,20 @@
   --animate-glimmer-slow: glimmer 8s var(--easing-standard) infinite;
   /* A rental's badge breathes, as if on offer right now. */
   --animate-breathe: breathe 2.6s ease-in-out infinite alternate;
-  @keyframes breathe {
+  /* Select screen art: each piece rises from below the banner's edge, once (owner refs, 5 Oct). */
+@keyframes art-float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes art-rise {
+  from {
+    transform: translateY(120%);
+  }
+}
+
+@keyframes breathe {
     from {
       background-color: rgb(255 255 255 / 0.15);
     }
@@ -641,6 +657,8 @@
   --surface-warm: #f3f1ec;
   /* Sign-in screens only: the ground of lovable.dev/login (owner, 4 Oct 2026). */
   --auth-ground: oklch(0.9699 0 107);
+  /* Banner panels on the Select screen (owner refs, 5 Oct 2026). */
+  --banner: #f6f6f5;
   --foreground: var(--ink); /* default text is ink black */
   --card: oklch(1 0 89.88);
   --card-foreground: var(--ink);
@@ -1302,4 +1320,16 @@ svg.lucide.text-muted-foreground,
   .eq-bar {
     animation: none;
   }
+}
+
+/* Paper grain for a large flat surface (ml-widgets .ml-grain): low-contrast dots in currentColor,
+   surface only, never a hue. */
+.ml-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: radial-gradient(currentColor 0.5px, transparent 0.5px);
+  background-size: 3px 3px;
 }

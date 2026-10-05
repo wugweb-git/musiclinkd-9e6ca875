@@ -12,18 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HandleRouteImport } from './routes/$handle'
 import { Route as AboutRouteImport } from './routes/about'
-import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DeleteAccountRouteImport } from './routes/delete-account'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as InboxRouteImport } from './routes/inbox'
-import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
@@ -48,7 +45,6 @@ import { Route as DiscoverSlugRouteImport } from './routes/discover.$slug'
 import { Route as DiscoverMatchRouteImport } from './routes/discover.match'
 import { Route as HelpIndexRouteImport } from './routes/help.index'
 import { Route as HelpSlugRouteImport } from './routes/help.$slug'
-import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
 import { Route as IdentityQrRouteImport } from './routes/identity.qr'
 import { Route as IdentityScanRouteImport } from './routes/identity.scan'
 import { Route as LegalSlugRouteImport } from './routes/legal.$slug'
@@ -70,7 +66,6 @@ import { Route as OpportunitiesMineRouteImport } from './routes/opportunities.mi
 import { Route as OpportunitiesNewRouteImport } from './routes/opportunities.new'
 import { Route as OpportunitiesSearchRouteImport } from './routes/opportunities.search'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
-import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
@@ -170,11 +165,6 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AcademyRoute = AcademyRouteImport.update({
-  id: '/academy',
-  path: '/academy',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AccountsRoute = AccountsRouteImport.update({
   id: '/accounts',
   path: '/accounts',
@@ -200,11 +190,6 @@ const InboxRoute = InboxRouteImport.update({
   path: '/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MeRoute = MeRouteImport.update({
-  id: '/me',
-  path: '/me',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MessagesRoute = MessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -223,11 +208,6 @@ const SavedRoute = SavedRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SingersRoute = SingersRouteImport.update({
-  id: '/singers',
-  path: '/singers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudioRoute = StudioRouteImport.update({
@@ -350,11 +330,6 @@ const HelpSlugRoute = HelpSlugRouteImport.update({
   path: '/help/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IdentityBusinessRoute = IdentityBusinessRouteImport.update({
-  id: '/identity/business',
-  path: '/identity/business',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IdentityQrRoute = IdentityQrRouteImport.update({
   id: '/identity/qr',
   path: '/identity/qr',
@@ -458,11 +433,6 @@ const OpportunitiesSearchRoute = OpportunitiesSearchRouteImport.update({
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   id: '/portfolio/',
   path: '/portfolio/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioAnalyticsRoute = PortfolioAnalyticsRouteImport.update({
-  id: '/portfolio/analytics',
-  path: '/portfolio/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileIndexRoute = ProfileIndexRouteImport.update({
@@ -895,18 +865,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
-  '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
-  '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/signup': typeof SignupRoute
-  '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
@@ -925,7 +892,6 @@ export interface FileRoutesByFullPath {
   '/discover/$slug': typeof DiscoverSlugRoute
   '/discover/match': typeof DiscoverMatchRoute
   '/help/$slug': typeof HelpSlugRoute
-  '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -942,7 +908,6 @@ export interface FileRoutesByFullPath {
   '/opportunities/mine': typeof OpportunitiesMineRoute
   '/opportunities/new': typeof OpportunitiesNewRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
-  '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/reviews/request': typeof ReviewsRequestRoute
@@ -1042,18 +1007,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
-  '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
-  '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/signup': typeof SignupRoute
-  '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
@@ -1071,7 +1033,6 @@ export interface FileRoutesByTo {
   '/discover/$slug': typeof DiscoverSlugRoute
   '/discover/match': typeof DiscoverMatchRoute
   '/help/$slug': typeof HelpSlugRoute
-  '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -1088,7 +1049,6 @@ export interface FileRoutesByTo {
   '/opportunities/mine': typeof OpportunitiesMineRoute
   '/opportunities/new': typeof OpportunitiesNewRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
-  '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/reviews/request': typeof ReviewsRequestRoute
@@ -1189,18 +1149,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
-  '/academy': typeof AcademyRoute
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
-  '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/signup': typeof SignupRoute
-  '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
@@ -1219,7 +1176,6 @@ export interface FileRoutesById {
   '/discover/$slug': typeof DiscoverSlugRoute
   '/discover/match': typeof DiscoverMatchRoute
   '/help/$slug': typeof HelpSlugRoute
-  '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/legal/$slug': typeof LegalSlugRoute
@@ -1236,7 +1192,6 @@ export interface FileRoutesById {
   '/opportunities/mine': typeof OpportunitiesMineRoute
   '/opportunities/new': typeof OpportunitiesNewRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
-  '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/reviews/request': typeof ReviewsRequestRoute
@@ -1338,18 +1293,15 @@ export interface FileRouteTypes {
     | '/'
     | '/$handle'
     | '/about'
-    | '/academy'
     | '/accounts'
     | '/contact'
     | '/delete-account'
     | '/home'
     | '/inbox'
-    | '/me'
     | '/messages'
     | '/reset-password'
     | '/saved'
     | '/signup'
-    | '/singers'
     | '/studio'
     | '/welcome'
     | '/auth/forgot'
@@ -1368,7 +1320,6 @@ export interface FileRouteTypes {
     | '/discover/$slug'
     | '/discover/match'
     | '/help/$slug'
-    | '/identity/business'
     | '/identity/qr'
     | '/identity/scan'
     | '/legal/$slug'
@@ -1385,7 +1336,6 @@ export interface FileRouteTypes {
     | '/opportunities/mine'
     | '/opportunities/new'
     | '/opportunities/search'
-    | '/portfolio/analytics'
     | '/profile/$username'
     | '/profile/edit'
     | '/reviews/request'
@@ -1485,18 +1435,15 @@ export interface FileRouteTypes {
     | '/'
     | '/$handle'
     | '/about'
-    | '/academy'
     | '/accounts'
     | '/contact'
     | '/delete-account'
     | '/home'
     | '/inbox'
-    | '/me'
     | '/messages'
     | '/reset-password'
     | '/saved'
     | '/signup'
-    | '/singers'
     | '/studio'
     | '/welcome'
     | '/auth/forgot'
@@ -1514,7 +1461,6 @@ export interface FileRouteTypes {
     | '/discover/$slug'
     | '/discover/match'
     | '/help/$slug'
-    | '/identity/business'
     | '/identity/qr'
     | '/identity/scan'
     | '/legal/$slug'
@@ -1531,7 +1477,6 @@ export interface FileRouteTypes {
     | '/opportunities/mine'
     | '/opportunities/new'
     | '/opportunities/search'
-    | '/portfolio/analytics'
     | '/profile/$username'
     | '/profile/edit'
     | '/reviews/request'
@@ -1631,18 +1576,15 @@ export interface FileRouteTypes {
     | '/'
     | '/$handle'
     | '/about'
-    | '/academy'
     | '/accounts'
     | '/contact'
     | '/delete-account'
     | '/home'
     | '/inbox'
-    | '/me'
     | '/messages'
     | '/reset-password'
     | '/saved'
     | '/signup'
-    | '/singers'
     | '/studio'
     | '/welcome'
     | '/auth/forgot'
@@ -1661,7 +1603,6 @@ export interface FileRouteTypes {
     | '/discover/$slug'
     | '/discover/match'
     | '/help/$slug'
-    | '/identity/business'
     | '/identity/qr'
     | '/identity/scan'
     | '/legal/$slug'
@@ -1678,7 +1619,6 @@ export interface FileRouteTypes {
     | '/opportunities/mine'
     | '/opportunities/new'
     | '/opportunities/search'
-    | '/portfolio/analytics'
     | '/profile/$username'
     | '/profile/edit'
     | '/reviews/request'
@@ -1779,18 +1719,15 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HandleRoute: typeof HandleRoute
   AboutRoute: typeof AboutRoute
-  AcademyRoute: typeof AcademyRoute
   AccountsRoute: typeof AccountsRoute
   ContactRoute: typeof ContactRoute
   DeleteAccountRoute: typeof DeleteAccountRoute
   HomeRoute: typeof HomeRoute
   InboxRoute: typeof InboxRoute
-  MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
   SignupRoute: typeof SignupRoute
-  SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
   WelcomeRoute: typeof WelcomeRoute
   AuthForgotRoute: typeof AuthForgotRoute
@@ -1809,7 +1746,6 @@ export interface RootRouteChildren {
   DiscoverSlugRoute: typeof DiscoverSlugRoute
   DiscoverMatchRoute: typeof DiscoverMatchRoute
   HelpSlugRoute: typeof HelpSlugRoute
-  IdentityBusinessRoute: typeof IdentityBusinessRoute
   IdentityQrRoute: typeof IdentityQrRoute
   IdentityScanRoute: typeof IdentityScanRoute
   LegalSlugRoute: typeof LegalSlugRoute
@@ -1826,7 +1762,6 @@ export interface RootRouteChildren {
   OpportunitiesMineRoute: typeof OpportunitiesMineRoute
   OpportunitiesNewRoute: typeof OpportunitiesNewRoute
   OpportunitiesSearchRoute: typeof OpportunitiesSearchRoute
-  PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
   ReviewsRequestRoute: typeof ReviewsRequestRoute
@@ -1940,13 +1875,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/academy': {
-      id: '/academy'
-      path: '/academy'
-      fullPath: '/academy'
-      preLoaderRoute: typeof AcademyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/accounts': {
       id: '/accounts'
       path: '/accounts'
@@ -1982,13 +1910,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InboxRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/me': {
-      id: '/me'
-      path: '/me'
-      fullPath: '/me'
-      preLoaderRoute: typeof MeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/messages': {
       id: '/messages'
       path: '/messages'
@@ -2015,13 +1936,6 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/singers': {
-      id: '/singers'
-      path: '/singers'
-      fullPath: '/singers'
-      preLoaderRoute: typeof SingersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/studio': {
@@ -2192,13 +2106,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HelpSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/identity/business': {
-      id: '/identity/business'
-      path: '/identity/business'
-      fullPath: '/identity/business'
-      preLoaderRoute: typeof IdentityBusinessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/identity/qr': {
       id: '/identity/qr'
       path: '/identity/qr'
@@ -2344,13 +2251,6 @@ declare module '@tanstack/react-router' {
       path: '/portfolio'
       fullPath: '/portfolio/'
       preLoaderRoute: typeof PortfolioIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio/analytics': {
-      id: '/portfolio/analytics'
-      path: '/portfolio/analytics'
-      fullPath: '/portfolio/analytics'
-      preLoaderRoute: typeof PortfolioAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/': {
@@ -2963,18 +2863,15 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HandleRoute: HandleRoute,
   AboutRoute: AboutRoute,
-  AcademyRoute: AcademyRoute,
   AccountsRoute: AccountsRoute,
   ContactRoute: ContactRoute,
   DeleteAccountRoute: DeleteAccountRoute,
   HomeRoute: HomeRoute,
   InboxRoute: InboxRoute,
-  MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
   SignupRoute: SignupRoute,
-  SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
   WelcomeRoute: WelcomeRoute,
   AuthForgotRoute: AuthForgotRoute,
@@ -2993,7 +2890,6 @@ const rootRouteChildren: RootRouteChildren = {
   DiscoverSlugRoute: DiscoverSlugRoute,
   DiscoverMatchRoute: DiscoverMatchRoute,
   HelpSlugRoute: HelpSlugRoute,
-  IdentityBusinessRoute: IdentityBusinessRoute,
   IdentityQrRoute: IdentityQrRoute,
   IdentityScanRoute: IdentityScanRoute,
   LegalSlugRoute: LegalSlugRoute,
@@ -3010,7 +2906,6 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesMineRoute: OpportunitiesMineRoute,
   OpportunitiesNewRoute: OpportunitiesNewRoute,
   OpportunitiesSearchRoute: OpportunitiesSearchRoute,
-  PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
   ReviewsRequestRoute: ReviewsRequestRoute,

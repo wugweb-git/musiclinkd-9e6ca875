@@ -137,6 +137,9 @@ function StepRoute() {
   const [banner, setBanner] = useState<Banner>("none");
   // Bumped on each blocked Continue so the button re-mounts and the shake replays.
   const [nudge, setNudge] = useState(0);
+  // Continue is never greyed out (phone plan): pressing it early marks what is missing, inline.
+  const [showErrors, setShowErrors] = useState(false);
+  useEffect(() => setShowErrors(false), [id]);
   const flowBack = useFlowBack();
   const usernameStatus = useUsernameAvailability(
     draft.username,
@@ -215,7 +218,7 @@ function StepRoute() {
 
   if (!hydrated) {
     return (
-      <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background px-5 pt-16">
+      <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-auth-ground px-5 pt-16">
         <StepSkeleton />
       </div>
     );
@@ -223,7 +226,7 @@ function StepRoute() {
 
   if (!def || index === -1) {
     return (
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-center bg-background px-6 text-center">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-center bg-auth-ground px-6 text-center">
         <p className="text-2 font-semibold">This step isn't part of your setup</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Your answers so far are safe. We'll take you to the next relevant question.
@@ -281,7 +284,9 @@ function StepRoute() {
 
   const blocked = () => {
     haptic("error");
-    setBanner("error");
+    setShowErrors(true);
+    // Identity marks its own fields; other steps have one choice and take the notice above it.
+    if (def.id !== "identity") setBanner("error");
     setNudge((n) => n + 1);
     // The message renders above the question; on a long step it would be off screen.
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -399,7 +404,6 @@ function StepRoute() {
             key={nudge}
             type="submit"
             loading={claiming}
-            pending={!valid}
             className={`w-full ${nudge ? "animate-shake" : ""}`}
           >
             Continue
@@ -422,6 +426,7 @@ function StepRoute() {
         claimedUsername={claimedUsername}
         claimError={claimError}
         roleStage={secondStage ? "secondary" : "primary"}
+        showErrors={showErrors}
       />
     </StepShell>
   );
@@ -463,6 +468,7 @@ function StepBody({
   claimedUsername,
   claimError,
   roleStage,
+  showErrors,
 }: {
   id: string;
   draft: OnboardingDraft;
@@ -472,6 +478,7 @@ function StepBody({
   claimedUsername: string | null;
   claimError: string | null;
   roleStage: RoleStage;
+  showErrors: boolean;
 }) {
   const { bucket, bucketState, retryBucket } = useOnboarding();
   const taxonomy = useTaxonomy();
@@ -552,14 +559,16 @@ function StepBody({
               placeholder="Your professional name"
               autoComplete="name"
               maxLength={80}
-              hint="Use the name you're credited under."
+              {...(showErrors && !d.displayName.trim()
+                ? { error: "Add the name you're credited under." }
+                : { hint: "Use the name you're credited under." })}
             />
             <UsernameField
               value={d.username}
               onChange={(v) => set({ username: v })}
               status={usernameStatus}
               locked={Boolean(claimedUsername)}
-              claimError={claimError}
+              claimError={showErrors && !d.username ? "Choose a username." : claimError}
             />
           </section>
           <section className="space-y-4 border-t border-border p-4">
@@ -587,7 +596,7 @@ function StepBody({
                 : { hint: "Enter this first to fill your location faster. Kept private." })}
             />
             <div className="grid grid-cols-2 gap-3">
-              <DrawerField label="State">
+              <DrawerField label="State" error={showErrors && !d.state ? "Choose a state." : null}>
                 <SheetSelect
                   title="State"
                   value={d.state || null}
@@ -597,7 +606,7 @@ function StepBody({
                   onChange={(v) => set({ state: v, city: "" })}
                 />
               </DrawerField>
-              <DrawerField label="City">
+              <DrawerField label="City" error={showErrors && !d.city ? "Choose a city." : null}>
                 {d.state ? (
                   <SheetSelect
                     title="City"
@@ -611,7 +620,7 @@ function StepBody({
                   <button
                     type="button"
                     disabled
-                    className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
+                    className="flex h-11 w-full items-center rounded-sm border border-input bg-card px-3.5 text-left text-[16px] text-muted-foreground opacity-60"
                   >
                     State first
                   </button>

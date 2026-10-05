@@ -85,7 +85,7 @@ function Complete() {
   const edges = useScrollEdges();
 
   return (
-    <Screen bottomNav={false} className="pb-32">
+    <Screen tone="auth" bottomNav={false} className="pb-32">
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
@@ -191,7 +191,7 @@ function Complete() {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t bg-auth-ground/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >

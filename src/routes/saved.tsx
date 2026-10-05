@@ -21,13 +21,13 @@ import { sized } from "@/lib/image-url";
 export const Route = createFileRoute("/saved")({
   head: () => ({
     meta: [
-      { title: "Bookmarked | MusicLinkd" },
+      { title: "Bookmarks | MusicLinkd" },
       {
         name: "description",
         content:
           "Your shortlist of talent, bands, studios, businesses and events with notes and tags.",
       },
-      { property: "og:title", content: "Saved Profiles | MusicLinkd" },
+      { property: "og:title", content: "Bookmarks | MusicLinkd" },
       {
         property: "og:description",
         content: "Shortlist talent and studios with private notes and tags.",
@@ -77,7 +77,7 @@ function Saved() {
 
   return (
     <Screen>
-      <TopBar title="Bookmarked" back="/discover" />
+      <TopBar title="Bookmarks" back="history" />
       <div className="px-5 pb-4">
         <Segmented
           value={tab}

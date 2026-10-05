@@ -36,7 +36,7 @@ function SkipLater() {
   const target = resumeTarget(draft, bucket);
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-auth-ground px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
       <div>
         <PauseCircle size={40} className="text-ink" />
         <h1 className="mt-4 text-3 leading-tight">We've saved your progress</h1>

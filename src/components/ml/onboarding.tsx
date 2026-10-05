@@ -26,6 +26,9 @@ import {
   Trash2,
   MapPin,
   type LucideIcon,
+  Plus,
+  ArrowRight,
+  ArrowUpRight,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -513,11 +516,11 @@ export function StepShell({
         e.preventDefault();
         onSubmit?.();
       }}
-      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-auth-ground"
     >
       {/* Modern top app bar: frosted glass with segmented story-style progress track */}
       <header
-        className={`vt-flow-header pt-safe sticky top-0 z-bar border-b bg-background/90 px-5 pb-3.5 backdrop-blur-md transition-colors duration-200 ease-standard ${
+        className={`vt-flow-header pt-safe sticky top-0 z-bar border-b bg-auth-ground/90 px-5 pb-3.5 backdrop-blur-md transition-colors duration-200 ease-standard ${
           edges.top ? "border-border shadow-2xs" : "border-transparent"
         }`}
       >
@@ -619,7 +622,7 @@ export function StepShell({
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
 
         {why ? (
-          <div className="mt-2.5 inline-flex items-start gap-1.5 rounded-full bg-subtle/80 px-3 py-1 text-1 text-muted-foreground border border-border/50">
+          <div className="mt-3 flex items-start gap-2 rounded-sm border border-border bg-card px-3 py-2.5 text-1 text-muted-foreground">
             <Info size={14} className="mt-0.5 shrink-0 text-foreground/60" aria-hidden />
             <span>{why}</span>
           </div>
@@ -630,7 +633,7 @@ export function StepShell({
 
       {/* Frosted floating bottom footer bar */}
       <div
-        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard ${
+        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-auth-ground/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard ${
           edges.bottom ? "border-border shadow-xs" : "border-transparent"
         }`}
       >
@@ -818,7 +821,7 @@ export function InlineField({
 }) {
   const messageId = `${inputId}-message`;
   const shared =
-    "w-full min-w-0 bg-transparent text-2 outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
+    "w-full min-w-0 bg-transparent text-[16px] outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
   return (
     <div className="group">
       {/* Same label states as TextField: grey at rest, ink while focused, red when invalid. */}
@@ -833,11 +836,10 @@ export function InlineField({
       </label>
       <div
         className={cn(
-          // One input shape for the app (owner, 24 Sep): a pill, the same shape as the pickers it
-          // sits beside. A textarea keeps a rounded rectangle — a pill around four lines reads
-          // wrong — which is the shape the other multi-line fields already use.
+          // Phone plan: one field shape — 8px corners, 44px tall, 16px text — for inputs and the
+          // pickers beside them. A textarea keeps the same corners and grows.
           "flex items-center gap-1 border bg-card transition-all duration-150 ease-standard",
-          multiline ? "rounded-lg px-4 py-3" : "h-13 rounded-full px-5",
+          multiline ? "rounded-sm px-3.5 py-3" : "h-11 rounded-sm px-3.5",
           readOnly && "bg-background",
           error
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
@@ -963,7 +965,7 @@ export function UsernameField({
     <InlineField
       inputId={inputId}
       label="Username"
-      prefix={`${PUBLIC_HOST}/@`}
+      prefix="@"
       value={value}
       onChange={(v) => onChange(v.toLowerCase().replace(/\s/g, ""))}
       placeholder="yourname"
@@ -975,7 +977,9 @@ export function UsernameField({
         : claimError
           ? { error: claimError }
           : !value
-            ? { hint: "Your profile link: lowercase letters, numbers, dots and underscores." }
+            ? {
+                hint: `Your link: ${PUBLIC_HOST}/@yourname. Lowercase letters, numbers, dots, underscores.`,
+              }
             : !check.ok
               ? { error: check.message }
               : status === "taken"
@@ -996,17 +1000,33 @@ export function UsernameField({
 export function DrawerField({
   label,
   hint,
+  error,
   children,
 }: {
   label: string;
   hint?: string | undefined;
+  /** Shown under the picker after Continue is pressed without a choice. */
+  error?: string | null | undefined;
   children: ReactNode;
 }) {
   return (
     <div>
-      <p className="mb-1.5 block text-sm font-medium text-foreground">{label}</p>
+      <p
+        className={cn(
+          "mb-1.5 block text-sm font-medium",
+          error ? "text-destructive" : "text-foreground",
+        )}
+      >
+        {label}
+      </p>
       {children}
-      {hint ? <p className="mt-1.5 text-1 text-muted-foreground">{hint}</p> : null}
+      {error ? (
+        <p role="alert" className="mt-1.5 text-1 text-destructive">
+          {error}
+        </p>
+      ) : hint ? (
+        <p className="mt-1.5 text-1 text-muted-foreground">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -1089,7 +1109,7 @@ export function DateDrawerField({
         type="button"
         aria-haspopup="dialog"
         onClick={openDrawer}
-        className="flex h-13 w-full items-center justify-between gap-2 rounded-full border border-input bg-card px-5 text-left text-sm"
+        className="flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-[16px]"
       >
         <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
           {shown}
@@ -1419,75 +1439,154 @@ export function PrivateDetailsFields() {
 }
 
 /*
- * One account-type choice on the Select screen, drawn after the owner's reference (4 Oct 2026): a
- * large card with the name top-left, a loose cluster of role icons top-right and the description
- * along the bottom. Tapping it is the choice and the next step. `hollow` is the outlined variant.
- * The cluster is icons only, never people or counts: nothing on a sign-up screen claims who is here.
+ * One account-type choice on the Select screen, as a banner (owner refs, 5 Oct 2026): a soft
+ * grey panel, a quiet meta row, a centred title and line, and a few tilted objects rising from the
+ * bottom edge. Tapping it is the choice. `hollow` is the coming-soon banner: dashed, one dashed
+ * "+" tile, not tappable. Objects are icons only: nothing on a sign-up screen claims who is here.
  */
 export function AccountTypeCard({
   title,
-  description,
-  icon: Icon,
-  cluster,
+  label,
+  tag,
+  art,
+  photo,
+  sticker,
+  tone = "light",
   onSelect,
   hollow = false,
 }: {
   title: string;
-  description: string;
-  icon: LucideIcon;
-  /** Up to four role icons for the top-right cluster. */
-  cluster: LucideIcon[];
-  /** Absent on an upcoming type: the card is shown, disabled, and says so. */
+  /** Accessible name for the tap, e.g. "Create my profile". The banner shows only the arrow. */
+  label: string;
+  /** The frosted label top-left (ml-widgets .ml-glass): an icon and a few words. */
+  tag: { text: string };
+  /** Up to three branded art pieces (select-art.tsx): back left, front, back right. */
+  art?: ReactNode[] | undefined;
+  /** Photo behind the banner, under an ink scrim; the title sits on it in white. */
+  photo?: string | undefined;
+  /** A rotated pink stamp over the art (ml-widgets "sticker"), e.g. "Coming soon". */
+  sticker?: string | undefined;
+  /** The round arrow button: brand pink, or white on a darker photo. */
+  tone?: "brand" | "light" | undefined;
+  /** Absent on an upcoming type: the banner is shown, not tappable, and says so. */
   onSelect?: (() => void) | undefined;
+  /** The upcoming banner: a frosted light panel, no photo, no arrow. */
   hollow?: boolean | undefined;
 }) {
-  // Fixed spots for the cluster, largest first, so the cards read as one family.
-  const spots = [
-    "right-4 top-4 h-11 w-11",
-    "right-16 top-10 h-9 w-9",
-    "right-28 top-3 h-8 w-8",
-    "right-8 top-16 h-7 w-7",
+  // Resting place of each piece in the top-right composition, and where it fans to on press.
+  // The two back pieces sit smaller and fainter, so the cluster has depth.
+  const slots = [
+    "right-32 top-9 h-16 w-14 -rotate-[16deg] opacity-80 group-hover:-rotate-[22deg] group-hover:-translate-x-2 group-active:-rotate-[22deg]",
+    "right-11 top-3 z-10 h-22 w-22 rotate-6 group-hover:-translate-y-1 group-active:-translate-y-1",
+    "right-3 top-14 h-14 w-12 rotate-12 opacity-80 group-hover:rotate-[22deg] group-hover:translate-x-1 group-active:rotate-[22deg]",
   ];
   const Root = onSelect ? "button" : "div";
   return (
     <Root
-      {...(onSelect ? { type: "button" as const, onClick: onSelect } : { "aria-disabled": true })}
+      {...(onSelect
+        ? { type: "button" as const, onClick: onSelect, "aria-label": `${title}: ${label}` }
+        : { "aria-disabled": true, "aria-label": `${title}: ${label}` })}
       className={cn(
-        "relative flex min-h-36 w-full flex-col justify-between overflow-hidden rounded-lg p-4 text-left transition-transform duration-150 ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        onSelect ? "active:scale-98" : "",
+        "group relative flex min-h-44 w-full flex-col justify-between overflow-hidden rounded-lg p-4 text-left transition-[transform,box-shadow] duration-200 ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         hollow
-          ? "border border-dashed border-input bg-transparent"
-          : "border border-border bg-card",
+          ? "ml-grain bg-card/60 backdrop-blur-md"
+          : "bg-ink text-white shadow-md active:scale-98 [@media(hover:hover)]:hover:shadow-lg",
       )}
     >
-      <span className="text-3 font-bold text-foreground">{title}</span>
-      <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
-        {cluster.slice(0, spots.length).map((C, i) => (
+      {photo && !hollow ? (
+        <>
+          <img
+            src={photo}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-standard group-hover:scale-105"
+          />
           <span
-            key={i}
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-tr from-ink/90 via-ink/45 to-ink/5"
+          />
+        </>
+      ) : null}
+      {art?.length && !hollow ? (
+        // Brand glow behind the art: allowed in branded banners (owner, 6 Oct 2026).
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-brand/35 blur-2xl"
+        />
+      ) : null}
+      {art?.length ? (
+        <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
+          {art.map((piece, i) => (
+            <span
+              key={i}
+              className={cn(
+                "absolute animate-art-rise transition-[rotate,translate] duration-300 ease-standard motion-reduce:transition-none [&>*]:h-full [&>*]:w-full",
+                slots[i],
+              )}
+              style={{ animationDelay: `${120 + i * 80}ms` }}
+            >
+              <span
+                className="block h-full w-full animate-art-float"
+                style={{ animationDelay: `${i * 600}ms` }}
+              >
+                {piece}
+              </span>
+            </span>
+          ))}
+          {sticker ? (
+            <span
+              data-brand-id="brand-0007"
+              className="absolute right-3 top-24 z-20 -rotate-6 animate-art-rise whitespace-nowrap rounded-full bg-brand px-3 py-1 text-sm font-bold text-white shadow-md"
+              style={{ animationDelay: "360ms" }}
+            >
+              {sticker}
+            </span>
+          ) : null}
+        </span>
+      ) : null}
+      {/* The glass label: the Market product card's badge (market.tsx), text only, no outline. */}
+      <span
+        className={cn(
+          "relative self-start rounded-full px-2.5 py-1.5 text-1 leading-none backdrop-blur-md",
+          hollow ? "bg-ink/5 text-foreground" : "bg-background/25 text-background",
+        )}
+      >
+        {tag.text}
+      </span>
+      {hollow ? (
+        // Academy's dashed edge (owner, 6 Oct 2026): a 6px stroke in 8px dashes and 8px gaps.
+        // CSS dashed borders can't set dash length, so it is drawn.
+        <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full">
+          <rect
+            x="3"
+            y="3"
+            rx="13"
+            fill="none"
+            strokeWidth="6"
+            strokeDasharray="8 8"
+            className="stroke-ink/15"
+            style={{ width: "calc(100% - 6px)", height: "calc(100% - 6px)" }}
+          />
+        </svg>
+      ) : null}
+      <span className="relative mt-8 flex items-end justify-between gap-3">
+        <span
+          className={cn("text-4 font-bold leading-none", hollow ? "text-foreground" : "text-white")}
+        >
+          {title}
+        </span>
+        {hollow ? null : (
+          // The one round control on this screen, per the owner's arrow reference (6 Oct 2026).
+          <span
+            aria-hidden
             className={cn(
-              "absolute flex items-center justify-center rounded-full text-muted-foreground",
-              // --subtle is white, the card's own colour: the tiles take the page grey.
-              hollow ? "border border-dashed border-input" : "bg-background",
-              spots[i],
+              "flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-md transition-transform duration-200 ease-standard group-hover:-translate-y-0.5 group-hover:translate-x-0.5",
+              tone === "brand" ? "bg-brand text-white" : "bg-card text-foreground",
             )}
           >
-            <C size={i === 0 ? iconSize.md : iconSize.sm} />
+            <ArrowUpRight size={iconSize.md} strokeWidth={3} />
           </span>
-        ))}
-      </span>
-      <span className="mt-6 flex items-center gap-3">
-        <span
-          className={cn(
-            "flex h-12 w-12 shrink-0 items-center justify-center rounded-full",
-            hollow
-              ? "border border-dashed border-input text-muted-foreground"
-              : "bg-ink text-ink-foreground",
-          )}
-        >
-          <Icon size={iconSize.md} aria-hidden />
-        </span>
-        <span className="min-w-0 text-sm font-semibold text-foreground">{description}</span>
+        )}
       </span>
     </Root>
   );

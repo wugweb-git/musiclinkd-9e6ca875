@@ -227,10 +227,6 @@ const menuGroups: {
       { to: "/marketplace/sell", label: "Sell or rent", icon: Package },
       { to: "/marketplace/mine", label: "My listings", icon: Package },
       { to: "/marketplace/nearby", label: "Nearby", icon: MapPin },
-      { to: "/marketplace/rent", label: "Rentals", icon: Package },
-      { to: "/marketplace/rent/mine", label: "My rentals", icon: Package },
-      { to: "/marketplace/rent/saved", label: "Saved rentals", icon: Bookmark },
-      { to: "/marketplace/rent/nearby", label: "Rentals nearby", icon: MapPin },
     ],
   },
   {
@@ -244,8 +240,8 @@ const menuGroups: {
     ],
   },
   {
-    title: "Bookmarked",
-    items: [{ to: "/saved", label: "Saved & recently viewed", icon: Bookmark }],
+    title: "Bookmarks",
+    items: [{ to: "/saved", label: "Bookmarks", icon: Bookmark }],
   },
 ];
 
