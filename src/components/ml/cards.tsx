@@ -1,8 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { PersonAvatar } from "./person-avatar";
-import { MapPin, Star, Building2, ChevronRight } from "lucide-react";
-import { VerifiedBadge } from "./ui";
+import { MapPin, Star, Building2, Plus, UserPlus } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  answerConnection,
+  connectionWith,
+  requestConnection,
+  setFollowing,
+  type ConnectionState,
+} from "@/lib/connections.functions";
+import type { SavedTargetType } from "@/lib/saved.functions";
+import { Btn, BtnLink, IconBtn, IconBtnLink, VerifiedBadge } from "./ui";
 import { Rating } from "./kit";
 import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
@@ -21,6 +33,7 @@ export {
   ReviewRail,
 } from "./profile";
 import { sized } from "@/lib/image-url";
+import { StateIcon } from "./tab-icon";
 
 /*
  * Talent card and business card (owner, 22 Sep 2026: "redo the cards, all states, types" — one
@@ -29,6 +42,174 @@ import { sized } from "@/lib/image-url";
  * never shows one (owner, 4 Oct 2026, §3); prices live on Service Cards. Two sizes each: a Row for lists
  * (Search, Directory) and a Card for horizontal rails (Discover, Home, business search).
  */
+
+/* ------------------------------------------------------------------ */
+/* Card actions — Connect / Follow and Save, beside the card link       */
+/* ------------------------------------------------------------------ */
+
+/*
+ * The action band every profile card shares (owner, 5 Oct: cards get Connect / Follow). It sits
+ * next to the card's link, never inside it: a button inside a link is invalid HTML. A person gets
+ * Connect, a business gets Follow (item 11); neither is needed before Message. Signed out, the
+ * action goes to Welcome, as on the profile pages. Your own card shows no action. The state is
+ * the profile page's own query (["connection", id]), so a card and the profile agree.
+ */
+function CardActions({
+  profileId,
+  relation,
+  save,
+  compact = false,
+  className,
+}: {
+  profileId: string | null | undefined;
+  relation: "connect" | "follow";
+  save: { targetType: SavedTargetType; targetId: string } | null;
+  /** A list row: the action is an icon button (named for screen readers) so the name keeps its room. */
+  compact?: boolean | undefined;
+  className?: string | undefined;
+}) {
+  const { signedIn, user } = useAuth();
+  const own = Boolean(profileId && user?.id === profileId);
+  const label = relation === "connect" ? "Connect" : "Follow";
+  const Glyph = relation === "connect" ? UserPlus : Plus;
+  const action =
+    !profileId || own ? null : signedIn ? (
+      <RelationButton profileId={profileId} relation={relation} compact={compact} />
+    ) : compact ? (
+      <IconBtnLink to="/welcome" label={label}>
+        <Glyph size={iconSize.md} aria-hidden />
+      </IconBtnLink>
+    ) : (
+      <BtnLink
+        to="/welcome"
+        variant="outline"
+        className={actionBtn}
+        icon={<Glyph size={iconSize.sm} aria-hidden />}
+      >
+        {label}
+      </BtnLink>
+    );
+  if (!action && !save) return null;
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      {action}
+      {save ? (
+        <SavedToggle targetType={save.targetType} targetId={save.targetId} size={36} />
+      ) : null}
+    </div>
+  );
+}
+
+/** Looks 36px, takes a 48dp tap (hit-area). */
+const actionBtn = "hit-area min-h-9 h-9 px-3 text-1";
+
+function RelationButton({
+  profileId,
+  relation,
+  compact,
+}: {
+  profileId: string;
+  relation: "connect" | "follow";
+  compact: boolean;
+}) {
+  const queryClient = useQueryClient();
+  const read = useServerFn(connectionWith);
+  const ask = useServerFn(requestConnection);
+  const answer = useServerFn(answerConnection);
+  const follow = useServerFn(setFollowing);
+  const key = ["connection", profileId] as const;
+  const q = useQuery({ queryKey: key, queryFn: () => read({ data: { profileId } }) });
+  const state: ConnectionState = q.data?.state ?? "none";
+  const following = q.data?.following ?? false;
+
+  const act = useMutation({
+    mutationFn: async (what: "ask" | "accept" | "follow" | "unfollow") => {
+      // Without the current state a tap could send a second request; say so instead.
+      if (q.isError) throw new Error("We couldn't load this connection. Try again.");
+      if (what === "ask") await ask({ data: { profileId } });
+      else if (what === "accept") {
+        const id = q.data?.connectionId;
+        if (id) await answer({ data: { id, accept: true } });
+      } else await follow({ data: { profileId, following: what === "follow" } });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+    // Optimistic below; a failure reverts it and says so.
+    onError: (e) => {
+      void q.refetch();
+      toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again.");
+    },
+  });
+  const pending = act.isPending ? act.variables : undefined;
+
+  if (relation === "follow") {
+    const on = pending === "follow" ? true : pending === "unfollow" ? false : following;
+    const toggle = () => {
+      if (!act.isPending) act.mutate(on ? "unfollow" : "follow");
+    };
+    if (compact)
+      return (
+        <IconBtn
+          label={on ? "Following" : "Follow"}
+          variant={on ? "ghost" : "outline"}
+          disabled={q.isPending}
+          onClick={toggle}
+        >
+          <StateIcon outline={Plus} solid="check" active={on} size={iconSize.md} move="stamp" />
+        </IconBtn>
+      );
+    return (
+      <Btn
+        variant={on ? "outline" : "primary"}
+        className={actionBtn}
+        icon={<Plus size={iconSize.sm} aria-hidden />}
+        disabled={q.isPending}
+        onClick={toggle}
+      >
+        {on ? "Following" : "Follow"}
+      </Btn>
+    );
+  }
+
+  const shown: ConnectionState =
+    pending === "ask" ? "sent" : pending === "accept" ? "connected" : state;
+  // Connected and Requested are states, not actions: removing a connection stays on the profile.
+  const done = shown === "connected" || shown === "sent";
+  const label =
+    shown === "connected"
+      ? "Connected"
+      : shown === "sent"
+        ? "Requested"
+        : shown === "received"
+          ? "Accept"
+          : "Connect";
+  const onConnect = () => {
+    if (act.isPending) return;
+    if (state === "received") act.mutate("accept");
+    else if (state === "none" || state === "declined") act.mutate("ask");
+  };
+  if (compact)
+    return (
+      <IconBtn
+        label={label}
+        variant={done ? "ghost" : "outline"}
+        disabled={q.isPending || done}
+        onClick={onConnect}
+      >
+        <StateIcon outline={UserPlus} solid="check" active={done} size={iconSize.md} move="stamp" />
+      </IconBtn>
+    );
+  return (
+    <Btn
+      variant={done ? "outline" : "primary"}
+      className={actionBtn}
+      icon={<UserPlus size={iconSize.sm} aria-hidden />}
+      disabled={q.isPending || done}
+      onClick={onConnect}
+    >
+      {label}
+    </Btn>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /* Talent card — a person from the directory                           */
@@ -110,7 +291,13 @@ export function PersonRow({
   );
   const end =
     action === undefined ? (
-      <SavedToggle targetType="talent" targetId={person.id} size={36} />
+      <CardActions
+        profileId={person.id}
+        relation="connect"
+        save={{ targetType: "talent", targetId: person.id }}
+        compact
+        className="shrink-0"
+      />
     ) : (
       action
     );
@@ -247,14 +434,22 @@ export function PersonCard({
     : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]";
   // A preview, or a person with no username, is the same card with nothing to open.
   if (disabled || !person.username) return <div className={shape}>{body}</div>;
+  // The footer sits beside the link, not inside it (no button inside a link).
   return (
-    <Link
-      to="/profile/$username"
-      params={{ username: person.username }}
-      className={cn(shape, live)}
-    >
-      {body}
-    </Link>
+    <div className="flex w-rail-sm shrink-0 flex-col gap-2">
+      <Link
+        to="/profile/$username"
+        params={{ username: person.username }}
+        className={cn(shape, live)}
+      >
+        {body}
+      </Link>
+      <CardActions
+        profileId={person.id}
+        relation="connect"
+        save={{ targetType: "talent", targetId: person.id }}
+      />
+    </div>
   );
 }
 
@@ -378,18 +573,26 @@ export function BookableCard({
     ? "relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
     : "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs";
   if (!link) return <div className={shape}>{body}</div>;
+  // The footer sits beside the link, not inside it (no button inside a link).
   return (
-    <Link
-      {...link}
-      className={cn(
-        shape,
-        featured
-          ? "state-layer"
-          : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]",
-      )}
-    >
-      {body}
-    </Link>
+    <div className="flex w-rail-md shrink-0 flex-col gap-2">
+      <Link
+        {...link}
+        className={cn(
+          shape,
+          featured
+            ? "state-layer"
+            : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]",
+        )}
+      >
+        {body}
+      </Link>
+      <CardActions
+        profileId={studio.ownerId}
+        relation="follow"
+        save={{ targetType: "studio", targetId: studio.id }}
+      />
+    </div>
   );
 }
 
@@ -444,7 +647,6 @@ export function BookableRow({ studio }: { studio: DiscoverBookable }) {
         </span>
       </span>
       {/* No price on a profile card (owner, 4 Oct 2026, §3): prices live on Service Cards. */}
-      <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
     </>
   );
   return (
@@ -457,6 +659,13 @@ export function BookableRow({ studio }: { studio: DiscoverBookable }) {
         // Nowhere to open: the same row, not a link that goes nowhere.
         <span className={inner}>{content}</span>
       )}
+      <CardActions
+        profileId={studio.ownerId}
+        relation="follow"
+        save={{ targetType: "studio", targetId: studio.id }}
+        compact
+        className="shrink-0"
+      />
     </li>
   );
 }

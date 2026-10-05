@@ -19,6 +19,8 @@ export type DiscoverBookable = {
   slug: string;
   /** The owning business account's username, which is the studio's profile. */
   username: string;
+  /** The owning business account's profile id: what Follow on the card targets. */
+  ownerId?: string | null | undefined;
   name: string;
   location: string;
   rating: number | null;
@@ -38,6 +40,7 @@ export function discoverBookableFromRow(
     id: row.id,
     slug: row.slug,
     username: row.owner?.username ?? "",
+    ownerId: row.owner?.id ?? null,
     name: row.name,
     location: shownPlace(row.location),
     rating: row.rating == null || !row.review_count ? null : Number(row.rating),

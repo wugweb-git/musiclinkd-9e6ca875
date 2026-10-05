@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — Connect / Follow on profile cards (5 Oct, phone plan P2)
+
+- `cards.tsx`: every profile card gets an action band beside its link (never inside it — no
+  button inside a link). Person cards and rows: Connect (Connect → Requested → Connected; Accept
+  for an incoming request). Business cards and rows: Follow ⇄ Following. Save sits next to it.
+  Signed out, the action goes to `/welcome`; your own card shows none. Rows use an icon button
+  (named for screen readers) so names keep their room; cards use a text button. Optimistic, with
+  rollback and an error toast; state is the profile page's own `["connection", id]` query.
+- `bookable-view.ts`: `DiscoverBookable.ownerId` (the owning business profile), which Follow
+  targets. `BookableRow`'s chevron is replaced by the actions.
+- Bands: no Follow yet (`follows.target_id` points at profiles; a band is a `collabs` row).
+
 ### Changed — duplicate components merged, no visual change (5 Oct, phone plan P1)
 
 - Rating: `cards.tsx` `RatingLine` and `market.tsx` `Rating` are now one `Rating` in `kit.tsx`
