@@ -13,6 +13,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   lists changed across 17 files; cards that had a shadow and no border gained the hairline.
 - `NavDock`: a page puts a control in the dock above the bottom nav beside the + pill (owner,
   5 Oct); Market and Collaborations put their Filters there instead of in the header.
+- Menu reaches every useful page (owner, 5 Oct): an audit found 15 pages nothing linked to. Added
+  Search; My opportunities, Applications, Find a match, New collaboration; a Market group (Sell
+  or rent, My listings, Nearby, Rentals, My rentals, Saved rentals, Rentals nearby). Legacy pages
+  (/me, /singers, /academy, /identity/business, /portfolio/analytics) stay unlinked; Settings
+  sub-pages stay under Settings.
 - `/opportunities/search` (the old version) redirects to Search on its Opportunities tab with the
   same query. Opportunities: the fake search field and filter link are gone; the top bar has + New
   then a Search icon; "Browse by need" is a side-scrolling row that opens Search with the need.
