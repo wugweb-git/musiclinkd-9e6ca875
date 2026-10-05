@@ -622,7 +622,9 @@
    */
   /* Three grounds, after Lovable (owner, 4 Oct 2026): --auth-ground for sign-in, --background for
    * content screens (Lovable's warm off-white), --card white for raised surfaces. */
-  --background: oklch(0.9846 0.0017 84.56);
+  /* Page: Lovable's app grey, measured at 412px (refs 01/02, owner 5 Oct). White cards
+     (--surface-subtle) sit on it. Was #FAFAF9, too close to white for cards to separate. */
+  --background: #f5f5f5;
   /* Sign-in screens only: the ground of lovable.dev/login (owner, 4 Oct 2026). */
   --auth-ground: oklch(0.9699 0 107);
   --foreground: var(--ink); /* default text is ink black */

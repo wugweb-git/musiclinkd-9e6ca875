@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — page background #F5F5F5 (5 Oct, owner)
+
+- `styles.css` `--background`: `#F5F5F5`, Lovable's app grey measured from the owner's references
+  (was `#FAFAF9`, too close to white for cards to separate). `theme-color` follows.
+  `--surface-subtle` stays white: it is the card and tile surface (owner, 17 Sep).
+
 ### Fixed — bottom sheets opened off screen (5 Oct)
 
 - `styles.css` `--animate-rise`: `backwards` instead of `both`. The screen rise-in held its end
