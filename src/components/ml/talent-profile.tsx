@@ -652,7 +652,7 @@ function Portfolio({
           <span className="flex items-center gap-1">
             <IconBtn
               label="Grid view"
-              variant={layout === "grid" ? "outline" : "ghost"}
+              variant={layout === "grid" ? "ghost" : "plain"}
               className="h-10 w-10"
               onClick={() => setLayout("grid")}
             >
@@ -660,7 +660,7 @@ function Portfolio({
             </IconBtn>
             <IconBtn
               label="Row view"
-              variant={layout === "rows" ? "outline" : "ghost"}
+              variant={layout === "rows" ? "ghost" : "plain"}
               className="h-10 w-10"
               onClick={() => setLayout("rows")}
             >

@@ -441,7 +441,7 @@ function Conversation() {
             type="button"
             aria-label="Share your profile, a service or a work"
             onClick={() => setSharing(true)}
-            className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground transition-transform duration-200 ease-standard active:scale-97"
+            className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-foreground transition-transform duration-200 ease-standard active:scale-97"
           >
             <Plus size={iconSize.md} aria-hidden />
           </button>

@@ -843,9 +843,11 @@ export const BtnLink = createLink(BtnAnchor);
 
 type IconBtnVariant = "outline" | "ink" | "ghost" | "plain";
 const iconBtnVariants: Record<IconBtnVariant, string> = {
-  outline: "border border-border bg-card text-foreground",
+  // No circle behind icons (owner, 5 Oct): "outline" is a plain icon now, on every screen. The
+  // 48dp tap area is unchanged. "ghost" is the soft fill that marks a selected toggle.
+  outline: "text-foreground",
   ink: "bg-ink text-ink-foreground",
-  ghost: "bg-subtle text-foreground",
+  ghost: "bg-ink/5 text-foreground",
   plain: "text-foreground",
 };
 function iconBtnClass(variant: IconBtnVariant, className: string) {

@@ -13,6 +13,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   lists changed across 17 files; cards that had a shadow and no border gained the hairline.
 - `NavDock`: a page puts a control in the dock above the bottom nav beside the + pill (owner,
   5 Oct); Market and Collaborations put their Filters there instead of in the header.
+- In the dock, Filters is a labelled pill (icon + "Filters", "Filters · 2" when on), like the +
+  pill. The header filter button lost its circle.
+- No circle behind icons anywhere (owner, 5 Oct): the shared icon button's "outline" style is a
+  plain icon now (48dp tap area kept); the conversation composer and opportunity header icons
+  too. "ghost" (ink 5%) marks the selected grid/row toggle. Text buttons, the booking counters,
+  the × over gallery photos and the scan button keep their outline.
 - Market listing tiles save with a bookmark, not a heart. Market's location icon is a plain icon.
 - `TopBar back="history"` goes back to wherever you came from (Home when there is nothing).
   Notifications, Bands, Bookings and Business bookings had no back at all; they use it now.

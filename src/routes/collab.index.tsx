@@ -197,7 +197,7 @@ function Collabs() {
                   <ArrowUpDown size={iconSize.sm} aria-hidden />
                 </IconBtn>
                 <NavDock>
-                  <FilterButton count={filterCount} onClick={() => setFiltersOpen(true)} />
+                  <FilterButton labelled count={filterCount} onClick={() => setFiltersOpen(true)} />
                 </NavDock>
               </>
             ) : null}

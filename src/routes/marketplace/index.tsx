@@ -137,7 +137,7 @@ function MarketHome() {
           <div className="flex items-center gap-2">
             {/* One order on every screen (owner, 5 Oct): page action · Search · Bell · Settings. */}
             <NavDock>
-              <FilterButton count={active} onClick={() => setFilters(true)} />
+              <FilterButton labelled count={active} onClick={() => setFilters(true)} />
             </NavDock>
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
             <NotificationsBell />

@@ -1049,13 +1049,34 @@ export function ActiveFilters({
 }
 
 /** The Filters button: dark with a count while any filter is set. */
-export function FilterButton({ count, onClick }: { count: number; onClick: () => void }) {
+export function FilterButton({
+  count,
+  onClick,
+  labelled = false,
+}: {
+  count: number;
+  onClick: () => void;
+  /** In the dock above the bottom nav: a pill with the icon and "Filters", like the + pill. */
+  labelled?: boolean;
+}) {
+  if (labelled)
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={count ? `Filters, ${count} applied` : "Filters"}
+        className={`hit-area state-layer inline-flex h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold ${count ? "bg-ink text-ink-foreground" : "bg-card text-foreground"}`}
+      >
+        <SlidersHorizontal size={iconSize.sm} aria-hidden />
+        {count ? `Filters · ${count}` : "Filters"}
+      </button>
+    );
   return (
     <button
       type="button"
       aria-label={count ? `Filters, ${count} applied` : "Filters"}
       onClick={onClick}
-      className={`hit-area relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${count ? "border-foreground bg-ink text-background" : "border-border bg-card"}`}
+      className={`hit-area relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${count ? "bg-ink text-background" : "text-foreground"}`}
     >
       <SlidersHorizontal size={iconSize.sm} aria-hidden />
       {count ? (
