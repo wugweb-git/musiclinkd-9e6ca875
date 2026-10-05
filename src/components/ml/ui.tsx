@@ -237,8 +237,10 @@ export function BottomNav() {
   const { allowed: isBusiness } = useRequireBusiness();
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app border-t border-border bg-card/95 backdrop-blur">
-        <ul className="flex items-stretch justify-between gap-1 px-2 pb-[env(safe-area-inset-bottom)]">
+      {/* A floating pill (owner's ref img 1, plan §7.1): side margins, rounded ends, a soft
+          shadow, the active tab as an inner pill; clear of the gesture bar. */}
+      <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <ul className="pointer-events-auto flex items-stretch justify-between gap-1 rounded-full bg-card/95 px-2 shadow-elevation-3 ring-1 ring-border backdrop-blur">
           {navItems.map((item) => {
             const active = path === item.to || path.startsWith(`${item.to}/`);
             return (
@@ -247,7 +249,7 @@ export function BottomNav() {
                   to={item.to}
                   aria-label={item.label}
                   aria-current={active ? "page" : undefined}
-                  className="hit-area flex h-16 w-full items-center justify-center"
+                  className="hit-area flex h-14 w-full items-center justify-center"
                 >
                   <span
                     className={`relative flex h-10 items-center justify-center gap-2 rounded-full transition-[background-color,padding] duration-200 ease-standard ${
@@ -284,7 +286,7 @@ export function BottomNav() {
               variant="plain"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(true)}
-              className="h-16 w-full rounded-none"
+              className="h-14 w-full rounded-full"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full">
                 <Grid2x2 size={iconSize.md} className="text-foreground" aria-hidden />

@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — floating pill bottom nav (5 Oct, phone plan P11)
+
+- `ui.tsx` `BottomNav`: a floating pill (owner's ref img 1) — side margins, rounded ends, soft
+  shadow and hairline ring, clear of the gesture bar; the active tab stays an inner pill with its
+  label; 48dp tap areas kept. Page clearance (`--spacing-nav-clear`, 96px) already covers it.
+
 ### Changed — Account and Security settings (5 Oct, phone plan P10)
 
 - `settings.account.tsx`: rows on the white surface like the owner's refs (img 4–5): title, a
