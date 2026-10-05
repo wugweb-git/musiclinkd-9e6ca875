@@ -191,7 +191,9 @@
   /* Splash: the session check, as a bar that fills and holds rather than a spinner. */
   --animate-loadbar: loadbar 1.8s var(--easing-enter) infinite;
   /* Arrival screens land on a beat: each block rises in, delayed by beat(n) (flow-motion.ts). */
-  --animate-rise: rise 480ms var(--easing-enter) both;
+  /* `backwards`, not `both`: a transform animation still held after it ends makes the screen the
+     containing block for position:fixed, which pushed every bottom sheet off screen. */
+  --animate-rise: rise 480ms var(--easing-enter) backwards;
   /* The Soon label: a slow light passes across it, so a later feature reads as on its way. */
   --animate-soon: soon 2.4s ease-in-out infinite;
   /* Bottom-nav tab selected: each icon moves like the thing it is. Tap-only, never on load. */

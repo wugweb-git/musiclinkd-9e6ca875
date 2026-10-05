@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — bottom sheets opened off screen (5 Oct)
+
+- `styles.css` `--animate-rise`: `backwards` instead of `both`. The screen rise-in held its end
+  transform after finishing, which made every screen the containing block for `position: fixed`,
+  so a `Sheet` opened inside a screen was placed against the page, not the phone screen.
+
 ### Changed — Search keeps its query and filters in the address (5 Oct, phone plan P6)
 
 - `search.index.tsx`: the query (`?q=`, once typing stops), the role and the Verified filter are
