@@ -5,7 +5,6 @@ import {
   BriefcaseBusiness,
   Building2,
   Search,
-  SlidersHorizontal,
   Sparkles,
   Store,
   UsersRound,
