@@ -306,7 +306,7 @@ export function ProductCard({
   const unit = unitName(item.price?.unit);
 
   const body = (
-    <div className="overflow-hidden rounded-lg bg-card shadow-sm transition-transform duration-300 ease-spring group-active:scale-[0.96]">
+    <div className="overflow-hidden rounded-lg bg-card transition-transform duration-300 ease-spring group-active:scale-[0.96] border border-border/80">
       <div className="p-2">
         <div className="relative aspect-square overflow-hidden rounded-sm bg-subtle">
           {item.photos.length ? (

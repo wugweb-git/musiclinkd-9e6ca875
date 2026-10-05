@@ -348,7 +348,7 @@ function NewBusiness() {
               }}
             />
 
-            <div className="rounded-lg border border-border/80 bg-card p-5 shadow-xs">
+            <div className="rounded-lg border border-border/80 bg-card p-5">
               <div className="mb-1 flex items-center justify-between">
                 <p className="text-sm font-bold text-foreground">Google Maps Profile (Optional)</p>
                 {reading ? (
@@ -400,7 +400,7 @@ function NewBusiness() {
             </div>
           </div>
         ) : step === "basics" ? (
-          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">
             <InlineField
               inputId="businessName"
               label="Business name"
@@ -430,7 +430,7 @@ function NewBusiness() {
             />
           </div>
         ) : step === "location" ? (
-          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">
             <div className="grid grid-cols-2 gap-3">
               <DrawerField label="State">
                 <SheetSelect
@@ -483,7 +483,7 @@ function NewBusiness() {
             />
           </div>
         ) : step === "offer" ? (
-          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">
             <DrawerField label="Genres">
               <ChipPicker
                 options={(tx.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}

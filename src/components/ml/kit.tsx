@@ -179,7 +179,7 @@ export function MadeByWugweb() {
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-lg bg-card p-4 shadow-elevation-2 ${className}`}>
+    <section className={`rounded-lg bg-card p-4 ${className} border border-border/80`}>
       {children}
     </section>
   );
@@ -222,8 +222,8 @@ export function SegmentedField<T extends string>({
           aria-checked={value === o}
           onClick={() => onChange(o)}
           className={`hit-area flex min-w-0 items-center justify-center gap-1.5 truncate rounded-sm px-2 py-2 text-sm font-semibold transition-colors ${
-            value === o ? "bg-card text-foreground shadow-xs" : "text-muted-foreground"
-          }`}
+            value === o ? "bg-card text-foreground" : "text-muted-foreground"
+          } border border-border/80`}
         >
           {icons?.[o]
             ? (() => {
@@ -507,7 +507,7 @@ export function RowGroup({
         className={
           flat
             ? "divide-y divide-border/70"
-            : "divide-y divide-border overflow-hidden rounded-lg bg-card shadow-elevation-2"
+            : "divide-y divide-border overflow-hidden rounded-lg bg-card"
         }
       >
         {children}
@@ -557,7 +557,7 @@ export function EmptyState({
   return (
     <div
       data-kind={kind}
-      className="relative overflow-hidden rounded-lg bg-ink text-ink-foreground shadow-elevation-2"
+      className="relative overflow-hidden rounded-lg bg-ink text-ink-foreground"
     >
       <img
         src={art ?? brandCollage}
@@ -670,7 +670,7 @@ export function StateCard({
 
   return (
     <div
-      className={`border-l-4 bg-card p-5 text-left shadow-elevation-2 ${tone === "error" ? "border-destructive" : "border-ink"}`}
+      className={`border-l-4 bg-card p-5 text-left ${tone === "error" ? "border-destructive" : "border-ink"}`}
       role={tone === "error" ? "alert" : undefined}
     >
       <h3 className="text-2">{title}</h3>
@@ -686,7 +686,7 @@ export function Loading({ rows = 3 }: { rows?: number }) {
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          className="flex h-20 items-center gap-3 rounded-lg bg-card px-4 shadow-elevation-2"
+          className="flex h-20 items-center gap-3 rounded-lg bg-card px-4 border border-border/80"
         >
           <Skeleton className="h-11 w-11 shrink-0 rounded-sm" />
           <span className="min-w-0 flex-1 space-y-2">

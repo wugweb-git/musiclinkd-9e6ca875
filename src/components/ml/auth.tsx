@@ -540,7 +540,7 @@ export function PhoneField({
       placeholder="98765 43210"
       leading={
         <span className="-ml-0.5 flex shrink-0 items-center gap-2 border-r border-border/80 pr-3 text-2 font-medium text-foreground">
-          <IndiaFlag className="shadow-xs" />
+          <IndiaFlag className="" />
           <span>{ISD_CODE}</span>
         </span>
       }
@@ -618,7 +618,7 @@ export function CodeInput({
                 invalid
                   ? "border-destructive bg-danger-container/20 text-destructive"
                   : active
-                    ? "border-foreground ring-2 ring-foreground/15 shadow-sm scale-[1.03]"
+                    ? "border-foreground ring-2 ring-foreground/15 scale-[1.03]"
                     : value.length === length
                       ? "border-foreground/80 bg-subtle"
                       : value[i]

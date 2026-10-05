@@ -870,10 +870,10 @@ export function AudioTrackCard({
               src={sized((track.artwork || coverFor(track.media))!, { width: 412 })}
               alt=""
               loading="lazy"
-              className="aspect-square w-full rounded-md object-cover shadow-xs"
+              className="aspect-square w-full rounded-md object-cover"
             />
           ) : (
-            <NoCover className="aspect-square w-full rounded-md shadow-xs" />
+            <NoCover className="aspect-square w-full rounded-md" />
           )}
           {track.media ? (
             <button
@@ -972,7 +972,7 @@ export function AudioTrackCard({
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-lg bg-card shadow-elevation-2 ring-1 ring-border animate-in fade-in duration-200",
+        "overflow-hidden rounded-lg bg-card ring-1 ring-border animate-in fade-in duration-200",
         layout === "portrait" && "col-span-full",
       )}
     >
@@ -1113,7 +1113,7 @@ export function VideoCard({
     return (
       <article
         className={cn(
-          "overflow-hidden rounded-lg bg-card shadow-elevation-2 ring-1 ring-border animate-in fade-in duration-200",
+          "overflow-hidden rounded-lg bg-card ring-1 ring-border animate-in fade-in duration-200",
           layout === "grid" && "col-span-full",
         )}
       >
@@ -1181,7 +1181,7 @@ export function VideoCard({
   return (
     <article className={cn("min-w-0", layout === "grid" ? "w-full" : "w-[220px] shrink-0")}>
       {/* Same tile as audio: a square cover, rounded, the source's play button, a Video tag. */}
-      <div className="relative aspect-square overflow-hidden rounded-md bg-ink/5 shadow-xs">
+      <div className="relative aspect-square overflow-hidden rounded-md bg-ink/5">
         {v.thumb || coverFor(v.media) ? (
           <img
             src={sized((v.thumb || coverFor(v.media))!, { width: 412 })}
@@ -1393,8 +1393,8 @@ export function ServiceCard({
       className={cn(
         "group relative flex flex-col justify-between overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-standard",
         selected
-          ? "border-foreground ring-2 ring-foreground/15 shadow-sm"
-          : "border-border/80 hover:border-foreground/40 hover:shadow-xs",
+          ? "border-foreground ring-2 ring-foreground/15"
+          : "border-border/80 hover:border-foreground/40",
         disabled && "opacity-60",
         className,
       )}
@@ -1559,7 +1559,7 @@ export function ReviewCard({
   return (
     <article
       className={cn(
-        "group flex h-full w-[min(300px,82vw)] flex-col justify-between rounded-lg border border-border/80 bg-card p-4 shadow-2xs transition-all duration-150 hover:shadow-xs",
+        "group flex h-full w-[min(300px,82vw)] flex-col justify-between rounded-lg border border-border/80 bg-card p-4 transition-all duration-150",
         className,
       )}
     >
@@ -1999,7 +1999,7 @@ export function ProfileCompletion({
   cta?: boolean | undefined;
 }) {
   return (
-    <div className="rounded-lg border border-border/80 bg-card p-4 shadow-xs">
+    <div className="rounded-lg border border-border/80 bg-card p-4">
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-1 font-bold text-foreground">{title}</p>
         <span className="tabular-nums text-1 font-bold text-foreground">{gaps.percent}%</span>

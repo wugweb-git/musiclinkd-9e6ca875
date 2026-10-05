@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — one surface rule; back from every page (5 Oct, owner)
+
+- Surfaces: anything sitting on the page (cards, tiles, rows, panels, selected states) has a 1px
+  hairline border and no shadow; only floating things keep a shadow (bottom nav, create pill,
+  sheets, popovers, round floating buttons, scroll-edge hints, a dragged kanban card). 48 class
+  lists changed across 17 files; cards that had a shadow and no border gained the hairline.
+- `TopBar back="history"` goes back to wherever you came from (Home when there is nothing).
+  Notifications, Bands, Bookings and Business bookings had no back at all; they use it now.
+
 ### Changed — top bar order and scroll, page tones (5 Oct, owner)
 
 - One icon order on every header: page action · Search · Bell · Settings; a screen shows only

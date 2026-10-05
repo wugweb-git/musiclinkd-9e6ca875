@@ -405,17 +405,33 @@ export function TopBar({
   title: string;
   /** Not shown: top bars carry the title only (owner rule, 5 Oct). Kept so callers still compile. */
   subtitle?: string;
+  /** A path, or "history" to go back to wherever you came from (Home when there is nothing). */
   back?: string;
   right?: ReactNode;
 }) {
   const chrome = useScrollChrome();
+  const goBack = () => {
+    if (window.history.length > 1) window.history.back();
+    else window.location.assign("/home");
+  };
   return (
     <header
       className={`pt-safe sticky top-0 z-bar flex items-center gap-3 border-b border-border/70 bg-card/92 px-5 backdrop-blur transition-[transform,padding] duration-200 ease-standard ${
         chrome.compact ? "pb-2" : "pb-3.5"
       } ${chrome.hidden ? "-translate-y-full" : ""}`}
     >
-      {back ? (
+      {back === "history" ? (
+        <button
+          type="button"
+          onClick={goBack}
+          // -ml-2.5: the 40px tap area is centred on a 20px arrow, so without it the arrow sat
+          // 10px further in than the content below and the bar looked shifted right.
+          className="hit-area -ml-2.5 flex h-10 w-10 shrink-0 items-center justify-center transition-transform duration-200 ease-standard active:scale-97"
+          aria-label="Back"
+        >
+          <ArrowLeft size={iconSize.md} aria-hidden />
+        </button>
+      ) : back ? (
         <Link
           to={back}
           // -ml-2.5: the 40px tap area is centred on a 20px arrow, so without it the arrow sat

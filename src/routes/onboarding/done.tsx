@@ -61,7 +61,7 @@ function Done() {
       <main className="px-5 pt-4">
         <section
           className={cn(
-            "rounded-lg bg-card p-6 text-center border border-border/80 shadow-xs relative overflow-hidden",
+            "rounded-lg bg-card p-6 text-center border border-border/80 relative overflow-hidden",
             rise,
           )}
         >
@@ -105,7 +105,7 @@ function Done() {
             to="/discover"
             className={cn(
               nextCard,
-              "bg-card border border-border/80 shadow-xs hover:border-foreground/40",
+              "bg-card border border-border/80 hover:border-foreground/40",
               rise,
             )}
             style={beat(3 + summary.length)}
@@ -120,7 +120,7 @@ function Done() {
             to="/profile"
             className={cn(
               nextCard,
-              "bg-card border border-border/80 shadow-xs hover:border-foreground/40",
+              "bg-card border border-border/80 hover:border-foreground/40",
               rise,
             )}
             style={beat(4 + summary.length)}
@@ -139,7 +139,7 @@ function Done() {
           edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >
-        <BtnLink to="/profile" className="w-full h-12 text-sm font-semibold shadow-xs">
+        <BtnLink to="/profile" className="w-full h-12 text-sm font-semibold">
           View your profile
         </BtnLink>
       </div>

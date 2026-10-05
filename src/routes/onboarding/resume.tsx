@@ -55,7 +55,7 @@ function Resume() {
           You have completed {done} of {list.length} questions. Your progress is saved.
         </p>
 
-        <div className="mt-6 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+        <div className="mt-6 rounded-lg bg-card p-5 border border-border/80">
           <span className="inline-block rounded-full bg-subtle px-2.5 py-0.5 text-1 font-bold text-foreground">
             Next question
           </span>
@@ -91,7 +91,7 @@ function Resume() {
 
       <div className="mt-8 space-y-2.5">
         <Btn
-          className="w-full h-12 text-sm font-semibold shadow-xs"
+          className="w-full h-12 text-sm font-semibold"
           onClick={() => navigate({ to: "/onboarding/step/$id", params: { id: target } })}
         >
           Continue Setup

@@ -102,7 +102,7 @@ function Preview() {
 
       <main className="px-5 pt-6">
         <h2 className="text-2 font-bold text-foreground">Your details</h2>
-        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg bg-card border border-border/80 shadow-xs">
+        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg bg-card border border-border/80">
           <DetailRow
             label="Roles"
             values={names(
@@ -147,7 +147,7 @@ function Preview() {
       </main>
 
       <ActionBar className="space-y-2">
-        <BtnLink to="/onboarding/complete" className="w-full h-12 text-sm font-semibold shadow-xs">
+        <BtnLink to="/onboarding/complete" className="w-full h-12 text-sm font-semibold">
           Publish My Profile
         </BtnLink>
         <p className="flex justify-center text-1">

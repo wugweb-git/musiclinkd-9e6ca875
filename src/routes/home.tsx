@@ -536,7 +536,7 @@ function WorkspaceLink({
   return (
     <Link
       to={to}
-      className="state-layer flex min-h-32 min-w-0 flex-col rounded-lg border border-border bg-card p-4 shadow-elevation-2"
+      className="state-layer flex min-h-32 min-w-0 flex-col rounded-lg border border-border bg-card p-4"
     >
       <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
         {icon}

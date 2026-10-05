@@ -99,7 +99,7 @@ function Complete() {
         ) : null}
         <section
           className={cn(
-            "rounded-lg bg-card p-6 border border-border/80 shadow-xs relative overflow-hidden",
+            "rounded-lg bg-card p-6 border border-border/80 relative overflow-hidden",
             rise,
           )}
         >
@@ -195,7 +195,7 @@ function Complete() {
           edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >
-        <BtnLink to="/onboarding/done" className="w-full h-12 text-sm font-semibold shadow-xs">
+        <BtnLink to="/onboarding/done" className="w-full h-12 text-sm font-semibold">
           Finish & View Dashboard
         </BtnLink>
       </div>

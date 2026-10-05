@@ -476,10 +476,10 @@ export function PersonCard({
   );
   const shape = featured
     ? "relative block h-56 w-rail-sm shrink-0 overflow-hidden rounded-lg text-left"
-    : "block w-full rounded-lg border border-border/80 bg-card p-2 shadow-xs";
+    : "block w-full rounded-lg border border-border/80 bg-card p-2";
   const live = featured
     ? "state-layer transition-transform duration-150 ease-standard active:scale-[0.985]"
-    : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]";
+    : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 active:scale-[0.985]";
   // A preview, or a person with no username, is the same card with nothing to open.
   const width = fill ? "w-full min-w-0" : "w-rail-sm shrink-0";
   if (disabled || !person.username)
@@ -489,7 +489,7 @@ export function PersonCard({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-lg border border-border/80 bg-card shadow-xs",
+        "flex flex-col rounded-lg border border-border/80 bg-card",
         featured ? "overflow-hidden" : "gap-2 p-2",
         width,
       )}
@@ -631,12 +631,12 @@ export function BookableCard({
   );
   const shape = featured
     ? "relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
-    : "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs";
+    : "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card";
   if (!link) return <div className={shape}>{body}</div>;
   // The card frame holds the link and, at its bottom, the action — beside the link, never inside
   // it (no button inside a link).
   return (
-    <div className="flex w-rail-md shrink-0 flex-col overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs">
+    <div className="flex w-rail-md shrink-0 flex-col overflow-hidden rounded-lg border border-border/80 bg-card">
       <Link
         {...link}
         className={cn(
@@ -657,7 +657,7 @@ export function BookableCard({
 
 export function BookableCardSkeleton() {
   return (
-    <div className="w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card shadow-xs">
+    <div className="w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card">
       <div className="h-28 w-full animate-pulse bg-ink/5" />
       <div className="space-y-1.5 p-3">
         <div className="h-3.5 w-28 animate-pulse rounded bg-ink/5" />

@@ -836,7 +836,7 @@ export function InlineField({
           // One input shape for the app (owner, 24 Sep): a pill, the same shape as the pickers it
           // sits beside. A textarea keeps a rounded rectangle — a pill around four lines reads
           // wrong — which is the shape the other multi-line fields already use.
-          "flex items-center gap-1 border bg-card shadow-xs transition-all duration-150 ease-standard",
+          "flex items-center gap-1 border bg-card transition-all duration-150 ease-standard",
           multiline ? "rounded-lg px-4 py-3" : "h-13 rounded-full px-5",
           readOnly && "bg-background",
           error
@@ -1457,7 +1457,7 @@ export function AccountTypeCard({
         onSelect ? "active:scale-98" : "",
         hollow
           ? "border border-dashed border-input bg-transparent"
-          : "border border-border bg-card shadow-xs",
+          : "border border-border bg-card",
       )}
     >
       <span className="text-3 font-bold text-foreground">{title}</span>
