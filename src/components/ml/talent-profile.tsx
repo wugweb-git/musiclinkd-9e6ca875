@@ -729,6 +729,7 @@ function Services({
 function About({ p }: { p: TalentProfile }) {
   return (
     <>
+      <FactGrid p={p} />
       <ProfileSection title="About">
         {p.longBio ? (
           <div className="rounded-lg bg-subtle p-4">
@@ -769,31 +770,46 @@ function About({ p }: { p: TalentProfile }) {
           <EmptyState title="No links yet" body="Streaming and social links will appear here." />
         )}
       </ProfileSection>
-      <ProfileSection title="Connections">
-        <div className="grid grid-cols-2 gap-3">
-          <IdentityFact
-            icon={<Users size={iconSize.sm} />}
-            label="Connections"
-            value={p.stats.connections}
-          />
-          <IdentityFact
-            icon={<Globe2 size={iconSize.sm} />}
-            label="Followers"
-            value={p.stats.followers}
-          />
-          <IdentityFact
-            icon={<MapPin size={iconSize.sm} />}
-            label="Location"
-            value={p.location || "—"}
-          />
-          <IdentityFact
-            icon={<Clock3 size={iconSize.sm} />}
-            label="Experience"
-            value={p.yearsActive || "—"}
-          />
-        </div>
-      </ProfileSection>
     </>
+  );
+}
+
+/**
+ * The fact grid (plan §6, owner 4 Oct): Experience, Genres, Languages, City — real values only.
+ * Two columns with a 1px gap on the hairline, so the gaps are the dividers. With an odd count the
+ * last fact spans both columns: never an empty cell.
+ */
+function FactGrid({ p }: { p: TalentProfile }) {
+  const facts = [
+    { label: "Experience", value: p.yearsActive, icon: <Clock3 size={14} aria-hidden /> },
+    {
+      label: "Genres",
+      value: p.genres.slice(0, 3).join(", "),
+      icon: <Music size={14} aria-hidden />,
+    },
+    {
+      label: "Languages",
+      value: p.languages.slice(0, 3).join(", "),
+      icon: <Globe2 size={14} aria-hidden />,
+    },
+    { label: "City", value: p.location, icon: <MapPin size={14} aria-hidden /> },
+  ].filter((f) => f.value);
+  if (!facts.length) return null;
+  return (
+    <ProfileSection title="At a glance">
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-border ring-1 ring-border">
+        {facts.map((f, i) => (
+          <div
+            key={f.label}
+            className={
+              i === facts.length - 1 && facts.length % 2 ? "col-span-2 bg-card" : "bg-card"
+            }
+          >
+            <InfoRow cell label={f.label} value={f.value} icon={f.icon} />
+          </div>
+        ))}
+      </div>
+    </ProfileSection>
   );
 }
 

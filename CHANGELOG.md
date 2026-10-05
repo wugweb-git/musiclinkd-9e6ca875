@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — profile fact grid (5 Oct, phone plan P7)
+
+- `profile.tsx` `InfoRow` gains a `cell` layout (icon + 12px label over a 14 medium value, 16px
+  padding). `talent-profile.tsx` About opens with "At a glance": Experience, Genres, Languages,
+  City from real values only, two columns with a 1px gap on the hairline as the dividers; with an
+  odd count the last fact spans both columns. It replaces the Connections grid, which showed "—"
+  for missing values.
+
 ### Changed — page background #F5F5F5 (5 Oct, owner)
 
 - `styles.css` `--background`: `#F5F5F5`, Lovable's app grey measured from the owner's references

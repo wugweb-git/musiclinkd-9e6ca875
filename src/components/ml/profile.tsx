@@ -412,7 +412,32 @@ export function ChipGroup({
 }
 
 /** A label and its value; a price value renders as amount and unit line, right-aligned. */
-export function InfoRow({ label, value }: { label: string; value: string | PriceParts }) {
+export function InfoRow({
+  label,
+  value,
+  icon,
+  cell = false,
+}: {
+  label: string;
+  value: string | PriceParts;
+  /** A 14px lucide icon before the label (fact grid). */
+  icon?: ReactNode;
+  /**
+   * A fact-grid cell (plan §6): icon + 12px label over a 14 medium value, on white, 16px padding.
+   * The grid around it draws the dividers with a 1px gap on a hairline background.
+   */
+  cell?: boolean;
+}) {
+  if (cell && typeof value === "string")
+    return (
+      <div className="h-full bg-card p-4">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          {icon}
+          {label}
+        </span>
+        <span className="mt-1 block text-sm font-medium text-foreground">{value}</span>
+      </div>
+    );
   return (
     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
       <span className="pill bg-background text-muted-foreground">{label}</span>
