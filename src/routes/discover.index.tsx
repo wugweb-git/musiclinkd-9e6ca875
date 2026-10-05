@@ -13,7 +13,7 @@ import {
 
 import { BookableCard, PersonCard, PersonRow } from "@/components/ml/cards";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
-import { NotificationsBell } from "@/components/ml/tab-header";
+import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { Chip, Screen, SectionHeader } from "@/components/ml/ui";
 import { listBookables, listOpportunities } from "@/lib/catalog.functions";
 import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
@@ -74,6 +74,7 @@ type Mode = (typeof TALENT_MODES)[number] | (typeof BUSINESS_MODES)[number];
 function DiscoverScreen() {
   const loaded = Route.useLoaderData();
   const navigate = useNavigate();
+  const [searchOpen, setSearchOpen] = useState(false);
   const business = useMyBusinessIdentity();
   const recommendations = useRecommendations();
   const saved = useSavedOpportunities();
@@ -101,19 +102,20 @@ function DiscoverScreen() {
             </p>
             <h1 className="mt-1 text-3">Discover</h1>
           </div>
-          <NotificationsBell />
+          <div className="flex items-center gap-2">
+            <NotificationsBell />
+            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => void navigate({ to: "/search" })}
-          className="state-layer mt-5 flex min-h-14 w-full items-center gap-3 rounded-full bg-subtle px-5 text-left"
-        >
-          <Search size={iconSize.md} aria-hidden />
-          <span className="min-w-0 flex-1 truncate text-2 text-muted-foreground">
-            Search people, studios, services and work
-          </span>
-          <SlidersHorizontal size={iconSize.md} aria-hidden />
-        </button>
+        {searchOpen ? (
+          <div className="mt-4">
+            <SearchField
+              to="/search"
+              placeholder="Search people, studios, services and work"
+              onClose={() => setSearchOpen(false)}
+            />
+          </div>
+        ) : null}
         <div className="rail no-scrollbar -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1">
           {modes.map((item) => (
             <Chip key={item} active={mode === item} onClick={() => setMode(item)}>
