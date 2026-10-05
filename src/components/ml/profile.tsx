@@ -903,57 +903,66 @@ export function AudioTrackCard({
 
   // Stacked (Spotify row): cover, title, who, duration — the whole row plays it. No bookmark, no
   // chevron. Playing: the same row on a dark panel with the player inside and the credit under it.
+  // Stacked (Spotify / Apple Music row): cover (an equaliser while playing), title in 14 medium
+  // so it never competes with the section heading, the artist muted, then on the right the
+  // duration and a play/pause control. The whole row plays.
+  const cover = track.artwork || coverFor(track.media);
   const row = (
-    <button
-      type="button"
-      onClick={track.media ? onToggle : undefined}
-      disabled={!track.media}
-      aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
-      aria-pressed={playing}
-      className="state-layer flex w-full min-w-0 items-center gap-3 p-2 text-left disabled:cursor-default"
-    >
-      {track.artwork || coverFor(track.media) ? (
-        <img
-          src={sized((track.artwork || coverFor(track.media))!, { width: 112 })}
-          alt=""
-          aria-hidden
-          loading="lazy"
-          className="h-14 w-14 shrink-0 rounded-sm object-cover"
-        />
-      ) : (
-        <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
-      )}
-      <span className="min-w-0 flex-1">
-        <span
-          className={cn(
-            "block truncate text-2 font-semibold",
-            playing ? "text-ink-foreground" : "text-foreground",
+    <div className="flex w-full min-w-0 items-center gap-3 p-2">
+      <button
+        type="button"
+        onClick={track.media ? onToggle : undefined}
+        disabled={!track.media}
+        aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
+        aria-pressed={playing}
+        className="state-layer flex min-w-0 flex-1 items-center gap-3 text-left disabled:cursor-default"
+      >
+        <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-sm bg-ink/5">
+          {cover ? (
+            <img
+              src={sized(cover, { width: 112 })}
+              alt=""
+              aria-hidden
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <NoCover className="h-full w-full" />
           )}
-        >
-          {track.title}
+          {playing ? <Equaliser /> : null}
         </span>
-        {track.role ? (
+        <span className="min-w-0 flex-1">
           <span
             className={cn(
-              "block truncate text-1",
-              playing ? "text-ink-foreground/70" : "text-muted-foreground",
+              "block truncate text-sm font-medium",
+              playing ? "text-brand" : "text-foreground",
             )}
           >
-            {track.role}
+            {track.title}
           </span>
-        ) : null}
-      </span>
-      {track.duration ? (
-        <span
-          className={cn(
-            "shrink-0 text-1 tabular-nums",
-            playing ? "text-ink-foreground/70" : "text-muted-foreground",
-          )}
-        >
-          {track.duration}
+          {track.role ? (
+            <span className="block truncate text-1 text-muted-foreground">{track.role}</span>
+          ) : null}
         </span>
+      </button>
+      {track.duration ? (
+        <span className="shrink-0 text-1 tabular-nums text-muted-foreground">{track.duration}</span>
       ) : null}
-    </button>
+      {track.media ? (
+        <IconBtn
+          label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
+          variant="plain"
+          className="h-10 w-10 shrink-0"
+          onClick={onToggle}
+        >
+          {playing ? (
+            <Pause size={iconSize.md} fill="currentColor" aria-hidden />
+          ) : (
+            <Play size={iconSize.md} fill="currentColor" aria-hidden />
+          )}
+        </IconBtn>
+      ) : null}
+    </div>
   );
 
   if (!isExpanded) return <article className="overflow-hidden rounded-lg">{row}</article>;
@@ -1033,6 +1042,24 @@ function WorkDetails({
         {isDbId(id) ? <ShareWorkButton id={id} title={title} /> : null}
       </div>
     </div>
+  );
+}
+
+/** Three bars over a playing track's cover (respects reduced motion via the CSS). */
+function Equaliser() {
+  return (
+    <span
+      aria-hidden
+      className="absolute inset-0 flex items-end justify-center gap-0.5 bg-ink/45 pb-2.5"
+    >
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="eq-bar w-1 rounded-full bg-ink-foreground"
+          style={{ animationDelay: `${i * 0.18}s` }}
+        />
+      ))}
+    </span>
   );
 }
 
@@ -1325,10 +1352,9 @@ export function ServiceCard({
   const meta = [category, s.mode].filter(Boolean).join(" · ");
   const allDeliverables = s.deliverables ?? [];
   const gets = expanded ? allDeliverables : allDeliverables.slice(0, 3);
+  // Collapsed by default, so anything beyond the name and the stub is a detail to open.
   const hasDetails =
-    allDeliverables.length > 3 ||
-    (s.description && s.description.length > 80) ||
-    (s.uses && s.uses.length > 0);
+    allDeliverables.length > 0 || Boolean(s.description) || Boolean(s.uses?.length);
 
   const book = onBook ? (
     <Btn
@@ -1393,12 +1419,12 @@ export function ServiceCard({
             <Link
               to="/services/$id"
               params={{ id: s.id }}
-              className="hit-area block text-3 font-bold leading-snug text-foreground underline-offset-4 hover:underline"
+              className="hit-area block text-2 font-bold leading-snug text-foreground underline-offset-4 hover:underline"
             >
               {s.name}
             </Link>
           ) : (
-            <h3 className="text-3 font-bold leading-snug text-foreground">{s.name}</h3>
+            <h3 className="text-2 font-bold leading-snug text-foreground">{s.name}</h3>
           )}
 
           {hasDetails ? (
@@ -1419,18 +1445,15 @@ export function ServiceCard({
           ) : null}
         </div>
 
-        {s.description ? (
-          <p
-            className={cn(
-              "mt-1.5 text-1 leading-relaxed text-foreground",
-              !expanded && "line-clamp-2",
-            )}
-          >
+        {/* Collapsed (owner, 5 Oct): category, name, then the stub with price and Book.
+            Details opens the description, what you get and the gear. */}
+        {expanded && s.description ? (
+          <p className="mt-1.5 text-1 leading-relaxed text-foreground animate-in fade-in-50 duration-150">
             {s.description}
           </p>
         ) : null}
 
-        {gets.length ? (
+        {expanded && gets.length ? (
           <ul className="mt-3 space-y-1.5" aria-label="What you get">
             {gets.map((d) => (
               <li key={d} className="flex items-start gap-2 text-1 font-medium text-foreground">

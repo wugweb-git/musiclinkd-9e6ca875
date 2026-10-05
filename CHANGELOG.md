@@ -21,6 +21,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   music photo behind a scrim (the brand collage by default; `art` per use case from
   `EMPTY_ART`: work, reviews, search, services), a brand-pink accent, white title and body, the
   action on the banner. Mapped: profile work and reviews, Search "Nothing matched".
+- Profile "At a glance" is one bento (owner, 5 Oct): Genres across the top, then Type,
+  Instruments, Languages, City, Experience and each professional detail as tiles in pairs; a long
+  value or a lone tile spans the row. Professional details and Music identity are no longer
+  separate sections, so nothing repeats; About is the bio only.
+- Service card collapsed by default: category, name, then price, delivery and Book; Details opens
+  the description, what you get and the gear. The name is one step smaller.
+- Stacked Portfolio row (Spotify / Apple Music): title in 14 medium (no longer the section-heading
+  size), artist muted, duration and a play/pause control on the right, an equaliser over the
+  cover while it plays (still under reduced motion).
 - Discover: Trending audio and Trending videos are side-scrolling rows of portrait tiles (the
   Portfolio tile, source-coloured play); a playing tile widens to the row.
 - Your own profile: empty Portfolio offers "Manage portfolio" (the Portfolio page) instead of

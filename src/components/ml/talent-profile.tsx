@@ -32,6 +32,7 @@ import {
   Users,
   type LucideIcon,
   UserRound,
+  SlidersHorizontal,
 } from "lucide-react";
 import {
   profileIdByUsername,
@@ -201,8 +202,16 @@ export function TalentProfileExperience({
           </>
         ) : (
           <>
-            <FactGrid p={p} />
-            <About p={p} part="text" />
+            {/* One bento for who they are (owner, 5 Oct): facts, music identity and professional
+                details together, each fact once. About is only the bio. */}
+            <AtAGlance p={p} />
+            {p.longBio ? (
+              <ProfileSection title="About">
+                <div className="rounded-lg bg-card p-4">
+                  <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
+                </div>
+              </ProfileSection>
+            ) : null}
             <Services p={p} onBook={onBook} />
             <Portfolio
               p={p}
@@ -212,7 +221,11 @@ export function TalentProfileExperience({
               onGalleryChange={onGalleryChange}
             />
             {owner || p.reviews.length ? <Reviews p={p} owner={owner} /> : null}
-            <About p={p} part="identity" />
+            {p.links.length ? (
+              <ProfileSection title="External links">
+                <SocialLinks links={p.links} />
+              </ProfileSection>
+            ) : null}
             {!owner && signedIn && p.profileId ? (
               <MessageCard name={p.name} profileId={p.profileId} />
             ) : null}
@@ -1018,9 +1031,7 @@ function BentoCard({
           <Icon size={iconSize.sm} className="text-foreground" aria-hidden />
           <span>{label}</span>
         </span>
-        {count ? (
-          <span className="text-1 font-medium text-muted-foreground">{count} genres</span>
-        ) : null}
+        {count ? <span className="text-1 font-medium text-muted-foreground">{count}</span> : null}
       </div>
       <div className="mt-2.5 flex flex-wrap gap-1.5">{children}</div>
     </div>
@@ -1099,6 +1110,66 @@ export function MessageCard({ name, profileId }: { name: string; profileId: stri
         {`Message ${name.split(" ")[0] || name}`}
       </Btn>
     </section>
+  );
+}
+
+/**
+ * At a glance as one bento (owner, 5 Oct): Type, Genres (wide), Instruments, Languages, City,
+ * Experience and each professional detail — every fact once, from real values only. A lone tile
+ * at the end of a row spans it, so there is never an empty half cell.
+ */
+function AtAGlance({ p }: { p: TalentProfile }) {
+  const chips = (items: string[]) => items.map((t) => <BentoChip key={t}>{t}</BentoChip>);
+  const text = (v: string) => <p className="text-sm font-medium text-foreground">{v}</p>;
+  const tiles: { key: string; icon: LucideIcon; label: string; body: ReactNode; wide?: boolean }[] =
+    [];
+  const types = typesOf(p);
+  if (p.genres.length)
+    tiles.push({ key: "genres", icon: Music, label: "Genres", body: chips(p.genres), wide: true });
+  if (types.length) tiles.push({ key: "type", icon: UserRound, label: "Type", body: chips(types) });
+  if (p.instruments.length)
+    tiles.push({ key: "inst", icon: Guitar, label: "Instruments", body: chips(p.instruments) });
+  if (p.languages.length)
+    tiles.push({ key: "lang", icon: Languages, label: "Languages", body: chips(p.languages) });
+  if (p.location) tiles.push({ key: "city", icon: MapPin, label: "City", body: text(p.location) });
+  if (p.yearsActive)
+    tiles.push({ key: "exp", icon: Clock3, label: "Experience", body: text(p.yearsActive) });
+  for (const d of professionalDetails(p)) {
+    const v = String(d.value);
+    // A long value reads better across the row; a short one pairs with its neighbour.
+    tiles.push({
+      key: `d-${d.label}`,
+      icon: SlidersHorizontal,
+      label: d.label,
+      body: text(v),
+      wide: v.length > 22,
+    });
+  }
+  if (!tiles.length) return null;
+  // Fill rows of two: a single tile left alone before a wide one, or at the end, spans the row.
+  let col = 0;
+  const laid = tiles.map((t, i) => {
+    if (t.wide) {
+      col = 0;
+      return t;
+    }
+    // The end counts as a wide neighbour; a normal tile does not (`??` read its missing flag as
+    // true and made every tile span the row).
+    const nextWide = i + 1 < tiles.length ? Boolean(tiles[i + 1]!.wide) : true;
+    const spans = col === 0 && nextWide;
+    col = spans ? 0 : (col + 1) % 2;
+    return { ...t, wide: spans };
+  });
+  return (
+    <ProfileSection title="At a glance">
+      <div className="grid grid-cols-2 gap-2.5">
+        {laid.map((t) => (
+          <BentoCard key={t.key} icon={t.icon} label={t.label} wide={!!t.wide}>
+            {t.body}
+          </BentoCard>
+        ))}
+      </div>
+    </ProfileSection>
   );
 }
 
