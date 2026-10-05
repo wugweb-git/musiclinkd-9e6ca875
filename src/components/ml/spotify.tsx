@@ -84,13 +84,13 @@ export function SpotifyRow() {
         type="button"
         disabled={unavailable}
         onClick={() => (failed ? setAttempt((n) => n + 1) : setOpen(true))}
-        className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left disabled:opacity-60"
+        className="state-layer flex min-h-touch w-full items-center gap-3 px-2 py-2.5 text-left disabled:opacity-60"
       >
         <span className="flex h-10 w-7 shrink-0 items-center justify-center">
           <Icon key={state?.state} size={24} className="animate-pop" aria-hidden />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-2 font-semibold">Spotify</span>
+          <span className="block truncate text-2 font-medium">Spotify</span>
           <span className="block truncate text-1 text-muted-foreground">{hint}</span>
         </span>
         <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />

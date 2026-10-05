@@ -13,6 +13,8 @@ export type SignInMethod = {
   id: string;
   provider: string;
   email: string | null;
+  /** When the method was linked; the oldest is the one the account was made with. */
+  createdAt: string | null;
 };
 
 /** The caller's own access token, which requireSupabaseAuth has already checked. */
@@ -31,6 +33,7 @@ async function methodsOf(
           identity_id: string;
           provider: string;
           identity_data?: Record<string, unknown>;
+          created_at?: string;
         }[];
       } | null;
     };
@@ -41,6 +44,7 @@ async function methodsOf(
     id: i.identity_id,
     provider: i.provider,
     email: typeof i.identity_data?.["email"] === "string" ? i.identity_data["email"] : null,
+    createdAt: i.created_at ?? null,
   }));
 }
 

@@ -12,6 +12,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   the text. A **Danger zone** band with a red "Delete account" link into the deletion flow.
 - `settings.security.index.tsx`: flat rows (no shadowed cards); **Log out everywhere** ends every
   session (`signOut({ scope: "global" })`) and lands on Welcome, its button on the right.
+- `settings.index.tsx`: each section is a grey band (title + one line) with white rows under it;
+  the Integrations rows (Sign-in methods, Calendar, Spotify) now share the other rows' spacing.
+- Sign-in methods: flat rows; a **Primary** tag on the method the account was made with (the
+  oldest, `createdAt` from the sign-in identities). No methods at all no longer claims "your only
+  way to sign in".
 - No band directly under the top bar (it read as a second top bar and repeated "Security").
 - `kit.tsx` `SettingsBand`: the grey section band (title + one line) for sections lower down.
 - `ui.tsx` `TopBar`: the back arrow lines up with the content edge (its 40px tap area had pushed

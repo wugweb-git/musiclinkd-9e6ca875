@@ -467,7 +467,13 @@ export function Switch({
  * A settings section header (owner's refs img 4–6): a grey band across the screen with the
  * section title and one line saying what it is for. Rows follow on the page ground.
  */
-export function SettingsBand({ title, description }: { title: string; description?: string }) {
+export function SettingsBand({
+  title,
+  description,
+}: {
+  title: string;
+  description?: string | undefined;
+}) {
   return (
     <div className="-mx-5 border-y border-border bg-ink/5 px-5 py-4">
       <h2 className="text-2 font-semibold">{title}</h2>

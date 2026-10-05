@@ -24,7 +24,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
-import { MadeByWugweb, Row, RowGroup, SoonBadge } from "@/components/ml/kit";
+import { MadeByWugweb, Row, SettingsBand, SoonBadge } from "@/components/ml/kit";
 import { SpotifyRow } from "@/components/ml/spotify";
 import { SignInMethodsRow } from "@/components/ml/identities";
 import { settingsGroups } from "@/data/settings";
@@ -118,6 +118,15 @@ export const Route = createFileRoute("/settings/")({
   component: SettingsScreen,
 });
 
+/** One line under each section band saying what it is for. Copy: owner. */
+const GROUP_LINES: Record<string, string> = {
+  account: "Your profile, sign-in and identity.",
+  work: "What you offer and how your work shows.",
+  integrations: "Sign-in methods and connected apps.",
+  privacy: "Who sees you, and how your account is protected.",
+  support: "Help, policies and feedback.",
+};
+
 function SettingsScreen() {
   // One account is one journey: only a business account manages a business from here.
   const { allowed: isBusiness } = useRequireBusiness();
@@ -146,8 +155,8 @@ function SettingsScreen() {
 
   return (
     <Screen>
-      <TopBar title="Settings" subtitle="Account and preferences" back="/profile" />
-      <div className="space-y-7 px-5 pt-5 pb-6">
+      <TopBar title="Settings" back="/profile" />
+      <div className="min-h-[calc(100dvh-4rem)] bg-card px-5 pt-5 pb-6">
         {signedIn ? (
           <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border-b border-border pb-5">
             <PersonAvatar
@@ -180,53 +189,59 @@ function SettingsScreen() {
         ) : null}
         <ProfileLinkRow />
         {settingsGroups.map((g) => (
-          <RowGroup key={g.key} title={g.title} flat>
-            {g.rows
-              .filter((r) => r.key !== "business" || isBusiness)
-              .map((r) => {
-                const Icon = rowIcons[r.icon] ?? Circle;
-                if (r.key === "spotify") {
+          // Section = grey band (title + one line), rows on white (owner's refs img 4–6).
+          <section key={g.key} className="mt-6">
+            <SettingsBand title={g.title} description={GROUP_LINES[g.key]} />
+            <ul className="divide-y divide-border">
+              {g.rows
+                .filter((r) => r.key !== "business" || isBusiness)
+                .map((r) => {
+                  const Icon = rowIcons[r.icon] ?? Circle;
+                  if (r.key === "spotify") {
+                    return (
+                      <li key={r.key}>
+                        <SpotifyRow />
+                      </li>
+                    );
+                  }
+                  if (r.key === "calendar") {
+                    return (
+                      <li key={r.key}>
+                        <CalendarFeedRow />
+                      </li>
+                    );
+                  }
+                  if (r.key === "sign-in-methods") {
+                    return (
+                      <li key={r.key}>
+                        <SignInMethodsRow />
+                      </li>
+                    );
+                  }
                   return (
                     <li key={r.key}>
-                      <SpotifyRow />
+                      <Row
+                        grouped
+                        flat
+                        icon={<Icon size={iconSize.lg} aria-hidden />}
+                        title={r.label}
+                        subtitle={r.hint}
+                        {...(r.soon
+                          ? { badge: <SoonBadge />, right: <span /> }
+                          : {
+                              to: r.to as LinkProps["to"],
+                              ...(r.params ? { params: r.params } : {}),
+                            })}
+                      />
                     </li>
                   );
-                }
-                if (r.key === "calendar") {
-                  return (
-                    <li key={r.key}>
-                      <CalendarFeedRow />
-                    </li>
-                  );
-                }
-                if (r.key === "sign-in-methods") {
-                  return (
-                    <li key={r.key}>
-                      <SignInMethodsRow />
-                    </li>
-                  );
-                }
-                return (
-                  <li key={r.key}>
-                    <Row
-                      grouped
-                      flat
-                      icon={<Icon size={iconSize.lg} aria-hidden />}
-                      title={r.label}
-                      subtitle={r.hint}
-                      {...(r.soon
-                        ? { badge: <SoonBadge />, right: <span /> }
-                        : {
-                            to: r.to as LinkProps["to"],
-                            ...(r.params ? { params: r.params } : {}),
-                          })}
-                    />
-                  </li>
-                );
-              })}
-          </RowGroup>
+                })}
+            </ul>
+          </section>
         ))}
-        <p className="px-1 text-center text-1 text-muted-foreground">MusicLinkd · v1.0 preview</p>
+        <p className="mt-6 px-1 text-center text-1 text-muted-foreground">
+          MusicLinkd · v1.0 preview
+        </p>
         <MadeByWugweb />
       </div>
     </Screen>

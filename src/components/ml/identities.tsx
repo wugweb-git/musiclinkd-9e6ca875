@@ -54,6 +54,13 @@ export function SignInMethodsRow() {
   });
 
   const count = identities?.length ?? 0;
+  // Primary = the oldest method, the one the account was made with (owner's ref img 5).
+  const primaryId =
+    count > 1
+      ? [...(identities ?? [])].sort((a, b) =>
+          (a.createdAt ?? "").localeCompare(b.createdAt ?? ""),
+        )[0]?.id
+      : identities?.[0]?.id;
   const hint = failed
     ? "Couldn't load"
     : identities === null
@@ -66,13 +73,13 @@ export function SignInMethodsRow() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
+        className="state-layer flex min-h-touch w-full items-center gap-3 px-2 py-2.5 text-left"
       >
         <span className="flex h-10 w-7 shrink-0 items-center justify-center">
           <KeyRound size={24} aria-hidden />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-2 font-semibold">Sign-in methods</span>
+          <span className="block truncate text-2 font-medium">Sign-in methods</span>
           <span className="block truncate text-1 text-muted-foreground">{hint}</span>
         </span>
         <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
@@ -89,14 +96,17 @@ export function SignInMethodsRow() {
         ) : identities === null ? (
           <p className="text-sm text-muted-foreground">Checking…</p>
         ) : (
-          <div className="space-y-2">
+          <div className="divide-y divide-border">
             {(identities ?? []).map((identity) => (
-              <div
-                key={identity.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3"
-              >
+              <div key={identity.id} className="flex items-center justify-between gap-3 py-4">
                 <span className="min-w-0">
-                  <span className="block text-sm font-semibold">{labelFor(identity.provider)}</span>
+                  <span className="flex items-center gap-2 text-2 font-medium">
+                    {labelFor(identity.provider)}
+                    {/* Primary: the method the account was made with (owner's ref img 5). */}
+                    {identity.id === primaryId ? (
+                      <span className="pill bg-ink/5 text-muted-foreground">Primary</span>
+                    ) : null}
+                  </span>
                   {identity.email ? (
                     <span className="block truncate text-1 text-muted-foreground">
                       {identity.email}
@@ -120,7 +130,11 @@ export function SignInMethodsRow() {
                 ) : null}
               </div>
             ))}
-            {count <= 1 ? (
+            {count === 0 ? (
+              <p className="pt-1 text-1 text-muted-foreground">
+                No sign-in methods found for this account.
+              </p>
+            ) : count === 1 ? (
               <p className="pt-1 text-1 text-muted-foreground">
                 This is your only way to sign in, so it can't be removed. Add another method first.
               </p>
