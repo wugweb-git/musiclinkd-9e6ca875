@@ -9,7 +9,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 - `ui.tsx` `BottomNav`: a floating pill (owner's ref img 1) — side margins, rounded ends, soft
   shadow and hairline ring, clear of the gesture bar; the active tab stays an inner pill with its
-  label; 48dp tap areas kept. Page clearance (`--spacing-nav-clear`, 96px) already covers it.
+  label; 48dp tap areas kept.
+- A labelled create pill above the nav that changes per tab (owner, 5 Oct): Home and Profile
+  "Add work" (the Add work drawer), Discover "Post an opportunity", Market "Sell or rent", Inbox
+  "New message" (Search on People, to pick who). Copy: owner.
+- `--spacing-nav-clear` 96 → 152px so the last row is never under the nav and its pill.
 
 ### Changed — Account and Security settings (5 Oct, phone plan P10)
 

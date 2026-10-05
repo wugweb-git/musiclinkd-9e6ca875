@@ -72,7 +72,8 @@
   /* Spacing uses Tailwind's numeric scale only (p-1 = 4px, p-2 = 8px, p-4 = 16px, p-8 = 32px).
    * The named duplicates --spacing-xs/sm/md/lg had zero uses and were removed 13 Sep so there
    * is one spacing system, not two. */
-  --spacing-nav-clear: 96px;
+  /* Floating nav (64) + its create pill (52) + margins, so the last row is never under them. */
+  --spacing-nav-clear: 152px;
 
   /* Space: the four sanctioned steps, for exports and docs. Tailwind's numeric scale draws them
    * (1 = 4px, 2 = 8px, 4 = 16px, 8 = 32px); other steps need a reason. */

@@ -24,6 +24,7 @@ import {
   User,
   ArrowLeft,
   X,
+  Plus,
   Search,
   Grid2x2,
   ArrowLeftRight,
@@ -229,8 +230,21 @@ const navRoots = new Set<string>([
  * Four tabs and a menu. A tab shows only its icon until it is the one you are on; then its label
  * opens beside the icon. The menu holds every module, so nothing depends on finding a shortcut.
  */
+/** The labelled create action per tab (owner, 5 Oct). Copy: owner. */
+function createFor(
+  path: string,
+): { label: string; to: string; search?: Record<string, string> } | null {
+  if (path === "/home" || path === "/profile")
+    return { label: "Add work", to: "/portfolio", search: { add: "1" } };
+  if (path === "/discover") return { label: "Post an opportunity", to: "/opportunities/new" };
+  if (path === "/marketplace") return { label: "Sell or rent", to: "/marketplace/sell" };
+  if (path === "/inbox") return { label: "New message", to: "/search", search: { tab: "people" } };
+  return null;
+}
+
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const create = createFor(path.replace(/\/$/, "") || "/");
   const [menuOpen, setMenuOpen] = useState(false);
   const viewer = useViewer();
   // Business is a business account's own area; a talent account doesn't see it (journey lock).
@@ -240,6 +254,20 @@ export function BottomNav() {
       {/* A floating pill (owner's ref img 1, plan §7.1): side margins, rounded ends, a soft
           shadow, the active tab as an inner pill; clear of the gesture bar. */}
       <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        {create ? (
+          // The tab's main create action as a labelled pill above the nav (owner, 5 Oct: it
+          // changes per tab), not an icon-only round button.
+          <div className="mb-2 flex justify-center">
+            <Link
+              to={create.to}
+              {...(create.search ? { search: create.search } : {})}
+              className="hit-area state-layer pointer-events-auto inline-flex h-11 items-center gap-2 rounded-full bg-card px-5 text-sm font-semibold shadow-elevation-3 ring-1 ring-border"
+            >
+              <Plus size={iconSize.sm} aria-hidden />
+              {create.label}
+            </Link>
+          </div>
+        ) : null}
         <ul className="pointer-events-auto flex items-stretch justify-between gap-1 rounded-full bg-card/95 px-2 shadow-elevation-3 ring-1 ring-border backdrop-blur">
           {navItems.map((item) => {
             const active = path === item.to || path.startsWith(`${item.to}/`);
