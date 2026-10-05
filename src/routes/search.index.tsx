@@ -17,7 +17,7 @@ import {
   VerifiedBadge,
 } from "@/components/ml/ui";
 import { PersonRow } from "@/components/ml/cards";
-import { EmptyState, LoadError, Segmented, StateCard } from "@/components/ml/kit";
+import { EMPTY_ART, EmptyState, LoadError, Segmented, StateCard } from "@/components/ml/kit";
 import { SectionActionLink } from "@/components/ml/links";
 import { ListingGrid } from "@/components/ml/market";
 import { OpportunityCard } from "@/components/ml/opportunity";
@@ -482,6 +482,7 @@ function SearchResults() {
         ) : !shown.length ? (
           <div className="px-5">
             <EmptyState
+              art={EMPTY_ART.search}
               title="Nothing matched"
               body={
                 filtering

@@ -240,6 +240,8 @@ export function ClampedText({ text, lines = 3 }: { text: string; lines?: 2 | 3 |
 /** Where an owner's empty-state button goes: profile edit, or new portfolio work of one kind. */
 export type ProfileEmptyCta =
   | { label: string; to: "/profile/edit" }
+  /** A section's own page, where it is managed (owner, 5 Oct: the profile shows, pages manage). */
+  | { label: string; to: "/portfolio" | "/services" | "/reviews" }
   | { label: string; to: "/portfolio/new/$kind"; kind: WorkKind };
 
 /**

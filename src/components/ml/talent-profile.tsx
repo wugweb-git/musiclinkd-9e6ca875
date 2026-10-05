@@ -46,7 +46,7 @@ import { cn } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
 import { NotificationsBell } from "./tab-header";
-import { EmptyState, Price } from "./kit";
+import { EMPTY_ART, EmptyState, Price } from "./kit";
 import {
   AudioTrackCard,
   MoreSheet,
@@ -592,7 +592,11 @@ function Overview({
           <EmptyState
             title="No audio yet"
             body="This professional has not added audio samples yet."
-            action={<ProfileCta cta={owner ? addWork("Add audio", "track") : undefined} />}
+            action={
+              <ProfileCta
+                cta={owner ? { label: "Manage portfolio", to: "/portfolio" } : undefined}
+              />
+            }
           />
         </ProfileSection>
       )}
@@ -671,15 +675,22 @@ function Portfolio({
           ) : (
             <div className="col-span-2">
               <EmptyState
+                art={EMPTY_ART.work}
                 title="No work yet"
                 body="Tracks, videos and reels will appear here."
-                action={<ProfileCta cta={owner ? addWork("Add work", "track") : undefined} />}
+                action={
+                  <ProfileCta
+                    cta={owner ? { label: "Manage portfolio", to: "/portfolio" } : undefined}
+                  />
+                }
               />
             </div>
           )}
         </div>
       </ProfileSection>
       {/* The owner can always add photos here; a visitor sees the gallery only once it has some. */}
+      {/* The owner can always add photos here; a visitor sees the gallery only once it has some.
+          The gallery has no page of its own yet, so it is still managed here. */}
       {owner && onGalleryChange ? (
         <ProfileSection title="Gallery">
           <GalleryEditor title="Gallery" onChange={onGalleryChange} />
@@ -889,6 +900,7 @@ function Reviews({ p, owner }: { p: TalentProfile; owner: boolean }) {
           </ReviewRail>
         ) : (
           <EmptyState
+            art={EMPTY_ART.reviews}
             title="No reviews yet"
             body="Reviews appear here once work booked through MusicLinkd is complete."
           />

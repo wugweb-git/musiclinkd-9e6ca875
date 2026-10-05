@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — branded empty states; profile shows, pages manage (5 Oct)
+
+- `kit.tsx` `EmptyState` is a branded banner everywhere it is used (144 places): ink ground, a
+  music photo behind a scrim (the brand collage by default; `art` per use case from
+  `EMPTY_ART`: work, reviews, search, services), a brand-pink accent, white title and body, the
+  action on the banner. Mapped: profile work and reviews, Search "Nothing matched".
+- Your own profile: empty Portfolio offers "Manage portfolio" (the Portfolio page) instead of
+  adding inline — sections are managed on their own pages (owner, 5 Oct). The gallery keeps its
+  editor on the profile until it has a page of its own.
+
 ### Changed — floating pill bottom nav (5 Oct, phone plan P11)
 
 - `ui.tsx` `BottomNav`: a floating pill (owner's ref img 1) — side margins, rounded ends, soft

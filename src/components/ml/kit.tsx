@@ -4,6 +4,7 @@
  * not a second design language.
  */
 import { Skeleton } from "@/components/ui/skeleton";
+import brandCollage from "@/assets/auth-music-collage.jpg";
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -526,20 +527,20 @@ export function RowGroup({
  * `filtered` — filters hid everything; `action-required` — the list fills when you do something.
  */
 export type EmptyStateKind = "default" | "no-results" | "filtered" | "action-required";
-type EmptyLayout = "circle-sm" | "circle-lg" | "square-lg";
-const KIND_LAYOUT: Record<EmptyStateKind, EmptyLayout> = {
-  default: "circle-sm",
-  "no-results": "square-lg",
-  filtered: "square-lg",
-  "action-required": "circle-lg",
-};
 
+/**
+ * Empty and fallback states are branded banners (owner, 5 Oct: "banner design with branded UI,
+ * rich media"): ink ground, a music photo behind a scrim, a brand-pink accent, the title and body
+ * in white, the action on the banner. `art` picks the photo for the use case (EMPTY_ART); the
+ * default is the brand collage. One component, so every empty state in the app follows it.
+ */
 export function EmptyState({
   icon,
   kind = "default",
   title,
   body,
   action,
+  art,
   children,
 }: {
   /** A Lucide icon. Never an emoji. */
@@ -548,56 +549,52 @@ export function EmptyState({
   title: string;
   body: string;
   action?: ReactNode;
+  /** The photo behind the banner, for the use case. Defaults to the brand collage. */
+  art?: string | undefined;
   children?: ReactNode;
 }) {
-  const variant = KIND_LAYOUT[kind];
   const extra = action ?? children;
-
-  if (variant === "circle-lg") {
-    return (
-      <div className="flex flex-col items-start border-l-4 border-ink bg-card px-5 py-8 text-left shadow-elevation-2">
+  return (
+    <div
+      data-kind={kind}
+      className="relative overflow-hidden rounded-lg bg-ink text-ink-foreground shadow-elevation-2"
+    >
+      <img
+        src={art ?? brandCollage}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover opacity-50"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/20"
+      />
+      <div className="relative px-5 py-7">
+        <span aria-hidden className="mb-4 block h-1 w-10 rounded-full bg-brand" />
         {icon ? (
-          <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-sm bg-ink text-ink-foreground">
+          <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-sm bg-ink-foreground/10">
             {icon}
           </span>
         ) : null}
-        <h3 className="text-2">{title}</h3>
-        <p className="mt-1 mb-5 max-w-rail-lg text-sm text-muted-foreground">{body}</p>
-        {extra}
+        <h3 className="text-2 font-semibold text-ink-foreground">{title}</h3>
+        <p className="mt-1 max-w-rail-lg text-sm text-ink-foreground/75">{body}</p>
+        {extra ? <div className="mt-5 flex flex-wrap gap-2">{extra}</div> : null}
       </div>
-    );
-  }
-
-  if (variant === "square-lg") {
-    return (
-      <div className="border-l-4 border-ink bg-card px-5 py-8 text-left shadow-elevation-2">
-        {icon ? (
-          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-sm bg-ink text-ink-foreground">
-            {icon}
-          </div>
-        ) : null}
-        <h3 className="text-2">{title}</h3>
-        <p className="mt-1 max-w-rail-lg text-sm text-muted-foreground">{body}</p>
-        {extra ? <div className="mt-5 flex justify-start">{extra}</div> : null}
-      </div>
-    );
-  }
-
-  return (
-    <div className="border-l-4 border-border bg-card px-5 py-7 text-left shadow-elevation-2">
-      {icon ? (
-        <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-sm bg-ink text-ink-foreground">
-          {icon}
-        </span>
-      ) : null}
-      <h3 className="text-2 leading-tight">{title}</h3>
-      <p className="mt-2 max-w-prose-sm text-sm text-muted-foreground">{body}</p>
-      {extra ? (
-        <div className="mt-5 flex flex-wrap items-center justify-start gap-2">{extra}</div>
-      ) : null}
     </div>
   );
 }
+
+/** Photos for empty states by use case (Unsplash, owner 4 Oct: keep Unsplash). */
+export const EMPTY_ART = {
+  work: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=70",
+  reviews:
+    "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=800&q=70",
+  search:
+    "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=70",
+  services:
+    "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=800&q=70",
+} as const;
 
 export function OfflineBanner({
   variant = "neutral",
