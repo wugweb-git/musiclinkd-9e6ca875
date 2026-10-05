@@ -21,6 +21,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - Music identity in the scroll is one card of labelled chip groups with dividers (reference img
   10), not the bento that left half-empty rows.
 - No budget, rate, price or fee rows in Professional details (item 8).
+- Audio and video share portrait and stacked states (owner, 5 Oct; Spotify / YouTube): the grid
+  view is portrait — a square cover with a round play button on it, title and who underneath; the
+  list view is stacked — a small square cover, title, who, duration on the right. Same sizes for
+  audio and video. Selected states differ: audio becomes the stacked row with the player under
+  it; video puts the player on top at full width with the row and a close button under it. Both
+  span the whole grid while selected. `AudioTrackCard` gains `layout`; `VideoCard` reworked.
+- Reels by link (`embed.ts`): Instagram reels and posts play in Instagram's embed, and YouTube
+  Shorts in a tall 9:16 frame instead of a letterboxed strip.
+- `LogoMark` hides itself if the image can't load (the asset is served by Lovable's hosting, so
+  a local dev server showed a broken image inside the no-cover tile).
 
 ### Changed — page background #F5F5F5 (5 Oct, owner)
 

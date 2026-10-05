@@ -651,12 +651,13 @@ function Portfolio({
           </span>
         }
       >
-        <div className="space-y-2">
+        <div className={cn(layout === "grid" ? "grid grid-cols-2 gap-3" : "space-y-2")}>
           {p.audio.length ? (
             p.audio.map((track) => (
               <AudioTrackCard
                 key={track.id}
                 track={track}
+                layout={layout === "grid" ? "portrait" : "stacked"}
                 playing={playingId === track.id}
                 onToggle={() => onToggleTrack(track.id)}
               />

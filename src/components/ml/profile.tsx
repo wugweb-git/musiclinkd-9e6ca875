@@ -15,6 +15,7 @@ import {
   MoreHorizontal,
   Pause,
   Play,
+  X,
   Share2,
   User,
   ArrowLeft,
@@ -831,14 +832,24 @@ export function ProfileHero({
 
 /* ── Portfolio pieces ──────────────────────────────────────── */
 
+/*
+ * Audio and video share three states (owner, 5 Oct; Spotify / YouTube pattern):
+ *   portrait — a big square cover (same size for audio and video) with a round play button on it,
+ *              title and who underneath; used in the grid view.
+ *   stacked  — one row: a small square cover (same for both), title, who, duration; list view.
+ *   playing  — always the stacked row, expanded with the player and the work's details, spanning
+ *              the full width of a grid.
+ */
 export function AudioTrackCard({
   track,
   playing,
   onToggle,
+  layout = "stacked",
 }: {
   track: AudioTrack;
   playing: boolean;
   onToggle: () => void;
+  layout?: "portrait" | "stacked";
 }) {
   const [expanded, setExpanded] = useState(false);
   // Shown on a profile counts as a view of the work, for its owner's Performance figures.
@@ -846,8 +857,54 @@ export function AudioTrackCard({
 
   const isExpanded = expanded || playing;
 
+  if (layout === "portrait" && !isExpanded)
+    return (
+      <article className="min-w-0">
+        <div className="relative">
+          {track.artwork ? (
+            <img
+              src={sized(track.artwork, { width: 412 })}
+              alt=""
+              loading="lazy"
+              className="aspect-square w-full rounded-md object-cover shadow-xs"
+            />
+          ) : (
+            <NoCover className="aspect-square w-full rounded-md shadow-xs" />
+          )}
+          {track.media ? (
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-label={`Play ${track.title}`}
+              className="hit-area absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-brand-button text-white shadow-elevation-2 transition-transform active:scale-95"
+            >
+              <Play size={iconSize.sm} fill="currentColor" aria-hidden />
+            </button>
+          ) : null}
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="state-layer mt-2 block w-full min-w-0 text-left"
+        >
+          <span className="block truncate text-2 font-semibold">{track.title}</span>
+          {track.role || track.project ? (
+            <span className="block truncate text-1 text-muted-foreground">
+              {joinParts(track.role, track.project)}
+            </span>
+          ) : null}
+        </button>
+      </article>
+    );
+
   return (
-    <article className="group overflow-hidden rounded-lg border border-border/80 bg-card transition-all duration-150 ease-standard hover:border-border">
+    <article
+      className={cn(
+        "group overflow-hidden rounded-lg border border-border/80 bg-card transition-all duration-150 ease-standard hover:border-border",
+        // Playing or opened from the grid: the stacked row, across the whole grid.
+        layout === "portrait" && "col-span-2",
+      )}
+    >
       <div className="flex items-center gap-3 p-3">
         {track.artwork ? (
           <img
@@ -869,18 +926,24 @@ export function AudioTrackCard({
               </span>
             ) : null}
           </div>
-          <p className="truncate text-1 font-medium text-foreground">
+          <p className="truncate text-1 text-muted-foreground">
             {joinParts(track.role, track.project)}
           </p>
-          {track.duration ? (
-            <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
-          ) : null}
         </div>
+        {track.duration ? (
+          <span className="shrink-0 text-1 tabular-nums text-muted-foreground">
+            {track.duration}
+          </span>
+        ) : null}
         <div className="flex items-center gap-1.5">
           {isDbId(track.id) ? <SavedToggle targetType="portfolio" targetId={track.id} /> : null}
           <button
             type="button"
-            onClick={() => setExpanded((e) => !e)}
+            onClick={() => {
+              // Collapsing a playing track stops it, so it really goes back to its resting state.
+              if (isExpanded && playing) onToggle();
+              setExpanded((e) => (playing ? false : !e));
+            }}
             aria-expanded={isExpanded}
             aria-label={isExpanded ? "Collapse details" : "Expand details"}
             className="hit-area flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-subtle active:scale-95 transition-transform"
@@ -949,7 +1012,10 @@ export function VideoCard({
   layout = "card",
 }: {
   v: VideoItem;
-  /** "card" is the rail tile, "grid" fills a cell, "row" is a wide thumbnail-left row. */
+  /**
+   * "card" is the rail tile, "grid" the portrait state filling a cell, "row" the stacked state.
+   * Playing always shows the stacked row with the player, across the whole grid.
+   */
   layout?: "card" | "grid" | "row";
 }) {
   const [open, setOpen] = useState(false);
@@ -967,6 +1033,44 @@ export function VideoCard({
         />
       </div>
     ) : null;
+  // Selected video (owner, 5 Oct): the player on top at full width, then the stacked row and its
+  // details (YouTube). Audio's selected state differs: the row first, the player under it.
+  if (open && v.media) {
+    return (
+      <article
+        className={cn(
+          "overflow-hidden rounded-lg border border-border/80 bg-card",
+          layout === "grid" && "col-span-2",
+        )}
+      >
+        <MediaEmbed
+          url={v.media}
+          title={v.title}
+          onOpen={() => recordWorkEvent(v.id, "link_click")}
+          onPlay={() => recordPlay(v.id)}
+        />
+        <div className="flex items-center gap-3 p-3">
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-2 font-semibold">{v.title}</h3>
+            {v.context ? (
+              <p className="truncate text-1 text-muted-foreground">{v.context}</p>
+            ) : null}
+          </div>
+          {v.duration ? (
+            <span className="shrink-0 text-1 tabular-nums text-muted-foreground">{v.duration}</span>
+          ) : null}
+          {isDbId(v.id) ? <SavedToggle targetType="portfolio" targetId={v.id} /> : null}
+          <IconBtn
+            label={`Close player for ${v.title}`}
+            variant="plain"
+            onClick={() => setOpen(false)}
+          >
+            <X size={iconSize.sm} aria-hidden />
+          </IconBtn>
+        </div>
+      </article>
+    );
+  }
   if (layout === "row") {
     return (
       <article>
@@ -976,8 +1080,8 @@ export function VideoCard({
             onClick={toggle}
             disabled={!toggle}
             aria-expanded={toggle ? open : undefined}
-            aria-label={`Play ${v.title}`}
-            className="relative h-20 w-32 shrink-0 overflow-hidden rounded-sm bg-background"
+            aria-label={open ? `Close player for ${v.title}` : `Play ${v.title}`}
+            className="relative h-14 w-14 shrink-0 overflow-hidden rounded-sm bg-background shadow-xs"
           >
             {v.thumb ? (
               <img
@@ -989,16 +1093,16 @@ export function VideoCard({
             ) : (
               <NoCover className="h-full w-full" />
             )}
-            {v.duration ? (
-              <span className="absolute bottom-1 left-1 rounded-sm bg-ink/80 px-1.5 py-0.5 text-1 font-semibold text-background">
-                {v.duration}
-              </span>
-            ) : null}
           </button>
-          <div className="min-w-0 flex-1 py-0.5">
-            <h3 className="line-clamp-2 text-2 font-semibold leading-snug">{v.title}</h3>
-            <p className="mt-1 truncate text-1 text-muted-foreground">{v.context}</p>
+          <div className="min-w-0 flex-1 self-center">
+            <h3 className="truncate text-2 font-semibold">{v.title}</h3>
+            <p className="truncate text-1 text-muted-foreground">{v.context}</p>
           </div>
+          {v.duration ? (
+            <span className="shrink-0 self-center text-1 tabular-nums text-muted-foreground">
+              {v.duration}
+            </span>
+          ) : null}
           {isDbId(v.id) ? <SavedToggle targetType="portfolio" targetId={v.id} /> : null}
         </div>
         {player}
@@ -1012,7 +1116,7 @@ export function VideoCard({
         layout === "grid" ? "w-full" : "w-[220px] shrink-0",
       )}
     >
-      <div className="relative h-32">
+      <div className="relative aspect-square">
         {v.thumb ? (
           <img
             src={sized(v.thumb, { width: 412 })}
@@ -1029,14 +1133,14 @@ export function VideoCard({
           disabled={!toggle}
           aria-expanded={toggle ? open : undefined}
           aria-label={`Play ${v.title}`}
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-0 flex items-end justify-end p-2"
         >
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-card/90">
-            <Play size={iconSize.sm} aria-hidden />
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-button text-white shadow-elevation-2">
+            <Play size={iconSize.sm} fill="currentColor" aria-hidden />
           </span>
         </button>
         {v.duration ? (
-          <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-1 font-semibold text-background">
+          <span className="absolute left-2 top-2 rounded-full bg-ink/80 px-2 py-0.5 text-1 font-semibold text-background">
             {v.duration}
           </span>
         ) : null}

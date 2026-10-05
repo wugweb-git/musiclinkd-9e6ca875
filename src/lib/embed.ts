@@ -1,11 +1,14 @@
 /*
- * How a portfolio link plays. YouTube, Spotify, SoundCloud, Bandcamp and Apple Music
- * embed in-app; audio/video play directly; web links preview in-app without redirecting out.
+ * How a portfolio link plays. YouTube (Shorts too), Instagram reels, Spotify, SoundCloud,
+ * Bandcamp and Apple Music embed in-app; reels and Shorts play in a tall 9:16 frame; audio/video play directly; web links preview in-app without redirecting out.
  */
 export type Embed =
   | { mode: "iframe"; src: string; height: number }
   | { mode: "audio" | "video"; src: string }
   | { mode: "in-app"; src: string };
+
+/** A 9:16 frame on a 412px phone, less the page gutters. */
+const REEL_HEIGHT = 600;
 
 export function embedFor(url: string): Embed | null {
   let u: URL;
@@ -24,10 +27,25 @@ export function embedFor(url: string): Embed | null {
         ? cleanPath.split("/")[0]?.split("?")[0]
         : (u.searchParams.get("v") ?? u.pathname.match(/^\/(?:shorts|embed|live)\/([^/?]+)/)?.[1]);
     if (id && /^[\w-]{6,25}$/.test(id)) {
+      // A Short is portrait: a 9:16 frame at the app's width, not a letterboxed 16:9 strip.
+      const short = /^\/shorts\//.test(u.pathname);
       return {
         mode: "iframe",
         src: `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`,
-        height: 210,
+        height: short ? REEL_HEIGHT : 210,
+      };
+    }
+  }
+
+  // Instagram reels and posts, by link (owner, 5 Oct): Instagram's own embed, in a tall frame.
+  if (host === "instagram.com") {
+    const m = u.pathname.match(/^\/(?:[\w.]+\/)?(reel|reels|p|tv)\/([\w-]+)/);
+    if (m) {
+      const kind = m[1] === "reels" ? "reel" : m[1];
+      return {
+        mode: "iframe",
+        src: `https://www.instagram.com/${kind}/${m[2]}/embed/`,
+        height: REEL_HEIGHT,
       };
     }
   }

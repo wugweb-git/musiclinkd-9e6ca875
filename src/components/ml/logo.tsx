@@ -5,6 +5,17 @@ import suppliedLogo from "@/assets/musiclinkd-logo.svg.asset.json";
 
 export function LogoMark({ className }: { className?: string | undefined }) {
   return (
-    <img src={suppliedLogo.url} className={className} alt="MusicLinkd" width={641} height={550} />
+    <img
+      src={suppliedLogo.url}
+      className={className}
+      alt="MusicLinkd"
+      width={641}
+      height={550}
+      // The asset is served by Lovable's hosting (/__l5e/…); anywhere it can't load (a local dev
+      // server) it hides instead of showing a broken image.
+      onError={(e) => {
+        e.currentTarget.style.visibility = "hidden";
+      }}
+    />
   );
 }
