@@ -37,6 +37,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   (tap to stop), the player, then the details; video puts the player on top at full width. Both
   show what the owner added with the work (description, collaborators, year) and Like / Share.
   `AudioTrack` / `VideoItem` carry collaborators and year; reels map into the container.
+- Your own Portfolio (`/portfolio`, `WorkCard`) uses the same states: a grid/stack toggle on
+  "All work"; at rest a stacked row (cover from the link when none is saved, title, type · role,
+  Published/Draft) or a portrait tile; selected expands with the player (video on top), what you
+  added (description, collaborators, year) and your actions.
 - Play buttons take the source's own colour (YouTube red, Spotify green, SoundCloud orange;
   `playSource` in `embed.ts`), ink otherwise.
 - Missing images app-wide (`__root.tsx` + `styles.css`): a failed `<img>` is marked

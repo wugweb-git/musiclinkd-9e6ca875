@@ -36,6 +36,7 @@ import { Card, StatusPill } from "@/components/ml/kit";
 import { MediaEmbed } from "./media-embed";
 import { playsCountedFromLabel } from "@/lib/plays-cutoff";
 import { cn, joinParts } from "@/lib/utils";
+import { coverFor } from "@/lib/embed";
 import {
   analyticsFor,
   FEATURED_LIMIT,
@@ -318,8 +319,11 @@ export function ShareWorkButton({ id, title }: { id: string; title: string }) {
 export function WorkCard({
   item,
   actions,
+  layout = "stacked",
 }: {
   item: PortfolioItem;
+  /** Grid view: a portrait tile at rest; list view: the stacked row. */
+  layout?: "portrait" | "stacked";
   /** Omitted for a read-only list (the signed-out demo, or somebody else's work). */
   actions?: {
     onFeature: () => void;
@@ -336,67 +340,103 @@ export function WorkCard({
 }) {
   const t = workType(item.kind);
   const [open, setOpen] = useState(false);
+  // Same states as a profile's Portfolio (owner, 5 Oct): stacked row or portrait tile at rest;
+  // selected = the stacked row expanded, across the grid, with the player (video on top), what
+  // you added, and your actions.
+  const cover = item.cover_url || coverFor(item.media_url ?? undefined);
+  const isVideo = t.media === "video";
+  const meta = joinParts(
+    item.collaborators.length ? `with ${item.collaborators.join(", ")}` : "",
+    item.release_year ? String(item.release_year) : "",
+  );
+  const status = (
+    <StatusPill
+      label={item.published ? "Published" : "Draft"}
+      tone={item.published ? "good" : "warn"}
+      icon={<></>}
+      className="shrink-0"
+    />
+  );
+  if (layout === "portrait" && !open)
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="state-layer block min-w-0 text-left"
+      >
+        <span className="relative block aspect-square overflow-hidden rounded-md shadow-xs">
+          {cover ? (
+            <img
+              src={sized(cover, { width: 412 })}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center bg-ink/5">
+              <WorkTypeIcon kind={item.kind} size="lg" />
+            </span>
+          )}
+          <span className="absolute left-2 top-2">{status}</span>
+        </span>
+        <span className="mt-2 block truncate text-2 font-semibold">{item.title}</span>
+        <span className="block truncate text-1 text-muted-foreground">
+          {joinParts(t.label, item.role)}
+        </span>
+      </button>
+    );
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card shadow-elevation-2">
+    <div
+      className={cn(
+        "overflow-hidden rounded-lg bg-card",
+        open ? "shadow-elevation-2 ring-1 ring-border" : "",
+        layout === "portrait" && "col-span-full",
+      )}
+    >
+      {open && isVideo && item.media_url ? (
+        <MediaEmbed url={item.media_url} title={item.title} />
+      ) : null}
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="state-layer block w-full p-3 text-left transition-transform duration-125 ease-standard active:scale-97"
+        className="state-layer flex w-full min-w-0 items-center gap-3 p-2 text-left"
       >
-        <div className="flex min-w-0 gap-3">
-          {item.cover_url ? (
+        {!(open && isVideo) ? (
+          cover ? (
             <img
-              src={sized(item.cover_url, { width: 64 })}
+              src={sized(cover, { width: 112 })}
               alt=""
               loading="lazy"
               decoding="async"
-              className="h-16 w-16 shrink-0 rounded-sm object-cover"
+              className="h-14 w-14 shrink-0 rounded-sm object-cover"
             />
           ) : (
             <WorkTypeIcon kind={item.kind} size="lg" />
-          )}
-          <div className="min-w-0 flex-1">
-            <div className="min-w-0">
-              <h3 className="truncate text-2 font-semibold">{item.title}</h3>
-              <span className="mt-1 flex flex-wrap items-center gap-1.5">
-                {item.featured ? (
-                  <span className="pill bg-background text-muted-foreground">Featured</span>
-                ) : null}
-                <StatusPill
-                  label={item.published ? "Published" : "Draft"}
-                  tone={item.published ? "good" : "warn"}
-                  icon={<></>}
-                  className="shrink-0"
-                />
-              </span>
-            </div>
-            <p className="mt-0.5 text-1 text-muted-foreground">
-              {t.label}
-              {item.release_year ? ` · ${item.release_year}` : ""}
-            </p>
-            {item.role ? (
-              <p className="mt-1 truncate text-1 font-semibold text-foreground">{item.role}</p>
+          )
+        ) : null}
+        <span className="min-w-0 flex-1">
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span className="truncate text-2 font-semibold">{item.title}</span>
+            {item.featured ? (
+              <Star size={iconSize.xs} fill="currentColor" aria-label="Featured" />
             ) : null}
-            {item.description ? (
-              <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{item.description}</p>
-            ) : null}
-            {item.collaborators.length ? (
-              <p className="mt-1.5 truncate text-1 text-muted-foreground">
-                with {item.collaborators.join(", ")}
-              </p>
-            ) : null}
-          </div>
-          <ChevronDown
-            size={iconSize.md}
-            aria-hidden
-            className={`mt-0.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-standard ${open ? "rotate-180" : ""}`}
-          />
-        </div>
+          </span>
+          <span className="block truncate text-1 text-muted-foreground">
+            {joinParts(t.label, item.role)}
+          </span>
+        </span>
+        {status}
       </button>
       {open ? (
         <div className="animate-in fade-in space-y-3 px-4 pb-4 duration-200">
-          {item.media_url ? <MediaEmbed url={item.media_url} title={item.title} /> : null}
+          {!isVideo && item.media_url ? (
+            <MediaEmbed url={item.media_url} title={item.title} />
+          ) : null}
+          {item.description ? (
+            <p className="line-clamp-3 text-1 text-muted-foreground">{item.description}</p>
+          ) : null}
+          {meta ? <p className="truncate text-1 text-muted-foreground">{meta}</p> : null}
           <div className="flex items-center gap-2">
             <BtnLink
               to="/portfolio/$id"

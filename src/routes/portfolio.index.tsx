@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { shareUrl } from "@/lib/site";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Plus, Search, X } from "lucide-react";
+import { LayoutGrid, Plus, Rows3, Search, X } from "lucide-react";
 import { Btn, IconBtn, Screen, TopBar } from "@/components/ml/ui";
 import { Dialog, StateCard } from "@/components/ml/kit";
 import { toast } from "sonner";
@@ -23,6 +23,7 @@ import {
 import { shareLink } from "@/lib/booking-actions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/portfolio/")({
   // ?add=1 opens the work-type drawer. Adding work is a drawer, not a screen (owner, 28 Sep 2026):
@@ -58,6 +59,7 @@ function PortfolioOverview() {
   const { signedIn, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
+  const [view, setView] = useState<"portrait" | "stacked">("stacked");
   // ?add=1 is how every "add work" entry point across the app opens the drawer; adding work is a
   // drawer, not a screen (owner, 28 Sep 2026), so /portfolio/new is gone.
   useEffect(() => {
@@ -246,11 +248,34 @@ function PortfolioOverview() {
           </>
         ) : null}
 
-        {showTools && items.length ? <h2 className="mt-7 text-2 font-semibold">All work</h2> : null}
+        {showTools && items.length ? (
+          <div className="mt-7 flex items-center justify-between gap-3">
+            <h2 className="text-2 font-semibold">All work</h2>
+            {/* Same grid/stack toggle as a profile's Portfolio (owner, 5 Oct). */}
+            <span className="flex items-center gap-1">
+              <IconBtn
+                label="Grid view"
+                variant={view === "portrait" ? "outline" : "ghost"}
+                className="h-10 w-10"
+                onClick={() => setView("portrait")}
+              >
+                <LayoutGrid size={iconSize.sm} aria-hidden />
+              </IconBtn>
+              <IconBtn
+                label="Row view"
+                variant={view === "stacked" ? "outline" : "ghost"}
+                className="h-10 w-10"
+                onClick={() => setView("stacked")}
+              >
+                <Rows3 size={iconSize.sm} aria-hidden />
+              </IconBtn>
+            </span>
+          </div>
+        ) : null}
         {!empty && term && visible.length === 0 ? (
           <StateCard title="Nothing matched" body={`No work titled or described with "${term}".`} />
         ) : null}
-        <div className="mt-3 space-y-3">
+        <div className={cn("mt-3", view === "portrait" ? "grid grid-cols-2 gap-3" : "space-y-1")}>
           {signedIn && (q.isLoading || authLoading) ? <PortfolioSkeleton /> : null}
 
           {signedIn && q.isError ? (
@@ -274,6 +299,7 @@ function PortfolioOverview() {
             <WorkCard
               key={item.id}
               item={item}
+              layout={view}
               {...(signedIn
                 ? {
                     actions: {
