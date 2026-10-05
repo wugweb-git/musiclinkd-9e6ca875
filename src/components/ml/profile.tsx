@@ -52,7 +52,8 @@ import { roleIcon } from "@/lib/role-icons";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { MediaEmbed } from "./media-embed";
-import { playSource } from "@/lib/embed";
+import { coverFor, playSource } from "@/lib/embed";
+import { LikeButton, ShareWorkButton, useWorkLikes } from "./portfolio";
 import { QrCode } from "./qr";
 import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
@@ -862,9 +863,9 @@ export function AudioTrackCard({
     return (
       <article className="min-w-0">
         <div className="relative">
-          {track.artwork ? (
+          {track.artwork || coverFor(track.media) ? (
             <img
-              src={sized(track.artwork, { width: 412 })}
+              src={sized((track.artwork || coverFor(track.media))!, { width: 412 })}
               alt=""
               loading="lazy"
               className="aspect-square w-full rounded-md object-cover shadow-xs"
@@ -891,10 +892,8 @@ export function AudioTrackCard({
           className="state-layer mt-2 block w-full min-w-0 text-left"
         >
           <span className="block truncate text-2 font-semibold">{track.title}</span>
-          {track.role || track.project ? (
-            <span className="block truncate text-1 text-muted-foreground">
-              {joinParts(track.role, track.project)}
-            </span>
+          {track.role ? (
+            <span className="block truncate text-1 text-muted-foreground">{track.role}</span>
           ) : null}
         </button>
       </article>
@@ -911,9 +910,9 @@ export function AudioTrackCard({
       aria-pressed={playing}
       className="state-layer flex w-full min-w-0 items-center gap-3 p-2 text-left disabled:cursor-default"
     >
-      {track.artwork ? (
+      {track.artwork || coverFor(track.media) ? (
         <img
-          src={sized(track.artwork, { width: 112 })}
+          src={sized((track.artwork || coverFor(track.media))!, { width: 112 })}
           alt=""
           aria-hidden
           loading="lazy"
@@ -957,33 +956,84 @@ export function AudioTrackCard({
 
   if (!isExpanded) return <article className="overflow-hidden rounded-lg">{row}</article>;
 
+  // Selected audio (owner, 5 Oct): on the card surface, following the system theme. The title
+  // once (tap it to stop), the player, then what the owner added with the work, Like and Share.
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-lg bg-ink p-1 text-ink-foreground shadow-elevation-3 animate-in fade-in duration-200",
-        // Playing from the grid: the stacked row, across the whole grid.
-        layout === "portrait" && "col-span-2",
+        "overflow-hidden rounded-lg bg-card shadow-elevation-2 ring-1 ring-border animate-in fade-in duration-200",
+        layout === "portrait" && "col-span-full",
       )}
     >
-      {row}
+      <button
+        type="button"
+        onClick={() => {
+          if (playing) onToggle();
+          setExpanded(false);
+        }}
+        aria-label={`Stop ${track.title}`}
+        className="state-layer block w-full min-w-0 px-4 pb-2 pt-3 text-left"
+      >
+        <span className="block truncate text-2 font-semibold">{track.title}</span>
+        {track.role ? (
+          <span className="block truncate text-1 text-muted-foreground">{track.role}</span>
+        ) : null}
+      </button>
       {track.media ? (
-        <div className="px-2 pb-2">
+        <div className="px-3">
           <MediaEmbed
             url={track.media}
             title={track.title}
             onOpen={() => recordWorkEvent(track.id, "link_click")}
             onPlay={() => recordPlay(track.id)}
           />
-          {track.project ? (
-            <p className="mt-2 truncate text-1 text-ink-foreground/70">{track.project}</p>
-          ) : null}
         </div>
       ) : null}
+      <WorkDetails
+        id={track.id}
+        title={track.title}
+        description={track.project}
+        collaborators={track.collaborators}
+        year={track.year}
+      />
     </article>
   );
 }
 
 /** A work with no cover (its link had no preview image): the logo on ink. */
+/**
+ * What the owner added with a work, shown when it is selected: the description, who it was made
+ * with, the year; then Like (once the likes table exists) and Share.
+ */
+function WorkDetails({
+  id,
+  title,
+  description,
+  collaborators,
+  year,
+}: {
+  id: string;
+  title: string;
+  description?: string | undefined;
+  collaborators?: string[] | undefined;
+  year?: string | undefined;
+}) {
+  const likes = useWorkLikes(isDbId(id) ? [id] : []);
+  const meta = joinParts(collaborators?.length ? `with ${collaborators.join(", ")}` : "", year);
+  return (
+    <div className="px-4 pb-2 pt-1">
+      {description ? (
+        <p className="line-clamp-3 text-1 text-muted-foreground">{description}</p>
+      ) : null}
+      {meta ? <p className="mt-1 truncate text-1 text-muted-foreground">{meta}</p> : null}
+      <div className="-ml-2 mt-1 flex items-center">
+        {likes.available ? <LikeButton id={id} likes={likes} /> : null}
+        {isDbId(id) ? <ShareWorkButton id={id} title={title} /> : null}
+      </div>
+    </div>
+  );
+}
+
 /** The play button in the source's own colour (YouTube red, Spotify green); ink otherwise. */
 function sourceStyle(url: string | undefined) {
   const source = playSource(url);
@@ -1028,13 +1078,14 @@ export function VideoCard({
   // Selected video (owner, 5 Oct): the player on top at full width, then the stacked row and its
   // details (YouTube). Audio's selected state differs: the row first, the player under it.
   // Playing video (Spotify / YouTube): a dark panel, the player on top at full width, then the
-  // title and who in white. Tap the row again to close.
+  // Selected video (owner, 5 Oct): the player on top at full width, then the title (tap it to
+  // close), what the owner added with the work, Like and Share. Card surface, system theme.
   if (open && v.media) {
     return (
       <article
         className={cn(
-          "overflow-hidden rounded-lg bg-ink text-ink-foreground shadow-elevation-3 animate-in fade-in duration-200",
-          layout === "grid" && "col-span-2",
+          "overflow-hidden rounded-lg bg-card shadow-elevation-2 ring-1 ring-border animate-in fade-in duration-200",
+          layout === "grid" && "col-span-full",
         )}
       >
         <MediaEmbed
@@ -1047,22 +1098,20 @@ export function VideoCard({
           type="button"
           onClick={() => setOpen(false)}
           aria-label={`Close player for ${v.title}`}
-          className="state-layer flex w-full min-w-0 items-center gap-3 p-3 text-left"
+          className="state-layer block w-full min-w-0 px-4 pb-1 pt-3 text-left"
         >
-          <span className="min-w-0 flex-1">
-            <span className="block truncate text-2 font-semibold text-ink-foreground">
-              {v.title}
-            </span>
-            {v.context ? (
-              <span className="block truncate text-1 text-ink-foreground/70">{v.context}</span>
-            ) : null}
-          </span>
-          {v.duration ? (
-            <span className="shrink-0 text-1 tabular-nums text-ink-foreground/70">
-              {v.duration}
-            </span>
+          <span className="block truncate text-2 font-semibold">{v.title}</span>
+          {v.role ? (
+            <span className="block truncate text-1 text-muted-foreground">{v.role}</span>
           ) : null}
         </button>
+        <WorkDetails
+          id={v.id}
+          title={v.title}
+          description={v.context}
+          collaborators={v.collaborators}
+          year={v.year}
+        />
       </article>
     );
   }
@@ -1077,9 +1126,9 @@ export function VideoCard({
           aria-label={`Play ${v.title}`}
           className="state-layer flex w-full min-w-0 items-center gap-3 p-2 text-left disabled:cursor-default"
         >
-          {v.thumb ? (
+          {v.thumb || coverFor(v.media) ? (
             <img
-              src={sized(v.thumb, { width: 112 })}
+              src={sized((v.thumb || coverFor(v.media))!, { width: 112 })}
               alt=""
               loading="lazy"
               className="h-14 w-14 shrink-0 rounded-sm object-cover"
@@ -1101,16 +1150,12 @@ export function VideoCard({
     );
   }
   return (
-    <article
-      className={cn(
-        "overflow-hidden rounded-lg bg-subtle",
-        layout === "grid" ? "w-full" : "w-[220px] shrink-0",
-      )}
-    >
-      <div className="relative aspect-square">
-        {v.thumb ? (
+    <article className={cn("min-w-0", layout === "grid" ? "w-full" : "w-[220px] shrink-0")}>
+      {/* Same tile as audio: a square cover, rounded, the source's play button, a Video tag. */}
+      <div className="relative aspect-square overflow-hidden rounded-md shadow-xs">
+        {v.thumb || coverFor(v.media) ? (
           <img
-            src={sized(v.thumb, { width: 412 })}
+            src={sized((v.thumb || coverFor(v.media))!, { width: 412 })}
             alt={v.title}
             loading="lazy"
             className="h-full w-full object-cover"
@@ -1133,20 +1178,16 @@ export function VideoCard({
             <Play size={iconSize.sm} fill="currentColor" aria-hidden />
           </span>
         </button>
-        {v.duration ? (
-          <span className="absolute left-2 top-2 rounded-full bg-ink/80 px-2 py-0.5 text-1 font-semibold text-background">
-            {v.duration}
-          </span>
-        ) : null}
+        <span className="pill pill-glass absolute left-2 top-2">
+          {v.format === "reel" ? "Reel" : "Video"}
+          {v.duration ? ` · ${v.duration}` : ""}
+        </span>
       </div>
-      <div className="p-3">
-        <div className="flex items-start gap-2">
-          <div className="min-w-0 flex-1">
-            <h3 className="truncate text-1">{v.title}</h3>
-            <p className="truncate text-1 text-muted-foreground">{v.context}</p>
-          </div>
-        </div>
-        {player}
+      <div className="mt-2 min-w-0">
+        <h3 className="truncate text-2 font-semibold">{v.title}</h3>
+        {v.role || v.context ? (
+          <p className="truncate text-1 text-muted-foreground">{v.role || v.context}</p>
+        ) : null}
       </div>
     </article>
   );

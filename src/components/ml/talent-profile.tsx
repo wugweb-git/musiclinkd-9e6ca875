@@ -629,7 +629,7 @@ function Portfolio({
   return (
     <>
       <ProfileSection
-        title="Audio"
+        title="Portfolio"
         aside={
           <span className="flex items-center gap-1">
             <IconBtn
@@ -651,46 +651,34 @@ function Portfolio({
           </span>
         }
       >
-        <div className={cn(layout === "grid" ? "grid grid-cols-2 gap-3" : "space-y-2")}>
-          {p.audio.length ? (
-            p.audio.map((track) => (
-              <AudioTrackCard
-                key={track.id}
-                track={track}
-                layout={layout === "grid" ? "portrait" : "stacked"}
-                playing={playingId === track.id}
-                onToggle={() => onToggleTrack(track.id)}
-              />
-            ))
+        {/* Audio, video and reels together (owner, 5 Oct), one grid/stack toggle for all. */}
+        <div className={cn(layout === "grid" ? "grid grid-cols-2 gap-3" : "space-y-1")}>
+          {p.audio.length || p.video.length ? (
+            <>
+              {p.audio.map((track) => (
+                <AudioTrackCard
+                  key={track.id}
+                  track={track}
+                  layout={layout === "grid" ? "portrait" : "stacked"}
+                  playing={playingId === track.id}
+                  onToggle={() => onToggleTrack(track.id)}
+                />
+              ))}
+              {p.video.map((video) => (
+                <VideoCard key={video.id} v={video} layout={layout === "grid" ? "grid" : "row"} />
+              ))}
+            </>
           ) : (
-            <EmptyState
-              title="No tracks added"
-              body="Audio samples, demos and sessions will appear here."
-              action={<ProfileCta cta={owner ? addWork("Add track", "track") : undefined} />}
-            />
+            <div className="col-span-2">
+              <EmptyState
+                title="No work yet"
+                body="Tracks, videos and reels will appear here."
+                action={<ProfileCta cta={owner ? addWork("Add work", "track") : undefined} />}
+              />
+            </div>
           )}
         </div>
       </ProfileSection>
-      {/* A visitor sees Video only once there is some; the owner sees the empty state to fill it. */}
-      {owner || p.video.length ? (
-        <ProfileSection title="Video">
-          <div className={cn(layout === "grid" ? "grid grid-cols-2 gap-3" : "space-y-4")}>
-            {p.video.length ? (
-              p.video.map((video) => (
-                <VideoCard key={video.id} v={video} layout={layout === "grid" ? "grid" : "row"} />
-              ))
-            ) : (
-              <div className="w-full">
-                <EmptyState
-                  title="No videos yet"
-                  body="Performance and studio videos will appear here."
-                  action={<ProfileCta cta={owner ? addWork("Add video", "video") : undefined} />}
-                />
-              </div>
-            )}
-          </div>
-        </ProfileSection>
-      ) : null}
       {/* The owner can always add photos here; a visitor sees the gallery only once it has some. */}
       {owner && onGalleryChange ? (
         <ProfileSection title="Gallery">

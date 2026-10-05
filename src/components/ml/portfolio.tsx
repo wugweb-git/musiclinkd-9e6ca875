@@ -251,7 +251,7 @@ export function useWorkLikes(ids: string[]): WorkLikes {
 }
 
 /** Heart outline ⇄ filled in brand pink; the total shows once you have liked it (owner, 5 Oct). */
-function LikeButton({ id, likes }: { id: string; likes: WorkLikes }) {
+export function LikeButton({ id, likes }: { id: string; likes: WorkLikes }) {
   const { signedIn } = useAuth();
   const liked = likes.mine.has(id);
   const count = likes.counts[id] ?? 0;
@@ -283,7 +283,7 @@ function LikeButton({ id, likes }: { id: string; likes: WorkLikes }) {
 }
 
 /** The phone's share sheet where there is one; otherwise the link is copied. */
-function ShareWorkButton({ id, title }: { id: string; title: string }) {
+export function ShareWorkButton({ id, title }: { id: string; title: string }) {
   return (
     <IconBtn
       label="Share"

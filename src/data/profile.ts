@@ -35,6 +35,9 @@ export type AudioTrack = {
   featured?: boolean;
   /** The work's link, played in place. */
   media?: string;
+  /** What the owner added with the work: who they made it with, and the year. */
+  collaborators?: string[] | undefined;
+  year?: string | undefined;
 };
 
 export type VideoItem = {
@@ -45,6 +48,10 @@ export type VideoItem = {
   thumb: string;
   /** The work's link, played in place. */
   media?: string;
+  /** What the owner added with the work: their role, who they made it with, the year. */
+  role?: string | undefined;
+  collaborators?: string[] | undefined;
+  year?: string | undefined;
   /** A 9:16 short — its own tile ratio and rail. Landscape ("video") is the default. */
   format?: "video" | "reel";
 };

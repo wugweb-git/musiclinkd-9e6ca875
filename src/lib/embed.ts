@@ -106,3 +106,24 @@ export function playSource(url: string | undefined): { label: string; bg: string
   if (host === "soundcloud.com") return { label: "SoundCloud", bg: "#FF5500" };
   return null;
 }
+
+/**
+ * The cover a link carries itself (owner, 5 Oct: the cover comes with the link's meta). YouTube's
+ * is known from the video id; other sources give theirs when the work is saved. Null when unknown.
+ */
+export function coverFor(url: string | undefined): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\.|^m\./, "");
+    const id =
+      host === "youtu.be"
+        ? u.pathname.slice(1).split("/")[0]
+        : host === "youtube.com" || host === "music.youtube.com"
+          ? (u.searchParams.get("v") ?? u.pathname.match(/^\/(?:shorts|embed|live)\/([^/?]+)/)?.[1])
+          : undefined;
+    return id && /^[\w-]{6,25}$/.test(id) ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+  } catch {
+    return null;
+  }
+}

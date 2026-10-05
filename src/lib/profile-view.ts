@@ -238,8 +238,10 @@ function portfolioSections(items: ProfileSections["portfolio"]) {
         duration: item.duration ?? "",
         artwork: item.cover_url ?? "",
         ...(item.media_url ? { media: item.media_url } : {}),
+        collaborators: item.collaborators,
+        year,
       });
-    } else if (item.kind === "video" || item.kind === "performance") {
+    } else if (item.kind === "video" || item.kind === "reel" || item.kind === "performance") {
       video.push({
         id: item.id,
         title: item.title,
@@ -247,6 +249,10 @@ function portfolioSections(items: ProfileSections["portfolio"]) {
         duration: "",
         thumb: item.cover_url ?? "",
         ...(item.media_url ? { media: item.media_url } : {}),
+        role: item.role ?? "",
+        collaborators: item.collaborators,
+        year,
+        ...(item.kind === "reel" ? { format: "reel" as const } : {}),
       });
     } else if (item.kind === "album") {
       discography.push({

@@ -30,6 +30,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - Stacked rows follow Spotify / Apple Music: cover, title, who, duration — the whole row plays;
   no bookmark, no chevron. Playing is a dark panel (ink) with the row in white, the player inside
   and the credit under it; video puts the player on top. No "Role:" / "Project:" labels.
+- One Portfolio container (owner, 5 Oct): audio, video and reels together, with one grid/stack
+  toggle. Grid is portrait tiles two to a row; stack is one row per work. Audio and video tiles
+  are the same size; videos carry a glass "Video"/"Reel" tag; the subtitle is the artist only.
+- Selected states follow the system theme on the card surface, and differ: audio shows the title
+  (tap to stop), the player, then the details; video puts the player on top at full width. Both
+  show what the owner added with the work (description, collaborators, year) and Like / Share.
+  `AudioTrack` / `VideoItem` carry collaborators and year; reels map into the container.
 - Play buttons take the source's own colour (YouTube red, Spotify green, SoundCloud orange;
   `playSource` in `embed.ts`), ink otherwise.
 - Missing images app-wide (`__root.tsx` + `styles.css`): a failed `<img>` is marked
