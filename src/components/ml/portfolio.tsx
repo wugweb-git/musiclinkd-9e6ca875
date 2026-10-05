@@ -139,7 +139,7 @@ export function WorkTypeSheet({
 
 /**
  * Someone else's work as a public card (phone plan 5.3): square cover (the type icon when there is
- * none), type, title and whose it is. The body opens the work; Like and Share sit in a footer
+ * none), type, title and whose it is. The body opens the work; Like and Share sit at the row's end,
  * beside the link, never inside it. Used where community work is listed (Discover, Discover → Music).
  */
 export function WorkLinkRow({
@@ -158,11 +158,11 @@ export function WorkLinkRow({
 }) {
   const t = workType(work.kind);
   return (
-    <div className="overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs">
+    <div className="flex items-center overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs">
       <Link
         to="/portfolio/$id"
         params={{ id: work.id }}
-        className="state-layer flex items-center gap-3 p-3 active:scale-[0.99]"
+        className="state-layer flex min-w-0 flex-1 items-center gap-3 p-3 active:scale-[0.99]"
       >
         {work.cover_url ? (
           <img
@@ -183,7 +183,7 @@ export function WorkLinkRow({
           ) : null}
         </span>
       </Link>
-      <div className="flex items-center gap-1 border-t border-border/60 px-2 py-1">
+      <div className="flex shrink-0 items-center pr-2">
         {likes?.available ? <LikeButton id={work.id} likes={likes} /> : null}
         <ShareWorkButton id={work.id} title={work.title} />
       </div>

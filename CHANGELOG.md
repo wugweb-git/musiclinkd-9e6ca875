@@ -10,6 +10,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - `portfolio.tsx` `WorkLinkRow` is now the public work card: square cover (type icon when none),
   type, title, owner; the body opens the work and a footer beside the link holds Like and Share.
   Used on Discover (Trending audio / videos) and Discover → Music.
+- `listNewWork` reads with the public client (published work and public profiles are readable
+  by anyone), so Discover → Music and the newest-work fallback no longer need the server key.
+- Like and Share sit at the row's end, beside the link.
 - Share: the phone's share sheet, else the link is copied.
 - Like: heart outline ⇄ filled in brand pink; once you have liked a work the total shows beside
   it. Signed out goes to `/welcome`. Optimistic with rollback. `useWorkLikes` reads a list's

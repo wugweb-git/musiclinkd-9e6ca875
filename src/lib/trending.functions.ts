@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { anonClient } from "@/lib/portfolio.functions";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { PLAYS_COUNTED_FROM } from "@/lib/plays-cutoff";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
@@ -114,8 +115,8 @@ export type NewWorkItem = Omit<TrendingItem, "plays">;
  */
 export const listNewWork = createServerFn({ method: "GET" }).handler(
   async (): Promise<NewWorkItem[]> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const db = supabaseAdmin as unknown as SupabaseClient;
+    // Published work and public profiles are readable by anyone (RLS), so no server key is needed.
+    const db = (await anonClient()) as unknown as SupabaseClient;
     const { data: items, error } = await db
       .from("portfolio_items")
       .select("id, title, kind, cover_url, media_url, user_id")
