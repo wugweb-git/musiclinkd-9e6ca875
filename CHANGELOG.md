@@ -15,6 +15,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   rollback and an error toast; state is the profile page's own `["connection", id]` query.
 - `bookable-view.ts`: `DiscoverBookable.ownerId` (the owning business profile), which Follow
   targets. `BookableRow`'s chevron is replaced by the actions.
+- Business accounts follow, talent connects (owner, 5 Oct): `DirectoryPerson.isBusiness` comes
+  from the `profile_business` row (directory reads and recommendations), so a business shown in a
+  people list gets Follow and saves as "business".
 - Bands: no Follow yet (`follows.target_id` points at profiles; a band is a `collabs` row).
 
 ### Changed — duplicate components merged, no visual change (5 Oct, phone plan P1)

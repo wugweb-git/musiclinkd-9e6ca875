@@ -52,6 +52,8 @@ type Me = {
 
 type Candidate = {
   id: string;
+  /** profile_business row: present only for a business account. */
+  business?: { profile_id: string } | { profile_id: string }[] | null;
   username: string | null;
   display_name: string | null;
   headline: string | null;
@@ -193,7 +195,7 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
         client
           .from("profiles")
           .select(
-            "id, username, display_name, headline, city, pin_code, roles, genres, instruments, avatar_url, is_verified, rating, review_count, discovery_prefs, availability",
+            "id, username, display_name, headline, city, pin_code, roles, genres, instruments, avatar_url, is_verified, rating, review_count, discovery_prefs, availability, business:profile_business(profile_id)",
           )
           .eq("visibility", "public")
           .neq("id", me)
@@ -347,6 +349,7 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
         reasons: s.reasons,
         score: s.score,
         availability: c.availability?.trim() || null,
+        isBusiness: Array.isArray(c.business) ? c.business.length > 0 : Boolean(c.business),
       });
     }
     people.sort((a, b) => b.score - a.score);

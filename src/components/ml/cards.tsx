@@ -225,6 +225,8 @@ export type PersonLike = Pick<DirectoryPerson, "id" | "name" | "headline" | "cit
   roles?: string[] | undefined;
   rating?: number | null | undefined;
   reviewCount?: number | undefined;
+  /** A business account: Follow instead of Connect (owner, 5 Oct). */
+  isBusiness?: boolean | undefined;
 };
 
 function personDetail(person: PersonLike, roleLabels?: TaxonomyOption[]) {
@@ -293,8 +295,8 @@ export function PersonRow({
     action === undefined ? (
       <CardActions
         profileId={person.id}
-        relation="connect"
-        save={{ targetType: "talent", targetId: person.id }}
+        relation={person.isBusiness ? "follow" : "connect"}
+        save={{ targetType: person.isBusiness ? "business" : "talent", targetId: person.id }}
         compact
         className="shrink-0"
       />
@@ -446,8 +448,8 @@ export function PersonCard({
       </Link>
       <CardActions
         profileId={person.id}
-        relation="connect"
-        save={{ targetType: "talent", targetId: person.id }}
+        relation={person.isBusiness ? "follow" : "connect"}
+        save={{ targetType: person.isBusiness ? "business" : "talent", targetId: person.id }}
       />
     </div>
   );
