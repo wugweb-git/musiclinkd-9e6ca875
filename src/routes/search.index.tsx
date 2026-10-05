@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Bookmark, Info, MapPin } from "lucide-react";
 import {
+  Btn,
   Chip,
   IconBtn,
   IconBtnLink,
@@ -14,7 +15,7 @@ import {
   VerifiedBadge,
 } from "@/components/ml/ui";
 import { PersonRow } from "@/components/ml/cards";
-import { Segmented, StateCard } from "@/components/ml/kit";
+import { EmptyState, LoadError, Segmented, StateCard } from "@/components/ml/kit";
 import { SectionActionLink } from "@/components/ml/links";
 import { ListingGrid } from "@/components/ml/market";
 import { OpportunityCard } from "@/components/ml/opportunity";
@@ -75,7 +76,7 @@ const TAB_LABEL: Record<Tab, string> = {
 };
 const tabOf = (label: string) => TABS.find((t) => TAB_LABEL[t] === label) ?? "all";
 
-type SearchParams = { q?: string; tab?: Tab };
+type SearchParams = { q?: string; tab?: Tab; role?: string; verified?: true };
 
 export const Route = createFileRoute("/search/")({
   validateSearch: (search: Record<string, unknown>): SearchParams => {
@@ -84,6 +85,9 @@ export const Route = createFileRoute("/search/")({
     const tab = search["tab"];
     if (typeof tab === "string" && tab !== "all" && (TABS as readonly string[]).includes(tab))
       out.tab = tab as Tab;
+    // Filters live in the address too, so Back and a shared link bring them back (plan §9).
+    if (typeof search["role"] === "string" && search["role"]) out.role = search["role"];
+    if (search["verified"] === true || search["verified"] === "true") out.verified = true;
     return out;
   },
   head: () => ({
@@ -125,9 +129,31 @@ function SearchResults() {
   const tab: Tab = params.tab ?? "all";
   const navigate = useNavigate({ from: "/search/" });
   const [q, setQ] = useState(params.q ?? "");
-  const [role, setRole] = useState("");
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const role = params.role ?? "";
+  const verifiedOnly = params.verified === true;
   const term = useSettled(q).trim();
+  // The address follows the query once typing stops, and every filter as it changes.
+  const setParams = (next: { [K in keyof SearchParams]?: SearchParams[K] | undefined }) =>
+    void navigate({
+      search: (prev) => {
+        const merged = { ...prev, ...next };
+        return Object.fromEntries(
+          Object.entries(merged).filter(([, v]) => v !== undefined && v !== ""),
+        ) as SearchParams;
+      },
+      replace: true,
+    });
+  const setRole = (next: string) => setParams({ role: next || undefined });
+  const setVerifiedOnly = (fn: (v: boolean) => boolean) =>
+    setParams({ verified: fn(verifiedOnly) ? true : undefined });
+  useEffect(() => {
+    if ((params.q ?? "") !== term) setParams({ q: term || undefined });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term]);
+  const clearFilters = () => {
+    setQ("");
+    void navigate({ search: tab === "all" ? {} : { tab }, replace: true });
+  };
   const { options } = useTaxonomy();
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
@@ -250,9 +276,13 @@ function SearchResults() {
   const roles = talentTypes(options?.person_types ?? []).slice(0, 8);
   const toTab = (next: Tab) => {
     // Roles narrow people only, and only show on People; leaving it drops the role.
-    if (next !== "people") setRole("");
     void navigate({
-      search: { ...(q.trim() ? { q: q.trim() } : {}), ...(next === "all" ? {} : { tab: next }) },
+      search: {
+        ...(q.trim() ? { q: q.trim() } : {}),
+        ...(next === "all" ? {} : { tab: next }),
+        ...(next === "people" && role ? { role } : {}),
+        ...(verifiedOnly ? { verified: true as const } : {}),
+      },
       replace: true,
     });
   };
@@ -394,21 +424,37 @@ function SearchResults() {
           </ul>
         ) : failed ? (
           <div className="px-5">
-            <StateCard
-              title="We couldn't run that search"
-              body="Check your connection, then try again."
+            <LoadError
+              what="these results"
+              action={
+                <Btn
+                  variant="outline"
+                  onClick={() => {
+                    void people.refetch();
+                    void rest.refetch();
+                  }}
+                >
+                  Try again
+                </Btn>
+              }
             />
           </div>
         ) : !shown.length ? (
           <div className="px-5">
-            <StateCard
+            <EmptyState
               title="Nothing matched"
               body={
                 filtering
                   ? "Try fewer words, or drop a filter."
                   : "Type a name, a role or a city to start."
               }
-            />
+            >
+              {filtering ? (
+                <Btn variant="outline" onClick={clearFilters}>
+                  Clear filters
+                </Btn>
+              ) : null}
+            </EmptyState>
           </div>
         ) : (
           <>

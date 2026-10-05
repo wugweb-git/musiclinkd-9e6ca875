@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — Search keeps its query and filters in the address (5 Oct, phone plan P6)
+
+- `search.index.tsx`: the query (`?q=`, once typing stops), the role and the Verified filter are
+  saved in the address, so Back and a shared link bring them back.
+- Nothing matched while filtering: the empty state offers "Clear filters". A failed search shows
+  `LoadError` with Try again instead of a dead card.
+- `ui.tsx` `SearchBar`: a round × (48dp tap area) clears the field whenever it has text.
+
 ### Added — public work card with Like and Share (5 Oct, phone plan P4/P5)
 
 - `portfolio.tsx` `WorkLinkRow` is now the public work card: square cover (type icon when none),

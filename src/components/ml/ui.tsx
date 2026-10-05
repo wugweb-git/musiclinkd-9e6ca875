@@ -24,6 +24,7 @@ import {
   User,
   ArrowLeft,
   Mic,
+  X,
   Search,
   Grid2x2,
   ArrowLeftRight,
@@ -409,8 +410,22 @@ export function SearchBar(props: SearchBarProps) {
         aria-label={placeholder ?? "Search"}
         className="w-full bg-transparent text-2 outline-none placeholder:text-muted-foreground"
       />
-      <span className="h-6 w-px bg-border" />
-      <Mic size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
+      {value ? (
+        // A round × to clear (plan §9); 48dp tap area.
+        <button
+          type="button"
+          aria-label="Clear search"
+          onClick={() => onChange?.("")}
+          className="hit-area -mr-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-border/60 text-foreground"
+        >
+          <X size={iconSize.sm} aria-hidden />
+        </button>
+      ) : (
+        <>
+          <span className="h-6 w-px bg-border" />
+          <Mic size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
+        </>
+      )}
     </label>
   );
 }
