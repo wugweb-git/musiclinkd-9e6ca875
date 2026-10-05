@@ -353,13 +353,14 @@ export function BottomNav() {
   );
 }
 
+/** A screen's top bar: back, the title, and actions. Title only — never an eyebrow or subtitle (owner rule). */
 export function TopBar({
   title,
-  subtitle,
   back,
   right,
 }: {
   title: string;
+  /** Not shown: top bars carry the title only (owner rule, 5 Oct). Kept so callers still compile. */
   subtitle?: string;
   back?: string;
   right?: ReactNode;
@@ -377,9 +378,6 @@ export function TopBar({
       ) : null}
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-3 leading-tight">{title}</h1>
-        {subtitle ? (
-          <p className="mt-0.5 truncate text-1 text-muted-foreground">{subtitle}</p>
-        ) : null}
       </div>
       {right}
     </header>
