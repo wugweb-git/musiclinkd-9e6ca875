@@ -1755,6 +1755,32 @@ export type Database = {
           },
         ]
       }
+      portfolio_item_likes: {
+        Row: {
+          created_at: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_item_likes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_item_plays: {
         Row: {
           id: number
@@ -3804,6 +3830,13 @@ export type Database = {
         Returns: boolean
       }
       portfolio_item_is_mine: { Args: { p_item: string }; Returns: boolean }
+      portfolio_like_counts: {
+        Args: { item_ids: string[] }
+        Returns: {
+          item_id: string
+          likes: number
+        }[]
+      }
       portfolio_save_count: { Args: { p_item: string }; Returns: number }
       profile_is_readable: { Args: { p_profile_id: string }; Returns: boolean }
       profile_response_time: { Args: { p: string }; Returns: string }
