@@ -13,6 +13,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   lists changed across 17 files; cards that had a shadow and no border gained the hairline.
 - `NavDock`: a page puts a control in the dock above the bottom nav beside the + pill (owner,
   5 Oct); Market and Collaborations put their Filters there instead of in the header.
+- Profile links sit at the top, under the actions (owner, 5 Oct; ref img 13): plain platform
+  icons that open the page (a handle becomes its platform address) and "Visit site" for a
+  website. The External links section at the bottom is gone.
 - Market listing "Details" is a bento like the profile's At a glance: short facts in pairs, long
   values and a lone last tile across the row.
 - Menu reaches every useful page (owner, 5 Oct): an audit found 15 pages nothing linked to. Added

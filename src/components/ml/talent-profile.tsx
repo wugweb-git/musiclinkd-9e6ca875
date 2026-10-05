@@ -62,6 +62,7 @@ import {
   ReviewInviteCard,
   ShareSheet,
   SocialLinks,
+  ProfileLinksRow,
   VideoCard,
   InfoRow,
   ChipGroup,
@@ -174,6 +175,10 @@ export function TalentProfileExperience({
           ) : (
             <ViewerActions profileId={p.profileId} username={p.username} />
           )}
+          {/* Links sit at the top, under the actions (owner, 5 Oct), not in a footer. */}
+          <div className="mt-3">
+            <ProfileLinksRow links={p.links} />
+          </div>
         </div>
       </div>
 
@@ -221,11 +226,6 @@ export function TalentProfileExperience({
               onGalleryChange={onGalleryChange}
             />
             {owner || p.reviews.length ? <Reviews p={p} owner={owner} /> : null}
-            {p.links.length ? (
-              <ProfileSection title="External links">
-                <SocialLinks links={p.links} />
-              </ProfileSection>
-            ) : null}
             {!owner && signedIn && p.profileId ? (
               <MessageCard name={p.name} profileId={p.profileId} />
             ) : null}

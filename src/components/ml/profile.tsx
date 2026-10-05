@@ -16,6 +16,7 @@ import {
   Pause,
   Play,
   X,
+  ExternalLink,
   Share2,
   User,
   ArrowLeft,
@@ -1818,6 +1819,78 @@ export function SocialLinks({
         );
       })}
     </ul>
+  );
+}
+
+/** Where a stored link goes: a full address as is, a handle on its platform's site. */
+function linkHref(platform: string | undefined, handle: string): string | null {
+  const h = handle.trim();
+  if (/^https?:\/\//i.test(h)) return h;
+  const bare = h.replace(/^@/, "");
+  if (!bare) return null;
+  switch (platform) {
+    case "instagram":
+      return `https://instagram.com/${bare}`;
+    case "youtube":
+      return `https://youtube.com/@${bare}`;
+    case "x":
+    case "twitter":
+      return `https://x.com/${bare}`;
+    case "soundcloud":
+      return `https://soundcloud.com/${bare}`;
+    case "linkedin":
+      return `https://linkedin.com/in/${bare}`;
+    case "website":
+      return `https://${bare}`;
+    default:
+      return /\./.test(bare) ? `https://${bare}` : null;
+  }
+}
+
+/**
+ * Links at the top of a profile (owner, 5 Oct; ref img 13): platform icons, plain (no circles),
+ * each opening its page; a website becomes "Visit site". Nothing when there are none.
+ */
+export function ProfileLinksRow({
+  links,
+}: {
+  links: { platform?: string | undefined; label: string; handle: string }[];
+}) {
+  const site = links.find((l) => l.platform === "website");
+  const socials = links.filter((l) => l !== site && linkHref(l.platform, l.handle));
+  const siteHref = site ? linkHref("website", site.handle) : null;
+  if (!socials.length && !siteHref) return null;
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div className="-ml-2.5 flex items-center">
+        {socials.map((l) => {
+          const Icon = (l.platform ? linkIcons[l.platform] : undefined) ?? Globe;
+          return (
+            <a
+              key={l.label}
+              href={linkHref(l.platform, l.handle)!}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${l.label}: ${l.handle}`}
+              className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full text-foreground"
+            >
+              <Icon size={iconSize.md} aria-hidden />
+            </a>
+          );
+        })}
+      </div>
+      {siteHref ? (
+        <a
+          href={siteHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hit-area inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-semibold"
+        >
+          Visit site
+          <ExternalLink size={iconSize.sm} aria-hidden />
+        </a>
+      ) : null}
+    </div>
   );
 }
 
