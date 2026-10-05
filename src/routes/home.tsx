@@ -19,6 +19,7 @@ import { BookableCard, PersonCard } from "@/components/ml/cards";
 import { EmptyState, Loading, StatusPill } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { NotificationsBell } from "@/components/ml/tab-header";
+import { IdentityPill } from "@/components/ml/accounts";
 import { Btn, BtnLink, Screen, SectionHeader } from "@/components/ml/ui";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { useAuth } from "@/hooks/use-auth";
@@ -196,20 +197,14 @@ function greeting() {
   return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 }
 
-function HomeHeader({ business = false }: { business?: boolean }) {
-  const { displayName } = useViewer();
-  const [hello, setHello] = useState("Hello");
-  useEffect(() => setHello(greeting()), []);
+function HomeHeader(_: { business?: boolean }) {
+  // Title-only header, no eyebrow (owner rule): the identity pill says who you are acting as and
+  // opens the account sheet; the bell and Settings stay on the right.
   return (
-    <header className="bg-card px-5 pb-5 pt-safe">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+    <header className="bg-card px-5 pb-4 pt-safe">
+      <div className="flex items-center justify-between gap-3 pt-2">
         <div className="min-w-0">
-          <p className="text-1 font-semibold text-muted-foreground">
-            {business ? "Business workspace" : hello}
-          </p>
-          <h1 className="mt-1 truncate text-3 font-semibold">
-            {firstNameOf(displayName) || "MusicLinkd"}
-          </h1>
+          <IdentityPill />
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <NotificationsBell />
@@ -220,7 +215,6 @@ function HomeHeader({ business = false }: { business?: boolean }) {
           >
             <Settings size={iconSize.md} aria-hidden />
           </Link>
-          <ViewerAvatar className="h-11 w-11 ring-1 ring-border" />
         </div>
       </div>
     </header>

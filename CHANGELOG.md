@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — identity pill and account sheet (5 Oct, phone plan P9)
+
+- `accounts.tsx`: `IdentityPill` (avatar, name, ⇅) shows who you are acting as and opens
+  `AccountSheet`: who you are (name, email or phone), your other identities to switch to
+  (`listLinkedProfiles` / `switchToLinked`, the same switch as Switch account), then Inbox,
+  Notifications, Profile, Settings; a divider; Switch account and Help (with ›, they lead to more)
+  and Log out. A › only on rows that lead to more choices.
+- Home header: the pill replaces the "Good morning" / "Business workspace" eyebrow and the name
+  (top bars are title only), bell and Settings on the right; the separate avatar is gone.
+
 ### Removed — enquiry pages and the leads page (5 Oct, owner)
 
 Per the 4 Oct decision record (Notion): the Inbox is communication + leads + enquiries; asking
