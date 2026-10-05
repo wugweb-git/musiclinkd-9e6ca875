@@ -23,6 +23,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   show as removable ink chips. Genre is saved in the address too.
 - Several roles and genres at once (`searchPeople({ roles, genres })`, any-of), comma-separated
   in the address (`?role=singer,composer`); each shows as its own removable chip.
+- Bands list: the search (`?q=`) and the My bands tab (`?mine=true`) are in the address too.
+  Category pages have no search or filters to keep.
 - `SearchBar`: the microphone is gone — it was decorative and did nothing (plan §10.5).
 - People means talent: `searchPeople({ talentOnly })` leaves business accounts out, so the list
   and every count match. `DrawerOption.count` shows a count at a row's end.

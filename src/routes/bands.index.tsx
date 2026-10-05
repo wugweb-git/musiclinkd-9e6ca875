@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Plus, Users } from "lucide-react";
 import { Screen, TopBar, SearchBar, BtnLink } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Loading } from "@/components/ml/kit";
@@ -9,7 +9,14 @@ import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
 
+type BandsSearch = { q?: string; mine?: true };
+
 export const Route = createFileRoute("/bands/")({
+  // The search and the tab live in the address, so Back brings them back (plan §9).
+  validateSearch: (search: Record<string, unknown>): BandsSearch => ({
+    ...(typeof search["q"] === "string" && search["q"] ? { q: search["q"] } : {}),
+    ...(search["mine"] === true || search["mine"] === "true" ? { mine: true as const } : {}),
+  }),
   loader: () => loadBands(),
   head: () => ({
     meta: [
@@ -30,8 +37,33 @@ export const Route = createFileRoute("/bands/")({
 const tabs = ["Discover", "My bands"] as const;
 
 function BandsIndex() {
-  const [tab, setTab] = useState<(typeof tabs)[number]>("Discover");
-  const [q, setQ] = useState("");
+  const params = Route.useSearch();
+  const navigate = useNavigate({ from: "/bands/" });
+  const tab: (typeof tabs)[number] = params.mine ? "My bands" : "Discover";
+  const [q, setQ] = useState(params.q ?? "");
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const next = q.trim();
+      if ((params.q ?? "") !== next)
+        void navigate({
+          search: (prev) => ({
+            ...(next ? { q: next } : {}),
+            ...(prev.mine ? { mine: true } : {}),
+          }),
+          replace: true,
+        });
+    }, 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q]);
+  const setTab = (next: (typeof tabs)[number]) =>
+    void navigate({
+      search: (prev) => ({
+        ...(prev.q ? { q: prev.q } : {}),
+        ...(next === "My bands" ? { mine: true as const } : {}),
+      }),
+      replace: true,
+    });
   const { bands: rows, labels } = Route.useLoaderData();
   const { user, loading } = useAuth();
   const viewerId = user?.id ?? null;
