@@ -86,7 +86,7 @@ function ServiceDetail() {
 
   if (pending || error || (!s && !removed)) {
     return (
-      <Screen>
+      <Screen tone="warm">
         <TopBar title="Service" back="/services" />
         <div className="px-5 pt-6">
           {pending ? (
@@ -122,7 +122,7 @@ function ServiceDetail() {
   const paused = s?.status !== "active";
 
   return (
-    <Screen>
+    <Screen tone="warm">
       <TopBar
         title={optionLabel(options?.categories, s?.category) || "Service"}
         back="/services"

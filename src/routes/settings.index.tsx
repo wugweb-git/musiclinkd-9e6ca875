@@ -154,7 +154,7 @@ function SettingsScreen() {
   }
 
   return (
-    <Screen>
+    <Screen tone="white">
       <TopBar title="Settings" back="/profile" />
       <div className="min-h-[calc(100dvh-4rem)] bg-card px-5 pt-5 pb-6">
         {signedIn ? (

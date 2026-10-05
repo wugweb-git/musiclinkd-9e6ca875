@@ -83,20 +83,35 @@ export function isNavRoot(path: string) {
   return navRoots.has(p);
 }
 
+/*
+ * Page tone by content type (owner, 5 Oct): "app" #F5F5F5 for app screens, "warm" #F3F1EC for
+ * people and their work, "white" for settings and forms, "auth" the sign-in ground.
+ */
+const SCREEN_TONE = {
+  app: "bg-background",
+  warm: "bg-warm",
+  white: "bg-card",
+  auth: "bg-auth-ground",
+} as const;
+
 export function Screen({
   children,
   bottomNav,
   className = "",
+  tone = "app",
 }: {
   children: ReactNode;
   bottomNav?: boolean;
   className?: string;
+  tone?: keyof typeof SCREEN_TONE;
 }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   bottomNav ??= isNavRoot(path);
   const clearance = className || (bottomNav ? "pb-nav-clear" : "pb-8");
   return (
-    <div className="app-canvas mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col bg-background">
+    <div
+      className={`app-canvas mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col ${SCREEN_TONE[tone]}`}
+    >
       <div className={`screen-enter flex-1 ${clearance}`}>{children}</div>
     </div>
   );
@@ -361,6 +376,26 @@ export function BottomNav() {
   );
 }
 
+/**
+ * Top bar on scroll (owner, 5 Oct): past a few pixels it goes compact; scrolling down further
+ * hides it, any scroll up brings it back.
+ */
+export function useScrollChrome() {
+  const [state, setState] = useState({ compact: false, hidden: false });
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const down = y > last;
+      last = y;
+      setState({ compact: y > 24, hidden: down && y > 160 });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return state;
+}
+
 /** A screen's top bar: back, the title, and actions. Title only — never an eyebrow or subtitle (owner rule). */
 export function TopBar({
   title,
@@ -373,8 +408,13 @@ export function TopBar({
   back?: string;
   right?: ReactNode;
 }) {
+  const chrome = useScrollChrome();
   return (
-    <header className="pt-safe sticky top-0 z-bar flex items-center gap-3 border-b border-border/70 bg-card/92 px-5 pb-3.5 backdrop-blur">
+    <header
+      className={`pt-safe sticky top-0 z-bar flex items-center gap-3 border-b border-border/70 bg-card/92 px-5 backdrop-blur transition-[transform,padding] duration-200 ease-standard ${
+        chrome.compact ? "pb-2" : "pb-3.5"
+      } ${chrome.hidden ? "-translate-y-full" : ""}`}
+    >
       {back ? (
         <Link
           to={back}
@@ -387,7 +427,11 @@ export function TopBar({
         </Link>
       ) : null}
       <div className="min-w-0 flex-1">
-        <h1 className="truncate text-3 leading-tight">{title}</h1>
+        <h1
+          className={`truncate leading-tight transition-[font-size] duration-200 ${chrome.compact ? "text-2 font-semibold" : "text-3"}`}
+        >
+          {title}
+        </h1>
       </div>
       {right}
     </header>

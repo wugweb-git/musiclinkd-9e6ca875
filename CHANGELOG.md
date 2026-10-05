@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — top bar order and scroll, page tones (5 Oct, owner)
+
+- One icon order on every header: page action · Search · Bell · Settings; a screen shows only
+  what it needs but never reorders (Discover, Market and the Profile tab were out of order).
+- `TopBar` on scroll (`useScrollChrome`): compact after a few pixels (slimmer, smaller title),
+  hidden while scrolling down past 160px, back on any scroll up.
+- Page tone by content (`Screen tone`): app `#F5F5F5`, warm `#F3F1EC` (new `--surface-warm`) on
+  talent and business profiles and the service page, white on Settings, the sign-in ground on
+  auth. White cards sit on all of them.
+
 ### Changed — branded empty states; profile shows, pages manage (5 Oct)
 
 - `kit.tsx` `EmptyState` is a branded banner everywhere it is used (144 places): ink ground, a

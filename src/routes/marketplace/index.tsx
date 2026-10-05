@@ -135,9 +135,10 @@ function MarketHome() {
         <div className="mb-3 flex items-center justify-between px-5">
           <h1 className="text-3 leading-tight">Market</h1>
           <div className="flex items-center gap-2">
-            <NotificationsBell />
-            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
+            {/* One order on every screen (owner, 5 Oct): page action · Search · Bell · Settings. */}
             <FilterButton count={active} onClick={() => setFilters(true)} />
+            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
+            <NotificationsBell />
           </div>
         </div>
         {searchOpen ? (

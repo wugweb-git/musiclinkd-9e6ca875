@@ -101,7 +101,7 @@ export function BusinessProfileExperience({
 
   if (!b) {
     return (
-      <Screen>
+      <Screen tone="warm">
         <TopBar title="Business" back="/discover" />
         <div className="px-5 pt-6">
           <EmptyState title="Business not found" body="This profile may have been removed." />
@@ -111,7 +111,7 @@ export function BusinessProfileExperience({
   }
 
   return (
-    <Screen>
+    <Screen tone="warm">
       {/* The person profile's own header: cover, the business's picture as its logo, the name. */}
       <CoverHero
         cover={b.cover}

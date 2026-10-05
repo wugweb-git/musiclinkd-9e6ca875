@@ -231,7 +231,7 @@ function PrivacyScreen() {
   }
 
   return (
-    <Screen>
+    <Screen tone="white">
       <TopBar title="Privacy" subtitle="Who sees and contacts you" back="/settings" />
       <div className="space-y-6 px-5 pt-4 pb-6">
         {/* One list, not a card per question: the hairlines already separate them. */}

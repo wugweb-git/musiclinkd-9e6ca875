@@ -136,7 +136,7 @@ export function TalentProfileExperience({
   const share = p.username ? () => setShareOpen(true) : undefined;
 
   return (
-    <Screen>
+    <Screen tone="warm">
       {/* Owner only: the same one-line top bar every other main tab carries. The public profile
           (profile/$username) is a different screen and keeps its own back-arrow header. */}
       {owner ? (
@@ -145,10 +145,11 @@ export function TalentProfileExperience({
               heading. This is a bar label, so it reads as a bar label. */}
           <p className="min-w-0 truncate text-3 font-semibold leading-tight">Profile</p>
           <div className="flex shrink-0 items-center gap-1">
-            <NotificationsBell />
+            {/* One order on every screen: page action · Search · Bell · Settings. */}
             <IconBtnLink to="/search" label="Search" variant="plain" className="h-10 w-10">
               <Search size={iconSize.md} aria-hidden />
             </IconBtnLink>
+            <NotificationsBell />
             <IconBtnLink to="/settings" label="Settings" variant="plain" className="h-10 w-10">
               <Settings size={iconSize.md} aria-hidden />
             </IconBtnLink>

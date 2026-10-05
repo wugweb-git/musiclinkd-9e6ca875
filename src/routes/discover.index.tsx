@@ -156,8 +156,9 @@ function DiscoverScreen() {
             <h1 className="text-3">Discover</h1>
           </div>
           <div className="flex items-center gap-2">
-            <NotificationsBell />
+            {/* One order on every screen (owner, 5 Oct): page action · Search · Bell · Settings. */}
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
+            <NotificationsBell />
           </div>
         </div>
         {searchOpen ? (

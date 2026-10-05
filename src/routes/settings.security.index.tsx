@@ -82,7 +82,7 @@ function SecurityScreen() {
   }
 
   return (
-    <Screen>
+    <Screen tone="white">
       <TopBar title="Security" back="/settings" />
       <div className="min-h-[calc(100dvh-4rem)] space-y-4 bg-card px-5 pt-2 pb-6">
         <div className="divide-y divide-border">
