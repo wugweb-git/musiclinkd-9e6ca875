@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — Account and Security settings (5 Oct, phone plan P10)
+
+- `settings.account.tsx`: rows on the white surface like the owner's refs (img 4–5): title, a
+  muted line on what it is, the value; the action (Change / Add / Claim) on the right, level with
+  the text. A **Danger zone** band with a red "Delete account" link into the deletion flow.
+- `settings.security.index.tsx`: flat rows (no shadowed cards); **Log out everywhere** ends every
+  session (`signOut({ scope: "global" })`) and lands on Welcome, its button on the right.
+- No band directly under the top bar (it read as a second top bar and repeated "Security").
+- `kit.tsx` `SettingsBand`: the grey section band (title + one line) for sections lower down.
+- `ui.tsx` `TopBar`: the back arrow lines up with the content edge (its 40px tap area had pushed
+  it 10px in, so the bar looked shifted right). The back button stays on every platform.
+
 ### Added — identity pill and account switcher (5 Oct, phone plan P9)
 
 - `accounts.tsx`: `IdentityPill` (avatar, name, ⇅) shows who you are acting as; like tapping your

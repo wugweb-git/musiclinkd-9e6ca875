@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
-import { Card, SoonBadge, StatusPill } from "@/components/ml/kit";
+import { Card, SettingsBand, SoonBadge, StatusPill } from "@/components/ml/kit";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { claimMyUsername, getMyProfile } from "@/lib/portfolio.functions";
@@ -32,6 +32,15 @@ type FieldKey = "email" | "phone" | "username" | "language" | "currency";
 
 /** Fixed for everyone (owner, 18 Sep 2026): English and ₹. Shown, not changeable. */
 const FIXED_FIELDS = new Set<FieldKey>(["language", "currency"]);
+
+/** One line under each field saying what it is (owner's ref img 4). Copy: owner. */
+const FIELD_HINTS: Record<FieldKey, string> = {
+  email: "Where we send sign-in links and account mail.",
+  phone: "For sign-in codes and booking updates.",
+  username: "Your public link: musiclinkd.com/your-name.",
+  language: "The language the app uses.",
+  currency: "How prices are shown to you.",
+};
 
 function AccountScreen() {
   const queryClient = useQueryClient();
@@ -128,43 +137,60 @@ function AccountScreen() {
 
   return (
     <Screen>
-      <TopBar title="Account" subtitle="Sign-in and basics" back="/settings" />
-      <div className="space-y-4 px-5 pt-4 pb-6">
-        <Card className="p-0">
+      <TopBar title="Account" back="/settings" />
+      <div className="min-h-[calc(100dvh-4rem)] bg-card px-5 pt-2 pb-6">
+        <ul className="divide-y divide-border">
           {fields.map((f) => {
             const fixed = FIXED_FIELDS.has(f.key);
             const locked = f.key === "username" && f.action === "Locked";
             return (
-              <div
-                key={f.key}
-                className="flex items-center gap-3 border-b border-border p-4 last:border-0"
-              >
+              // Reference rows (img 4–5): title, a muted line, the value; the action on the
+              // right, level with the text.
+              <li key={f.key} className="flex items-center gap-4 py-5">
                 <div className="min-w-0 flex-1">
-                  <p className="pill bg-background text-muted-foreground">{f.label}</p>
-                  <p className="mt-0.5 flex items-center gap-2 truncate text-1 font-semibold">
-                    {f.value}
-                    {f.verified ? <StatusPill label="verified" tone="good" /> : null}
-                  </p>
+                  <p className="text-2 font-medium">{f.label}</p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{FIELD_HINTS[f.key]}</p>
+                  {f.value ? (
+                    <p className="mt-2 flex min-w-0 items-center gap-2 truncate text-2">
+                      {f.value}
+                      {f.verified ? <StatusPill label="verified" tone="good" /> : null}
+                    </p>
+                  ) : null}
                 </div>
                 {fixed ? null : locked ? (
-                  <span className="shrink-0 text-1 text-muted-foreground">Locked</span>
+                  <span className="shrink-0 text-sm text-muted-foreground">Locked</span>
                 ) : (
-                  <button
-                    type="button"
+                  <Btn
+                    variant="outline"
+                    className="!min-h-9 !h-9 shrink-0 !rounded-sm !px-4 !text-sm"
                     onClick={() => setEditing(f.key)}
-                    className="shrink-0 text-1 font-semibold text-foreground"
                   >
                     {f.action}
-                  </button>
+                  </Btn>
                 )}
-              </div>
+              </li>
             );
           })}
-        </Card>
-        <p className="px-1 text-1 text-muted-foreground">
+        </ul>
+        <p className="pb-5 text-sm text-muted-foreground">
           Changing your email or phone asks you to confirm the new one before it becomes your
           sign-in.
         </p>
+
+        {/* Danger zone (owner's ref img 5): a destructive text link into the deletion flow. */}
+        <SettingsBand title="Danger zone" />
+        <div className="py-5">
+          <p className="text-2 font-medium">Delete account</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            Permanently delete your MusicLinkd account and its data. This cannot be undone.
+          </p>
+          <Link
+            to="/settings/delete-account"
+            className="hit-area mt-2 inline-block text-2 font-semibold text-destructive underline-offset-4 hover:underline"
+          >
+            Delete account
+          </Link>
+        </div>
       </div>
 
       <Sheet

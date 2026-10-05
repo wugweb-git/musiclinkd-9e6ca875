@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ChevronRight, Laptop, ShieldCheck } from "lucide-react";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, Loading } from "@/components/ml/kit";
 import { securityRows } from "@/data/settings";
+import { supabase } from "@/integrations/supabase/client";
 import { listMySessions, revokeMySession } from "@/lib/security.functions";
 import { iconSize } from "@/lib/tokens";
 
@@ -56,6 +58,19 @@ function SecurityScreen() {
   const revoke = useServerFn(revokeMySession);
   const sessions = useQuery({ queryKey: ["security", "sessions"], queryFn: () => load() });
 
+  const [endingAll, setEndingAll] = useState(false);
+  async function logOutEverywhere() {
+    setEndingAll(true);
+    try {
+      const { error } = await supabase.auth.signOut({ scope: "global" });
+      if (error) throw error;
+      window.location.assign("/welcome");
+    } catch {
+      toast.error("Couldn't log out everywhere. Try again.");
+      setEndingAll(false);
+    }
+  }
+
   async function signOutOne(id: string) {
     try {
       await revoke({ data: { id } });
@@ -68,41 +83,43 @@ function SecurityScreen() {
 
   return (
     <Screen>
-      <TopBar title="Security" subtitle="Password and devices" back="/settings" />
-      <div className="space-y-4 px-5 pt-4 pb-6">
-        <Card className="p-0">
+      <TopBar title="Security" back="/settings" />
+      <div className="min-h-[calc(100dvh-4rem)] space-y-4 bg-card px-5 pt-2 pb-6">
+        <div className="divide-y divide-border">
           {securityRows.map((r) => (
             <Link
               key={r.key}
               to={r.to}
-              className="flex items-center gap-3 border-b border-border p-4 last:border-0"
+              className="state-layer flex min-h-touch items-center gap-4 py-5"
             >
               <span className="min-w-0 flex-1">
-                <span className="block text-1 font-semibold">{r.label}</span>
-                <span className="block truncate text-1 text-muted-foreground">{r.hint}</span>
+                <span className="block text-2 font-medium">{r.label}</span>
+                <span className="mt-0.5 block truncate text-sm text-muted-foreground">
+                  {r.hint}
+                </span>
               </span>
               <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" />
             </Link>
           ))}
-        </Card>
+        </div>
 
-        <div>
-          <p className="pill mb-2 px-1 text-muted-foreground">Signed in on</p>
+        <div className="border-t border-border pt-4">
+          <p className="text-2 font-medium">Signed in on</p>
           {sessions.isLoading ? (
             <Loading rows={2} />
           ) : sessions.isError || !sessions.data?.length ? (
-            <Card className="flex items-center gap-3">
+            <div className="mt-2 flex items-center gap-3">
               <span className="flex h-10 w-7 shrink-0 items-center justify-center">
                 <ShieldCheck size={iconSize.lg} aria-hidden />
               </span>
               <p className="min-w-0 flex-1 text-1 text-muted-foreground">
                 {sessions.isError ? "Couldn't load your sessions." : "No active sessions found."}
               </p>
-            </Card>
+            </div>
           ) : (
             <div className="space-y-2">
               {sessions.data.map((s) => (
-                <Card key={s.id} className="flex items-center gap-3">
+                <div key={s.id} className="flex items-center gap-3 py-2">
                   <Laptop
                     size={iconSize.lg}
                     className="shrink-0 text-muted-foreground"
@@ -122,10 +139,27 @@ function SecurityScreen() {
                   >
                     Sign out
                   </Btn>
-                </Card>
+                </div>
               ))}
             </div>
           )}
+        </div>
+        {/* Log out everywhere (ref img 6; also queue item 2): the action on the right. */}
+        <div className="flex items-center gap-4 border-t border-border py-5">
+          <div className="min-w-0 flex-1">
+            <p className="text-2 font-medium">Log out everywhere</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              End your sessions on all devices and browsers, including this one.
+            </p>
+          </div>
+          <Btn
+            variant="outline"
+            className="!min-h-9 !h-9 shrink-0 !rounded-sm !px-4 !text-sm"
+            loading={endingAll}
+            onClick={() => void logOutEverywhere()}
+          >
+            Log out
+          </Btn>
         </div>
       </div>
     </Screen>

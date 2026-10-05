@@ -370,7 +370,9 @@ export function TopBar({
       {back ? (
         <Link
           to={back}
-          className="hit-area flex h-10 w-10 shrink-0 items-center justify-center transition-transform duration-200 ease-standard active:scale-97"
+          // -ml-2.5: the 40px tap area is centred on a 20px arrow, so without it the arrow sat
+          // 10px further in than the content below and the bar looked shifted right.
+          className="hit-area -ml-2.5 flex h-10 w-10 shrink-0 items-center justify-center transition-transform duration-200 ease-standard active:scale-97"
           aria-label="Back"
         >
           <ArrowLeft size={iconSize.md} aria-hidden />

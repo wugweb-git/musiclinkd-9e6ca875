@@ -463,6 +463,19 @@ export function Switch({
  * settings page UI"), shared so Settings and the menu are one thing rather than two styled copies.
  * Rows inside it take `grouped`.
  */
+/**
+ * A settings section header (owner's refs img 4–6): a grey band across the screen with the
+ * section title and one line saying what it is for. Rows follow on the page ground.
+ */
+export function SettingsBand({ title, description }: { title: string; description?: string }) {
+  return (
+    <div className="-mx-5 border-y border-border bg-ink/5 px-5 py-4">
+      <h2 className="text-2 font-semibold">{title}</h2>
+      {description ? <p className="mt-0.5 text-1 text-muted-foreground">{description}</p> : null}
+    </div>
+  );
+}
+
 export function RowGroup({
   title,
   children,
