@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Search, Bookmark, Briefcase, SlidersHorizontal } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, IconBtnLink, Sheet } from "@/components/ml/ui";
 import { Card, EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunityCategories } from "@/data/opportunities";
@@ -109,36 +109,29 @@ function OpportunitiesHome() {
         subtitle="Who needs what, right now"
         back="/discover"
         right={
-          <Btn
-            variant="ink"
-            className="min-h-10 px-4"
-            icon={<Plus size={iconSize.sm} aria-hidden />}
-            onClick={() => setSheet(true)}
-          >
-            New
-          </Btn>
+          // One order everywhere: page action, then Search (owner, 5 Oct).
+          <span className="flex items-center gap-1">
+            <Btn
+              variant="ink"
+              className="min-h-10 px-4"
+              icon={<Plus size={iconSize.sm} aria-hidden />}
+              onClick={() => setSheet(true)}
+            >
+              New
+            </Btn>
+            <IconBtnLink
+              to="/search"
+              search={{ tab: "opportunities" }}
+              label="Search opportunities"
+              variant="plain"
+            >
+              <Search size={iconSize.md} aria-hidden />
+            </IconBtnLink>
+          </span>
         }
       />
 
       <div className="space-y-5 px-5 pt-4">
-        <div className="grid grid-cols-[minmax(0,1fr)_48px] gap-2">
-          <Link to="/opportunities/search" className="block min-w-0">
-            <div className="flex h-12 items-center gap-3 rounded-full border border-input bg-card px-4">
-              <Search size={iconSize.sm} className="text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Singer, mixing engineer, studio…
-              </span>
-            </div>
-          </Link>
-          <Link
-            to="/opportunities/search"
-            aria-label="Filter opportunities"
-            className="hit-area flex h-12 w-12 items-center justify-center rounded-full border border-input bg-card"
-          >
-            <SlidersHorizontal size={iconSize.md} aria-hidden />
-          </Link>
-        </div>
-
         <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-border bg-card">
           <Link
             to="/opportunities/applications"
@@ -166,15 +159,16 @@ function OpportunitiesHome() {
 
         <section>
           <h2 className="mb-2 text-sm font-semibold">Browse by need</h2>
-          <div className="grid grid-cols-2 gap-2">
-            {opportunityCategories.slice(0, 6).map((c) => {
+          {/* A side-scrolling row (owner, 5 Oct); each need opens Search with it filled in. */}
+          <div className="rail no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
+            {opportunityCategories.map((c) => {
               const Icon = categoryIcon(c.key);
               return (
                 <Link
                   key={c.key}
-                  to="/opportunities/search"
-                  search={{ q: c.label }}
-                  className="state-layer grid min-h-touch grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-sm border border-border bg-card p-3"
+                  to="/search"
+                  search={{ tab: "opportunities", q: c.label }}
+                  className="state-layer grid min-h-touch w-44 shrink-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-sm border border-border bg-card p-3"
                 >
                   <Icon size={20} aria-hidden />
                   <span className="min-w-0">
