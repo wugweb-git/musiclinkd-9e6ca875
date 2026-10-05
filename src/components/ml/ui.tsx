@@ -23,7 +23,6 @@ import {
   MessageCircle,
   User,
   ArrowLeft,
-  Mic,
   X,
   Search,
   Grid2x2,
@@ -420,12 +419,9 @@ export function SearchBar(props: SearchBarProps) {
         >
           <X size={iconSize.sm} aria-hidden />
         </button>
-      ) : (
-        <>
-          <span className="h-6 w-px bg-border" />
-          <Mic size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
-        </>
-      )}
+      ) : null}
+      {/* No microphone: it was decorative and did nothing (plan §10.5). Voice comes back only
+          with real speech input and a "didn't catch that" state. */}
     </label>
   );
 }

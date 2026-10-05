@@ -553,6 +553,9 @@ export const searchPeople = createServerFn({ method: "GET" })
         q: z.string().trim().max(80).optional(),
         role: z.string().max(60).optional(),
         genre: z.string().max(60).optional(),
+        /** Several roles or genres: anyone with any of them (Search filters, multi-select). */
+        roles: z.array(z.string().max(60)).max(20).optional(),
+        genres: z.array(z.string().max(60)).max(20).optional(),
         verifiedOnly: z.boolean().optional(),
         limit: z.number().int().min(1).max(60).optional(),
         /** Skip the exact count when the screen never shows it; the count is the slow part. */
@@ -582,6 +585,8 @@ export const searchPeople = createServerFn({ method: "GET" })
       }
       if (data.role) query = query.contains("roles", [data.role]);
       if (data.genre) query = query.contains("genres", [data.genre]);
+      if (data.roles?.length) query = query.overlaps("roles", data.roles);
+      if (data.genres?.length) query = query.overlaps("genres", data.genres);
       if (data.verifiedOnly) query = query.eq("is_verified", true);
       if (businessIds.length) query = query.not("id", "in", `(${businessIds.join(",")})`);
       return query.order("is_verified", { ascending: false }).limit(data.limit ?? 40);

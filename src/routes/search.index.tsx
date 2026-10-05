@@ -132,8 +132,11 @@ function SearchResults() {
   const tab: Tab = params.tab ?? "all";
   const navigate = useNavigate({ from: "/search/" });
   const [q, setQ] = useState(params.q ?? "");
-  const role = params.role ?? "";
-  const genre = params.genre ?? "";
+  // Several of each, comma-separated in the address (?role=singer,composer).
+  const roleList = (params.role ?? "").split(",").filter(Boolean);
+  const genreList = (params.genre ?? "").split(",").filter(Boolean);
+  const role = roleList.join(",");
+  const genre = genreList.join(",");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const verifiedOnly = params.verified === true;
   const term = useSettled(q).trim();
@@ -174,8 +177,8 @@ function SearchResults() {
       find({
         data: {
           ...(term ? { q: term } : {}),
-          ...(role ? { role } : {}),
-          ...(genre ? { genre } : {}),
+          ...(roleList.length ? { roles: roleList } : {}),
+          ...(genreList.length ? { genres: genreList } : {}),
           ...(verifiedOnly ? { verifiedOnly: true } : {}),
           talentOnly: true,
           limit,
@@ -361,7 +364,7 @@ function SearchResults() {
     ];
   const shown = sections.filter((s) => (tab === "all" || s.tab === tab) && s.count > 0);
   const filtering = Boolean(term || role || genre || verifiedOnly);
-  const activeFilters = (role ? 1 : 0) + (genre ? 1 : 0);
+  const activeFilters = roleList.length + genreList.length;
   const popularItems = popular.data?.items ?? [];
 
   return (
@@ -406,18 +409,22 @@ function SearchResults() {
         {tab === "people" && activeFilters ? (
           // Active filters as removable ink chips (plan §9).
           <div className="mt-2 flex flex-wrap gap-2">
-            {role ? (
+            {roleList.map((r) => (
               <ActiveFilterChip
-                label={labelFor(options?.person_types, role)}
-                onRemove={() => setRole("")}
+                key={`r-${r}`}
+                label={labelFor(options?.person_types, r)}
+                onRemove={() => setRole(roleList.filter((x) => x !== r).join(","))}
               />
-            ) : null}
-            {genre ? (
+            ))}
+            {genreList.map((g) => (
               <ActiveFilterChip
-                label={labelFor(options?.genres, genre)}
-                onRemove={() => setParams({ genre: undefined })}
+                key={`g-${g}`}
+                label={labelFor(options?.genres, g)}
+                onRemove={() =>
+                  setParams({ genre: genreList.filter((x) => x !== g).join(",") || undefined })
+                }
               />
-            ) : null}
+            ))}
           </div>
         ) : null}
         <div className="mt-1">
@@ -662,11 +669,13 @@ function ActiveFilterChip({ label, onRemove }: { label: string; onRemove: () => 
 }
 
 const SHOWN_AT_FIRST = 8;
+const toggle = (list: string[], v: string) =>
+  list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
 
 /**
  * The People filters panel (plan §9): Role and Genre, each searchable, a real count on every
- * option, "Show N more", and a footer with Clear all and a live "Show N results". One role and
- * one genre at a time — the people search narrows by one of each.
+ * option, "Show N more", and a footer with Clear all and a live "Show N results". Pick several
+ * roles and genres: a person matches with any picked role and any picked genre.
  */
 function PeopleFilters({
   open,
@@ -689,10 +698,11 @@ function PeopleFilters({
   genreOptions: TaxonomyOption[];
   onApply: (next: { role: string; genre: string }) => void;
 }) {
-  const [draft, setDraft] = useState({ role, genre });
+  const split = (v: string) => v.split(",").filter(Boolean);
+  const [draft, setDraft] = useState({ roles: split(role), genres: split(genre) });
   const [openGroup, setOpenGroup] = useState<"Role" | "Genre" | "">("Role");
   useEffect(() => {
-    if (open) setDraft({ role, genre });
+    if (open) setDraft({ roles: split(role), genres: split(genre) });
   }, [open, role, genre]);
   const loadFacets = useServerFn(peopleFacets);
   const facets = useQuery({
@@ -703,13 +713,13 @@ function PeopleFilters({
   });
   const find = useServerFn(searchPeople);
   const live = useQuery({
-    queryKey: ["search", "people", "count", term, draft.role, draft.genre, verifiedOnly],
+    queryKey: ["search", "people", "count", term, draft.roles, draft.genres, verifiedOnly],
     queryFn: () =>
       find({
         data: {
           ...(term ? { q: term } : {}),
-          ...(draft.role ? { role: draft.role } : {}),
-          ...(draft.genre ? { genre: draft.genre } : {}),
+          ...(draft.roles.length ? { roles: draft.roles } : {}),
+          ...(draft.genres.length ? { genres: draft.genres } : {}),
           ...(verifiedOnly ? { verifiedOnly: true } : {}),
           talentOnly: true,
           limit: 1,
@@ -728,7 +738,7 @@ function PeopleFilters({
         <button
           type="button"
           className="hit-area text-sm font-semibold underline-offset-4 hover:underline"
-          onClick={() => setDraft({ role: "", genre: "" })}
+          onClick={() => setDraft({ roles: [], genres: [] })}
         >
           Clear all
         </button>
@@ -739,25 +749,29 @@ function PeopleFilters({
           title="Role"
           open={openGroup === "Role"}
           onToggle={() => setOpenGroup((g) => (g === "Role" ? "" : "Role"))}
-          picked={draft.role ? labelFor(roleOptions, draft.role) : ""}
+          picked={draft.roles.map((r) => labelFor(roleOptions, r)).join(", ")}
           options={roleOptions}
           counts={facets.data?.roles}
-          value={draft.role}
-          onPick={(v) => setDraft((d) => ({ ...d, role: d.role === v ? "" : v }))}
+          value={draft.roles}
+          onPick={(v) => setDraft((d) => ({ ...d, roles: toggle(d.roles, v) }))}
         />
         <FilterGroup
           title="Genre"
           open={openGroup === "Genre"}
           onToggle={() => setOpenGroup((g) => (g === "Genre" ? "" : "Genre"))}
-          picked={draft.genre ? labelFor(genreOptions, draft.genre) : ""}
+          picked={draft.genres.map((g) => labelFor(genreOptions, g)).join(", ")}
           options={genreOptions}
           counts={facets.data?.genres}
-          value={draft.genre}
-          onPick={(v) => setDraft((d) => ({ ...d, genre: d.genre === v ? "" : v }))}
+          value={draft.genres}
+          onPick={(v) => setDraft((d) => ({ ...d, genres: toggle(d.genres, v) }))}
         />
       </div>
       <div className="sticky bottom-0 mt-4 bg-card pt-3 pb-safe">
-        <Btn className="w-full" loading={live.isFetching} onClick={() => onApply(draft)}>
+        <Btn
+          className="w-full"
+          loading={live.isFetching}
+          onClick={() => onApply({ role: draft.roles.join(","), genre: draft.genres.join(",") })}
+        >
           {total === undefined ? "Show results" : `Show ${total.toLocaleString("en-IN")} results`}
         </Btn>
       </div>
@@ -782,7 +796,7 @@ function FilterGroup({
   picked: string;
   options: TaxonomyOption[];
   counts: Record<string, number> | undefined;
-  value: string;
+  value: string[];
   onPick: (slug: string) => void;
 }) {
   const [query, setQuery] = useState("");
@@ -790,7 +804,7 @@ function FilterGroup({
   // Only options someone actually has, most common first; the picked one always stays visible.
   const withCounts = options
     .map((o) => ({ value: o.slug, label: o.label, count: counts?.[o.slug] ?? 0 }))
-    .filter((o) => !counts || o.count > 0 || o.value === value)
+    .filter((o) => !counts || o.count > 0 || value.includes(o.value))
     .sort((a, b) => b.count - a.count);
   const found = matching(withCounts, query);
   const shown = all || query ? found : found.slice(0, SHOWN_AT_FIRST);
@@ -819,12 +833,12 @@ function FilterGroup({
             label={`Search ${title.toLowerCase()}`}
             placeholder={`Search ${title.toLowerCase()}`}
           />
-          <DrawerList label={title} empty="Nothing matches that.">
+          <DrawerList label={title} multiple empty="Nothing matches that.">
             {shown.map((o) => (
               <DrawerOptionRow
                 key={o.value}
                 option={counts ? o : { value: o.value, label: o.label }}
-                selected={value === o.value}
+                selected={value.includes(o.value)}
                 onClick={() => onPick(o.value)}
               />
             ))}
