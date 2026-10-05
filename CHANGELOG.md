@@ -9,6 +9,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 - `discover.index.tsx`: removed the "Find your next move" / "Build the right team" line above
   the Discover heading. Top bars carry the title only.
+- `ui.tsx` `TopBar`: the subtitle line under the title is no longer drawn on any screen (43 call
+  sites pass one; the prop is ignored until those are cleaned up).
 
 ### Fixed — local dev server never hydrated; collaboration tab titles (4 Oct)
 
