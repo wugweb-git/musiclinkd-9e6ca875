@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — no eyebrow above the Discover title (5 Oct)
+
+- `discover.index.tsx`: removed the "Find your next move" / "Build the right team" line above
+  the Discover heading. Top bars carry the title only.
+
 ### Added — Connect / Follow on profile cards (5 Oct, phone plan P2)
 
 - `cards.tsx`: every profile card gets an action band beside its link (never inside it — no
