@@ -967,46 +967,87 @@ export function AudioTrackCard({
 
   if (!isExpanded) return <article className="overflow-hidden rounded-lg">{row}</article>;
 
-  // Selected audio (owner, 5 Oct): on the card surface, following the system theme. The title
-  // once (tap it to stop), the player, then what the owner added with the work, Like and Share.
+  // Selected audio = a now-playing card (owner's refs: Spotify / Apple Music widgets): the cover,
+  // blurred, fills the card behind a dark scrim; the cover, title and artist in white with the
+  // source's mark; the player; then what the owner added, Like and Share. Tap the title to stop.
+  const source = playSource(track.media);
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-lg bg-card ring-1 ring-border animate-in fade-in duration-200",
+        "relative overflow-hidden rounded-lg bg-ink text-ink-foreground animate-in fade-in duration-200",
         layout === "portrait" && "col-span-full",
       )}
     >
-      <button
-        type="button"
-        onClick={() => {
-          if (playing) onToggle();
-          setExpanded(false);
-        }}
-        aria-label={`Stop ${track.title}`}
-        className="state-layer block w-full min-w-0 px-4 pb-2 pt-3 text-left"
-      >
-        <span className="block truncate text-2 font-semibold">{track.title}</span>
-        {track.role ? (
-          <span className="block truncate text-1 text-muted-foreground">{track.role}</span>
-        ) : null}
-      </button>
-      {track.media ? (
-        <div className="px-3">
-          <MediaEmbed
-            url={track.media}
-            title={track.title}
-            onOpen={() => recordWorkEvent(track.id, "link_click")}
-            onPlay={() => recordPlay(track.id)}
-          />
-        </div>
+      {cover ? (
+        <img
+          src={sized(cover, { width: 412 })}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full scale-125 object-cover opacity-60 blur-2xl"
+        />
       ) : null}
-      <WorkDetails
-        id={track.id}
-        title={track.title}
-        description={track.project}
-        collaborators={track.collaborators}
-        year={track.year}
-      />
+      <div aria-hidden className="absolute inset-0 bg-ink/55" />
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => {
+            if (playing) onToggle();
+            setExpanded(false);
+          }}
+          aria-label={`Stop ${track.title}`}
+          className="state-layer flex w-full min-w-0 items-center gap-3 p-4 text-left"
+        >
+          <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md shadow-elevation-3">
+            {cover ? (
+              <img
+                src={sized(cover, { width: 160 })}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <NoCover className="h-full w-full" />
+            )}
+            {playing ? <Equaliser /> : null}
+          </span>
+          <span className="min-w-0 flex-1">
+            {source ? (
+              <span className="mb-1 inline-flex items-center gap-1.5 text-1 font-semibold text-ink-foreground/80">
+                <span
+                  aria-hidden
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: source.bg }}
+                />
+                {source.label}
+              </span>
+            ) : null}
+            <span className="block truncate text-2 font-semibold text-ink-foreground">
+              {track.title}
+            </span>
+            {track.role ? (
+              <span className="block truncate text-sm text-ink-foreground/70">{track.role}</span>
+            ) : null}
+          </span>
+          <Pause size={iconSize.lg} fill="currentColor" className="shrink-0" aria-hidden />
+        </button>
+        {track.media ? (
+          <div className="px-3">
+            <MediaEmbed
+              url={track.media}
+              title={track.title}
+              onOpen={() => recordWorkEvent(track.id, "link_click")}
+              onPlay={() => recordPlay(track.id)}
+            />
+          </div>
+        ) : null}
+        <WorkDetails
+          onDark
+          id={track.id}
+          title={track.title}
+          description={track.project}
+          collaborators={track.collaborators}
+          year={track.year}
+        />
+      </div>
     </article>
   );
 }
@@ -1017,12 +1058,15 @@ export function AudioTrackCard({
  * with, the year; then Like (once the likes table exists) and Share.
  */
 function WorkDetails({
+  onDark = false,
   id,
   title,
   description,
   collaborators,
   year,
 }: {
+  /** On a now-playing card: white text and controls. */
+  onDark?: boolean;
   id: string;
   title: string;
   description?: string | undefined;
@@ -1032,11 +1076,14 @@ function WorkDetails({
   const likes = useWorkLikes(isDbId(id) ? [id] : []);
   const meta = joinParts(collaborators?.length ? `with ${collaborators.join(", ")}` : "", year);
   return (
-    <div className="px-4 pb-2 pt-1">
-      {description ? (
-        <p className="line-clamp-3 text-1 text-muted-foreground">{description}</p>
-      ) : null}
-      {meta ? <p className="mt-1 truncate text-1 text-muted-foreground">{meta}</p> : null}
+    <div
+      className={cn(
+        "px-4 pb-2 pt-2",
+        onDark ? "text-ink-foreground/75 [&_button]:text-ink-foreground" : "text-muted-foreground",
+      )}
+    >
+      {description ? <p className="line-clamp-3 text-1">{description}</p> : null}
+      {meta ? <p className="mt-1 truncate text-1">{meta}</p> : null}
       <div className="-ml-2 mt-1 flex items-center">
         {likes.available ? <LikeButton id={id} likes={likes} /> : null}
         {isDbId(id) ? <ShareWorkButton id={id} title={title} /> : null}

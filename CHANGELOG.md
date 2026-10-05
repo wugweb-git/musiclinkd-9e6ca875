@@ -13,6 +13,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   lists changed across 17 files; cards that had a shadow and no border gained the hairline.
 - `NavDock`: a page puts a control in the dock above the bottom nav beside the + pill (owner,
   5 Oct); Market and Collaborations put their Filters there instead of in the header.
+- Selected audio is a now-playing card (owner's refs: Spotify / Apple Music widgets): the cover,
+  blurred, fills the card behind a dark scrim; cover, source mark, title and artist in white,
+  pause on the right, the player, then what the owner added with Like and Share.
 - In the dock, Filters is a labelled pill (icon + "Filters", "Filters · 2" when on), like the +
   pill. The header filter button lost its circle.
 - No circle behind icons anywhere (owner, 5 Oct): the shared icon button's "outline" style is a
