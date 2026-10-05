@@ -96,10 +96,7 @@ function DiscoverScreen() {
       <header className="bg-card px-5 pb-5 pt-safe">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-1 font-semibold text-muted-foreground">
-              {business.hasBusiness ? "Build the right team" : "Find your next move"}
-            </p>
-            <h1 className="mt-1 text-3">Discover</h1>
+            <h1 className="text-3">Discover</h1>
           </div>
           <div className="flex items-center gap-2">
             <NotificationsBell />

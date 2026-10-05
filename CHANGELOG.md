@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — no eyebrow above the Discover title (5 Oct)
+
+- `discover.index.tsx`: removed the "Find your next move" / "Build the right team" line above
+  the Discover heading. Top bars carry the title only.
+
 ### Fixed — local dev server never hydrated; collaboration tab titles (4 Oct)
 
 - `vite.config.ts`: the `@supabase/realtime-js` alias pointed at the root-relative
