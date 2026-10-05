@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { fileReport, type ReportSubject } from "@/lib/reports.functions";
 import { makeOffer } from "@/lib/offers.functions";
 import {
-  Heart,
+  Bookmark,
   MapPin,
   Star,
   ShieldCheck,
@@ -391,7 +391,8 @@ export function ProductCard({
         tapped ? "animate-tab-tap" : ""
       }`}
     >
-      <StateIcon outline={Heart} solid="heart" active={isSaved} size={iconSize.sm} move="beat" />
+      {/* Save is a bookmark, never a heart (owner, 5 Oct). */}
+      <Bookmark size={iconSize.sm} fill={isSaved ? "currentColor" : "none"} aria-hidden />
     </button>
   ) : null;
 

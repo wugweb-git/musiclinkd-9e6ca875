@@ -5,7 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { ArrowUpDown, Plus, Search, UsersRound } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
+import {
+  Screen,
+  TopBar,
+  Btn,
+  BtnLink,
+  IconBtn,
+  IconBtnLink,
+  NavDock,
+  Sheet,
+} from "@/components/ml/ui";
 import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { DrawerSearch } from "@/components/ml/drawer-list";
 import { Field, SheetMultiSelect } from "@/components/ml/listing-form";
@@ -187,7 +196,9 @@ function Collabs() {
                 <IconBtn label={`Sort: ${sort}`} onClick={() => setSortOpen(true)}>
                   <ArrowUpDown size={iconSize.sm} aria-hidden />
                 </IconBtn>
-                <FilterButton count={filterCount} onClick={() => setFiltersOpen(true)} />
+                <NavDock>
+                  <FilterButton count={filterCount} onClick={() => setFiltersOpen(true)} />
+                </NavDock>
               </>
             ) : null}
             <Btn

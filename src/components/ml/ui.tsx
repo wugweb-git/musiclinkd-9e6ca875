@@ -5,6 +5,7 @@ import {
   useRouterState,
   type LinkProps,
 } from "@tanstack/react-router";
+import { createPortal } from "react-dom";
 import { haptic } from "@/lib/haptics";
 import {
   useEffect,
@@ -257,6 +258,20 @@ function createFor(
   return null;
 }
 
+/** Put a page's control (its Filters) in the dock above the bottom nav, beside the + pill. */
+export function NavDock({ children }: { children: ReactNode }) {
+  const [el, setEl] = useState<HTMLElement | null>(null);
+  useEffect(() => setEl(document.getElementById("nav-dock")), []);
+  return el
+    ? createPortal(
+        <span className="pointer-events-auto rounded-full bg-card shadow-elevation-3 ring-1 ring-border">
+          {children}
+        </span>,
+        el,
+      )
+    : null;
+}
+
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const create = createFor(path.replace(/\/$/, "") || "/");
@@ -269,10 +284,10 @@ export function BottomNav() {
       {/* A floating pill (owner's ref img 1, plan §7.1): side margins, rounded ends, a soft
           shadow, the active tab as an inner pill; clear of the gesture bar. */}
       <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        {create ? (
-          // The tab's main create action as a labelled pill above the nav (owner, 5 Oct: it
-          // changes per tab), not an icon-only round button.
-          <div className="mb-2 flex justify-center">
+        {/* The dock above the nav: the page's create pill and, beside it, whatever the page puts
+            here with <NavDock> (its Filters; owner, 5 Oct). Empty, it takes no space. */}
+        <div id="nav-dock" className="mb-2 flex justify-center gap-2 empty:hidden">
+          {create ? (
             <Link
               to={create.to}
               {...(create.search ? { search: create.search } : {})}
@@ -281,8 +296,8 @@ export function BottomNav() {
               <Plus size={iconSize.sm} aria-hidden />
               {create.label}
             </Link>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
         <ul className="pointer-events-auto flex items-stretch justify-between gap-1 rounded-full bg-card/95 px-2 shadow-elevation-3 ring-1 ring-border backdrop-blur">
           {navItems.map((item) => {
             const active = path === item.to || path.startsWith(`${item.to}/`);

@@ -11,6 +11,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   hairline border and no shadow; only floating things keep a shadow (bottom nav, create pill,
   sheets, popovers, round floating buttons, scroll-edge hints, a dragged kanban card). 48 class
   lists changed across 17 files; cards that had a shadow and no border gained the hairline.
+- `NavDock`: a page puts a control in the dock above the bottom nav beside the + pill (owner,
+  5 Oct); Market and Collaborations put their Filters there instead of in the header.
+- Market listing tiles save with a bookmark, not a heart. Market's location icon is a plain icon.
 - `TopBar back="history"` goes back to wherever you came from (Home when there is nothing).
   Notifications, Bands, Bookings and Business bookings had no back at all; they use it now.
 
