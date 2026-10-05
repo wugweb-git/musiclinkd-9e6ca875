@@ -63,6 +63,8 @@ import {
   SocialLinks,
   VideoCard,
   InfoRow,
+  ChipGroup,
+  ChipGroupList,
 } from "./profile";
 import { GalleryEditor, GalleryView } from "./gallery";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -100,6 +102,9 @@ const addWork = (label: string, kind: WorkKind): ProfileEmptyCta => ({
   to: "/portfolio/new/$kind",
   kind,
 });
+
+/** Tabs are hidden for the one-scroll profile (owner, 5 Oct); flip to bring them back. */
+const SHOW_TABS = false;
 
 export function TalentProfileExperience({
   p,
@@ -170,21 +175,48 @@ export function TalentProfileExperience({
         </div>
       </div>
 
-      <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Profile sections" />
+      {/* One long scroll in the reference order (owner, 5 Oct): facts, About, Services, Portfolio,
+          Reviews, identity chips, links, then the Message card. Tabs are hidden, not deleted —
+          the owner may bring them back. */}
+      {SHOW_TABS ? (
+        <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Profile sections" />
+      ) : null}
 
       <main className="px-5 pb-8">
-        {tab === "Portfolio" ? (
-          <Portfolio
-            p={p}
-            playingId={playingId}
-            onToggleTrack={toggleTrack}
-            owner={owner}
-            onGalleryChange={onGalleryChange}
-          />
-        ) : null}
-        {tab === "Services" ? <Services p={p} onBook={onBook} /> : null}
-        {tab === "About" ? <About p={p} /> : null}
-        {tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
+        {SHOW_TABS ? (
+          <>
+            {tab === "Portfolio" ? (
+              <Portfolio
+                p={p}
+                playingId={playingId}
+                onToggleTrack={toggleTrack}
+                owner={owner}
+                onGalleryChange={onGalleryChange}
+              />
+            ) : null}
+            {tab === "Services" ? <Services p={p} onBook={onBook} /> : null}
+            {tab === "About" ? <About p={p} /> : null}
+            {tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
+          </>
+        ) : (
+          <>
+            <FactGrid p={p} />
+            <About p={p} part="text" />
+            <Services p={p} onBook={onBook} />
+            <Portfolio
+              p={p}
+              playingId={playingId}
+              onToggleTrack={toggleTrack}
+              owner={owner}
+              onGalleryChange={onGalleryChange}
+            />
+            {owner || p.reviews.length ? <Reviews p={p} owner={owner} /> : null}
+            <About p={p} part="identity" />
+            {!owner && signedIn && p.profileId ? (
+              <MessageCard name={p.name} profileId={p.profileId} />
+            ) : null}
+          </>
+        )}
         {/* A shared profile link is most people's first sight of MusicLinkd, so a signed-out visitor
             is told what this is and how to join. Copy is the welcome screen's own; no figures. */}
         {!owner && !loading && !signedIn ? (
@@ -638,23 +670,26 @@ function Portfolio({
           )}
         </div>
       </ProfileSection>
-      <ProfileSection title="Video">
-        <div className={cn(layout === "grid" ? "grid grid-cols-2 gap-3" : "space-y-4")}>
-          {p.video.length ? (
-            p.video.map((video) => (
-              <VideoCard key={video.id} v={video} layout={layout === "grid" ? "grid" : "row"} />
-            ))
-          ) : (
-            <div className="w-full">
-              <EmptyState
-                title="No videos yet"
-                body="Performance and studio videos will appear here."
-                action={<ProfileCta cta={owner ? addWork("Add video", "video") : undefined} />}
-              />
-            </div>
-          )}
-        </div>
-      </ProfileSection>
+      {/* A visitor sees Video only once there is some; the owner sees the empty state to fill it. */}
+      {owner || p.video.length ? (
+        <ProfileSection title="Video">
+          <div className={cn(layout === "grid" ? "grid grid-cols-2 gap-3" : "space-y-4")}>
+            {p.video.length ? (
+              p.video.map((video) => (
+                <VideoCard key={video.id} v={video} layout={layout === "grid" ? "grid" : "row"} />
+              ))
+            ) : (
+              <div className="w-full">
+                <EmptyState
+                  title="No videos yet"
+                  body="Performance and studio videos will appear here."
+                  action={<ProfileCta cta={owner ? addWork("Add video", "video") : undefined} />}
+                />
+              </div>
+            )}
+          </div>
+        </ProfileSection>
+      ) : null}
       {/* The owner can always add photos here; a visitor sees the gallery only once it has some. */}
       {owner && onGalleryChange ? (
         <ProfileSection title="Gallery">
@@ -726,50 +761,89 @@ function Services({
   );
 }
 
-function About({ p }: { p: TalentProfile }) {
+function About({
+  p,
+  part = "all",
+}: {
+  p: TalentProfile;
+  /** One scroll: "text" (bio, details) up top, "identity" (chips, links) after Reviews. */
+  part?: "all" | "text" | "identity";
+}) {
+  const text = part !== "identity";
+  const identity = part !== "text";
   return (
     <>
-      <FactGrid p={p} />
-      <ProfileSection title="About">
-        {p.longBio ? (
-          <div className="rounded-lg bg-subtle p-4">
-            <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
-          </div>
-        ) : (
-          <EmptyState title="No bio yet" body="This professional has not written a bio yet." />
-        )}
-      </ProfileSection>
-      <ProfileSection title="Professional details">
-        {p.professional.length ? (
-          <div className="divide-y divide-border rounded-lg bg-subtle">
-            {p.professional.map((item) => (
-              <InfoRow key={item.label} label={item.label} value={item.value} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            title="No details yet"
-            body="Setup, tools and working details will appear here."
-          />
-        )}
-      </ProfileSection>
-      <ProfileSection title="Music identity">
-        {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
-          <MusicIdentityBento p={p} />
-        ) : (
-          <EmptyState
-            title="No music identity yet"
-            body="Instruments and languages will appear here."
-          />
-        )}
-      </ProfileSection>
-      <ProfileSection title="External links">
-        {p.links.length ? (
-          <SocialLinks links={p.links} />
-        ) : (
-          <EmptyState title="No links yet" body="Streaming and social links will appear here." />
-        )}
-      </ProfileSection>
+      {part === "all" ? <FactGrid p={p} /> : null}
+      {text && (part === "all" || p.longBio || professionalDetails(p).length) ? (
+        <>
+          <ProfileSection title="About">
+            {p.longBio ? (
+              <div className="rounded-lg bg-subtle p-4">
+                <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
+              </div>
+            ) : (
+              <EmptyState title="No bio yet" body="This professional has not written a bio yet." />
+            )}
+          </ProfileSection>
+          <ProfileSection title="Professional details">
+            {professionalDetails(p).length ? (
+              <div className="divide-y divide-border rounded-lg bg-subtle">
+                {professionalDetails(p).map((item) => (
+                  <InfoRow key={item.label} label={item.label} value={item.value} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="No details yet"
+                body="Setup, tools and working details will appear here."
+              />
+            )}
+          </ProfileSection>
+        </>
+      ) : null}
+      {identity &&
+      (part === "all" ||
+        typesOf(p).length ||
+        p.genres.length ||
+        p.instruments.length ||
+        p.languages.length ||
+        p.links.length) ? (
+        <>
+          <ProfileSection title="Music identity">
+            {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
+              part === "identity" ? (
+                // One card of labelled chip groups with dividers (reference img 10): no half-empty
+                // rows the bento left beside a short card.
+                <ChipGroupList>
+                  <ChipGroup label="Type" items={typesOf(p)} />
+                  <ChipGroup label="Genres" items={p.genres} />
+                  <ChipGroup label="Instruments" items={p.instruments} />
+                  <ChipGroup label={`Languages (${p.languages.length})`} items={p.languages} />
+                </ChipGroupList>
+              ) : (
+                <MusicIdentityBento p={p} />
+              )
+            ) : (
+              <EmptyState
+                title="No music identity yet"
+                body="Instruments and languages will appear here."
+              />
+            )}
+          </ProfileSection>
+          {p.links.length ? (
+            <ProfileSection title="External links">
+              {p.links.length ? (
+                <SocialLinks links={p.links} />
+              ) : (
+                <EmptyState
+                  title="No links yet"
+                  body="Streaming and social links will appear here."
+                />
+              )}
+            </ProfileSection>
+          ) : null}
+        </>
+      ) : null}
     </>
   );
 }
@@ -1000,5 +1074,35 @@ function MusicIdentityBento({ p }: { p: TalentProfile }) {
         </BentoCard>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The dark card that closes a profile (reference: "Have a question for …?"): one action, Message,
+ * which opens the thread in the Inbox (item 10). Copy: owner.
+ */
+function MessageCard({ name, profileId }: { name: string; profileId: string }) {
+  const message = useMessagePerson();
+  return (
+    <section className="mt-8 rounded-lg bg-ink p-5 text-ink-foreground">
+      <h2 className="text-2 font-semibold text-ink-foreground">{`Have a question for ${name}?`}</h2>
+      <p className="mt-1 text-1 opacity-80">Send a message.</p>
+      <Btn
+        variant="outline"
+        className="mt-4"
+        icon={<Send size={iconSize.sm} aria-hidden />}
+        loading={message.pending}
+        onClick={() => void message.open(profileId)}
+      >
+        {`Message ${name.split(" ")[0] || name}`}
+      </Btn>
+    </section>
+  );
+}
+
+/** No price, rate or budget on a profile (owner, 4 Oct, item 8): those live on Service Cards. */
+function professionalDetails(p: TalentProfile) {
+  return p.professional.filter(
+    (item) => typeof item.value === "string" && !/budget|rate|price|fee/i.test(item.label),
   );
 }

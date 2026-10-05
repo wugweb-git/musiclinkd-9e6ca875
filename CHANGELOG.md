@@ -12,6 +12,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   City from real values only, two columns with a 1px gap on the hairline as the dividers; with an
   odd count the last fact spans both columns. It replaces the Connections grid, which showed "—"
   for missing values.
+- Talent profile is one long scroll in the reference order (owner, 5 Oct; tabs hidden behind
+  `SHOW_TABS`, not deleted): At a glance, About, Professional details, Services, Portfolio,
+  Reviews, Music identity, links, then a dark "Have a question for {name}?" card with one action,
+  Message (signed-in visitors). Copy: owner.
+- A visitor sees no empty sections (Video, Reviews, links appear only with content); the owner
+  still sees the empty states to fill them.
+- Music identity in the scroll is one card of labelled chip groups with dividers (reference img
+  10), not the bento that left half-empty rows.
+- No budget, rate, price or fee rows in Professional details (item 8).
 
 ### Changed — page background #F5F5F5 (5 Oct, owner)
 
