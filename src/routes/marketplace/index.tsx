@@ -12,9 +12,9 @@ import {
   Plus,
   Guitar,
 } from "lucide-react";
-import { Screen, IconBtn } from "@/components/ml/ui";
+import { Screen, IconBtn, SearchBar } from "@/components/ml/ui";
 import { Segmented, EmptyState } from "@/components/ml/kit";
-import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
+import { NotificationsBell, SearchIconButton } from "@/components/ml/tab-header";
 import {
   ActiveFilters,
   FilterButton,
@@ -148,7 +148,7 @@ function MarketHome() {
         </div>
         {searchOpen ? (
           <div className="px-5 pt-2">
-            <SearchField
+            <SearchBar
               to="/marketplace/search"
               placeholder="Search instruments, equipment, services"
               onClose={() => setSearchOpen(false)}

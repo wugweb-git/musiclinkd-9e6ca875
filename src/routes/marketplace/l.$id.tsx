@@ -41,15 +41,14 @@ import {
   LocationRow,
   OfferSheet,
   PriceBlock,
-  Rating,
   ReportSheet,
   ReviewTags,
-  SaveButton,
   MarketCategoryIcon,
   SellerCard,
   TrustPill,
 } from "@/components/ml/market";
-import { EmptyState, LoadError, Loading } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading, Rating } from "@/components/ml/kit";
+import { SaveButton } from "@/components/ml/saved-toggle";
 import { loadCatalogListings, loadListingBySlug } from "@/lib/market-view";
 import { useSavedListings } from "@/hooks/use-saved-listings";
 import { rememberListingVisit } from "@/lib/device-history";

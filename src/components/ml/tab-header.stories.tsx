@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
 import { ViewerAvatar } from "./viewer";
-import { NotificationsBell, SearchField, SearchIconButton } from "./tab-header";
+import { NotificationsBell, SearchIconButton } from "./tab-header";
+import { SearchBar } from "./ui";
 
 /*
  * The actions a tab screen's header carries. Home and Discover both had their own bell — Discover's
@@ -31,7 +32,7 @@ export const SearchToggle: Story = {
           </span>
         </div>
         {open ? (
-          <SearchField
+          <SearchBar
             to="/search"
             placeholder="Search talent, studios, bands, labels"
             onClose={() => setOpen(false)}
@@ -45,7 +46,7 @@ export const SearchToggle: Story = {
 /** The field on its own. It focuses on mount, submits to the screen's search page, closes on Escape. */
 export const Field: Story = {
   render: () => (
-    <SearchField
+    <SearchBar
       to="/search"
       placeholder="Search talent, studios, bands, labels"
       onClose={() => {}}
@@ -74,13 +75,13 @@ export const HeaderRow: Story = {
 export const LongPlaceholder: Story = {
   render: () => (
     <div className="space-y-3">
-      <SearchField
+      <SearchBar
         to="/search"
         label="Search (Hindi placeholder demo)"
         placeholder="गायक, स्टूडियो, बैंड और लेबल खोजें"
         onClose={() => {}}
       />
-      <SearchField
+      <SearchBar
         to="/search"
         label="Search (Tamil placeholder demo)"
         placeholder="பாடகர்கள், ஸ்டுடியோக்கள், இசைக்குழுக்கள் தேடுங்கள்"

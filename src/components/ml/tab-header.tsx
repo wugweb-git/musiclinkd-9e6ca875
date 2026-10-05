@@ -1,6 +1,5 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Bell, Search, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { unreadCount } from "@/lib/notifications.functions";
@@ -64,52 +63,5 @@ export function SearchIconButton({ open, onToggle }: { open: boolean; onToggle: 
     >
       {open ? <X size={iconSize.md} aria-hidden /> : <Search size={iconSize.md} aria-hidden />}
     </button>
-  );
-}
-
-export function SearchField({
-  to,
-  placeholder,
-  onClose,
-  label = "Search",
-}: {
-  to: "/search" | "/marketplace/search";
-  placeholder: string;
-  onClose: () => void;
-  /** Names the search landmark; only matters when a screen (or a story) shows more than one. */
-  label?: string;
-}) {
-  const navigate = useNavigate();
-  const [q, setQ] = useState("");
-  const input = useRef<HTMLInputElement>(null);
-  useEffect(() => input.current?.focus(), []);
-
-  return (
-    <form
-      role="search"
-      aria-label={label}
-      className="animate-in fade-in slide-in-from-top-2 duration-200"
-      onSubmit={(e) => {
-        e.preventDefault();
-        void navigate({ to, search: q.trim() ? { q: q.trim() } : {} });
-      }}
-    >
-      <label className="flex h-14 items-center gap-3 rounded-full bg-subtle px-5 focus-within:ring-2 focus-within:ring-ring">
-        <Search size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
-        <input
-          ref={input}
-          type="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") onClose();
-          }}
-          placeholder={placeholder}
-          aria-label={placeholder}
-          enterKeyHint="search"
-          className="w-full min-w-0 bg-transparent text-2 outline-none placeholder:text-muted-foreground"
-        />
-      </label>
-    </form>
   );
 }

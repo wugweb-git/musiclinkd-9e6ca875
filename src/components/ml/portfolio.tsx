@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
-import { Card, StatusPill as BaseStatusPill } from "@/components/ml/kit";
+import { Card, StatusPill } from "@/components/ml/kit";
 import { MediaEmbed } from "./media-embed";
 import { playsCountedFromLabel } from "@/lib/plays-cutoff";
 import { cn, joinParts } from "@/lib/utils";
@@ -217,7 +217,12 @@ export function WorkCard({
                 {item.featured ? (
                   <span className="pill bg-background text-muted-foreground">Featured</span>
                 ) : null}
-                <StatusPill published={item.published} />
+                <StatusPill
+                  label={item.published ? "Published" : "Draft"}
+                  tone={item.published ? "good" : "warn"}
+                  icon={<></>}
+                  className="shrink-0"
+                />
               </span>
             </div>
             <p className="mt-0.5 text-1 text-muted-foreground">
@@ -329,21 +334,6 @@ export function WorkCard({
   );
 }
 
-/**
- * Exact same colors as kit.tsx's "good"/"warn" tones. icon={<></>} suppresses the dot kit's
- * version shows by default — this one was always text-only.
- */
-export function StatusPill({ published }: { published: boolean }) {
-  return (
-    <BaseStatusPill
-      label={published ? "Published" : "Draft"}
-      tone={published ? "good" : "warn"}
-      icon={<></>}
-      className="shrink-0"
-    />
-  );
-}
-
 /* ---------------- States ------------------------------------------------ */
 
 export function PortfolioSkeleton() {
@@ -427,7 +417,7 @@ export function MediaStatePill({ state }: { state: MediaState }) {
   const c = mediaStateCopy[state];
   // mediaStateCopy's tone names ("good"/"warn"/"bad", else neutral) are StatusPill's Tone names.
   const tone = c.tone === "good" || c.tone === "warn" || c.tone === "bad" ? c.tone : "neutral";
-  return <BaseStatusPill label={c.label} tone={tone} />;
+  return <StatusPill label={c.label} tone={tone} />;
 }
 
 /* ---------------- Players ----------------------------------------------- */

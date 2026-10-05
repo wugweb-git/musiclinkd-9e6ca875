@@ -9,13 +9,12 @@ import {
   MediaStatePill,
   CreditRow,
   PortfolioSkeleton,
-  StatusPill,
   WorkAnalytics,
   WorkTypeIcon,
 } from "@/components/ml/portfolio";
 import { mediaStateCopy, workType, type PortfolioItem } from "@/data/portfolio";
 import { MediaEmbed } from "@/components/ml/media-embed";
-import { Dialog, StateCard } from "@/components/ml/kit";
+import { Dialog, StateCard, StatusPill } from "@/components/ml/kit";
 import {
   deletePortfolioItem,
   getMyPortfolioItem,
@@ -154,7 +153,12 @@ function WorkDetail() {
             <section className="rounded-lg bg-subtle p-5">
               <div className="flex items-start justify-between gap-3">
                 <WorkTypeIcon kind={item.kind} />
-                <StatusPill published={item.published} />
+                <StatusPill
+                  label={item.published ? "Published" : "Draft"}
+                  tone={item.published ? "good" : "warn"}
+                  icon={<></>}
+                  className="shrink-0"
+                />
               </div>
               <h1 className="mt-3 text-3 leading-tight">{item.title}</h1>
               <p className="mt-1 text-1 text-muted-foreground">

@@ -6,15 +6,8 @@ import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import {
-  Followers,
-  ListingGrid,
-  Rating,
-  ReportSheet,
-  ReviewTags,
-  TrustPill,
-} from "@/components/ml/market";
-import { EmptyState, LoadError, Loading } from "@/components/ml/kit";
+import { Followers, ListingGrid, ReportSheet, ReviewTags, TrustPill } from "@/components/ml/market";
+import { EmptyState, LoadError, Loading, Rating } from "@/components/ml/kit";
 import { getRentalProvider } from "@/lib/rentals.functions";
 import { getSellerListings } from "@/lib/catalog.functions";
 import { listingFromRow as adaptListing } from "@/lib/market-view";

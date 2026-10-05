@@ -1,4 +1,4 @@
-import { StateCard } from "./kit";
+import { StateCard, StatusPill } from "./kit";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { demoPortfolio, mediaStateCopy, workTypes, type PortfolioItem } from "@/data/portfolio";
@@ -9,7 +9,6 @@ import {
   PortfolioHeader,
   PortfolioMediaGrid,
   PortfolioSkeleton,
-  StatusPill,
   WorkCard,
   WorkTypeIcon,
 } from "./portfolio";
@@ -127,8 +126,8 @@ export const Counts: Story = {
 export const Pills: Story = {
   render: () => (
     <div className="flex gap-2">
-      <StatusPill published />
-      <StatusPill published={false} />
+      <StatusPill label="Published" tone="good" icon={<></>} className="shrink-0" />
+      <StatusPill label="Draft" tone="warn" icon={<></>} className="shrink-0" />
     </div>
   ),
 };

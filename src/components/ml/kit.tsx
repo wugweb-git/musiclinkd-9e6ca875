@@ -758,6 +758,32 @@ export function BusinessOnlyGate({
   return <>{children}</>;
 }
 
+/**
+ * The one rating line: a filled star, the stored average and the review count. Nothing while there
+ * is no rating, so cards never show an invented score. Replaces cards.tsx's `RatingLine` and
+ * market.tsx's `Rating`.
+ */
+export function Rating({
+  value,
+  count,
+}: {
+  value?: number | null | undefined;
+  count?: number | undefined;
+}) {
+  if (!value) return null;
+  return (
+    <span
+      className="inline-flex shrink-0 items-center gap-1 text-1 font-semibold text-warn-strong"
+      aria-label={`${value.toFixed(1)} out of 5${count ? ` from ${count} reviews` : ""}`}
+    >
+      {/* Filled: a solid star with no outline, so no stroke (the one stroke exception). */}
+      <Star size={iconSize.xs} fill="currentColor" strokeWidth={0} aria-hidden />
+      {value.toFixed(1)}
+      {count ? <span className="font-normal text-muted-foreground">({count})</span> : null}
+    </span>
+  );
+}
+
 export function Stars({ value, size = 14 }: { value: number; size?: number }) {
   return (
     <span className="inline-flex items-center gap-0.5" role="img" aria-label={`${value} out of 5`}>

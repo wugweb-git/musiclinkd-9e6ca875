@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — duplicate components merged, no visual change (5 Oct, phone plan P1)
+
+- Rating: `cards.tsx` `RatingLine` and `market.tsx` `Rating` are now one `Rating` in `kit.tsx`
+  (filled star, average, review count; nothing without a rating). Call sites: the four cards,
+  rental provider row, marketplace listing tile, seller card, listing and seller pages.
+- Save: `SaveButton` moved from `market.tsx` into `saved-toggle.tsx` beside `SavedToggle`, its
+  only wrapper; marketplace listing pages import it from there.
+- Status pill: `portfolio.tsx`'s private Published/Draft `StatusPill` removed; its two call sites
+  (and the story) use `kit.tsx` `StatusPill` with the same tone, no dot, same classes.
+- Search: `tab-header.tsx` `SearchField` merged into `ui.tsx` `SearchBar`. Pass `value`/`onChange`
+  to filter in place, or `to`/`onClose` to jump to results (Discover and Marketplace headers).
+- `Followers` stays in `market.tsx` until the card action footer (P2); `Stars` (5-star display)
+  is a different control and stays.
+
 ### Fixed — local dev server never hydrated; collaboration tab titles (4 Oct)
 
 - `vite.config.ts`: the `@supabase/realtime-js` alias pointed at the root-relative

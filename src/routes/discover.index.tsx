@@ -12,8 +12,8 @@ import {
 
 import { BookableCard, PersonCard, PersonRow } from "@/components/ml/cards";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
-import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
-import { Chip, Screen, SectionHeader } from "@/components/ml/ui";
+import { NotificationsBell, SearchIconButton } from "@/components/ml/tab-header";
+import { Chip, Screen, SearchBar, SectionHeader } from "@/components/ml/ui";
 import { listBookables, listOpportunities } from "@/lib/catalog.functions";
 import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
 import { WorkLinkRow } from "@/components/ml/portfolio";
@@ -108,7 +108,7 @@ function DiscoverScreen() {
         </div>
         {searchOpen ? (
           <div className="mt-4">
-            <SearchField
+            <SearchBar
               to="/search"
               placeholder="Search people, studios, services and work"
               onClose={() => setSearchOpen(false)}

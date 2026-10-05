@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { PersonAvatar } from "./person-avatar";
 import { MapPin, Star, Building2, ChevronRight } from "lucide-react";
 import { VerifiedBadge } from "./ui";
+import { Rating } from "./kit";
 import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
 import type { DiscoverBookable } from "@/lib/bookable-view";
@@ -28,21 +29,6 @@ import { sized } from "@/lib/image-url";
  * never shows one (owner, 4 Oct 2026, §3); prices live on Service Cards. Two sizes each: a Row for lists
  * (Search, Directory) and a Card for horizontal rails (Discover, Home, business search).
  */
-
-/** The stored rating and review count; nothing while there are no reviews. */
-function RatingLine({ rating, reviewCount }: { rating: number | null; reviewCount: number }) {
-  if (rating == null) return null;
-  return (
-    <span
-      className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-warn-strong"
-      aria-label={`${rating.toFixed(1)} out of 5 from ${reviewCount} reviews`}
-    >
-      <Star size={iconSize.xs} fill="currentColor" aria-hidden />
-      {rating.toFixed(1)}
-      <span className="font-normal text-muted-foreground">({reviewCount})</span>
-    </span>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /* Talent card — a person from the directory                           */
@@ -116,7 +102,7 @@ export function PersonRow({
                 <span className="truncate">{person.city}</span>
               </>
             ) : null}
-            <RatingLine rating={rating} reviewCount={person.reviewCount ?? 0} />
+            <Rating value={rating} count={person.reviewCount ?? 0} />
           </span>
         ) : null}
       </span>
@@ -248,7 +234,7 @@ export function PersonCard({
       ) : null}
       {rating != null ? (
         <span className="mt-1 flex items-center text-1">
-          <RatingLine rating={rating} reviewCount={person.reviewCount ?? 0} />
+          <Rating value={rating} count={person.reviewCount ?? 0} />
         </span>
       ) : null}
     </>
@@ -381,7 +367,7 @@ export function BookableCard({
           {studio.rating != null ? (
             <>
               <span aria-hidden>·</span>
-              <RatingLine rating={studio.rating} reviewCount={studio.reviewCount} />
+              <Rating value={studio.rating} count={studio.reviewCount} />
             </>
           ) : null}
         </span>
@@ -452,7 +438,7 @@ export function BookableRow({ studio }: { studio: DiscoverBookable }) {
           {studio.rating != null ? (
             <>
               <span aria-hidden>·</span>
-              <RatingLine rating={studio.rating} reviewCount={studio.reviewCount} />
+              <Rating value={studio.rating} count={studio.reviewCount} />
             </>
           ) : null}
         </span>

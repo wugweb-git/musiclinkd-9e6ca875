@@ -65,64 +65,16 @@ import {
   type MarketFilter,
 } from "@/lib/market-filter";
 import { Btn, Chip, IconBtn, Sheet, VerifiedBadge } from "./ui";
-import { EmptyState as BaseEmptyState, Price, Segmented } from "./kit";
+import { EmptyState as BaseEmptyState, Price, Rating, Segmented } from "./kit";
+import { SaveButton } from "./saved-toggle";
 import { unitLabel, unitName, type PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 import { StateIcon } from "./tab-icon";
 import { sized } from "@/lib/image-url";
 
-export function SaveButton({
-  saved,
-  onToggle,
-  size = 36,
-}: {
-  saved: boolean;
-  onToggle: () => void;
-  size?: number;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={saved ? "Remove bookmark" : "Bookmark listing"}
-      aria-pressed={saved}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onToggle();
-      }}
-      className="hit-area flex items-center justify-center rounded-full bg-card transition-transform active:scale-97"
-      style={{ width: size, height: size }}
-    >
-      <Heart
-        size={size * 0.45}
-        className={saved ? "text-ink" : "text-foreground"}
-        fill={saved ? "currentColor" : "none"}
-      />
-    </button>
-  );
-}
-
 export function ConditionBadge({ value }: { value: string }) {
   return <span className="pill bg-background text-muted-foreground">{value}</span>;
-}
-
-export function Rating({
-  value,
-  count,
-}: {
-  value?: number | undefined;
-  count?: number | undefined;
-}) {
-  if (!value) return null;
-  return (
-    <span className="inline-flex items-center gap-1 text-1 font-semibold text-warn-strong">
-      {/* Filled: a solid star with no outline, so no stroke (the one stroke exception). */}
-      <Star size={iconSize.xs} fill="currentColor" strokeWidth={0} />
-      {value.toFixed(1)}
-      {count ? <span className="text-muted-foreground">({count})</span> : null}
-    </span>
-  );
 }
 
 /** A follower count beside a rating; nothing before anyone follows. */
