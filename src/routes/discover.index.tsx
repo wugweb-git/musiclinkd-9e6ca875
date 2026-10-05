@@ -15,7 +15,13 @@ import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportun
 import { NotificationsBell, SearchIconButton } from "@/components/ml/tab-header";
 import { Chip, Screen, SearchBar, SectionHeader } from "@/components/ml/ui";
 import { listBookables, listOpportunities } from "@/lib/catalog.functions";
-import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
+import {
+  listTrendingPages,
+  listTrendingWork,
+  type TrendingItem,
+  type TrendingPage,
+} from "@/lib/trending.functions";
+import { workType } from "@/data/portfolio";
 import { WorkLinkRow } from "@/components/ml/portfolio";
 import { discoverBookableFromRow } from "@/lib/bookable-view";
 import { iconSize } from "@/lib/tokens";
@@ -45,20 +51,23 @@ export const Route = createFileRoute("/discover/")({
     ],
   }),
   loader: async () => {
-    const [studioRows, opportunityRows, labels, people, trendingWork] = await Promise.all([
-      listBookables().catch(() => []),
-      listOpportunities().catch(() => []),
-      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-      searchPeople({ data: { limit: 20, withTotal: false } })
-        .then((result) => result.people)
-        .catch((): DirectoryPerson[] => []),
-      listTrendingWork().catch((): TrendingItem[] => []),
-    ]);
+    const [studioRows, opportunityRows, labels, people, trendingWork, trendingPages] =
+      await Promise.all([
+        listBookables().catch(() => []),
+        listOpportunities().catch(() => []),
+        getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+        searchPeople({ data: { limit: 20, withTotal: false } })
+          .then((result) => result.people)
+          .catch((): DirectoryPerson[] => []),
+        listTrendingWork().catch((): TrendingItem[] => []),
+        listTrendingPages().catch((): TrendingPage[] => []),
+      ]);
     return {
       studios: studioRows.map((row) => discoverBookableFromRow(row, labels)),
       opportunities: opportunityRows.map((row) => opportunityFromRow(row, labels)),
       people,
       trendingWork,
+      trendingPages,
     };
   },
   // Coming back to Discover within a minute reuses what was read instead of waiting again.
@@ -93,6 +102,22 @@ function DiscoverScreen() {
   const showPeople = mode === "For you" || mode === "People" || mode === "Talent";
   const showStudios = mode === "For you" || mode === "Studios";
   const showOpportunities = mode === "For you" || mode === "Opportunities";
+
+  // Trending (owner, 5 Oct): each section is real activity from the last 7 days, and a section
+  // with nothing in it is left out rather than shown empty. Collabs have no trending signal yet.
+  const trendingTalent = loaded.trendingPages.flatMap((page) =>
+    page.kind === "person" && !page.person.isBusiness ? [page.person] : [],
+  );
+  const studioById = new Map(loaded.studios.map((studio) => [studio.id, studio]));
+  const trendingBusinesses = loaded.trendingPages.flatMap((page) => {
+    const studio = page.kind === "studio" ? studioById.get(page.studioId) : undefined;
+    return studio ? [studio] : [];
+  });
+  const trendingAudio = loaded.trendingWork.filter((w) => workType(w.kind).media === "audio");
+  const trendingVideo = loaded.trendingWork.filter((w) => workType(w.kind).media === "video");
+  const trendingOpportunities = loaded.opportunities
+    .filter((o) => o.applicants > 0)
+    .sort((a, b) => b.applicants - a.applicants);
 
   return (
     <Screen className="pb-nav-clear">
@@ -241,17 +266,68 @@ function DiscoverScreen() {
           </section>
         ) : null}
 
-        {/* Work of every kind with plays in the last 7 days (queue item 3): shown only when there
-            is some, so a quiet week leaves no empty heading. */}
-        {mode === "For you" && loaded.trendingWork.length ? (
-          <section>
-            <SectionHeader title="Trending work" />
-            <div className="space-y-3 px-5">
-              {loaded.trendingWork.map((work) => (
-                <WorkLinkRow key={work.id} work={work} />
-              ))}
-            </div>
-          </section>
+        {mode === "For you" ? (
+          <>
+            {trendingTalent.length ? (
+              <section>
+                <SectionHeader title="Trending talent" />
+                <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
+                  {trendingTalent.slice(0, 8).map((person) => (
+                    <PersonCard
+                      key={person.id}
+                      person={person}
+                      roleLabels={options?.person_types}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+            {trendingBusinesses.length ? (
+              <section>
+                <SectionHeader title="Trending businesses" />
+                <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
+                  {trendingBusinesses.slice(0, 8).map((studio) => (
+                    <BookableCard key={studio.id} studio={studio} featured />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+            {trendingAudio.length ? (
+              <section>
+                <SectionHeader title="Trending audio" />
+                <div className="space-y-3 px-5">
+                  {trendingAudio.slice(0, 5).map((work) => (
+                    <WorkLinkRow key={work.id} work={work} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+            {trendingVideo.length ? (
+              <section>
+                <SectionHeader title="Trending videos" />
+                <div className="space-y-3 px-5">
+                  {trendingVideo.slice(0, 5).map((work) => (
+                    <WorkLinkRow key={work.id} work={work} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+            {trendingOpportunities.length ? (
+              <section>
+                <SectionHeader title="Trending opportunities" />
+                <div className="space-y-3 px-5">
+                  {trendingOpportunities.slice(0, 3).map((opportunity) => (
+                    <OpportunityCard
+                      key={opportunity.id}
+                      o={opportunity}
+                      saved={saved.has(opportunity.id)}
+                      onSave={() => saved.toggle(opportunity.id)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </>
         ) : null}
 
         <section className="px-5">

@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — trending sections on Discover (5 Oct, owner)
+
+- `discover.index.tsx` "For you": Trending talent (rail of people cards), Trending businesses
+  (studio cards), Trending audio and Trending videos (work rows, split by `workType(kind).media`),
+  Trending opportunities (most applications first). Talent and businesses come from
+  `listTrendingPages` (views, follows, saves, enquiries, bookings, reviews in the last 7 days);
+  audio and video from `listTrendingWork` (plays in the last 7 days). A section with nothing in it
+  is left out. Replaces the single "Trending work" list.
+- Trending collabs: not added — bands have no activity signal to rank by yet.
+
 ### Fixed — no eyebrow above the Discover title (5 Oct)
 
 - `discover.index.tsx`: removed the "Find your next move" / "Build the right team" line above
