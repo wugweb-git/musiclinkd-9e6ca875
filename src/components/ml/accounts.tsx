@@ -2,25 +2,19 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import {
-  Bell,
-  ChevronsUpDown,
-  Check,
-  CircleHelp,
-  Inbox,
-  LogOut,
-  Settings,
-  User,
-  Users,
-  X,
-} from "lucide-react";
-import { Row, RowGroup, StatusPill } from "@/components/ml/kit";
+import { ChevronsUpDown, Plus, Check, X } from "lucide-react";
+import { StatusPill } from "@/components/ml/kit";
 import { Sheet } from "@/components/ml/ui";
 import { PersonAvatar } from "@/components/ml/person-avatar";
 import { useViewer } from "@/components/ml/viewer";
 import { useAuth } from "@/hooks/use-auth";
 import { enterLinkedProfile, listLinkedProfiles } from "@/lib/pages.functions";
-import { switchToLinked } from "@/lib/saved-accounts";
+import {
+  addAnotherAccount,
+  switchTo as switchSaved,
+  switchToLinked,
+  useSavedAccounts,
+} from "@/lib/saved-accounts";
 import type { SavedAccount } from "@/lib/saved-accounts";
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
@@ -39,7 +33,8 @@ export function AccountRow({
   onPick: () => void;
   onRemove?: () => void;
 }) {
-  const title = account.name ?? account.username ?? account.email ?? "Account";
+  // `||`, not `??`: a saved sign-in can carry an empty name, which must not show as a blank row.
+  const title = account.name || account.username || account.email || "Unnamed account";
   return (
     <li className="flex items-center gap-3 px-4 py-3">
       <button
@@ -88,9 +83,8 @@ export function AccountRow({
 }
 
 /*
- * Personal ↔ business switcher (plan §7.4, owner's img 3): a pill with the identity you are acting
- * as (avatar, name, ⇅) that opens the account sheet. The sheet (§7.3): who you are, your other
- * identities to switch to, then grouped rows; a › only on rows that lead to more choices.
+ * Personal ↔ business switcher (plan §7.4): a pill with the identity you are acting as (avatar,
+ * name, ⇅). Like tapping your username on Instagram, it opens the account switcher.
  */
 /** The name to show for the signed-in identity: profile name, else email name, else phone. */
 function useIdentityName() {
@@ -117,7 +111,7 @@ export function IdentityPill() {
         <PersonAvatar
           name={displayName}
           photo={photo ? sized(photo, { width: 64 }) : null}
-          className="h-8 w-8 shrink-0 bg-ink/5 text-1"
+          className="h-8 w-8 shrink-0 text-1"
         />
         <span className="truncate text-2 font-semibold">{displayName}</span>
         <ChevronsUpDown size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
@@ -127,10 +121,15 @@ export function IdentityPill() {
   );
 }
 
+/**
+ * Instagram's account switcher (owner, 5 Oct: "refer Instagram as is"): one sheet with every
+ * identity you can act as — your profile, your business pages, other sign-ins saved on this
+ * device — the current one ticked, a tap on another switches; then Add account. Navigation
+ * (Inbox, Settings…) is not in here, as on Instagram.
+ */
 export function AccountSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { user } = useAuth();
-  const { photo } = useViewer();
-  const displayName = useIdentityName();
+  const saved = useSavedAccounts();
   const loadLinked = useServerFn(listLinkedProfiles);
   const enter = useServerFn(enterLinkedProfile);
   const linked = useQuery({
@@ -139,109 +138,56 @@ export function AccountSheet({ open, onClose }: { open: boolean; onClose: () => 
     enabled: open && !!user,
   });
   const [busy, setBusy] = useState(false);
-  const others = (linked.data ?? []).filter((p) => p.id !== user?.id);
-  const none = <></>;
+  const mine = linked.data ?? [];
+  const linkedIds = new Set(mine.map((p) => p.id));
+  const others = saved.filter((a) => !linkedIds.has(a.userId));
 
-  async function switchTo(id: string) {
+  async function pick(id: string) {
     setBusy(true);
     try {
-      await switchToLinked(id, enter);
+      if (linkedIds.has(id)) await switchToLinked(id, enter);
+      else await switchSaved(id);
       // A fresh start as the other identity, so nothing from this one stays on screen.
       window.location.assign("/");
     } catch {
-      toast.error("Couldn't switch. Try again from Switch account.");
+      toast.error("Couldn't switch account. Try again.");
       setBusy(false);
     }
   }
 
   return (
-    <Sheet open={open} onClose={onClose} title="Account">
-      <div className="flex items-center gap-3 pb-4">
-        <PersonAvatar
-          name={displayName}
-          photo={photo ? sized(photo, { width: 96 }) : null}
-          className="h-12 w-12 shrink-0 bg-ink/5 text-2"
-        />
-        <div className="min-w-0">
-          <p className="truncate text-2 font-semibold">{displayName}</p>
-          {user?.email || user?.phone ? (
-            <p className="truncate text-1 text-muted-foreground">{user.email || user.phone}</p>
-          ) : null}
-        </div>
-      </div>
-
-      {others.length ? (
-        <RowGroup title="Switch to" flat>
-          {others.map((p) => (
-            <AccountRow
-              key={p.id}
-              account={{ ...p, email: null }}
-              current={false}
-              busy={busy}
-              onPick={() => void switchTo(p.id)}
-            />
-          ))}
-        </RowGroup>
-      ) : null}
-
-      <div className="border-t border-border pt-1">
-        <Row
-          grouped
-          flat
-          to="/inbox"
-          icon={<Inbox size={iconSize.md} aria-hidden />}
-          title="Inbox"
-          right={none}
-        />
-        <Row
-          grouped
-          flat
-          to="/notifications"
-          icon={<Bell size={iconSize.md} aria-hidden />}
-          title="Notifications"
-          right={none}
-        />
-        <Row
-          grouped
-          flat
-          to="/profile"
-          icon={<User size={iconSize.md} aria-hidden />}
-          title="Profile"
-          right={none}
-        />
-        <Row
-          grouped
-          flat
-          to="/settings"
-          icon={<Settings size={iconSize.md} aria-hidden />}
-          title="Settings"
-          right={none}
-        />
-      </div>
-      <div className="mt-1 border-t border-border pt-1">
-        <Row
-          grouped
-          flat
-          to="/accounts"
-          icon={<Users size={iconSize.md} aria-hidden />}
-          title="Switch account"
-        />
-        <Row
-          grouped
-          flat
-          to="/help"
-          icon={<CircleHelp size={iconSize.md} aria-hidden />}
-          title="Help"
-        />
-        <Row
-          grouped
-          flat
-          to="/auth/signout"
-          icon={<LogOut size={iconSize.md} aria-hidden />}
-          title="Log out"
-          right={none}
-        />
-      </div>
+    <Sheet open={open} onClose={onClose} title="Switch account">
+      <ul className="divide-y divide-border">
+        {mine.map((p) => (
+          <AccountRow
+            key={p.id}
+            account={{ ...p, email: null }}
+            current={p.id === user?.id}
+            busy={busy}
+            onPick={() => void pick(p.id)}
+          />
+        ))}
+        {others.map((a) => (
+          <AccountRow
+            key={a.userId}
+            account={a}
+            current={a.userId === user?.id}
+            busy={busy}
+            onPick={() => void pick(a.userId)}
+          />
+        ))}
+      </ul>
+      <button
+        type="button"
+        onClick={addAnotherAccount}
+        disabled={busy}
+        className="state-layer mt-1 flex min-h-touch w-full items-center gap-3 px-4 py-3 text-left text-2 font-semibold"
+      >
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink/5">
+          <Plus size={iconSize.md} aria-hidden />
+        </span>
+        Add account
+      </button>
     </Sheet>
   );
 }

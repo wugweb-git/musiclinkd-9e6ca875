@@ -19,7 +19,7 @@ export function PersonAvatar({
   return (
     <Avatar className={className}>
       {photo ? <AvatarImage src={photo} alt="" className="object-cover" /> : null}
-      <AvatarFallback className="bg-subtle font-semibold text-foreground">
+      <AvatarFallback className="bg-ink/5 font-semibold text-foreground">
         {initialsOf(name ?? null) || <User size={iconSize.sm} aria-hidden />}
       </AvatarFallback>
     </Avatar>

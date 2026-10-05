@@ -5,15 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Added — identity pill and account sheet (5 Oct, phone plan P9)
+### Added — identity pill and account switcher (5 Oct, phone plan P9)
 
-- `accounts.tsx`: `IdentityPill` (avatar, name, ⇅) shows who you are acting as and opens
-  `AccountSheet`: who you are (name, email or phone), your other identities to switch to
-  (`listLinkedProfiles` / `switchToLinked`, the same switch as Switch account), then Inbox,
-  Notifications, Profile, Settings; a divider; Switch account and Help (with ›, they lead to more)
-  and Log out. A › only on rows that lead to more choices.
+- `accounts.tsx`: `IdentityPill` (avatar, name, ⇅) shows who you are acting as; like tapping your
+  username on Instagram it opens `AccountSheet`, the account switcher: your profile, your business
+  pages (`listLinkedProfiles`) and other sign-ins saved on this device, the current one ticked, a
+  tap on another switches (`switchToLinked` / saved switch); then Add account. No navigation rows.
 - Home header: the pill replaces the "Good morning" / "Business workspace" eyebrow and the name
-  (top bars are title only), bell and Settings on the right; the separate avatar is gone.
+  (top bars are title only); bell and Settings on the right.
+- `AccountRow`: a saved sign-in with an empty name shows "Unnamed account", not a blank row.
+- `PersonAvatar`: the initials circle uses ink at 5%, so it shows on white surfaces too.
 
 ### Removed — enquiry pages and the leads page (5 Oct, owner)
 
