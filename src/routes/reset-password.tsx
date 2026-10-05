@@ -87,9 +87,9 @@ function ResetPassword() {
       <AuthScreen>
         <AuthComposition footer={<AuthFooter />}>
           <div role="status" aria-label="Loading password reset" className="space-y-4 pt-8">
-            <div className="h-4 w-28 animate-pulse rounded-full bg-subtle" />
-            <div className="h-9 w-56 animate-pulse rounded-full bg-subtle" />
-            <div className="h-13 w-full animate-pulse rounded-sm bg-subtle" />
+            <div className="h-4 w-28 animate-pulse rounded-full bg-ink/5" />
+            <div className="h-9 w-56 animate-pulse rounded-full bg-ink/5" />
+            <div className="h-13 w-full animate-pulse rounded-sm bg-ink/5" />
           </div>
         </AuthComposition>
       </AuthScreen>

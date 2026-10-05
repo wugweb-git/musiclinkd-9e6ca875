@@ -245,7 +245,7 @@ function Mine() {
           {mine.isLoading ? (
             <div className="space-y-3" aria-busy>
               {[0, 1].map((i) => (
-                <div key={i} className="h-28 animate-pulse rounded-lg bg-subtle" />
+                <div key={i} className="h-28 animate-pulse rounded-lg bg-ink/5" />
               ))}
             </div>
           ) : mine.isError ? (
@@ -347,7 +347,7 @@ function Mine() {
           {offersQuery.isLoading ? (
             <div className="space-y-3" aria-busy>
               {[0, 1].map((i) => (
-                <div key={i} className="h-20 animate-pulse rounded-lg bg-subtle" />
+                <div key={i} className="h-20 animate-pulse rounded-lg bg-ink/5" />
               ))}
             </div>
           ) : offers.length ? (

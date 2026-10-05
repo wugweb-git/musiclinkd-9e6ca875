@@ -486,7 +486,7 @@ export function PortfolioSkeleton() {
   return (
     <div className="space-y-3" role="status" aria-busy="true" aria-label="Loading portfolio">
       {[0, 1, 2].map((i) => (
-        <div key={i} className="h-28 animate-pulse rounded-lg border border-border bg-subtle" />
+        <div key={i} className="h-28 animate-pulse rounded-lg border border-border bg-ink/5" />
       ))}
     </div>
   );

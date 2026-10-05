@@ -1321,17 +1321,17 @@ export function ServiceCardSkeleton({ className }: { className?: string | undefi
       )}
     >
       <div>
-        <div className="h-3.5 w-24 rounded bg-subtle animate-pulse" />
-        <div className="mt-2.5 h-6 w-3/4 rounded bg-subtle animate-pulse" />
-        <div className="mt-2 h-4 w-full rounded bg-subtle animate-pulse" />
+        <div className="h-3.5 w-24 rounded bg-ink/5 animate-pulse" />
+        <div className="mt-2.5 h-6 w-3/4 rounded bg-ink/5 animate-pulse" />
+        <div className="mt-2 h-4 w-full rounded bg-ink/5 animate-pulse" />
         <div className="mt-4 space-y-2">
-          <div className="h-3.5 w-4/5 rounded bg-subtle animate-pulse" />
-          <div className="h-3.5 w-2/3 rounded bg-subtle animate-pulse" />
+          <div className="h-3.5 w-4/5 rounded bg-ink/5 animate-pulse" />
+          <div className="h-3.5 w-2/3 rounded bg-ink/5 animate-pulse" />
         </div>
       </div>
       <div className="mt-5 flex items-center justify-between border-t border-dashed border-border/60 pt-3">
-        <div className="h-6 w-24 rounded bg-subtle animate-pulse" />
-        <div className="h-9 w-20 rounded-full bg-subtle animate-pulse" />
+        <div className="h-6 w-24 rounded bg-ink/5 animate-pulse" />
+        <div className="h-9 w-20 rounded-full bg-ink/5 animate-pulse" />
       </div>
     </article>
   );
@@ -1503,24 +1503,24 @@ export function ReviewCardSkeleton({ className }: { className?: string | undefin
     >
       <div>
         <div className="flex items-center justify-between">
-          <div className="h-4 w-20 rounded bg-subtle animate-pulse" />
-          <div className="h-4 w-16 rounded-full bg-subtle animate-pulse" />
+          <div className="h-4 w-20 rounded bg-ink/5 animate-pulse" />
+          <div className="h-4 w-16 rounded-full bg-ink/5 animate-pulse" />
         </div>
         <div className="mt-3 space-y-2">
-          <div className="h-3.5 w-full rounded bg-subtle animate-pulse" />
-          <div className="h-3.5 w-5/6 rounded bg-subtle animate-pulse" />
-          <div className="h-3.5 w-2/3 rounded bg-subtle animate-pulse" />
+          <div className="h-3.5 w-full rounded bg-ink/5 animate-pulse" />
+          <div className="h-3.5 w-5/6 rounded bg-ink/5 animate-pulse" />
+          <div className="h-3.5 w-2/3 rounded bg-ink/5 animate-pulse" />
         </div>
       </div>
       <div className="flex items-center justify-between border-t border-border/50 pt-3">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-subtle animate-pulse" />
+          <div className="h-8 w-8 rounded-full bg-ink/5 animate-pulse" />
           <div className="space-y-1">
-            <div className="h-3 w-20 rounded bg-subtle animate-pulse" />
-            <div className="h-2.5 w-12 rounded bg-subtle animate-pulse" />
+            <div className="h-3 w-20 rounded bg-ink/5 animate-pulse" />
+            <div className="h-2.5 w-12 rounded bg-ink/5 animate-pulse" />
           </div>
         </div>
-        <div className="h-6 w-14 rounded-full bg-subtle animate-pulse" />
+        <div className="h-6 w-14 rounded-full bg-ink/5 animate-pulse" />
       </div>
     </article>
   );

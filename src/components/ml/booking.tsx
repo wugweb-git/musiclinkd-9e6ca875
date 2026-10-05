@@ -796,7 +796,7 @@ export function BookingSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-3" aria-hidden>
       {Array.from({ length: rows }, (_, i) => (
-        <div key={i} className="h-28 animate-pulse rounded-lg bg-subtle" />
+        <div key={i} className="h-28 animate-pulse rounded-lg bg-ink/5" />
       ))}
     </div>
   );
@@ -808,7 +808,7 @@ export function CalendarSkeleton() {
       <div className="h-5 w-32 animate-pulse rounded-full bg-background" />
       <div className="mt-4 grid grid-cols-7 gap-1">
         {Array.from({ length: 28 }, (_, i) => (
-          <div key={i} className="h-12 animate-pulse rounded-sm bg-subtle" />
+          <div key={i} className="h-12 animate-pulse rounded-sm bg-ink/5" />
         ))}
       </div>
     </div>

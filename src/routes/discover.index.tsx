@@ -369,7 +369,7 @@ function DiscoverScreen() {
                             className="h-28 w-full object-cover"
                           />
                         ) : (
-                          <span aria-hidden className="block h-28 w-full bg-subtle" />
+                          <span aria-hidden className="block h-28 w-full bg-ink/5" />
                         )}
                         <span className="block p-3">
                           <span className="block truncate text-sm font-bold">{band.name}</span>

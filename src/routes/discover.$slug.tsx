@@ -85,7 +85,7 @@ function PeopleList({ role, label }: { role: string; label: string | null }) {
         {people.isLoading ? (
           <ul className="space-y-3" aria-hidden>
             {[0, 1, 2].map((i) => (
-              <li key={i} className="h-20 animate-pulse rounded-lg bg-subtle" />
+              <li key={i} className="h-20 animate-pulse rounded-lg bg-ink/5" />
             ))}
           </ul>
         ) : people.isError ? (

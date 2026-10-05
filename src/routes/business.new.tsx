@@ -352,7 +352,7 @@ function NewBusiness() {
               <div className="mb-1 flex items-center justify-between">
                 <p className="text-sm font-bold text-foreground">Google Maps Profile (Optional)</p>
                 {reading ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-2.5 py-0.5 text-1 font-semibold text-muted-foreground animate-pulse">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-0.5 text-1 font-semibold text-muted-foreground animate-pulse">
                     <span className="h-1.5 w-1.5 rounded-full bg-ink animate-ping" />
                     Locating...
                   </span>

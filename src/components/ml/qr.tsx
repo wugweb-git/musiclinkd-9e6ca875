@@ -161,7 +161,7 @@ export function QrCode({
         </p>
       ) : (
         <div
-          className="h-full w-full animate-pulse rounded-lg bg-subtle"
+          className="h-full w-full animate-pulse rounded-lg bg-ink/5"
           role="img"
           aria-label="Generating QR code"
         />

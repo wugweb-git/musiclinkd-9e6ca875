@@ -1269,7 +1269,7 @@ export function StepSkeleton() {
   return (
     <div className="space-y-3" aria-hidden>
       {[0, 1, 2, 3, 4].map((i) => (
-        <div key={i} className="h-14 animate-pulse rounded-sm bg-subtle" />
+        <div key={i} className="h-14 animate-pulse rounded-sm bg-ink/5" />
       ))}
     </div>
   );

@@ -10,6 +10,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - `styles.css` `--background`: `#F5F5F5`, Lovable's app grey measured from the owner's references
   (was `#FAFAF9`, too close to white for cards to separate). `theme-color` follows.
   `--surface-subtle` stays white: it is the card and tile surface (owner, 17 Sep).
+- Loading placeholders (`animate-pulse`, the `Skeleton` primitive; 14 files) and the empty photo
+  tiles on cards use ink at 5% (`bg-ink/5`) instead of `bg-subtle`, so they read grey on both the
+  white cards and the grey page. No new token.
 
 ### Fixed — bottom sheets opened off screen (5 Oct)
 

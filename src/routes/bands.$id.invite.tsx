@@ -94,7 +94,7 @@ function InviteMembers() {
         {people.isLoading ? (
           <ul className="space-y-3" aria-hidden>
             {[0, 1, 2].map((i) => (
-              <li key={i} className="h-16 animate-pulse rounded-lg bg-subtle" />
+              <li key={i} className="h-16 animate-pulse rounded-lg bg-ink/5" />
             ))}
           </ul>
         ) : people.isError ? (

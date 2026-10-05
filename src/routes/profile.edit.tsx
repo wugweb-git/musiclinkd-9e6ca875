@@ -449,7 +449,7 @@ function EditProfile() {
         <TopBar title="Edit profile" back="/profile" />
         <div className="space-y-2 px-5 py-6" aria-busy>
           {[0, 1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-[72px] animate-pulse rounded-lg bg-subtle" />
+            <div key={i} className="h-[72px] animate-pulse rounded-lg bg-ink/5" />
           ))}
         </div>
       </Screen>

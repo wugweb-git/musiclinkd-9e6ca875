@@ -362,13 +362,13 @@ export function PersonRow({
 export function PersonRowSkeleton() {
   return (
     <li className="flex items-center gap-3 px-4 py-3.5">
-      <span className="h-11 w-11 shrink-0 animate-pulse rounded-full bg-subtle" />
+      <span className="h-11 w-11 shrink-0 animate-pulse rounded-full bg-ink/5" />
       <span className="min-w-0 flex-1 space-y-1.5">
-        <span className="block h-3.5 w-28 animate-pulse rounded bg-subtle" />
-        <span className="block h-3 w-40 animate-pulse rounded bg-subtle" />
-        <span className="block h-3 w-20 animate-pulse rounded bg-subtle" />
+        <span className="block h-3.5 w-28 animate-pulse rounded bg-ink/5" />
+        <span className="block h-3 w-40 animate-pulse rounded bg-ink/5" />
+        <span className="block h-3 w-20 animate-pulse rounded bg-ink/5" />
       </span>
-      <span className="h-9 w-9 shrink-0 animate-pulse rounded-full bg-subtle" />
+      <span className="h-9 w-9 shrink-0 animate-pulse rounded-full bg-ink/5" />
     </li>
   );
 }
@@ -419,7 +419,7 @@ export function PersonCard({
           className="h-full w-full object-cover"
         />
       ) : (
-        <span className="flex h-full w-full items-center justify-center bg-subtle">
+        <span className="flex h-full w-full items-center justify-center bg-ink/5">
           <PersonAvatar name={person.name} photo={null} className="h-20 w-20 text-3" />
         </span>
       )}
@@ -453,7 +453,7 @@ export function PersonCard({
             className="aspect-square w-full rounded-md object-cover"
           />
         ) : (
-          <span className="flex aspect-square w-full items-center justify-center rounded-md bg-subtle">
+          <span className="flex aspect-square w-full items-center justify-center rounded-md bg-ink/5">
             <LogoMark className="h-auto w-1/4" />
           </span>
         )}
@@ -516,11 +516,11 @@ export function PersonCard({
 export function PersonCardSkeleton() {
   return (
     <div className="w-rail-sm shrink-0 rounded-lg border border-border/60 bg-card p-4">
-      <div className="h-14 w-14 animate-pulse rounded-full bg-subtle" />
-      <div className="mt-3 h-3.5 w-24 animate-pulse rounded bg-subtle" />
-      <div className="mt-1.5 h-3 w-full animate-pulse rounded bg-subtle" />
-      <div className="mt-1 h-3 w-3/4 animate-pulse rounded bg-subtle" />
-      <div className="mt-2 h-3 w-16 animate-pulse rounded bg-subtle" />
+      <div className="h-14 w-14 animate-pulse rounded-full bg-ink/5" />
+      <div className="mt-3 h-3.5 w-24 animate-pulse rounded bg-ink/5" />
+      <div className="mt-1.5 h-3 w-full animate-pulse rounded bg-ink/5" />
+      <div className="mt-1 h-3 w-3/4 animate-pulse rounded bg-ink/5" />
+      <div className="mt-2 h-3 w-16 animate-pulse rounded bg-ink/5" />
     </div>
   );
 }
@@ -566,7 +566,7 @@ export function BookableCard({
           className="h-full w-full object-cover"
         />
       ) : (
-        <span className="flex h-full w-full items-center justify-center bg-subtle text-muted-foreground">
+        <span className="flex h-full w-full items-center justify-center bg-ink/5 text-muted-foreground">
           <Building2 size={28} aria-hidden />
         </span>
       )}
@@ -603,7 +603,7 @@ export function BookableCard({
         </div>
       ) : (
         <span
-          className="flex h-28 w-full items-center justify-center bg-subtle text-muted-foreground"
+          className="flex h-28 w-full items-center justify-center bg-ink/5 text-muted-foreground"
           aria-hidden
         >
           <Building2 size={28} />
@@ -658,11 +658,11 @@ export function BookableCard({
 export function BookableCardSkeleton() {
   return (
     <div className="w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card shadow-xs">
-      <div className="h-28 w-full animate-pulse bg-subtle" />
+      <div className="h-28 w-full animate-pulse bg-ink/5" />
       <div className="space-y-1.5 p-3">
-        <div className="h-3.5 w-28 animate-pulse rounded bg-subtle" />
-        <div className="h-3 w-20 animate-pulse rounded bg-subtle" />
-        <div className="mt-1.5 h-3.5 w-16 animate-pulse rounded bg-subtle" />
+        <div className="h-3.5 w-28 animate-pulse rounded bg-ink/5" />
+        <div className="h-3 w-20 animate-pulse rounded bg-ink/5" />
+        <div className="mt-1.5 h-3.5 w-16 animate-pulse rounded bg-ink/5" />
       </div>
     </div>
   );
@@ -685,7 +685,7 @@ export function BookableRow({ studio }: { studio: DiscoverBookable }) {
           className="h-14 w-14 shrink-0 rounded-lg border border-border/60 object-cover"
         />
       ) : (
-        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-subtle text-muted-foreground">
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-ink/5 text-muted-foreground">
           <Building2 size={20} aria-hidden />
         </span>
       )}
