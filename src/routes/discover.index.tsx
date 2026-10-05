@@ -27,7 +27,7 @@ import { workType } from "@/data/portfolio";
 import { listBands, type BandRow } from "@/lib/bands.functions";
 import { joinParts } from "@/lib/utils";
 import { sized } from "@/lib/image-url";
-import { useWorkLikes, WorkLinkRow } from "@/components/ml/portfolio";
+import { AudioTrackCard, VideoCard } from "@/components/ml/profile";
 import { discoverBookableFromRow } from "@/lib/bookable-view";
 import { iconSize } from "@/lib/tokens";
 import { opportunityFromRow } from "@/lib/opportunity-view";
@@ -141,9 +141,7 @@ function DiscoverScreen() {
   const workPool = loaded.trendingWork.length ? loaded.trendingWork : loaded.newWork;
   const trendingAudio = workPool.filter((w) => workType(w.kind).media === "audio");
   const trendingVideo = workPool.filter((w) => workType(w.kind).media === "video");
-  const workLikes = useWorkLikes(
-    [...trendingAudio.slice(0, 5), ...trendingVideo.slice(0, 5)].map((w) => w.id),
-  );
+  const [playingId, setPlayingId] = useState<string | null>(null);
   const trendingOpportunities = [...loaded.opportunities].sort(
     (a, b) => b.applicants - a.applicants,
   );
@@ -325,9 +323,29 @@ function DiscoverScreen() {
             {trendingAudio.length ? (
               <section>
                 <SectionHeader title="Trending audio" />
-                <div className="space-y-3 px-5">
-                  {trendingAudio.slice(0, 5).map((work) => (
-                    <WorkLinkRow key={work.id} work={work} likes={workLikes} />
+                {/* Side-scrolling portrait tiles (owner, 5 Oct); a playing tile widens to the
+                    full row, the same selected state as a profile's Portfolio. */}
+                <div className="rail no-scrollbar flex items-start gap-3 overflow-x-auto px-5">
+                  {trendingAudio.slice(0, 8).map((work) => (
+                    <div
+                      key={work.id}
+                      className="w-rail-sm shrink-0 has-[.col-span-full]:w-[calc(min(100vw,var(--container-app))-2.5rem)]"
+                    >
+                      <AudioTrackCard
+                        track={{
+                          id: work.id,
+                          title: work.title,
+                          role: work.display_name ?? "",
+                          project: "",
+                          duration: "",
+                          artwork: work.cover_url ?? "",
+                          ...(work.media_url ? { media: work.media_url } : {}),
+                        }}
+                        layout="portrait"
+                        playing={playingId === work.id}
+                        onToggle={() => setPlayingId((id) => (id === work.id ? null : work.id))}
+                      />
+                    </div>
                   ))}
                 </div>
               </section>
@@ -335,9 +353,24 @@ function DiscoverScreen() {
             {trendingVideo.length ? (
               <section>
                 <SectionHeader title="Trending videos" />
-                <div className="space-y-3 px-5">
-                  {trendingVideo.slice(0, 5).map((work) => (
-                    <WorkLinkRow key={work.id} work={work} likes={workLikes} />
+                <div className="rail no-scrollbar flex items-start gap-3 overflow-x-auto px-5">
+                  {trendingVideo.slice(0, 8).map((work) => (
+                    <div
+                      key={work.id}
+                      className="w-rail-sm shrink-0 has-[.col-span-full]:w-[calc(min(100vw,var(--container-app))-2.5rem)]"
+                    >
+                      <VideoCard
+                        layout="grid"
+                        v={{
+                          id: work.id,
+                          title: work.title,
+                          context: work.display_name ?? "",
+                          duration: "",
+                          thumb: work.cover_url ?? "",
+                          ...(work.media_url ? { media: work.media_url } : {}),
+                        }}
+                      />
+                    </div>
                   ))}
                 </div>
               </section>

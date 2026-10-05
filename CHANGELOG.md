@@ -21,6 +21,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   music photo behind a scrim (the brand collage by default; `art` per use case from
   `EMPTY_ART`: work, reviews, search, services), a brand-pink accent, white title and body, the
   action on the banner. Mapped: profile work and reviews, Search "Nothing matched".
+- Discover: Trending audio and Trending videos are side-scrolling rows of portrait tiles (the
+  Portfolio tile, source-coloured play); a playing tile widens to the row.
 - Your own profile: empty Portfolio offers "Manage portfolio" (the Portfolio page) instead of
   adding inline — sections are managed on their own pages (owner, 5 Oct). The gallery keeps its
   editor on the profile until it has a page of its own.
