@@ -12,10 +12,7 @@ import { iconSize } from "@/lib/tokens";
  * nothing behind it.
  */
 export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }) {
-  const surface =
-    tone === "onInk"
-      ? "border-background/25 bg-background/10 text-background backdrop-blur"
-      : "border-border bg-card";
+  const surface = tone === "onInk" ? "text-background" : "text-foreground";
   const { signedIn } = useAuth();
   const load = useServerFn(unreadCount);
   // The dot means something now: how many notifications this account has not opened.
@@ -29,7 +26,7 @@ export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }
     <Link
       to="/notifications"
       aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
-      className={`hit-area state-layer relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-transform duration-125 ease-standard active:scale-97 ${surface}`}
+      className={`hit-area state-layer relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-transform duration-125 ease-standard active:scale-97 ${surface}`}
     >
       <Bell size={iconSize.md} aria-hidden />
       <span className="sr-only">
@@ -59,7 +56,7 @@ export function SearchIconButton({ open, onToggle }: { open: boolean; onToggle: 
       aria-label={open ? "Close search" : "Search"}
       aria-expanded={open}
       onClick={onToggle}
-      className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-97"
+      className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-transform duration-125 ease-standard active:scale-97"
     >
       {open ? <X size={iconSize.md} aria-hidden /> : <Search size={iconSize.md} aria-hidden />}
     </button>

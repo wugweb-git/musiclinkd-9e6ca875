@@ -36,7 +36,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthNotice } from "@/components/ml/auth";
-import { Btn } from "@/components/ml/ui";
+import { Btn, BtnLink } from "@/components/ml/ui";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { reactivateMyAccount } from "@/lib/account.functions";
 import { useViewer } from "@/components/ml/viewer";
@@ -158,7 +158,7 @@ function SettingsScreen() {
       <TopBar title="Settings" back="/profile" />
       <div className="min-h-[calc(100dvh-4rem)] bg-card px-5 pt-5 pb-6">
         {signedIn ? (
-          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border-b border-border pb-5">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border pb-5">
             <PersonAvatar
               name={viewer.displayName ?? ""}
               photo={viewer.photo}
@@ -172,6 +172,14 @@ function SettingsScreen() {
                 <p className="truncate text-sm text-muted-foreground">@{viewer.username}</p>
               ) : null}
             </div>
+            {/* Sign out sits beside your account (owner, 5 Oct), not as a row at the bottom. */}
+            <BtnLink
+              to="/auth/signout"
+              variant="outline"
+              className="!min-h-9 !h-9 shrink-0 !rounded-sm !px-4 !text-sm"
+            >
+              Sign out
+            </BtnLink>
           </div>
         ) : null}
         {deactivated ? (

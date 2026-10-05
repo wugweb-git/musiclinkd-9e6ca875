@@ -172,13 +172,6 @@ export const settingsGroups: SettingsGroup[] = [
         params: { slug: "privacy" },
         icon: "file-text",
       },
-      {
-        key: "signout",
-        label: "Sign out",
-        hint: "On this device",
-        to: "/auth/signout",
-        icon: "log-out",
-      },
     ],
   },
 ];

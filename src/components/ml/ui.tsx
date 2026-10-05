@@ -168,9 +168,18 @@ const menuGroups: {
     search?: LinkProps["search"];
   }[];
 }[] = [
+  // Everything, whether or not it is also in the bottom nav (owner, 5 Oct). No Business box and
+  // no Academy; Bookmarked (saved and recently viewed) near the bottom.
   {
-    title: "Browse",
-    items: [{ to: "/saved", label: "Saved & recently viewed", icon: Bookmark }],
+    title: "Main",
+    items: [
+      { to: "/home", label: "Home", icon: Home },
+      { to: "/discover", label: "Discover", icon: Compass },
+      { to: "/inbox", label: "Inbox", icon: Inbox },
+      { to: "/marketplace", label: "Market", icon: ShoppingBag },
+      { to: "/profile", label: "Profile", icon: User },
+      { to: "/notifications", label: "Notifications", icon: Bell },
+    ],
   },
   {
     title: "My work",
@@ -184,36 +193,25 @@ const menuGroups: {
     ],
   },
   {
-    title: "Rentals & bookings",
+    title: "Bookings & rentals",
     items: [
-      { to: "/marketplace", search: { view: "Rent" }, label: "Rentals", icon: Package },
       { to: "/bookings", label: "Bookings", icon: CalendarCheck },
-    ],
-  },
-  {
-    title: "Business",
-    items: [
-      { to: "/business/bookings", label: "Booking requests", icon: CalendarClock },
-      { to: "/inbox", label: "Inbox", icon: Inbox },
+      { to: "/marketplace", search: { view: "Rent" }, label: "Rentals", icon: Package },
     ],
   },
   {
     title: "You",
     items: [
-      { to: "/inbox", label: "Inbox", icon: Inbox },
-      { to: "/notifications", label: "Notifications", icon: Bell },
       { to: "/identity/qr", label: "QR & Card", icon: QrCode },
       { to: "/verification", label: "Verification", icon: BadgeCheck },
       { to: "/accounts", label: "Switch account", icon: ArrowLeftRight },
+      { to: "/settings", label: "Settings", icon: Settings },
+      { to: "/help", label: "Help", icon: CircleHelp },
     ],
   },
   {
-    title: "App",
-    items: [
-      { to: "/settings", label: "Settings", icon: Settings },
-      { to: "/help", label: "Help", icon: CircleHelp },
-      { to: "/academy", label: "Academy", icon: GraduationCap },
-    ],
+    title: "Bookmarked",
+    items: [{ to: "/saved", label: "Saved & recently viewed", icon: Bookmark }],
   },
 ];
 
@@ -230,15 +228,17 @@ const navRoots = new Set<string>([
  * Four tabs and a menu. A tab shows only its icon until it is the one you are on; then its label
  * opens beside the icon. The menu holds every module, so nothing depends on finding a shortcut.
  */
-/** The labelled create action per tab (owner, 5 Oct). Copy: owner. */
+/**
+ * The labelled create pill above the nav (owner, 5 Oct): only on pages whose create action used to
+ * be a + in the top bar, and it replaces that +. Pages whose + opens an in-page sheet keep it.
+ */
 function createFor(
   path: string,
 ): { label: string; to: string; search?: Record<string, string> } | null {
-  if (path === "/home" || path === "/profile")
-    return { label: "Add work", to: "/portfolio", search: { add: "1" } };
-  if (path === "/discover") return { label: "Post an opportunity", to: "/opportunities/new" };
-  if (path === "/marketplace") return { label: "Sell or rent", to: "/marketplace/sell" };
-  if (path === "/inbox") return { label: "New message", to: "/search", search: { tab: "people" } };
+  if (path === "/portfolio") return { label: "Add work", to: "/portfolio", search: { add: "1" } };
+  if (path === "/services") return { label: "New service", to: "/services/new" };
+  if (path === "/bands") return { label: "New band", to: "/bands/new" };
+  if (path === "/marketplace") return { label: "List an item", to: "/marketplace/mine" };
   return null;
 }
 
@@ -324,31 +324,9 @@ export function BottomNav() {
         </ul>
       </nav>
       <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title="Menu">
-        <Link
-          to={viewer.signedIn ? "/profile" : "/welcome"}
-          onClick={() => setMenuOpen(false)}
-          className="state-layer flex min-h-18 items-center gap-3 border-b border-border pb-5 pt-1"
-        >
-          <PersonAvatar
-            name={viewer.displayName ?? ""}
-            photo={viewer.photo}
-            className="h-12 w-12 shrink-0 text-1"
-          />
-          <span className="min-w-0 flex-1">
-            <span className="block truncate text-2 font-semibold">
-              {viewer.displayName || (viewer.signedIn ? "Your account" : "Sign in")}
-            </span>
-            {viewer.username ? (
-              <span className="block truncate text-sm text-muted-foreground">
-                @{viewer.username}
-              </span>
-            ) : null}
-          </span>
-        </Link>
         <div className="flex flex-col gap-5">
           {menuGroups.map((group) => {
-            // The business entries are for a business page's own account.
-            const items = group.items.filter((i) => !i.to.startsWith("/business") || isBusiness);
+            const items = group.items;
             if (!items.length) return null;
             return (
               <RowGroup key={group.title} title={group.title} flat>

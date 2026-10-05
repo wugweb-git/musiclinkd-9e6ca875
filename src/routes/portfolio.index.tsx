@@ -201,15 +201,7 @@ function PortfolioOverview() {
                 <Search size={iconSize.md} aria-hidden />
               )}
             </IconBtn>
-            {/* Performance (/portfolio/analytics) is unlinked: analytics is GA's job, later (owner, 21 Sep 2026). */}
-            <Btn
-              variant="ink"
-              className="min-h-10 px-4"
-              icon={<Plus size={iconSize.sm} aria-hidden />}
-              onClick={() => setAdding(true)}
-            >
-              Add
-            </Btn>
+            {/* Add work is the pill above the bottom nav now (owner, 5 Oct). */}
           </div>
         }
       />

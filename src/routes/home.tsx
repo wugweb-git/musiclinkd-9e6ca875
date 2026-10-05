@@ -211,7 +211,7 @@ function HomeHeader(_: { business?: boolean }) {
           <Link
             to="/settings"
             aria-label="Settings"
-            className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+            className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full"
           >
             <Settings size={iconSize.md} aria-hidden />
           </Link>

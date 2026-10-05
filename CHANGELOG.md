@@ -10,9 +10,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - `ui.tsx` `BottomNav`: a floating pill (owner's ref img 1) — side margins, rounded ends, soft
   shadow and hairline ring, clear of the gesture bar; the active tab stays an inner pill with its
   label; 48dp tap areas kept.
-- A labelled create pill above the nav that changes per tab (owner, 5 Oct): Home and Profile
-  "Add work" (the Add work drawer), Discover "Post an opportunity", Market "Sell or rent", Inbox
-  "New message" (Search on People, to pick who). Copy: owner.
+- A labelled create pill above the nav, only on pages whose create action was a + in the top bar,
+  and it replaces that + (owner, 5 Oct): Portfolio "Add work", Services "New service", Bands "New
+  band", Market "List an item". Home, Discover, Profile and Inbox have none. Opportunities and
+  Collaborations keep their top + (it opens an in-page sheet). Copy: owner.
+- Menu (⊞): every destination, including the bottom-nav tabs; no profile block, no Business box,
+  no Academy; Bookmarked (saved and recently viewed) last.
+- Header icons (bell, search, Home's settings) are plain icons, no circle background.
+- Settings: Sign out is a button beside your account block; the Sign out row is gone.
 - `--spacing-nav-clear` 96 → 152px so the last row is never under the nav and its pill.
 
 ### Changed — Account and Security settings (5 Oct, phone plan P10)

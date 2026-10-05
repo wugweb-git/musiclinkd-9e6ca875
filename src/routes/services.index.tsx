@@ -52,22 +52,7 @@ function ServicesHome() {
 
   return (
     <Screen>
-      <TopBar
-        title="Services"
-        subtitle="What people can book you for"
-        back="/profile"
-        right={
-          <BtnLink
-            to="/services/new"
-            search={{}}
-            variant="ink"
-            className="min-h-10 px-4"
-            icon={<Plus size={iconSize.sm} aria-hidden />}
-          >
-            New
-          </BtnLink>
-        }
-      />
+      <TopBar title="Services" subtitle="What people can book you for" back="/profile" />
 
       <div className="space-y-4 px-5 pt-4 pb-6">
         {items.length ? (
