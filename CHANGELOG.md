@@ -18,6 +18,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - Business accounts follow, talent connects (owner, 5 Oct): `DirectoryPerson.isBusiness` comes
   from the `profile_business` row (directory reads and recommendations), so a business shown in a
   people list gets Follow and saves as "business".
+- No Save on profile cards (owner, 5 Oct): the band holds Connect / Follow only. On a rail card
+  the button spans the card's width as its footer.
+- Save is a bookmark, never a heart (owner, 5 Oct): `SaveButton` in `saved-toggle.tsx` now draws
+  `Bookmark`, everywhere it is used (marketplace listings and `SavedToggle`).
 - Bands: no Follow yet (`follows.target_id` points at profiles; a band is a `collabs` row).
 
 ### Changed — duplicate components merged, no visual change (5 Oct, phone plan P1)

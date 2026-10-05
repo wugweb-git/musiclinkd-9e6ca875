@@ -8,10 +8,10 @@ import {
   unsaveTarget,
   type SavedTargetType,
 } from "@/lib/saved.functions";
-import { Heart } from "lucide-react";
+import { Bookmark } from "lucide-react";
 
 /**
- * The one save/heart control used everywhere a talent, band, studio or business can be
+ * The one save (bookmark) control used everywhere a talent, band, studio or business can be
  * shortlisted, wired to the real saved_items table. `SaveButton` below is its look, also used
  * directly where the saved state lives elsewhere (marketplace listings).
  */
@@ -59,7 +59,7 @@ export function SavedToggle({
   return <SaveButton saved={saved} onToggle={() => void toggle()} {...(size ? { size } : {})} />;
 }
 
-/** The heart button itself: state in, toggle out. `SavedToggle` wires it to saved_items. */
+/** The bookmark button itself (Save is a bookmark, never a heart — owner, 5 Oct): state in, toggle out. `SavedToggle` wires it to saved_items. */
 export function SaveButton({
   saved,
   onToggle,
@@ -82,7 +82,7 @@ export function SaveButton({
       className="hit-area flex items-center justify-center rounded-full bg-card transition-transform active:scale-97"
       style={{ width: size, height: size }}
     >
-      <Heart
+      <Bookmark
         size={size * 0.45}
         className={saved ? "text-ink" : "text-foreground"}
         fill={saved ? "currentColor" : "none"}

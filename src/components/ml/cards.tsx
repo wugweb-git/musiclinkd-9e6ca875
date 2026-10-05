@@ -13,10 +13,8 @@ import {
   setFollowing,
   type ConnectionState,
 } from "@/lib/connections.functions";
-import type { SavedTargetType } from "@/lib/saved.functions";
 import { Btn, BtnLink, IconBtn, IconBtnLink, VerifiedBadge } from "./ui";
 import { Rating } from "./kit";
-import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
 import type { DiscoverBookable } from "@/lib/bookable-view";
 import { labelFor, type TaxonomyOption } from "@/lib/taxonomy";
@@ -44,7 +42,7 @@ import { StateIcon } from "./tab-icon";
  */
 
 /* ------------------------------------------------------------------ */
-/* Card actions — Connect / Follow and Save, beside the card link       */
+/* Card actions — Connect / Follow, beside the card link                 */
 /* ------------------------------------------------------------------ */
 
 /*
@@ -57,13 +55,11 @@ import { StateIcon } from "./tab-icon";
 function CardActions({
   profileId,
   relation,
-  save,
   compact = false,
   className,
 }: {
   profileId: string | null | undefined;
   relation: "connect" | "follow";
-  save: { targetType: SavedTargetType; targetId: string } | null;
   /** A list row: the action is an icon button (named for screen readers) so the name keeps its room. */
   compact?: boolean | undefined;
   className?: string | undefined;
@@ -83,25 +79,20 @@ function CardActions({
       <BtnLink
         to="/welcome"
         variant="outline"
-        className={actionBtn}
+        className={compact ? actionBtn : cardFooterBtn}
         icon={<Glyph size={iconSize.sm} aria-hidden />}
       >
         {label}
       </BtnLink>
     );
-  if (!action && !save) return null;
-  return (
-    <div className={cn("flex items-center gap-2", className)}>
-      {action}
-      {save ? (
-        <SavedToggle targetType={save.targetType} targetId={save.targetId} size={36} />
-      ) : null}
-    </div>
-  );
+  if (!action) return null;
+  return <div className={cn("flex items-center gap-2", className)}>{action}</div>;
 }
 
 /** Looks 36px, takes a 48dp tap (hit-area). */
 const actionBtn = "hit-area min-h-9 h-9 px-3 text-1";
+/** On a rail card the action spans the card's width, so it reads as the card's footer. */
+const cardFooterBtn = "hit-area min-h-10 h-10 w-full px-3 text-1";
 
 function RelationButton({
   profileId,
@@ -160,7 +151,7 @@ function RelationButton({
     return (
       <Btn
         variant={on ? "outline" : "primary"}
-        className={actionBtn}
+        className={compact ? actionBtn : cardFooterBtn}
         icon={<Plus size={iconSize.sm} aria-hidden />}
         disabled={q.isPending}
         onClick={toggle}
@@ -201,7 +192,7 @@ function RelationButton({
   return (
     <Btn
       variant={done ? "outline" : "primary"}
-      className={actionBtn}
+      className={compact ? actionBtn : cardFooterBtn}
       icon={<UserPlus size={iconSize.sm} aria-hidden />}
       disabled={q.isPending || done}
       onClick={onConnect}
@@ -242,7 +233,7 @@ function personDetail(person: PersonLike, roleLabels?: TaxonomyOption[]) {
 /**
  * One person as a row. The directory, search, connections, an opportunity's poster and anywhere
  * else that lists real people share this: photo (initials when there is none), name, one line of
- * detail, city and rating. The row's end holds the save heart unless the screen passes its own
+ * detail, city and rating. The row's end holds Connect / Follow unless the screen passes its own
  * `action` (Accept / Ignore, "Requested"); `null` leaves it empty.
  */
 export function PersonRow({
@@ -257,7 +248,7 @@ export function PersonRow({
   roleLabels?: TaxonomyOption[] | undefined;
   /** Replaces the headline line, e.g. an opportunity poster's kind and hires. */
   detail?: ReactNode | undefined;
-  /** The row's end. Defaults to the save heart; `null` for nothing. */
+  /** The row's end. Defaults to Connect / Follow; `null` for nothing. */
   action?: ReactNode | undefined;
   as?: "li" | "div" | undefined;
   className?: string | undefined;
@@ -296,7 +287,6 @@ export function PersonRow({
       <CardActions
         profileId={person.id}
         relation={person.isBusiness ? "follow" : "connect"}
-        save={{ targetType: person.isBusiness ? "business" : "talent", targetId: person.id }}
         compact
         className="shrink-0"
       />
@@ -446,11 +436,7 @@ export function PersonCard({
       >
         {body}
       </Link>
-      <CardActions
-        profileId={person.id}
-        relation={person.isBusiness ? "follow" : "connect"}
-        save={{ targetType: person.isBusiness ? "business" : "talent", targetId: person.id }}
-      />
+      <CardActions profileId={person.id} relation={person.isBusiness ? "follow" : "connect"} />
     </div>
   );
 }
@@ -589,11 +575,7 @@ export function BookableCard({
       >
         {body}
       </Link>
-      <CardActions
-        profileId={studio.ownerId}
-        relation="follow"
-        save={{ targetType: "studio", targetId: studio.id }}
-      />
+      <CardActions profileId={studio.ownerId} relation="follow" />
     </div>
   );
 }
@@ -613,7 +595,7 @@ export function BookableCardSkeleton() {
 
 /**
  * A business row for a list (search results, directory). Same fields as BookableCard, laid out
- * horizontally, with the same save control PersonRow uses.
+ * horizontally, with Follow at its end.
  */
 export function BookableRow({ studio }: { studio: DiscoverBookable }) {
   const link = studioLink(studio);
@@ -661,13 +643,7 @@ export function BookableRow({ studio }: { studio: DiscoverBookable }) {
         // Nowhere to open: the same row, not a link that goes nowhere.
         <span className={inner}>{content}</span>
       )}
-      <CardActions
-        profileId={studio.ownerId}
-        relation="follow"
-        save={{ targetType: "studio", targetId: studio.id }}
-        compact
-        className="shrink-0"
-      />
+      <CardActions profileId={studio.ownerId} relation="follow" compact className="shrink-0" />
     </li>
   );
 }
