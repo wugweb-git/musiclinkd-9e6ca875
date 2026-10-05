@@ -34,7 +34,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   Connect / Follow is a small pill in the photo's corner, beside the link. Discover's People tab
   is a 2-column grid of these cards; the For you rail uses the same card.
 - Card actions sit at the bottom of the card, inside its frame, beside the link (owner, 5 Oct);
-  smaller cards (4:3 photo, tighter padding). Discover's People section shows talent only —
+  smaller cards (tighter padding; the photo stays square as in reference 16). Discover's People section shows talent only —
   business pages are filtered out.
 - Talent cards: no city (owner, 5 Oct). Glass labels on the photo from real data only: "New"
   (joined in the last 14 days, `profiles.created_at`) and "Favourite" (you saved them).

@@ -450,10 +450,10 @@ export function PersonCard({
             src={sized(person.avatarUrl, { width: 412 })}
             alt=""
             loading="lazy"
-            className="aspect-[4/3] w-full rounded-md object-cover"
+            className="aspect-square w-full rounded-md object-cover"
           />
         ) : (
-          <span className="flex aspect-[4/3] w-full items-center justify-center rounded-md bg-subtle">
+          <span className="flex aspect-square w-full items-center justify-center rounded-md bg-subtle">
             <LogoMark className="h-auto w-1/4" />
           </span>
         )}

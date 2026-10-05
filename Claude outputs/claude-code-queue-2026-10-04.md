@@ -405,3 +405,12 @@ Academy placeholder screen; Inbox screen in the menu; Market banners with counts
 **Still blocked:** every signed-in check in Waves A–E (needs accounts; the dev server never hydrates);
 a real hiring post (needs the owner's genuine need); the Lovable background-colour conflict (owner
 said both "use three backgrounds" and "ignore it"); the create screen's tab title "Create a Band".
+
+## 14. Phone patterns plan (owner, 5 Oct) — see `Claude outputs/lovable-phone-patterns-plan/plan.md`
+
+Full plan with the owner's 16 screenshots and 22 measured phone captures. It covers:
+- card Connect/Follow actions (next to the card link, not inside it);
+- Discover showing every business page;
+- a public portfolio feed (Trending / New / Music / Video) with a Like button — **the likes table needs the owner's yes before the migration is applied**;
+- profile phone layout, forms UI, search and filters saved in the address, identity switcher, settings, bottom nav.
+**Update existing components; no new component files.** Work packages P1–P12 in its section 11, one branch each, nothing merged without the owner.
