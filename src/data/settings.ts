@@ -70,7 +70,7 @@ export const settingsGroups: SettingsGroup[] = [
         key: "business",
         label: "Business profiles",
         hint: "Studios, labels, venues",
-        to: "/discover",
+        to: "/accounts",
         icon: "building",
       },
       {
