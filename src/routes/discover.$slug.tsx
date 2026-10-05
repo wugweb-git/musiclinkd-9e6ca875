@@ -14,7 +14,7 @@ import { listNewWork, type NewWorkItem } from "@/lib/trending.functions";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { joinParts } from "@/lib/utils";
-import { WorkLinkRow } from "@/components/ml/portfolio";
+import { useWorkLikes, WorkLinkRow } from "@/components/ml/portfolio";
 
 /*
  * One Discover slug, every subject. `/discover/<slug>` is the shareable form of a Discover filter
@@ -112,6 +112,7 @@ function PeopleList({ role, label }: { role: string; label: string | null }) {
 
 /** Work published by people you can actually hire, not a chart. */
 function MusicList({ tracks }: { tracks: NewWorkItem[] }) {
+  const likes = useWorkLikes(tracks.slice(0, 60).map((t) => t.id));
   return (
     <Screen>
       <TopBar title="Music" subtitle="New work from the community" back="/discover" />
@@ -119,7 +120,7 @@ function MusicList({ tracks }: { tracks: NewWorkItem[] }) {
         {tracks.length ? (
           <div className="space-y-3">
             {tracks.map((t) => (
-              <WorkLinkRow key={t.id} work={t} />
+              <WorkLinkRow key={t.id} work={t} likes={likes} />
             ))}
           </div>
         ) : (

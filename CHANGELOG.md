@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — public work card with Like and Share (5 Oct, phone plan P4/P5)
+
+- `portfolio.tsx` `WorkLinkRow` is now the public work card: square cover (type icon when none),
+  type, title, owner; the body opens the work and a footer beside the link holds Like and Share.
+  Used on Discover (Trending audio / videos) and Discover → Music.
+- Share: the phone's share sheet, else the link is copied.
+- Like: heart outline ⇄ filled in brand pink; once you have liked a work the total shows beside
+  it. Signed out goes to `/welcome`. Optimistic with rollback. `useWorkLikes` reads a list's
+  counts and your likes in one go.
+- `portfolio.functions.ts`: `portfolioLikeCounts`, `myPortfolioLikes`, `toggleLike`.
+- `supabase/migrations/20261005120000_portfolio_item_likes.sql` — **not applied; owner's yes
+  needed.** Until it is, the Like button stays hidden (never a button that does nothing).
+
 ### Added — trending sections on Discover (5 Oct, owner)
 
 - `discover.index.tsx` "For you": Trending talent (rail of people cards), Trending businesses

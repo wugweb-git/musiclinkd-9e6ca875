@@ -23,8 +23,14 @@ import {
   Play,
   Pause,
   Smartphone,
+  Heart,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import { myPortfolioLikes, portfolioLikeCounts, toggleLike } from "@/lib/portfolio.functions";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { MediaEmbed } from "./media-embed";
@@ -41,8 +47,6 @@ import {
   type WorkAnalyticsFigures,
 } from "@/data/portfolio";
 import { showDemoControls } from "@/lib/dev";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { searchPeople } from "@/lib/profile-groups.functions";
 import { iconSize } from "@/lib/tokens";
 import { DrawerList, DrawerOptionRow } from "./drawer-list";
@@ -134,28 +138,170 @@ export function WorkTypeSheet({
 }
 
 /**
- * Someone else's work as one row that opens it: type icon, title, "type · name". Used where work
- * from the community is listed (Discover → Music, Discover's Trending work).
+ * Someone else's work as a public card (phone plan 5.3): square cover (the type icon when there is
+ * none), type, title and whose it is. The body opens the work; Like and Share sit in a footer
+ * beside the link, never inside it. Used where community work is listed (Discover, Discover → Music).
  */
 export function WorkLinkRow({
   work,
+  likes,
 }: {
-  work: { id: string; title: string; kind: string; display_name: string | null };
+  work: {
+    id: string;
+    title: string;
+    kind: string;
+    display_name: string | null;
+    cover_url?: string | null | undefined;
+  };
+  /** The list's like data (`useWorkLikes`); omitted, no Like shows. */
+  likes?: WorkLikes | undefined;
 }) {
+  const t = workType(work.kind);
   return (
-    <Link to="/portfolio/$id" params={{ id: work.id }} className="block">
-      <Card>
-        <div className="flex items-center gap-3">
-          <WorkTypeIcon kind={work.kind} />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{work.title}</p>
-            <p className="truncate text-1 text-muted-foreground">
-              {joinParts(workType(work.kind).label, work.display_name)}
-            </p>
-          </div>
-        </div>
-      </Card>
-    </Link>
+    <div className="overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs">
+      <Link
+        to="/portfolio/$id"
+        params={{ id: work.id }}
+        className="state-layer flex items-center gap-3 p-3 active:scale-[0.99]"
+      >
+        {work.cover_url ? (
+          <img
+            src={sized(work.cover_url, { width: 112 })}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="aspect-square h-14 w-14 shrink-0 rounded-sm object-cover"
+          />
+        ) : (
+          <WorkTypeIcon kind={work.kind} size="lg" />
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-xs uppercase text-muted-foreground">{t.label}</span>
+          <span className="block truncate text-sm font-semibold">{work.title}</span>
+          {work.display_name ? (
+            <span className="block truncate text-1 text-muted-foreground">{work.display_name}</span>
+          ) : null}
+        </span>
+      </Link>
+      <div className="flex items-center gap-1 border-t border-border/60 px-2 py-1">
+        {likes?.available ? <LikeButton id={work.id} likes={likes} /> : null}
+        <ShareWorkButton id={work.id} title={work.title} />
+      </div>
+    </div>
+  );
+}
+
+export type WorkLikes = {
+  available: boolean;
+  counts: Record<string, number>;
+  mine: Set<string>;
+  toggle: (id: string, liked: boolean) => void;
+};
+
+/**
+ * Like data for a list of works, in one read: whether likes exist yet, each work's count, and
+ * which ones you liked. Optimistic toggle with rollback.
+ */
+export function useWorkLikes(ids: string[]): WorkLikes {
+  const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
+  const loadCounts = useServerFn(portfolioLikeCounts);
+  const loadMine = useServerFn(myPortfolioLikes);
+  const save = useServerFn(toggleLike);
+  const key = ids.join(",");
+  const counts = useQuery({
+    queryKey: ["likes", "counts", key],
+    queryFn: () => loadCounts({ data: { ids } }),
+    enabled: ids.length > 0,
+  });
+  const mine = useQuery({
+    queryKey: ["likes", "mine", key],
+    queryFn: () => loadMine({ data: { ids } }),
+    enabled: signedIn && ids.length > 0 && counts.data?.available === true,
+  });
+  const act = useMutation({
+    mutationFn: (v: { id: string; liked: boolean }) => save({ data: v }),
+    onMutate: ({ id, liked }) => {
+      queryClient.setQueryData<string[]>(["likes", "mine", key], (prev = []) =>
+        liked ? [...prev, id] : prev.filter((x) => x !== id),
+      );
+      queryClient.setQueryData<{ available: boolean; counts: Record<string, number> }>(
+        ["likes", "counts", key],
+        (prev) =>
+          prev && {
+            ...prev,
+            counts: {
+              ...prev.counts,
+              [id]: Math.max(0, (prev.counts[id] ?? 0) + (liked ? 1 : -1)),
+            },
+          },
+      );
+    },
+    onError: () => toast.error("That didn't save. Try again."),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["likes"] }),
+  });
+  return {
+    available: counts.data?.available ?? false,
+    counts: counts.data?.counts ?? {},
+    mine: new Set(mine.data ?? []),
+    toggle: (id, liked) => {
+      if (!act.isPending) act.mutate({ id, liked });
+    },
+  };
+}
+
+/** Heart outline ⇄ filled in brand pink; the total shows once you have liked it (owner, 5 Oct). */
+function LikeButton({ id, likes }: { id: string; likes: WorkLikes }) {
+  const { signedIn } = useAuth();
+  const liked = likes.mine.has(id);
+  const count = likes.counts[id] ?? 0;
+  if (!signedIn)
+    return (
+      <IconBtnLink to="/welcome" label="Like" variant="plain">
+        <Heart size={iconSize.sm} aria-hidden />
+      </IconBtnLink>
+    );
+  return (
+    <span className="flex items-center">
+      <IconBtn
+        label={liked ? "Unlike" : "Like"}
+        variant="plain"
+        onClick={() => likes.toggle(id, !liked)}
+      >
+        <Heart
+          size={iconSize.sm}
+          className={liked ? "text-brand" : undefined}
+          fill={liked ? "currentColor" : "none"}
+          aria-hidden
+        />
+      </IconBtn>
+      {liked && count > 0 ? (
+        <span className="pr-1 text-xs text-muted-foreground">{count.toLocaleString("en-IN")}</span>
+      ) : null}
+    </span>
+  );
+}
+
+/** The phone's share sheet where there is one; otherwise the link is copied. */
+function ShareWorkButton({ id, title }: { id: string; title: string }) {
+  return (
+    <IconBtn
+      label="Share"
+      variant="plain"
+      onClick={() => {
+        const url = `${window.location.origin}/portfolio/${id}`;
+        if (typeof navigator.share === "function") {
+          navigator.share({ title, url }).catch(() => undefined);
+          return;
+        }
+        navigator.clipboard
+          .writeText(url)
+          .then(() => toast.success("Link copied"))
+          .catch(() => toast.error("Couldn't copy the link"));
+      }}
+    >
+      <Share2 size={iconSize.sm} aria-hidden />
+    </IconBtn>
   );
 }
 

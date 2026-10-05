@@ -27,7 +27,7 @@ import { workType } from "@/data/portfolio";
 import { listBands, type BandRow } from "@/lib/bands.functions";
 import { joinParts } from "@/lib/utils";
 import { sized } from "@/lib/image-url";
-import { WorkLinkRow } from "@/components/ml/portfolio";
+import { useWorkLikes, WorkLinkRow } from "@/components/ml/portfolio";
 import { discoverBookableFromRow } from "@/lib/bookable-view";
 import { iconSize } from "@/lib/tokens";
 import { opportunityFromRow } from "@/lib/opportunity-view";
@@ -141,6 +141,9 @@ function DiscoverScreen() {
   const workPool = loaded.trendingWork.length ? loaded.trendingWork : loaded.newWork;
   const trendingAudio = workPool.filter((w) => workType(w.kind).media === "audio");
   const trendingVideo = workPool.filter((w) => workType(w.kind).media === "video");
+  const workLikes = useWorkLikes(
+    [...trendingAudio.slice(0, 5), ...trendingVideo.slice(0, 5)].map((w) => w.id),
+  );
   const trendingOpportunities = [...loaded.opportunities].sort(
     (a, b) => b.applicants - a.applicants,
   );
@@ -323,7 +326,7 @@ function DiscoverScreen() {
                 <SectionHeader title="Trending audio" />
                 <div className="space-y-3 px-5">
                   {trendingAudio.slice(0, 5).map((work) => (
-                    <WorkLinkRow key={work.id} work={work} />
+                    <WorkLinkRow key={work.id} work={work} likes={workLikes} />
                   ))}
                 </div>
               </section>
@@ -333,7 +336,7 @@ function DiscoverScreen() {
                 <SectionHeader title="Trending videos" />
                 <div className="space-y-3 px-5">
                   {trendingVideo.slice(0, 5).map((work) => (
-                    <WorkLinkRow key={work.id} work={work} />
+                    <WorkLinkRow key={work.id} work={work} likes={workLikes} />
                   ))}
                 </div>
               </section>

@@ -909,3 +909,54 @@ export const myPortfolioEvents = createServerFn({ method: "GET" })
     }
     return counts;
   });
+
+/*
+ * Likes on published work (migration 20261005120000_portfolio_item_likes.sql, owner's yes needed
+ * before it is applied). Until the table exists these report `available: false` and the card shows
+ * no Like button, never one that does nothing. Counts never say who liked.
+ */
+export const portfolioLikeCounts = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(60) }).parse(d))
+  .handler(async ({ data }): Promise<{ available: boolean; counts: Record<string, number> }> => {
+    if (!data.ids.length) return { available: true, counts: {} };
+    const client = (await anonClient()) as unknown as SupabaseClient;
+    const { data: rows, error } = await client.rpc("portfolio_like_counts", { item_ids: data.ids });
+    if (error) return { available: false, counts: {} };
+    const counts: Record<string, number> = {};
+    for (const r of (rows ?? []) as { item_id: string; likes: number }[])
+      counts[r.item_id] = Number(r.likes);
+    return { available: true, counts };
+  });
+
+/** Which of these works the signed-in user has liked. */
+export const myPortfolioLikes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(60) }).parse(d))
+  .handler(async ({ context, data }): Promise<string[]> => {
+    if (!data.ids.length) return [];
+    const { data: rows, error } = await (context.supabase as unknown as SupabaseClient)
+      .from("portfolio_item_likes")
+      .select("item_id")
+      .eq("user_id", context.userId)
+      .in("item_id", data.ids);
+    if (error) return [];
+    return ((rows ?? []) as { item_id: string }[]).map((r) => r.item_id);
+  });
+
+export const toggleLike = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid(), liked: z.boolean() }).parse(d))
+  .handler(async ({ context, data }) => {
+    const db = context.supabase as unknown as SupabaseClient;
+    const { error } = data.liked
+      ? await db
+          .from("portfolio_item_likes")
+          .upsert({ user_id: context.userId, item_id: data.id }, { ignoreDuplicates: true })
+      : await db
+          .from("portfolio_item_likes")
+          .delete()
+          .eq("user_id", context.userId)
+          .eq("item_id", data.id);
+    if (error) throw new Error(error.message);
+    return { liked: data.liked };
+  });
