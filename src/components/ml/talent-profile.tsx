@@ -1070,7 +1070,7 @@ function MusicIdentityBento({ p }: { p: TalentProfile }) {
  * The dark card that closes a profile (reference: "Have a question for …?"): one action, Message,
  * which opens the thread in the Inbox (item 10). Copy: owner.
  */
-function MessageCard({ name, profileId }: { name: string; profileId: string }) {
+export function MessageCard({ name, profileId }: { name: string; profileId: string }) {
   const message = useMessagePerson();
   return (
     <section className="mt-8 rounded-lg bg-ink p-5 text-ink-foreground">

@@ -862,7 +862,7 @@ export function AudioTrackCard({
   if (layout === "portrait" && !isExpanded)
     return (
       <article className="min-w-0">
-        <div className="relative">
+        <div className="relative overflow-hidden rounded-md bg-ink/5">
           {track.artwork || coverFor(track.media) ? (
             <img
               src={sized((track.artwork || coverFor(track.media))!, { width: 412 })}
@@ -1152,7 +1152,7 @@ export function VideoCard({
   return (
     <article className={cn("min-w-0", layout === "grid" ? "w-full" : "w-[220px] shrink-0")}>
       {/* Same tile as audio: a square cover, rounded, the source's play button, a Video tag. */}
-      <div className="relative aspect-square overflow-hidden rounded-md shadow-xs">
+      <div className="relative aspect-square overflow-hidden rounded-md bg-ink/5 shadow-xs">
         {v.thumb || coverFor(v.media) ? (
           <img
             src={sized((v.thumb || coverFor(v.media))!, { width: 412 })}

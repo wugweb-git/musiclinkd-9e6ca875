@@ -16,6 +16,8 @@ import {
   Sparkles,
   Star,
   type LucideIcon,
+  LayoutGrid,
+  Rows3,
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -47,7 +49,7 @@ import {
   useServiceRequest,
 } from "@/components/ml/booking";
 import type { TalentProfile } from "@/data/profile";
-import { CallBtn } from "@/components/ml/talent-profile";
+import { CallBtn, MessageCard } from "@/components/ml/talent-profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useMessagePerson } from "@/hooks/use-message-person";
@@ -67,6 +69,9 @@ const tabs: { key: BusinessTab; icon: LucideIcon; solid: SolidIcon; move: Move }
 ];
 
 /** A business account's profile: /business/$id and /profile/$username for a business. */
+/** Tabs are hidden for the one-scroll profile (owner, 5 Oct); flip to bring them back. */
+const SHOW_TABS = false;
+
 export function BusinessProfileExperience({
   b,
   work = null,
@@ -78,6 +83,7 @@ export function BusinessProfileExperience({
   const [tab, setTab] = useState<BusinessTab>("Overview");
   const navigate = useNavigate();
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [view, setView] = useState<"portrait" | "stacked">("portrait");
   const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   const { user, signedIn } = useAuth();
   const isOwner = !!b && user?.id === b.profileId;
@@ -158,10 +164,13 @@ export function BusinessProfileExperience({
         )}
       </div>
 
-      <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Business sections" />
+      {/* One scroll like the talent profile (owner, 5 Oct); tabs hidden, not deleted. */}
+      {SHOW_TABS ? (
+        <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Business sections" />
+      ) : null}
 
       <div className="px-3 pb-6">
-        {tab === "Overview" ? (
+        {!SHOW_TABS || tab === "Overview" ? (
           <>
             {b.about || b.legalName ? (
               <StackSection title="About">
@@ -271,22 +280,61 @@ export function BusinessProfileExperience({
             {work && (work.audio.length || work.video.length) ? (
               <StackSection
                 title="Portfolio"
-                showAll="See all work"
-                onShowAll={() => setTab("Portfolio")}
+                action={
+                  <span className="flex items-center gap-1">
+                    <IconBtn
+                      label="Grid view"
+                      variant={view === "portrait" ? "outline" : "ghost"}
+                      className="h-10 w-10"
+                      onClick={() => setView("portrait")}
+                    >
+                      <LayoutGrid size={iconSize.sm} aria-hidden />
+                    </IconBtn>
+                    <IconBtn
+                      label="Row view"
+                      variant={view === "stacked" ? "outline" : "ghost"}
+                      className="h-10 w-10"
+                      onClick={() => setView("stacked")}
+                    >
+                      <Rows3 size={iconSize.sm} aria-hidden />
+                    </IconBtn>
+                  </span>
+                }
               >
-                <div className="space-y-3">
-                  {work.audio.slice(0, 2).map((track) => (
+                {/* Audio, video and reels together, one grid/stack toggle (owner, 5 Oct). */}
+                <div className={view === "portrait" ? "grid grid-cols-2 gap-3" : "space-y-1"}>
+                  {work.audio.map((track) => (
                     <AudioTrackCard
                       key={track.id}
                       track={track}
+                      layout={view}
                       playing={playingId === track.id}
                       onToggle={() => setPlayingId((id) => (id === track.id ? null : track.id))}
                     />
                   ))}
-                  {work.video.slice(0, 2).map((v) => (
-                    <VideoCard key={v.id} v={v} layout="row" />
+                  {work.video.map((v) => (
+                    <VideoCard key={v.id} v={v} layout={view === "portrait" ? "grid" : "row"} />
                   ))}
                 </div>
+              </StackSection>
+            ) : null}
+            {!SHOW_TABS && work?.projects.length ? (
+              <StackSection title="Projects">
+                <div className="space-y-2">
+                  {work.projects.map((project) => (
+                    <ProjectCard key={project.id} p={project} />
+                  ))}
+                </div>
+              </StackSection>
+            ) : null}
+            {!SHOW_TABS && b.credits.length ? (
+              <StackSection title="Credits" collapsible>
+                {b.credits.map((c) => (
+                  <div key={c.id} className="border-b border-border py-2 last:border-0">
+                    <p className="text-sm font-semibold">{c.title}</p>
+                    {c.meta ? <p className="text-1 text-muted-foreground">{c.meta}</p> : null}
+                  </div>
+                ))}
               </StackSection>
             ) : null}
 
@@ -341,8 +389,9 @@ export function BusinessProfileExperience({
             {b.reviews.length ? (
               <StackSection
                 title="Reviews"
-                showAll="See all reviews"
-                onShowAll={() => setTab("Reviews")}
+                {...(SHOW_TABS
+                  ? { showAll: "See all reviews", onShowAll: () => setTab("Reviews") }
+                  : {})}
               >
                 <ReviewRail>
                   {b.reviews.map((rv) => (
@@ -421,6 +470,12 @@ export function BusinessProfileExperience({
           </div>
         ) : null}
       </div>
+
+      {!SHOW_TABS && !isOwner && !ownsPage && signedIn ? (
+        <div className="px-5 pb-8">
+          <MessageCard name={b.name} profileId={b.profileId} />
+        </div>
+      ) : null}
 
       <PhotoSheet
         title={viewing?.title ?? ""}

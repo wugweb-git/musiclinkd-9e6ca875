@@ -41,6 +41,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   "All work"; at rest a stacked row (cover from the link when none is saved, title, type · role,
   Published/Draft) or a portrait tile; selected expands with the player (video on top), what you
   added (description, collaborators, year) and your actions.
+- Business profile is one scroll too (tabs hidden behind `SHOW_TABS`): About, Showcase, Services,
+  Amenities, Equipment, the full Portfolio container (all works, grid/stack toggle), Projects,
+  Credits, Hours, Policies, Find & contact, Reviews, then the dark Message card for signed-in
+  visitors. `MessageCard` is shared from `talent-profile.tsx`.
+- Portrait tiles sit on the grey placeholder while their cover loads.
 - Play buttons take the source's own colour (YouTube red, Spotify green, SoundCloud orange;
   `playSource` in `embed.ts`), ink otherwise.
 - Missing images app-wide (`__root.tsx` + `styles.css`): a failed `<img>` is marked
