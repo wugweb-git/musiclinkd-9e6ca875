@@ -169,20 +169,20 @@ function DiscoverScreen() {
               }
             />
             {mode === "People" || mode === "Talent" ? (
-              <div className="mx-5 overflow-hidden rounded-lg border border-border bg-card">
+              <div className="mx-5 grid grid-cols-2 gap-3">
                 {people.slice(0, 10).map((person) => (
-                  <PersonRow key={person.id} person={person} roleLabels={options?.person_types} />
+                  <PersonCard
+                    key={person.id}
+                    person={person}
+                    roleLabels={options?.person_types}
+                    fill
+                  />
                 ))}
               </div>
             ) : (
               <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
                 {people.slice(0, 8).map((person) => (
-                  <PersonCard
-                    key={person.id}
-                    person={person}
-                    roleLabels={options?.person_types}
-                    featured
-                  />
+                  <PersonCard key={person.id} person={person} roleLabels={options?.person_types} />
                 ))}
               </div>
             )}

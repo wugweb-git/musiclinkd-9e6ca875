@@ -31,6 +31,7 @@ export {
   ReviewRail,
 } from "./profile";
 import { sized } from "@/lib/image-url";
+import { LogoMark } from "./logo";
 import { StateIcon } from "./tab-icon";
 
 /*
@@ -341,14 +342,21 @@ export function PersonCard({
   roleLabels,
   featured = false,
   disabled = false,
+  fill = false,
 }: {
   person: PersonLike;
   roleLabels?: TaxonomyOption[] | undefined;
   featured?: boolean | undefined;
+  /** Fill a grid cell (the 2-column People grid) instead of a fixed rail width. */
+  fill?: boolean | undefined;
   /** A preview, not a real profile to open — renders the same card with no link. */
   disabled?: boolean | undefined;
 }) {
   const detail = personDetail(person, roleLabels);
+  const roleLine = (person.roles ?? [])
+    .slice(0, 2)
+    .map((r) => labelFor(roleLabels, r))
+    .join(" · ");
   const rating = person.rating ?? null;
   const body = featured ? (
     <>
@@ -388,47 +396,48 @@ export function PersonCard({
       </span>
     </>
   ) : (
+    // Reference 16: square photo inset in the card, name, role · specialty, place in small capitals.
+    // No photo: the brand mark on a quiet tile, never initials.
     <>
-      <PersonAvatar
-        name={person.name}
-        photo={person.avatarUrl ? sized(person.avatarUrl, { width: 56 }) : null}
-        className="h-14 w-14 border border-border/60 text-sm"
-      />
-      <span className="mt-3 flex min-w-0 items-center gap-1">
-        <span className="truncate text-2 font-semibold text-foreground transition-colors group-hover:text-ink">
-          {person.name}
+      {person.avatarUrl ? (
+        <img
+          src={sized(person.avatarUrl, { width: 412 })}
+          alt=""
+          loading="lazy"
+          className="aspect-square w-full rounded-md object-cover"
+        />
+      ) : (
+        <span className="flex aspect-square w-full items-center justify-center rounded-md bg-subtle">
+          <LogoMark className="h-auto w-1/3" />
         </span>
+      )}
+      <span className="mt-3 flex min-w-0 items-center gap-1">
+        <span className="truncate text-2 font-bold text-foreground">{person.name}</span>
         {person.verified ? <VerifiedBadge size={14} /> : null}
       </span>
-      {detail ? (
-        <span className="mt-0.5 line-clamp-3 block min-w-0 text-1 leading-snug text-muted-foreground">
-          {detail}
-        </span>
+      {roleLine ? (
+        <span className="mt-0.5 block truncate text-1 text-muted-foreground">{roleLine}</span>
       ) : null}
       {person.city ? (
-        <span className="mt-1.5 flex min-w-0 items-center gap-1 text-1 text-muted-foreground">
-          <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-          <span className="truncate">{person.city}</span>
-        </span>
-      ) : null}
-      {rating != null ? (
-        <span className="mt-1 flex items-center text-1">
-          <Rating value={rating} count={person.reviewCount ?? 0} />
+        <span className="mt-1 block truncate text-xs uppercase text-muted-foreground">
+          {person.city}
         </span>
       ) : null}
     </>
   );
   const shape = featured
     ? "relative block h-56 w-rail-sm shrink-0 overflow-hidden rounded-lg text-left"
-    : "block w-rail-sm shrink-0 rounded-lg border border-border/80 bg-card p-4 shadow-xs";
+    : "block w-full rounded-lg border border-border/80 bg-card p-3 shadow-xs";
   const live = featured
     ? "state-layer transition-transform duration-150 ease-standard active:scale-[0.985]"
     : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]";
   // A preview, or a person with no username, is the same card with nothing to open.
-  if (disabled || !person.username) return <div className={shape}>{body}</div>;
+  const width = fill ? "w-full min-w-0" : "w-rail-sm shrink-0";
+  if (disabled || !person.username)
+    return <div className={cn(shape, !featured && width)}>{body}</div>;
   // The action sits over the card but beside the link, not inside it (no button inside a link).
   return (
-    <div className="relative w-rail-sm shrink-0">
+    <div className={cn("relative", width)}>
       <Link
         to="/profile/$username"
         params={{ username: person.username }}
@@ -439,7 +448,7 @@ export function PersonCard({
       <CardActions
         profileId={person.id}
         relation={person.isBusiness ? "follow" : "connect"}
-        className="absolute right-3 top-3 z-10"
+        className="absolute right-5 top-5 z-10"
       />
     </div>
   );
@@ -582,7 +591,7 @@ export function BookableCard({
       <CardActions
         profileId={studio.ownerId}
         relation="follow"
-        className="absolute right-3 top-3 z-10"
+        className="absolute right-5 top-5 z-10"
       />
     </div>
   );
