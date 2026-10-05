@@ -28,7 +28,6 @@ import { discoverBookableFromRow, type DiscoverBookable } from "@/lib/bookable-v
 import { listBookableBookings, type BookingRequest } from "@/lib/bookings.functions";
 import { listBookables, listOpportunities } from "@/lib/catalog.functions";
 import { listMyConnections } from "@/lib/connections.functions";
-import { listMyLeads, type EnquiryRow } from "@/lib/enquiries.functions";
 import { iconSize } from "@/lib/tokens";
 import { opportunityFromRow } from "@/lib/opportunity-view";
 import {
@@ -83,7 +82,6 @@ type HomeData = {
   connections: Awaited<ReturnType<typeof listMyConnections>>;
   applications: Awaited<ReturnType<typeof listMyApplications>>;
   bookings: BookingRequest[];
-  leads: EnquiryRow[];
   services: ServiceRow[];
 };
 
@@ -104,7 +102,6 @@ function useHomeData() {
   const connections = useServerFn(listMyConnections);
   const applications = useServerFn(listMyApplications);
   const bookings = useServerFn(listBookableBookings);
-  const leads = useServerFn(listMyLeads);
   const services = useServerFn(listMyServices);
   const [offline, setOffline] = useState(false);
 
@@ -133,21 +130,19 @@ function useHomeData() {
         readOr(portfolio(), []),
         readOr(business(), null),
       ]);
-      const [network, applied, incoming, businessLeads, myServices] = businessRow
+      const [network, applied, incoming, myServices] = businessRow
         ? await Promise.all([
             Promise.resolve({ connected: [], received: [], sent: [] }) as ReturnType<
               typeof connections
             >,
             Promise.resolve([]) as ReturnType<typeof applications>,
             readOr(bookings(), []),
-            readOr(leads(), []),
             readOr(services(), []),
           ])
         : await Promise.all([
             readOr(connections(), { connected: [], received: [], sent: [] }),
             readOr(applications(), []),
             Promise.resolve([] as BookingRequest[]),
-            Promise.resolve([] as EnquiryRow[]),
             Promise.resolve([] as ServiceRow[]),
           ]);
       return {
@@ -157,7 +152,6 @@ function useHomeData() {
         connections: network,
         applications: applied,
         bookings: incoming,
-        leads: businessLeads,
         services: myServices,
       };
     },
@@ -337,7 +331,6 @@ function BusinessHome({ data }: { data: HomeData }) {
   const pendingBookings = data.bookings.filter(
     (b) => b.status === "requested" || b.status === "reviewing",
   );
-  const newLeads = data.leads.filter((lead) => lead.status === "new");
   const activeServices = data.services.filter((service) => service.status === "active");
   const today = new Date().toISOString().slice(0, 10);
   const todayBookings = data.bookings.filter(
@@ -387,18 +380,10 @@ function BusinessHome({ data }: { data: HomeData }) {
           </Link>
         </section>
 
-        {newLeads.length || pendingBookings.length ? (
+        {pendingBookings.length ? (
           <section>
             <SectionHeader title="Needs attention" />
             <div className="mx-5 overflow-hidden rounded-lg border border-border bg-card">
-              {newLeads.length ? (
-                <ActionRow
-                  to="/leads"
-                  title={`${newLeads.length} new ${newLeads.length === 1 ? "enquiry" : "enquiries"}`}
-                  detail="Reply while the request is current."
-                  icon={<Inbox size={iconSize.md} />}
-                />
-              ) : null}
               {pendingBookings.length ? (
                 <ActionRow
                   to="/business/bookings/requests"
@@ -435,11 +420,12 @@ function BusinessHome({ data }: { data: HomeData }) {
                   : "Manage requests"
               }
             />
+            {/* Enquiries are messages (owner, 4 Oct: Inbox = communication + leads). */}
             <WorkspaceLink
-              to="/leads"
+              to="/inbox"
               icon={<Inbox size={iconSize.lg} />}
-              label="Enquiries"
-              detail={newLeads.length ? `${newLeads.length} new` : "Open your inbox"}
+              label="Inbox"
+              detail="Messages and requests"
             />
             <WorkspaceLink
               to="/services"
@@ -495,12 +481,7 @@ function ActionRow({
   detail,
   icon,
 }: {
-  to:
-    | "/profile/edit"
-    | "/onboarding/resume"
-    | "/portfolio"
-    | "/leads"
-    | "/business/bookings/requests";
+  to: "/profile/edit" | "/onboarding/resume" | "/portfolio" | "/business/bookings/requests";
   title: string;
   detail: string;
   icon?: ReactNode;
@@ -553,7 +534,7 @@ function WorkspaceLink({
   label,
   detail,
 }: {
-  to: "/business/bookings/requests" | "/leads" | "/services" | "/discover";
+  to: "/business/bookings/requests" | "/inbox" | "/services" | "/discover";
   icon: ReactNode;
   label: string;
   detail: string;

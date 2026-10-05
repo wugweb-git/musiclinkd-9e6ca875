@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed — enquiry pages and the leads page (5 Oct, owner)
+
+Per the 4 Oct decision record (Notion): the Inbox is communication + leads + enquiries; asking
+is just a Message, like LinkedIn. Booking stays Service → Book.
+
+- Deleted `/business/$id/enquiry`, `/services/$id/enquiry`, `/leads`, the Inbox's Enquiries tab
+  (`inbox-enquiries.tsx`) and `enquiries.functions.ts`. The Inbox is All · Messages · Booking
+  Requests.
+- Business profile: no Enquire button (Message is beside Book). Service page: Enquire becomes
+  Message to whoever offers it; the owner's "Preview Booking" link to the enquiry page is gone.
+  Service card: the default Book opens the service instead of the enquiry page.
+- Home: the "new enquiries" row is gone; the Enquiries tile is now Inbox.
+- No data deleted: the `enquiries` table and its trigger stay; nothing writes to them now.
+
 ### Changed — profile fact grid (5 Oct, phone plan P7)
 
 - `profile.tsx` `InfoRow` gains a `cell` layout (icon + 12px label over a 14 medium value, 16px

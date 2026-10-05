@@ -18,7 +18,6 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DeleteAccountRouteImport } from './routes/delete-account'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as InboxRouteImport } from './routes/inbox'
-import { Route as LeadsRouteImport } from './routes/leads'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -107,7 +106,6 @@ import { Route as BookingIdScheduleRouteImport } from './routes/booking.$id.sche
 import { Route as BookingIdServiceRouteImport } from './routes/booking.$id.service'
 import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confirmed.$ref'
 import { Route as BusinessIdAvailabilityRouteImport } from './routes/business.$id.availability'
-import { Route as BusinessIdEnquiryRouteImport } from './routes/business.$id.enquiry'
 import { Route as BusinessBookingsIndexRouteImport } from './routes/business.bookings.index'
 import { Route as BusinessBookingsRefRouteImport } from './routes/business.bookings.$ref'
 import { Route as BusinessBookingsCalendarRouteImport } from './routes/business.bookings.calendar'
@@ -145,7 +143,6 @@ import { Route as ReviewsIdReportRouteImport } from './routes/reviews.$id.report
 import { Route as ReviewsWriteIdRouteImport } from './routes/reviews.write.$id'
 import { Route as SearchWhyIdRouteImport } from './routes/search.why.$id'
 import { Route as ServicesIdIndexRouteImport } from './routes/services.$id.index'
-import { Route as ServicesIdEnquiryRouteImport } from './routes/services.$id.enquiry'
 import { Route as ServicesIdManageRouteImport } from './routes/services.$id.manage'
 import { Route as SettingsSecurityIndexRouteImport } from './routes/settings.security.index'
 import { Route as BusinessBookingsRequestsIndexRouteImport } from './routes/business.bookings.requests.index'
@@ -201,11 +198,6 @@ const HomeRoute = HomeRouteImport.update({
 const InboxRoute = InboxRouteImport.update({
   id: '/inbox',
   path: '/inbox',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LeadsRoute = LeadsRouteImport.update({
-  id: '/leads',
-  path: '/leads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeRoute = MeRouteImport.update({
@@ -648,11 +640,6 @@ const BusinessIdAvailabilityRoute = BusinessIdAvailabilityRouteImport.update({
   path: '/business/$id/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BusinessIdEnquiryRoute = BusinessIdEnquiryRouteImport.update({
-  id: '/business/$id/enquiry',
-  path: '/business/$id/enquiry',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BusinessBookingsIndexRoute = BusinessBookingsIndexRouteImport.update({
   id: '/business/bookings/',
   path: '/business/bookings/',
@@ -842,11 +829,6 @@ const ServicesIdIndexRoute = ServicesIdIndexRouteImport.update({
   path: '/services/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ServicesIdEnquiryRoute = ServicesIdEnquiryRouteImport.update({
-  id: '/services/$id/enquiry',
-  path: '/services/$id/enquiry',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ServicesIdManageRoute = ServicesIdManageRouteImport.update({
   id: '/services/$id/manage',
   path: '/services/$id/manage',
@@ -919,7 +901,6 @@ export interface FileRoutesByFullPath {
   '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
-  '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1006,7 +987,6 @@ export interface FileRoutesByFullPath {
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
-  '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1034,7 +1014,6 @@ export interface FileRoutesByFullPath {
   '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/search/why/$id': typeof SearchWhyIdRoute
-  '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
@@ -1069,7 +1048,6 @@ export interface FileRoutesByTo {
   '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
-  '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1155,7 +1133,6 @@ export interface FileRoutesByTo {
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
-  '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1183,7 +1160,6 @@ export interface FileRoutesByTo {
   '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/search/why/$id': typeof SearchWhyIdRoute
-  '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/bands/$id': typeof BandsIdIndexRoute
   '/booking/$id': typeof BookingIdIndexRoute
@@ -1219,7 +1195,6 @@ export interface FileRoutesById {
   '/delete-account': typeof DeleteAccountRoute
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
-  '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1306,7 +1281,6 @@ export interface FileRoutesById {
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
-  '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1334,7 +1308,6 @@ export interface FileRoutesById {
   '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/search/why/$id': typeof SearchWhyIdRoute
-  '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
@@ -1371,7 +1344,6 @@ export interface FileRouteTypes {
     | '/delete-account'
     | '/home'
     | '/inbox'
-    | '/leads'
     | '/me'
     | '/messages'
     | '/reset-password'
@@ -1458,7 +1430,6 @@ export interface FileRouteTypes {
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
     | '/business/$id/availability'
-    | '/business/$id/enquiry'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -1486,7 +1457,6 @@ export interface FileRouteTypes {
     | '/reviews/$id/report'
     | '/reviews/write/$id'
     | '/search/why/$id'
-    | '/services/$id/enquiry'
     | '/services/$id/manage'
     | '/bands/$id/'
     | '/booking/$id/'
@@ -1521,7 +1491,6 @@ export interface FileRouteTypes {
     | '/delete-account'
     | '/home'
     | '/inbox'
-    | '/leads'
     | '/me'
     | '/messages'
     | '/reset-password'
@@ -1607,7 +1576,6 @@ export interface FileRouteTypes {
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
     | '/business/$id/availability'
-    | '/business/$id/enquiry'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -1635,7 +1603,6 @@ export interface FileRouteTypes {
     | '/reviews/$id/report'
     | '/reviews/write/$id'
     | '/search/why/$id'
-    | '/services/$id/enquiry'
     | '/services/$id/manage'
     | '/bands/$id'
     | '/booking/$id'
@@ -1670,7 +1637,6 @@ export interface FileRouteTypes {
     | '/delete-account'
     | '/home'
     | '/inbox'
-    | '/leads'
     | '/me'
     | '/messages'
     | '/reset-password'
@@ -1757,7 +1723,6 @@ export interface FileRouteTypes {
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
     | '/business/$id/availability'
-    | '/business/$id/enquiry'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -1785,7 +1750,6 @@ export interface FileRouteTypes {
     | '/reviews/$id/report'
     | '/reviews/write/$id'
     | '/search/why/$id'
-    | '/services/$id/enquiry'
     | '/services/$id/manage'
     | '/bands/$id/'
     | '/booking/$id/'
@@ -1821,7 +1785,6 @@ export interface RootRouteChildren {
   DeleteAccountRoute: typeof DeleteAccountRoute
   HomeRoute: typeof HomeRoute
   InboxRoute: typeof InboxRoute
-  LeadsRoute: typeof LeadsRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -1903,7 +1866,6 @@ export interface RootRouteChildren {
   BandsIdPortfolioRoute: typeof BandsIdPortfolioRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BusinessIdAvailabilityRoute: typeof BusinessIdAvailabilityRoute
-  BusinessIdEnquiryRoute: typeof BusinessIdEnquiryRoute
   BusinessBookingsRefRoute: typeof BusinessBookingsRefRoute
   BusinessBookingsCalendarRoute: typeof BusinessBookingsCalendarRoute
   CollabJoinTokenRoute: typeof CollabJoinTokenRoute
@@ -1931,7 +1893,6 @@ export interface RootRouteChildren {
   ReviewsIdReportRoute: typeof ReviewsIdReportRoute
   ReviewsWriteIdRoute: typeof ReviewsWriteIdRoute
   SearchWhyIdRoute: typeof SearchWhyIdRoute
-  ServicesIdEnquiryRoute: typeof ServicesIdEnquiryRoute
   ServicesIdManageRoute: typeof ServicesIdManageRoute
   BandsIdIndexRoute: typeof BandsIdIndexRoute
   BusinessBookingsIndexRoute: typeof BusinessBookingsIndexRoute
@@ -2019,13 +1980,6 @@ declare module '@tanstack/react-router' {
       path: '/inbox'
       fullPath: '/inbox'
       preLoaderRoute: typeof InboxRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/leads': {
-      id: '/leads'
-      path: '/leads'
-      fullPath: '/leads'
-      preLoaderRoute: typeof LeadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/me': {
@@ -2644,13 +2598,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessIdAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/business/$id/enquiry': {
-      id: '/business/$id/enquiry'
-      path: '/business/$id/enquiry'
-      fullPath: '/business/$id/enquiry'
-      preLoaderRoute: typeof BusinessIdEnquiryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/business/bookings/': {
       id: '/business/bookings/'
       path: '/business/bookings'
@@ -2910,13 +2857,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/services/$id/enquiry': {
-      id: '/services/$id/enquiry'
-      path: '/services/$id/enquiry'
-      fullPath: '/services/$id/enquiry'
-      preLoaderRoute: typeof ServicesIdEnquiryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/services/$id/manage': {
       id: '/services/$id/manage'
       path: '/services/$id/manage'
@@ -3029,7 +2969,6 @@ const rootRouteChildren: RootRouteChildren = {
   DeleteAccountRoute: DeleteAccountRoute,
   HomeRoute: HomeRoute,
   InboxRoute: InboxRoute,
-  LeadsRoute: LeadsRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -3111,7 +3050,6 @@ const rootRouteChildren: RootRouteChildren = {
   BandsIdPortfolioRoute: BandsIdPortfolioRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BusinessIdAvailabilityRoute: BusinessIdAvailabilityRoute,
-  BusinessIdEnquiryRoute: BusinessIdEnquiryRoute,
   BusinessBookingsRefRoute: BusinessBookingsRefRoute,
   BusinessBookingsCalendarRoute: BusinessBookingsCalendarRoute,
   CollabJoinTokenRoute: CollabJoinTokenRoute,
@@ -3139,7 +3077,6 @@ const rootRouteChildren: RootRouteChildren = {
   ReviewsIdReportRoute: ReviewsIdReportRoute,
   ReviewsWriteIdRoute: ReviewsWriteIdRoute,
   SearchWhyIdRoute: SearchWhyIdRoute,
-  ServicesIdEnquiryRoute: ServicesIdEnquiryRoute,
   ServicesIdManageRoute: ServicesIdManageRoute,
   BandsIdIndexRoute: BandsIdIndexRoute,
   BusinessBookingsIndexRoute: BusinessBookingsIndexRoute,

@@ -1296,7 +1296,7 @@ export function ReviewInviteCard() {
  */
 /**
  * One service, everywhere a service is shown: talent profiles, business pages, booking. A studio's
- * service lists what it uses; `onBook` replaces the default Book (the service's enquiry) — a studio
+ * service lists what it uses; `onBook` replaces the default Book (opening the service) — a studio
  * opens its booking flow with the service picked. `selected` marks the one picked in booking.
  */
 export function ServiceCard({
@@ -1338,7 +1338,8 @@ export function ServiceCard({
     </Btn>
   ) : real ? (
     <BtnLink
-      to="/services/$id/enquiry"
+      // No enquiry page any more (owner, 5 Oct): Book opens the service, where it is booked.
+      to="/services/$id"
       params={{ id: s.id }}
       className={cn(
         "hit-area min-h-control-sm shrink-0 px-5 text-sm active:scale-95",

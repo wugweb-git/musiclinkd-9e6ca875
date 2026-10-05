@@ -630,28 +630,12 @@ function BusinessActions({
   });
   const followOn = act.isPending ? act.variables : (q.data?.following ?? false);
 
-  // A studio is booked through its rooms and calendar; any other business takes an enquiry.
-  // A studio can be booked (rooms, dates, slots) and asked; any other business is asked.
-  const enquire = (
-    <BtnLink
-      to="/business/$id/enquiry"
-      params={{ id }}
-      variant={studioSlug ? "outline" : "primary"}
-      className="min-w-0 flex-1 px-3"
-    >
-      Enquire
-    </BtnLink>
-  );
+  // A studio can be booked; enquiries are just Messages in the Inbox (owner, 4 Oct).
   const book = studioSlug ? (
-    <>
-      <BtnLink to="/booking/$id" params={{ id: studioSlug }} className="min-w-0 flex-1 px-3">
-        Book
-      </BtnLink>
-      {enquire}
-    </>
-  ) : (
-    enquire
-  );
+    <BtnLink to="/booking/$id" params={{ id: studioSlug }} className="min-w-0 flex-1 px-3">
+      Book
+    </BtnLink>
+  ) : null;
   // The owner sees what the person profile's owner sees: edit, share, stats — not Book or Follow.
   if (owner) {
     return (
@@ -695,7 +679,7 @@ function BusinessActions({
 
   return (
     <div className="flex items-center gap-2">
-      {/* With Book and Enquire beside it, Message is the icon; otherwise it keeps its label. */}
+      {/* With Book beside it, Message is the icon; otherwise it keeps its label. */}
       {studioSlug ? (
         <IconBtn
           label="Message"

@@ -20,6 +20,7 @@ import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { useMessagePerson } from "@/hooks/use-message-person";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import {
   Card,
@@ -80,6 +81,7 @@ function ServiceDetail() {
   const [confirmRemove, setConfirmRemove] = useState(false);
   // Book on a service with no place to book is a dated request (owner, 3 Oct 2026).
   const serviceRequest = useServiceRequest();
+  const message = useMessagePerson();
   const [removed, setRemoved] = useState(false);
 
   if (pending || error || (!s && !removed)) {
@@ -383,9 +385,9 @@ function ServiceDetail() {
                 Availability
               </BtnLink>
               {s.ownerAvailability ? (
-                <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
-                  Preview Booking
-                </BtnLink>
+                <Btn className="w-full" disabled>
+                  Bookable
+                </Btn>
               ) : (
                 <Btn className="w-full" disabled>
                   Not Bookable
@@ -415,12 +417,15 @@ function ServiceDetail() {
                   Book
                 </Btn>
               )}
-              {/* The enquiry, as before. */}
-              {s.ownerAvailability ? (
-                <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
-                  Enquire
-                </BtnLink>
-              ) : null}
+              {/* Questions are just a Message, like LinkedIn (owner, 4 Oct: Inbox = enquiries). */}
+              <Btn
+                variant="outline"
+                className="w-full"
+                loading={message.pending}
+                onClick={() => void message.open(s.profile_id)}
+              >
+                Message
+              </Btn>
             </div>
           ) : (
             <Btn className="w-full" disabled>

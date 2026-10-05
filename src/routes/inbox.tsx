@@ -13,7 +13,6 @@ import {
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { MessagesPanel } from "@/components/ml/inbox-messages";
-import { EnquiriesPanel } from "@/components/ml/inbox-enquiries";
 import { BookingRequestsPanel } from "@/components/ml/inbox-bookings";
 import { useAuth } from "@/hooks/use-auth";
 import { listConversations } from "@/lib/messages.functions";
@@ -21,16 +20,15 @@ import { iconSize } from "@/lib/tokens";
 
 /*
  * One Inbox (owner, 4 Oct 2026, queue item 10): open-ended communication and leads around what
- * people offer. All · Messages · Enquiries · Booking Requests; /messages, /leads and
+ * people offer. All · Messages · Booking Requests (enquiries are just messages, owner 5 Oct); /messages and
  * /business/bookings/requests redirect here with their tab. Enquiry state and booking state are
  * two separate machines, each shown in its own tab, never mapped into each other.
  */
-const INBOX_TABS = ["all", "messages", "enquiries", "bookings"] as const;
+const INBOX_TABS = ["all", "messages", "bookings"] as const;
 type InboxTab = (typeof INBOX_TABS)[number];
 const tabLabels: Record<InboxTab, string> = {
   all: "All",
   messages: "Messages",
-  enquiries: "Enquiries",
   bookings: "Booking Requests",
 };
 
@@ -69,7 +67,6 @@ const ROWS: ({ label: string; hint: string; icon: LucideIcon } & (
     hint: "Requests, replies and updates",
     icon: Bell,
   },
-  { tab: "enquiries", label: "Enquiries", hint: "Enquiries for your services", icon: Inbox },
   {
     tab: "bookings",
     label: "Booking Requests",
@@ -98,7 +95,6 @@ function InboxScreen() {
         <Segmented value={tab} options={INBOX_TABS} labels={tabLabels} onChange={setTab} />
       </div>
       {tab === "messages" ? <MessagesPanel /> : null}
-      {tab === "enquiries" ? <EnquiriesPanel /> : null}
       {tab === "bookings" ? <BookingRequestsPanel /> : null}
       {tab === "all" ? <InboxAll onTab={setTab} /> : null}
     </Screen>
