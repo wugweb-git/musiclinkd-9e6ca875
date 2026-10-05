@@ -92,8 +92,8 @@ function CardActions({
 
 /** Looks 36px, takes a 48dp tap (hit-area). */
 const actionBtn = "hit-area min-h-9 h-9 px-3 text-1";
-/** On a rail card: a small pill in the card's top-right corner (looks 32px, taps at 48dp). */
-const cardFooterBtn = "hit-area !min-h-8 !h-8 !gap-1 !px-3 !text-1 shadow-xs";
+/** On a card: a small full-width button at the card's bottom (looks 32px, taps at 48dp). */
+const cardFooterBtn = "hit-area !min-h-8 !h-8 w-full !gap-1 !px-3 !text-1";
 
 function RelationButton({
   profileId,
@@ -404,22 +404,22 @@ export function PersonCard({
           src={sized(person.avatarUrl, { width: 412 })}
           alt=""
           loading="lazy"
-          className="aspect-square w-full rounded-md object-cover"
+          className="aspect-[4/3] w-full rounded-md object-cover"
         />
       ) : (
-        <span className="flex aspect-square w-full items-center justify-center rounded-md bg-subtle">
-          <LogoMark className="h-auto w-1/3" />
+        <span className="flex aspect-[4/3] w-full items-center justify-center rounded-md bg-subtle">
+          <LogoMark className="h-auto w-1/4" />
         </span>
       )}
-      <span className="mt-3 flex min-w-0 items-center gap-1">
-        <span className="truncate text-2 font-bold text-foreground">{person.name}</span>
+      <span className="mt-2 flex min-w-0 items-center gap-1">
+        <span className="truncate text-sm font-bold text-foreground">{person.name}</span>
         {person.verified ? <VerifiedBadge size={14} /> : null}
       </span>
       {roleLine ? (
-        <span className="mt-0.5 block truncate text-1 text-muted-foreground">{roleLine}</span>
+        <span className="block truncate text-xs text-muted-foreground">{roleLine}</span>
       ) : null}
       {person.city ? (
-        <span className="mt-1 block truncate text-xs uppercase text-muted-foreground">
+        <span className="mt-0.5 block truncate text-xs uppercase text-muted-foreground">
           {person.city}
         </span>
       ) : null}
@@ -427,7 +427,7 @@ export function PersonCard({
   );
   const shape = featured
     ? "relative block h-56 w-rail-sm shrink-0 overflow-hidden rounded-lg text-left"
-    : "block w-full rounded-lg border border-border/80 bg-card p-3 shadow-xs";
+    : "block w-full rounded-lg border border-border/80 bg-card p-2 shadow-xs";
   const live = featured
     ? "state-layer transition-transform duration-150 ease-standard active:scale-[0.985]"
     : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]";
@@ -435,20 +435,30 @@ export function PersonCard({
   const width = fill ? "w-full min-w-0" : "w-rail-sm shrink-0";
   if (disabled || !person.username)
     return <div className={cn(shape, !featured && width)}>{body}</div>;
-  // The action sits over the card but beside the link, not inside it (no button inside a link).
+  // The card frame holds the link and, at its bottom, the action — beside the link, never inside
+  // it (no button inside a link).
   return (
-    <div className={cn("relative", width)}>
+    <div
+      className={cn(
+        "flex flex-col rounded-lg border border-border/80 bg-card shadow-xs",
+        featured ? "overflow-hidden" : "gap-2 p-2",
+        width,
+      )}
+    >
       <Link
         to="/profile/$username"
         params={{ username: person.username }}
-        className={cn(shape, live)}
+        className={cn(
+          featured ? "relative block h-56 overflow-hidden text-left" : "group block rounded-md",
+          "state-layer transition-transform duration-150 ease-standard active:scale-[0.985]",
+        )}
       >
         {body}
       </Link>
       <CardActions
         profileId={person.id}
         relation={person.isBusiness ? "follow" : "connect"}
-        className="absolute right-5 top-5 z-10"
+        className={featured ? "p-2" : undefined}
       />
     </div>
   );
@@ -574,16 +584,15 @@ export function BookableCard({
     ? "relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
     : "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs";
   if (!link) return <div className={shape}>{body}</div>;
-  // The action sits over the card but beside the link, not inside it (no button inside a link).
+  // The card frame holds the link and, at its bottom, the action — beside the link, never inside
+  // it (no button inside a link).
   return (
-    <div className="relative w-rail-md shrink-0">
+    <div className="flex w-rail-md shrink-0 flex-col overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs">
       <Link
         {...link}
         className={cn(
-          shape,
-          featured
-            ? "state-layer"
-            : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]",
+          featured ? "relative block aspect-[4/3] overflow-hidden text-left" : "group block",
+          "state-layer transition-transform duration-150 ease-standard active:scale-[0.985]",
         )}
       >
         {body}
@@ -591,7 +600,7 @@ export function BookableCard({
       <CardActions
         profileId={studio.ownerId}
         relation="follow"
-        className="absolute right-5 top-5 z-10"
+        className={featured ? "p-2" : "px-3 pb-3"}
       />
     </div>
   );

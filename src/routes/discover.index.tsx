@@ -80,7 +80,10 @@ function DiscoverScreen() {
   const { options } = useTaxonomy();
   const modes = business.hasBusiness ? BUSINESS_MODES : TALENT_MODES;
   const [mode, setMode] = useState<Mode>("For you");
-  const people = recommendations?.people.length ? recommendations.people : loaded.people;
+  // People means talent: business pages never show here (owner, 5 Oct); they have Studios.
+  const people = (recommendations?.people.length ? recommendations.people : loaded.people).filter(
+    (p) => !p.isBusiness,
+  );
   const studios = rankBy(loaded.studios, recommendations?.studios, (studio) => studio.id);
   const opportunities = rankBy(
     loaded.opportunities,

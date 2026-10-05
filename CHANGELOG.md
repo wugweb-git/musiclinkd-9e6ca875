@@ -33,6 +33,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   specialty, place in small capitals; the brand mark on a quiet tile when there is no photo.
   Connect / Follow is a small pill in the photo's corner, beside the link. Discover's People tab
   is a 2-column grid of these cards; the For you rail uses the same card.
+- Card actions sit at the bottom of the card, inside its frame, beside the link (owner, 5 Oct);
+  smaller cards (4:3 photo, tighter padding). Discover's People section shows talent only —
+  business pages are filtered out.
 - Bands: no Follow yet (`follows.target_id` points at profiles; a band is a `collabs` row).
 
 ### Changed — duplicate components merged, no visual change (5 Oct, phone plan P1)
