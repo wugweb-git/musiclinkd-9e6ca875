@@ -27,6 +27,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   audio and video. Selected states differ: audio becomes the stacked row with the player under
   it; video puts the player on top at full width with the row and a close button under it. Both
   span the whole grid while selected. `AudioTrackCard` gains `layout`; `VideoCard` reworked.
+- Stacked rows follow Spotify / Apple Music: cover, title, who, duration — the whole row plays;
+  no bookmark, no chevron. Playing is a dark panel (ink) with the row in white, the player inside
+  and the credit under it; video puts the player on top. No "Role:" / "Project:" labels.
+- Play buttons take the source's own colour (YouTube red, Spotify green, SoundCloud orange;
+  `playSource` in `embed.ts`), ink otherwise.
+- Missing images app-wide (`__root.tsx` + `styles.css`): a failed `<img>` is marked
+  `data-broken` and hidden, so its tile (grey placeholder or the ink no-cover mark) shows instead
+  of a broken-image icon; caught before hydration too.
 - Reels by link (`embed.ts`): Instagram reels and posts play in Instagram's embed, and YouTube
   Shorts in a tall 9:16 frame instead of a letterboxed strip.
 - `LogoMark` hides itself if the image can't load (the asset is served by Lovable's hosting, so

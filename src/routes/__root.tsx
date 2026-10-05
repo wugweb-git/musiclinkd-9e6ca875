@@ -86,6 +86,8 @@ function ErrorComponent({ error, reset }: { error: unknown; reset: () => void })
   );
 }
 
+const IMG_FALLBACK = `document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")t.setAttribute("data-broken","")},true);`;
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
@@ -145,6 +147,10 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Missing images (owner, 5 Oct): any <img> that fails — a dead link, a removed cover —
+            is hidden, so the tile behind it (grey placeholder or the ink no-cover mark) shows
+            instead of a broken-image icon. Inline so it catches failures before hydration. */}
+        <script dangerouslySetInnerHTML={{ __html: IMG_FALLBACK }} />
       </head>
       <body>
         {children}

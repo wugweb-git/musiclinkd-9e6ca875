@@ -85,3 +85,24 @@ export function embedFor(url: string): Embed | null {
 
   return { mode: "in-app", src: url };
 }
+
+/**
+ * The source a link plays from, for its own play button (owner, 5 Oct): YouTube's red, Spotify's
+ * green, SoundCloud's orange. The colours are the sources' marks, not ours, so they live here and
+ * nowhere else. Anything else gets our ink button.
+ */
+export function playSource(url: string | undefined): { label: string; bg: string } | null {
+  if (!url) return null;
+  let host = "";
+  try {
+    host = new URL(url).hostname.replace(/^www\.|^m\./, "");
+  } catch {
+    return null;
+  }
+  if (host === "youtube.com" || host === "youtu.be" || host === "music.youtube.com")
+    return { label: "YouTube", bg: "#FF0033" };
+  if (host === "open.spotify.com" || host === "spotify.com")
+    return { label: "Spotify", bg: "#1ED760" };
+  if (host === "soundcloud.com") return { label: "SoundCloud", bg: "#FF5500" };
+  return null;
+}

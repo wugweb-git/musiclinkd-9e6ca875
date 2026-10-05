@@ -52,6 +52,7 @@ import { roleIcon } from "@/lib/role-icons";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { MediaEmbed } from "./media-embed";
+import { playSource } from "@/lib/embed";
 import { QrCode } from "./qr";
 import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
@@ -876,7 +877,9 @@ export function AudioTrackCard({
               type="button"
               onClick={onToggle}
               aria-label={`Play ${track.title}`}
-              className="hit-area absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-brand-button text-white shadow-elevation-2 transition-transform active:scale-95"
+              title={playSource(track.media)?.label}
+              style={sourceStyle(track.media)}
+              className="hit-area absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-ink text-white shadow-elevation-2 transition-transform active:scale-95"
             >
               <Play size={iconSize.sm} fill="currentColor" aria-hidden />
             </button>
@@ -897,101 +900,83 @@ export function AudioTrackCard({
       </article>
     );
 
+  // Stacked (Spotify row): cover, title, who, duration — the whole row plays it. No bookmark, no
+  // chevron. Playing: the same row on a dark panel with the player inside and the credit under it.
+  const row = (
+    <button
+      type="button"
+      onClick={track.media ? onToggle : undefined}
+      disabled={!track.media}
+      aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
+      aria-pressed={playing}
+      className="state-layer flex w-full min-w-0 items-center gap-3 p-2 text-left disabled:cursor-default"
+    >
+      {track.artwork ? (
+        <img
+          src={sized(track.artwork, { width: 112 })}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          className="h-14 w-14 shrink-0 rounded-sm object-cover"
+        />
+      ) : (
+        <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
+      )}
+      <span className="min-w-0 flex-1">
+        <span
+          className={cn(
+            "block truncate text-2 font-semibold",
+            playing ? "text-ink-foreground" : "text-foreground",
+          )}
+        >
+          {track.title}
+        </span>
+        {track.role ? (
+          <span
+            className={cn(
+              "block truncate text-1",
+              playing ? "text-ink-foreground/70" : "text-muted-foreground",
+            )}
+          >
+            {track.role}
+          </span>
+        ) : null}
+      </span>
+      {track.duration ? (
+        <span
+          className={cn(
+            "shrink-0 text-1 tabular-nums",
+            playing ? "text-ink-foreground/70" : "text-muted-foreground",
+          )}
+        >
+          {track.duration}
+        </span>
+      ) : null}
+    </button>
+  );
+
+  if (!isExpanded) return <article className="overflow-hidden rounded-lg">{row}</article>;
+
   return (
     <article
       className={cn(
-        "group overflow-hidden rounded-lg border border-border/80 bg-card transition-all duration-150 ease-standard hover:border-border",
-        // Playing or opened from the grid: the stacked row, across the whole grid.
+        "overflow-hidden rounded-lg bg-ink p-1 text-ink-foreground shadow-elevation-3 animate-in fade-in duration-200",
+        // Playing from the grid: the stacked row, across the whole grid.
         layout === "portrait" && "col-span-2",
       )}
     >
-      <div className="flex items-center gap-3 p-3">
-        {track.artwork ? (
-          <img
-            src={sized(track.artwork, { width: 56 })}
-            alt=""
-            aria-hidden
-            loading="lazy"
-            className="h-14 w-14 rounded-sm object-cover shadow-xs"
+      {row}
+      {track.media ? (
+        <div className="px-2 pb-2">
+          <MediaEmbed
+            url={track.media}
+            title={track.title}
+            onOpen={() => recordWorkEvent(track.id, "link_click")}
+            onPlay={() => recordPlay(track.id)}
           />
-        ) : (
-          <NoCover className="h-14 w-14 shrink-0 rounded-sm shadow-xs" />
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <h3 className="truncate text-2 font-semibold text-foreground">{track.title}</h3>
-            {track.featured ? (
-              <span className="rounded-full bg-ink px-2 py-0.5 text-1 font-semibold text-background">
-                Featured
-              </span>
-            ) : null}
-          </div>
-          <p className="truncate text-1 text-muted-foreground">
-            {joinParts(track.role, track.project)}
-          </p>
-        </div>
-        {track.duration ? (
-          <span className="shrink-0 text-1 tabular-nums text-muted-foreground">
-            {track.duration}
-          </span>
-        ) : null}
-        <div className="flex items-center gap-1.5">
-          {isDbId(track.id) ? <SavedToggle targetType="portfolio" targetId={track.id} /> : null}
-          <button
-            type="button"
-            onClick={() => {
-              // Collapsing a playing track stops it, so it really goes back to its resting state.
-              if (isExpanded && playing) onToggle();
-              setExpanded((e) => (playing ? false : !e));
-            }}
-            aria-expanded={isExpanded}
-            aria-label={isExpanded ? "Collapse details" : "Expand details"}
-            className="hit-area flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-subtle active:scale-95 transition-transform"
-          >
-            <ChevronDown
-              size={iconSize.sm}
-              className={cn("transition-transform duration-200", isExpanded && "rotate-180")}
-              aria-hidden
-            />
-          </button>
-          {/* Opens the track's own player; no media, nothing to play, no button. */}
-          {track.media ? (
-            <button
-              type="button"
-              onClick={onToggle}
-              aria-label={playing ? `Close player for ${track.title}` : `Play ${track.title}`}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-ink-foreground shadow-xs active:scale-95 transition-transform"
-            >
-              {playing ? (
-                <Pause size={iconSize.sm} aria-hidden />
-              ) : (
-                <Play size={iconSize.sm} aria-hidden />
-              )}
-            </button>
+          {track.project ? (
+            <p className="mt-2 truncate text-1 text-ink-foreground/70">{track.project}</p>
           ) : null}
-        </div>
-      </div>
-
-      {isExpanded ? (
-        <div className="border-t border-border/70 bg-subtle/50 px-4 py-3 animate-in fade-in-50 duration-150">
-          {track.media ? (
-            <div className="mb-2">
-              <MediaEmbed
-                url={track.media}
-                title={track.title}
-                onOpen={() => recordWorkEvent(track.id, "link_click")}
-                onPlay={() => recordPlay(track.id)}
-              />
-            </div>
-          ) : (
-            <p className="text-1 text-muted-foreground">No audio added to this track yet.</p>
-          )}
-          <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 pt-1 text-1 text-foreground border-t border-border/40">
-            {track.role ? <span className="font-semibold">Role: {track.role}</span> : null}
-            {track.project ? (
-              <span className="text-muted-foreground">Project: {track.project}</span>
-            ) : null}
-          </div>
         </div>
       ) : null}
     </article>
@@ -999,6 +984,13 @@ export function AudioTrackCard({
 }
 
 /** A work with no cover (its link had no preview image): the logo on ink. */
+/** The play button in the source's own colour (YouTube red, Spotify green); ink otherwise. */
+function sourceStyle(url: string | undefined) {
+  const source = playSource(url);
+  // computed: the source's brand colour, known only from the link
+  return source ? { backgroundColor: source.bg } : undefined;
+}
+
 export function NoCover({ className }: { className?: string }) {
   return (
     <div aria-hidden className={cn("flex items-center justify-center bg-ink", className)}>
@@ -1035,11 +1027,13 @@ export function VideoCard({
     ) : null;
   // Selected video (owner, 5 Oct): the player on top at full width, then the stacked row and its
   // details (YouTube). Audio's selected state differs: the row first, the player under it.
+  // Playing video (Spotify / YouTube): a dark panel, the player on top at full width, then the
+  // title and who in white. Tap the row again to close.
   if (open && v.media) {
     return (
       <article
         className={cn(
-          "overflow-hidden rounded-lg border border-border/80 bg-card",
+          "overflow-hidden rounded-lg bg-ink text-ink-foreground shadow-elevation-3 animate-in fade-in duration-200",
           layout === "grid" && "col-span-2",
         )}
       >
@@ -1049,63 +1043,60 @@ export function VideoCard({
           onOpen={() => recordWorkEvent(v.id, "link_click")}
           onPlay={() => recordPlay(v.id)}
         />
-        <div className="flex items-center gap-3 p-3">
-          <div className="min-w-0 flex-1">
-            <h3 className="truncate text-2 font-semibold">{v.title}</h3>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label={`Close player for ${v.title}`}
+          className="state-layer flex w-full min-w-0 items-center gap-3 p-3 text-left"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-2 font-semibold text-ink-foreground">
+              {v.title}
+            </span>
             {v.context ? (
-              <p className="truncate text-1 text-muted-foreground">{v.context}</p>
+              <span className="block truncate text-1 text-ink-foreground/70">{v.context}</span>
             ) : null}
-          </div>
+          </span>
           {v.duration ? (
-            <span className="shrink-0 text-1 tabular-nums text-muted-foreground">{v.duration}</span>
-          ) : null}
-          {isDbId(v.id) ? <SavedToggle targetType="portfolio" targetId={v.id} /> : null}
-          <IconBtn
-            label={`Close player for ${v.title}`}
-            variant="plain"
-            onClick={() => setOpen(false)}
-          >
-            <X size={iconSize.sm} aria-hidden />
-          </IconBtn>
-        </div>
-      </article>
-    );
-  }
-  if (layout === "row") {
-    return (
-      <article>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={toggle}
-            disabled={!toggle}
-            aria-expanded={toggle ? open : undefined}
-            aria-label={open ? `Close player for ${v.title}` : `Play ${v.title}`}
-            className="relative h-14 w-14 shrink-0 overflow-hidden rounded-sm bg-background shadow-xs"
-          >
-            {v.thumb ? (
-              <img
-                src={sized(v.thumb, { width: 412 })}
-                alt=""
-                loading="lazy"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <NoCover className="h-full w-full" />
-            )}
-          </button>
-          <div className="min-w-0 flex-1 self-center">
-            <h3 className="truncate text-2 font-semibold">{v.title}</h3>
-            <p className="truncate text-1 text-muted-foreground">{v.context}</p>
-          </div>
-          {v.duration ? (
-            <span className="shrink-0 self-center text-1 tabular-nums text-muted-foreground">
+            <span className="shrink-0 text-1 tabular-nums text-ink-foreground/70">
               {v.duration}
             </span>
           ) : null}
-          {isDbId(v.id) ? <SavedToggle targetType="portfolio" targetId={v.id} /> : null}
-        </div>
-        {player}
+        </button>
+      </article>
+    );
+  }
+  // Stacked (Spotify row): small cover, title, who, duration; the whole row plays it.
+  if (layout === "row") {
+    return (
+      <article className="overflow-hidden rounded-lg">
+        <button
+          type="button"
+          onClick={toggle}
+          disabled={!toggle}
+          aria-label={`Play ${v.title}`}
+          className="state-layer flex w-full min-w-0 items-center gap-3 p-2 text-left disabled:cursor-default"
+        >
+          {v.thumb ? (
+            <img
+              src={sized(v.thumb, { width: 112 })}
+              alt=""
+              loading="lazy"
+              className="h-14 w-14 shrink-0 rounded-sm object-cover"
+            />
+          ) : (
+            <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
+          )}
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-2 font-semibold">{v.title}</span>
+            {v.context ? (
+              <span className="block truncate text-1 text-muted-foreground">{v.context}</span>
+            ) : null}
+          </span>
+          {v.duration ? (
+            <span className="shrink-0 text-1 tabular-nums text-muted-foreground">{v.duration}</span>
+          ) : null}
+        </button>
       </article>
     );
   }
@@ -1135,7 +1126,10 @@ export function VideoCard({
           aria-label={`Play ${v.title}`}
           className="absolute inset-0 flex items-end justify-end p-2"
         >
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-button text-white shadow-elevation-2">
+          <span
+            style={sourceStyle(v.media)}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-white shadow-elevation-2"
+          >
             <Play size={iconSize.sm} fill="currentColor" aria-hidden />
           </span>
         </button>
@@ -1151,7 +1145,6 @@ export function VideoCard({
             <h3 className="truncate text-1">{v.title}</h3>
             <p className="truncate text-1 text-muted-foreground">{v.context}</p>
           </div>
-          {isDbId(v.id) ? <SavedToggle targetType="portfolio" targetId={v.id} size={36} /> : null}
         </div>
         {player}
       </div>
