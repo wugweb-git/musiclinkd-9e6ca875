@@ -11,6 +11,7 @@ import {
   Star,
   ShieldCheck,
   Check,
+  CircleAlert,
   ChevronRight,
   LocateFixed,
   Search,
@@ -72,6 +73,7 @@ import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 import { StateIcon } from "./tab-icon";
 import { sized } from "@/lib/image-url";
+import { cn } from "@/lib/utils";
 
 export function ConditionBadge({ value }: { value: string }) {
   return <span className="pill bg-background text-muted-foreground">{value}</span>;
@@ -1166,18 +1168,28 @@ export function OfferSheet({
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  // Send Offer never greys out for an empty amount; pressing it says so under the field
+  // (owner, 10 Oct 2026).
+  const [tried, setTried] = useState(false);
   const send = useServerFn(makeOffer);
+  const amountProblem =
+    tried && !Number(amount.replace(/[^0-9]/g, "")) ? "Enter the amount you'd pay" : null;
 
   const close = () => {
     setSent(false);
     setAmount("");
     setMessage("");
+    setTried(false);
     onClose();
   };
 
   async function submit() {
     const rupees = Number(amount.replace(/[^0-9]/g, ""));
-    if (!rupees || !listing.dbId) return;
+    if (!rupees) {
+      setTried(true);
+      return;
+    }
+    if (!listing.dbId) return;
     setSending(true);
     try {
       await send({
@@ -1242,8 +1254,23 @@ export function OfferSheet({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="₹1,70,000"
-            className="mb-4 h-14 w-full rounded-full border border-input bg-card px-5 text-2 font-semibold outline-none focus:border-ink"
+            aria-invalid={Boolean(amountProblem) || undefined}
+            aria-describedby={amountProblem ? "your-offer-error" : undefined}
+            className={cn(
+              "field-focus h-14 w-full rounded-full border border-input bg-card px-5 text-2 font-semibold outline-none",
+              amountProblem ? "mb-1.5" : "mb-4",
+            )}
           />
+          {amountProblem ? (
+            <p
+              id="your-offer-error"
+              role="alert"
+              className="mb-4 flex animate-message items-start gap-1.5 text-1 text-destructive"
+            >
+              <CircleAlert size={iconSize.sm} className="mt-px shrink-0" aria-hidden />
+              {amountProblem}
+            </p>
+          ) : null}
 
           <label
             htmlFor="message-optional"
@@ -1257,7 +1284,7 @@ export function OfferSheet({
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
             placeholder="I can collect this weekend."
-            className="mb-3 w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
+            className="field-focus mb-3 w-full rounded-lg border border-input bg-card p-4 text-sm outline-none"
           />
           <p className="mb-5 text-1 text-muted-foreground">
             Payment is arranged directly with the seller.
@@ -1265,7 +1292,7 @@ export function OfferSheet({
 
           <Btn
             className="w-full"
-            disabled={!amount || !listing.dbId}
+            disabled={!listing.dbId}
             loading={sending}
             onClick={() => void submit()}
           >

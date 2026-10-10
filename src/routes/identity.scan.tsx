@@ -232,7 +232,7 @@ function Scanner() {
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value)}
               placeholder={`username or ${PUBLIC_HOST}/@username`}
-              className="min-h-control w-full rounded-lg border border-input bg-background px-3 text-1 outline-none focus:border-ink"
+              className="min-h-control w-full rounded-lg border border-input bg-background px-3 text-1 outline-none field-focus"
             />
             <Btn
               className="mt-2 w-full"

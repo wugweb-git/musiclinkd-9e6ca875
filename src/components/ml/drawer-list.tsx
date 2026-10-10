@@ -88,7 +88,7 @@ export function DrawerSearch({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={label}
-        className="h-13 w-full rounded-full border border-input bg-card py-3.5 pl-12 pr-5 text-sm outline-none focus:border-ink"
+        className="h-13 w-full rounded-full border border-input bg-card py-3.5 pl-12 pr-5 text-sm outline-none field-focus"
       />
     </div>
   );

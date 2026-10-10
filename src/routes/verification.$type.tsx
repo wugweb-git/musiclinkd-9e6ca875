@@ -622,7 +622,7 @@ function Wizard({
                       value={values[r.id] ?? ""}
                       onChange={(e) => setValues((v) => ({ ...v, [r.id]: e.target.value }))}
                       maxLength={140}
-                      className="mt-2 h-12 w-full rounded-lg border border-input bg-card px-4 text-sm outline-none focus:border-ink"
+                      className="mt-2 h-12 w-full rounded-lg border border-input bg-card px-4 text-sm outline-none field-focus"
                       placeholder="Type here"
                     />
                   )}

@@ -306,7 +306,7 @@ function RequestFlow() {
               onChange={(ev) => setNote(ev.target.value)}
               rows={3}
               placeholder="Recording at Famous Studios, need it from 10 am on the 18th."
-              className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
+              className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none field-focus"
             />
             <p className="mt-3 text-1 text-muted-foreground">
               No payment is taken now. The provider confirms availability and the final amount in

@@ -442,6 +442,7 @@ function NewBusiness() {
             <InlineField
               inputId="businessName"
               label="Business name"
+              required
               value={name}
               onChange={setName}
               placeholder="Soundhouse Studios Bandra"
@@ -560,6 +561,7 @@ function NewBusiness() {
               <InlineField
                 inputId="pinCode"
                 label="PIN code"
+                required
                 value={pinCode}
                 onChange={(v) => {
                   const pin = v.replace(/\D/g, "").slice(0, 6);

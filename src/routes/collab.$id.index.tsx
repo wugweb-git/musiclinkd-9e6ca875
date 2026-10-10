@@ -579,6 +579,7 @@ function CollabRoom() {
 
           {canManage ? (
             <form
+              noValidate
               className="flex gap-2 pt-1"
               onSubmit={(e) => {
                 e.preventDefault();
@@ -899,13 +900,14 @@ function EditCollabSheet({
   return (
     <Sheet open={open} onClose={onClose} title="Edit">
       <form
+        noValidate
         className="space-y-5"
         onSubmit={(e) => {
           e.preventDefault();
           if (!nameProblem && !datesProblem && !commit.isPending) commit.mutate();
         }}
       >
-        <Field label="Name" id="edit-collab-name" error={nameProblem}>
+        <Field label="Name" id="edit-collab-name" required error={nameProblem}>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -922,7 +924,7 @@ function EditCollabSheet({
             onChange={(e) => setAbout(e.target.value)}
             maxLength={2000}
             aria-labelledby="edit-collab-about"
-            className="w-full resize-none rounded-lg border border-input bg-card p-4 text-2 outline-none focus-visible:ring-2 focus-visible:ring-ring focus:border-ink"
+            className="w-full resize-none rounded-lg border border-input bg-card p-4 text-2 outline-none field-focus"
           />
         </Field>
 

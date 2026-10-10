@@ -83,6 +83,7 @@ function MatchScreen() {
           </EmptyState>
         ) : (
           <form
+            noValidate
             className="space-y-3"
             onSubmit={(e) => {
               e.preventDefault();

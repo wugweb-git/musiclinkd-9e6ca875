@@ -34,7 +34,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Btn, Chip, IconBtn, Sheet } from "@/components/ml/ui";
-import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
+import { AuthNotice, AuthTextButton, RequiredMark } from "@/components/ml/auth";
 import { useAuth } from "@/hooks/use-auth";
 import {
   claimMyUsername,
@@ -800,6 +800,7 @@ export function InlineField({
   type = "text",
   max,
   readOnly = false,
+  required = false,
 }: {
   label: string;
   value: string;
@@ -825,6 +826,8 @@ export function InlineField({
   enterKeyHint?: "next" | "done" | "go";
   /** Shown but not editable, e.g. a username that is already set. */
   readOnly?: boolean;
+  /** Adds a muted " *" after the label (owner, 10 Oct 2026). Never on an "(optional)" label. */
+  required?: boolean | undefined;
 }) {
   const messageId = `${inputId}-message`;
   const shared =
@@ -840,17 +843,19 @@ export function InlineField({
         )}
       >
         {label}
+        {required ? <RequiredMark /> : null}
       </label>
       <div
         className={cn(
           // Phone plan: one field shape — 8px corners, 44px tall, 16px text — for inputs and the
-          // pickers beside them. A textarea keeps the same corners and grows.
-          "flex items-center gap-1 border bg-card transition-all duration-150 ease-standard",
+          // pickers beside them. A textarea keeps the same corners and grows. field-focus is the
+          // one focus look for text fields (owner, 10 Oct 2026).
+          "field-focus flex items-center gap-1 border bg-card transition-all duration-150 ease-standard",
           multiline ? "rounded-sm px-3.5 py-3" : "h-11 rounded-sm px-3.5",
           readOnly && "bg-background",
           error
-            ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
-            : "border-input focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
+            ? "border-destructive"
+            : "border-input [@media(hover:hover)]:hover:not-focus-within:border-muted-foreground/80",
         )}
       >
         {leading ? (
@@ -866,6 +871,7 @@ export function InlineField({
             rows={4}
             maxLength={maxLength}
             aria-invalid={Boolean(error) || undefined}
+            aria-required={required || undefined}
             aria-describedby={messageId}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
@@ -883,6 +889,7 @@ export function InlineField({
             enterKeyHint={enterKeyHint}
             readOnly={readOnly}
             aria-invalid={Boolean(error) || undefined}
+            aria-required={required || undefined}
             aria-describedby={messageId}
             onKeyDown={(e) => {
               // Some Android keyboards do not submit forms on their own. Next moves to the next

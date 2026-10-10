@@ -128,7 +128,7 @@ function DeleteAccount() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="DELETE"
-            className="h-13 w-full rounded-sm border border-input bg-card px-4 text-sm outline-none focus:border-ink"
+            className="h-13 w-full rounded-sm border border-input bg-card px-4 text-sm outline-none field-focus"
           />
         </label>
 

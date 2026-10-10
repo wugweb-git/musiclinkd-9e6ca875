@@ -47,7 +47,7 @@ export const PHOTOS_KEY = ["studio-photos", "mine"];
 export const EQUIPMENT_KEY = ["studio-equipment", "mine"];
 
 const inputCls =
-  "min-h-control w-full rounded-lg border border-input bg-card px-4 text-sm outline-none focus:border-ink";
+  "min-h-control w-full rounded-lg border border-input bg-card px-4 text-sm outline-none field-focus";
 
 /** The business's amenities and photos. Off for accounts that aren't a business. */
 export function useMyBookablePhotos(enabled = true) {
@@ -313,6 +313,7 @@ export function EquipmentEditor() {
       >
         {draft ? (
           <form
+            noValidate
             className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
@@ -416,7 +417,7 @@ export function PoliciesEditor({
         aria-invalid={problem ? true : undefined}
         aria-describedby="policies-message"
         className={cn(
-          "w-full resize-none rounded-sm border bg-card px-3.5 py-3 text-[16px] leading-relaxed outline-none focus:border-ink",
+          "w-full resize-none rounded-sm border bg-card px-3.5 py-3 text-[16px] leading-relaxed outline-none field-focus",
           problem ? "border-destructive" : "border-input",
         )}
       />

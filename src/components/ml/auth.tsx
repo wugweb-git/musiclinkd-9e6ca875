@@ -282,6 +282,7 @@ export function TextField({
   trailing,
   maxLength,
   disabled = false,
+  required = false,
   className,
 }: {
   label: string;
@@ -300,6 +301,8 @@ export function TextField({
   trailing?: ReactNode;
   maxLength?: number;
   disabled?: boolean;
+  /** Adds a muted " *" after the label (owner, 10 Oct 2026); the box itself is unchanged. */
+  required?: boolean | undefined;
   className?: string;
 }) {
   const id = useId();
@@ -310,20 +313,23 @@ export function TextField({
       <label
         htmlFor={id}
         className={cn(
-          "mb-1 block text-2 font-medium transition-colors duration-125 ease-standard",
+          // Labels are 14px medium on every field (owner, 10 Oct 2026).
+          "mb-1 block text-sm font-medium transition-colors duration-125 ease-standard",
           invalid ? "text-destructive" : "text-foreground",
         )}
       >
         {label}
+        {required ? <RequiredMark /> : null}
       </label>
       {/* lovable.dev/login's field: a pill, transparent on the grey ground, a hairline and a soft
           inset shadow; 16px of side padding. */}
       <div
         className={cn(
-          "flex h-12 items-center gap-2 rounded-full border bg-gradient-to-b from-foreground/[0.03] to-transparent px-4 shadow-[inset_0_2px_2px_-1px_rgb(0_0_0/0.05)] transition-all duration-150 ease-standard",
+          // field-focus: the one focus look for text fields (owner, 10 Oct 2026).
+          "field-focus flex h-12 items-center gap-2 rounded-full border bg-gradient-to-b from-foreground/[0.03] to-transparent px-4 shadow-[inset_0_2px_2px_-1px_rgb(0_0_0/0.05)] transition-all duration-150 ease-standard",
           invalid
-            ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
-            : "border-input focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
+            ? "border-destructive"
+            : "border-input [@media(hover:hover)]:hover:not-focus-within:border-muted-foreground",
           disabled && "bg-background opacity-60",
         )}
       >
@@ -338,6 +344,7 @@ export function TextField({
           maxLength={maxLength}
           disabled={disabled}
           aria-invalid={invalid || undefined}
+          aria-required={required || undefined}
           aria-describedby={error || hint ? messageId : undefined}
           onKeyDown={(e) => {
             // Some Android keyboards do not submit forms on their own. Next moves to the next
@@ -381,6 +388,18 @@ export function TextField({
   );
 }
 
+/**
+ * The required mark every field label shares (owner, 10 Oct 2026): a muted " *", hidden from screen
+ * readers because the control says aria-required itself.
+ */
+export function RequiredMark() {
+  return (
+    <span aria-hidden className="font-normal text-muted-foreground">
+      {" *"}
+    </span>
+  );
+}
+
 /** Kept for existing call sites; it is a TextField. */
 export const LabeledInput = TextField;
 
@@ -412,6 +431,7 @@ export function PasswordInput({
       <TextField
         className="mb-0"
         label={label}
+        required
         value={value}
         onChange={onChange}
         {...(onBlur ? { onBlur } : {})}
@@ -529,6 +549,7 @@ export function PhoneField({
   return (
     <TextField
       label="Mobile number"
+      required
       value={formatIndianMobile(value)}
       onChange={(v) => onChange(v.replace(/\D/g, "").slice(0, MOBILE_DIGITS))}
       {...(onBlur ? { onBlur } : {})}

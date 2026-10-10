@@ -117,7 +117,7 @@ function AvailabilityContent() {
             value={hours}
             placeholder="e.g. Mon–Sat, 10am–7pm. Closed Sundays."
             onChange={(e) => setHours(e.target.value)}
-            className="mt-2 w-full resize-none rounded-lg border border-input bg-card p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-ink"
+            className="mt-2 w-full resize-none rounded-lg border border-input bg-card p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground field-focus"
           />
           <Btn className="mt-4 w-full" onClick={() => void onSaveHours()}>
             Save Opening Hours
@@ -175,7 +175,7 @@ const DAYS: { key: Weekday; label: string }[] = [
 ];
 
 const inputCls =
-  "min-h-control w-full rounded-lg border border-input bg-card px-4 text-sm outline-none focus:border-ink";
+  "min-h-control w-full rounded-lg border border-input bg-card px-4 text-sm outline-none field-focus";
 
 /** The hours customers can pick from on the booking calendar, day by day. */
 function WeeklyHoursEditor({ studio }: { studio: MyBookable }) {
@@ -380,13 +380,14 @@ function NoticeAndBlackouts({ studio }: { studio: MyBookable }) {
 
       <Sheet open={open} onClose={() => setOpen(false)} title="Add blackout dates">
         <form
+          noValidate
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
             if (from && !busy) void onAdd();
           }}
         >
-          <Field label="From" id="blackout-from">
+          <Field label="From" id="blackout-from" required>
             <input
               type="date"
               aria-labelledby="blackout-from"
@@ -509,6 +510,7 @@ function ClosedTimes({ studio }: { studio: MyBookable }) {
 
       <Sheet open={open} onClose={() => setOpen(false)} title="Close a time">
         <form
+          noValidate
           className="space-y-3"
           onSubmit={(e) => {
             e.preventDefault();

@@ -1026,6 +1026,7 @@ export function RequestSessionSheet({
       title={dated ? "Request a session" : "Request this service"}
     >
       <form
+        noValidate
         className="space-y-3"
         onSubmit={(e) => {
           e.preventDefault();
