@@ -1130,42 +1130,6 @@ export type Database = {
           },
         ]
       }
-      genre_languages: {
-        Row: {
-          genre_category: string
-          genre_slug: string
-          language_category: string
-          language_slug: string
-        }
-        Insert: {
-          genre_category?: string
-          genre_slug: string
-          language_category?: string
-          language_slug: string
-        }
-        Update: {
-          genre_category?: string
-          genre_slug?: string
-          language_category?: string
-          language_slug?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "genre_languages_genre_category_genre_slug_fkey"
-            columns: ["genre_category", "genre_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-          {
-            foreignKeyName: "genre_languages_language_category_language_slug_fkey"
-            columns: ["language_category", "language_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-        ]
-      }
       help_feedback: {
         Row: {
           created_at: string
@@ -1687,42 +1651,6 @@ export type Database = {
           },
         ]
       }
-      person_type_service_categories: {
-        Row: {
-          person_type_category: string
-          person_type_slug: string
-          service_category_category: string
-          service_category_slug: string
-        }
-        Insert: {
-          person_type_category?: string
-          person_type_slug: string
-          service_category_category?: string
-          service_category_slug: string
-        }
-        Update: {
-          person_type_category?: string
-          person_type_slug?: string
-          service_category_category?: string
-          service_category_slug?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_type_service_categorie_person_type_category_person__fkey"
-            columns: ["person_type_category", "person_type_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-          {
-            foreignKeyName: "person_type_service_categorie_service_category_category_se_fkey"
-            columns: ["service_category_category", "service_category_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-        ]
-      }
       portfolio_item_events: {
         Row: {
           created_at: string
@@ -2153,35 +2081,6 @@ export type Database = {
         }
         Relationships: []
       }
-      profile_role_details: {
-        Row: {
-          details: Json
-          profile_id: string
-          role_slug: string
-          updated_at: string
-        }
-        Insert: {
-          details?: Json
-          profile_id: string
-          role_slug: string
-          updated_at?: string
-        }
-        Update: {
-          details?: Json
-          profile_id?: string
-          role_slug?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profile_role_details_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profile_service_addons: {
         Row: {
           created_at: string
@@ -2300,9 +2199,6 @@ export type Database = {
         Row: {
           amenity_slugs: string[]
           availability: string | null
-          categories: string[]
-          category: string | null
-          category_taxonomy: string
           collab_id: string | null
           created_at: string
           deliverables: string[]
@@ -2330,9 +2226,6 @@ export type Database = {
         Insert: {
           amenity_slugs?: string[]
           availability?: string | null
-          categories?: string[]
-          category?: string | null
-          category_taxonomy?: string
           collab_id?: string | null
           created_at?: string
           deliverables?: string[]
@@ -2360,9 +2253,6 @@ export type Database = {
         Update: {
           amenity_slugs?: string[]
           availability?: string | null
-          categories?: string[]
-          category?: string | null
-          category_taxonomy?: string
           collab_id?: string | null
           created_at?: string
           deliverables?: string[]
@@ -2388,13 +2278,6 @@ export type Database = {
           work_modes?: string[]
         }
         Relationships: [
-          {
-            foreignKeyName: "profile_services_category_fkey"
-            columns: ["category_taxonomy", "category"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
           {
             foreignKeyName: "profile_services_collab_id_fkey"
             columns: ["collab_id"]
@@ -2431,7 +2314,6 @@ export type Database = {
           availability: string | null
           avatar_url: string | null
           bio: string | null
-          budget_tier: string | null
           city: string | null
           contact_channels: string[]
           country: string | null
@@ -2480,7 +2362,6 @@ export type Database = {
           availability?: string | null
           avatar_url?: string | null
           bio?: string | null
-          budget_tier?: string | null
           city?: string | null
           contact_channels?: string[]
           country?: string | null
@@ -2529,7 +2410,6 @@ export type Database = {
           availability?: string | null
           avatar_url?: string | null
           bio?: string | null
-          budget_tier?: string | null
           city?: string | null
           contact_channels?: string[]
           country?: string | null
@@ -3045,42 +2925,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-        ]
-      }
-      service_category_specialties: {
-        Row: {
-          option_category: string
-          option_slug: string
-          service_category_category: string
-          service_category_slug: string
-        }
-        Insert: {
-          option_category: string
-          option_slug: string
-          service_category_category?: string
-          service_category_slug: string
-        }
-        Update: {
-          option_category?: string
-          option_slug?: string
-          service_category_category?: string
-          service_category_slug?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_category_specialties_option_category_option_slug_fkey"
-            columns: ["option_category", "option_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-          {
-            foreignKeyName: "service_category_specialties_service_category_category_ser_fkey"
-            columns: ["service_category_category", "service_category_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
           },
         ]
       }
@@ -3802,20 +3646,6 @@ export type Database = {
         Returns: {
           day: string
           views: number
-        }[]
-      }
-      persona_bucket: {
-        Args: {
-          p_languages?: string[]
-          p_limit?: number
-          p_primary: string
-          p_secondary?: string[]
-        }
-        Returns: {
-          category_key: string
-          display_order: number
-          label: string
-          slug: string
         }[]
       }
       popular_searches: {
