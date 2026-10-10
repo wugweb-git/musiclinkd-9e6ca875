@@ -176,7 +176,7 @@ function WriteReview() {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Describe the work, communication and whether you would book again."
-            className="w-full rounded-lg border border-input bg-card p-3 text-1 outline-none focus:border-ink"
+            className="w-full rounded-lg border border-input bg-card p-3 text-1 outline-none field-focus"
           />
           <p className="text-1 text-muted-foreground">{body.trim().length}/2000</p>
         </Card>

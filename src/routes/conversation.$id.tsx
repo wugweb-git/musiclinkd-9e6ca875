@@ -451,6 +451,7 @@ function Conversation() {
         {/* The composer, the 2026 way: a round + for sharing your work, a borderless field that
             grows with the message, and a squared send key that fills in once there is text. */}
         <form
+          noValidate
           className="flex shrink-0 items-end gap-2 border-t border-border bg-card px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2"
           onSubmit={(e) => {
             e.preventDefault();

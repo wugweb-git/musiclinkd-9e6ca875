@@ -97,17 +97,28 @@ function AccountScreen() {
   const field = fields.find((f) => f.key === editing);
   const [input, setInput] = useState("");
   const [saving, setSaving] = useState(false);
-  useEffect(() => setInput(field?.key === "email" || field?.key === "phone" ? "" : ""), [field]);
+  // Send never greys out while the value is wrong; pressing it says what is wrong under the
+  // field (owner, 10 Oct 2026).
+  const [tried, setTried] = useState(false);
+  useEffect(() => {
+    setInput(field?.key === "email" || field?.key === "phone" ? "" : "");
+    setTried(false);
+  }, [field]);
 
   const problem =
     field?.key === "email" && input.trim()
       ? emailProblem(input)
       : field?.key === "phone" && input.trim()
         ? phoneProblem(input)
-        : null;
+        : tried && field && !input.trim()
+          ? `Enter your new ${field.label.toLowerCase()}`
+          : null;
 
   async function submit() {
-    if (!field || !input.trim() || problem) return;
+    if (!field || !input.trim() || problem) {
+      setTried(true);
+      return;
+    }
     setSaving(true);
     try {
       if (field.key === "email") {
@@ -204,7 +215,7 @@ function AccountScreen() {
               New {field?.label.toLowerCase()}
             </span>
             {field?.key === "phone" ? (
-              <span className="mt-1.5 flex min-h-control items-center rounded-lg border border-input bg-background focus-within:border-ink has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+              <span className="field-focus mt-1.5 flex min-h-control items-center rounded-lg border border-input bg-background">
                 <span className="pl-3 text-1 text-muted-foreground">+91</span>
                 <input
                   value={input}
@@ -212,6 +223,8 @@ function AccountScreen() {
                   autoComplete="tel-national"
                   onChange={(e) => setInput(e.target.value.replace(/[^\d]/g, "").slice(0, 10))}
                   placeholder="98xxxxxxxx"
+                  aria-invalid={Boolean(problem) || undefined}
+                  aria-describedby={problem ? "account-field-error" : undefined}
                   className="min-h-control w-full bg-transparent px-2 text-2 outline-none"
                 />
               </span>
@@ -222,23 +235,21 @@ function AccountScreen() {
                   ? { type: "email", inputMode: "email" as const, autoComplete: "email" }
                   : {})}
                 onChange={(e) => setInput(e.target.value)}
-                className="mt-1.5 min-h-control w-full rounded-lg border border-input bg-background px-3 text-1 outline-none focus:border-ink"
+                aria-invalid={Boolean(problem) || undefined}
+                aria-describedby={problem ? "account-field-error" : undefined}
+                className="field-focus mt-1.5 min-h-control w-full rounded-lg border border-input bg-background px-3 text-1 outline-none"
               />
             )}
           </label>
           {problem ? (
-            <p role="alert" className="text-1 text-destructive">
+            <p id="account-field-error" role="alert" className="text-1 text-destructive">
               {problem}
             </p>
           ) : null}
           <p className="text-1 text-muted-foreground">
             We send a confirmation before anything changes.
           </p>
-          <Btn
-            className="w-full"
-            onClick={() => void submit()}
-            disabled={saving || !input.trim() || Boolean(problem)}
-          >
+          <Btn className="w-full" onClick={() => void submit()} disabled={saving}>
             Send confirmation
           </Btn>
         </div>

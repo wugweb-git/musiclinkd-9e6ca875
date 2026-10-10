@@ -38,6 +38,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - Select screen: the Business banner's art pieces are spread so none covers another's text.
 - Removed hardcoded lists no screen used: service categories, service availability states,
   "Available for", role specialisations and market categories.
+### Changed — forms: one field focus, inline errors, required marks (10 Oct, owner)
+
+- Every text field focuses the same way: ink border and a 1.5px ink ring (`field-focus` in
+  styles.css, `--field-ring`). TextField, InlineField, the listing `inputClass` and the remaining
+  hand-rolled inputs and textareas use it.
+- Errors: red border, red label and a message under the field (role="alert", aria-invalid) on
+  TextField, InlineField and Field; `inputClass` inputs and SheetSelect turn red when their Field
+  has an error.
+- Required fields show a muted " *" after the label (`required` on TextField, InlineField, Field,
+  CityField); never on an "(optional)" label. Field labels are 14px medium.
+- Every form has `noValidate`, so the browser's own bubble never shows.
+- Create listing, Make an offer and Settings → Account no longer grey out Continue / Publish /
+  Send while a field is missing: pressing it shows what is missing under each field.
 
 ### Changed — amenities and equipment belong to every business (10 Oct, owner)
 

@@ -279,7 +279,7 @@ function Confirmed() {
               min={earliestBookingDate()}
               value={moveDate}
               onChange={(e) => setMoveDate(e.target.value)}
-              className="mt-2 h-12 w-full rounded-sm border border-input bg-background px-4 text-sm outline-none focus:border-ink"
+              className="mt-2 h-12 w-full rounded-sm border border-input bg-background px-4 text-sm outline-none field-focus"
             />
           </label>
           <label className="block">
@@ -288,7 +288,7 @@ function Confirmed() {
               type="time"
               value={moveStart}
               onChange={(e) => setMoveStart(e.target.value)}
-              className="mt-2 h-12 w-full rounded-sm border border-input bg-background px-4 text-sm outline-none focus:border-ink"
+              className="mt-2 h-12 w-full rounded-sm border border-input bg-background px-4 text-sm outline-none field-focus"
             />
           </label>
           <Btn

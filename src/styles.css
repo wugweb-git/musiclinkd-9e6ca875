@@ -776,6 +776,8 @@
   /* Focus. Every interactive control shows this on :focus-visible. */
   --focus-ring: 2px solid var(--ink);
   --focus-ring-offset: 2px;
+  /* Text fields take a ring hugging the border instead (owner, 10 Oct 2026): see field-focus. */
+  --field-ring: 1.5px;
 
   /*
    * Charts. The vendor chart components (components/charts/**) read these four; they are aliases of
@@ -887,6 +889,30 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/*
+ * One focus look for every text field (owner, 10 Oct 2026): ink border and a 1.5px ink ring, on the
+ * field box or on a bare input. Invalid — aria-invalid on the box or the input inside it — keeps a
+ * red border, and a red ring while focused, so the error never hides behind the focus state.
+ */
+@utility field-focus {
+  &:focus-within {
+    border-color: var(--ink);
+    box-shadow:
+      0 0 0 var(--field-ring) var(--ink),
+      var(--tw-shadow, 0 0 #0000);
+  }
+  &[aria-invalid="true"],
+  &:has([aria-invalid="true"]) {
+    border-color: var(--destructive);
+  }
+  &[aria-invalid="true"]:focus-within,
+  &:has([aria-invalid="true"]):focus-within {
+    box-shadow:
+      0 0 0 var(--field-ring) var(--destructive),
+      var(--tw-shadow, 0 0 #0000);
   }
 }
 

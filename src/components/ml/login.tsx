@@ -332,6 +332,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
 
               <TextField
                 label="Email"
+                required
                 value={email}
                 className="mb-3"
                 onChange={(v) => {

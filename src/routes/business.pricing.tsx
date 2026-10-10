@@ -231,6 +231,7 @@ function NewAddOnSheet({
       title="Add an add-on"
     >
       <form
+        noValidate
         className="space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
@@ -247,7 +248,7 @@ function NewAddOnSheet({
           reset();
         }}
       >
-        <Field label="Name" id="addon-name">
+        <Field label="Name" id="addon-name" required>
           <input
             aria-labelledby="addon-name"
             value={name}
@@ -257,7 +258,7 @@ function NewAddOnSheet({
             className={inputClass}
           />
         </Field>
-        <Field label="Price (₹)" id="addon-price">
+        <Field label="Price (₹)" id="addon-price" required>
           <input
             aria-labelledby="addon-price"
             type="number"

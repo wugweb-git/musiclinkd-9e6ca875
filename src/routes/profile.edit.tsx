@@ -553,6 +553,7 @@ function EditProfile() {
           {isBusiness ? (
             <Field
               label="Business name"
+              required
               value={form.first_name}
               onChange={(v) => update({ first_name: v, last_name: "" })}
               error={problems.first_name}
@@ -561,6 +562,7 @@ function EditProfile() {
             <div className="grid grid-cols-2 gap-3">
               <Field
                 label="First name"
+                required
                 value={form.first_name}
                 onChange={(v) => update({ first_name: v })}
                 error={problems.first_name}

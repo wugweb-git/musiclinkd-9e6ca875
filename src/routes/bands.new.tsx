@@ -121,6 +121,7 @@ function CreateBand() {
           <Card className="space-y-4">
             <Field
               label={`${label} name`}
+              required
               value={name}
               onChange={setName}
               placeholder="The Kite Notes"

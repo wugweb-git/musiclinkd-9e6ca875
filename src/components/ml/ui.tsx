@@ -551,6 +551,7 @@ function SearchJump({ to, placeholder, onClose, label = "Search" }: SearchJumpPr
 
   return (
     <form
+      noValidate
       role="search"
       aria-label={label}
       className="animate-in fade-in slide-in-from-top-2 duration-200"

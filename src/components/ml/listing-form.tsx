@@ -39,6 +39,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, IconBtn, Sheet } from "./ui";
+import { RequiredMark } from "./auth";
+import { cn } from "@/lib/utils";
 import {
   DrawerList,
   DrawerOptionRow,
@@ -295,7 +297,8 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
  * page whenever it focuses an input smaller than 16px — every one of these fields did that.
  */
 export const inputClass =
-  "h-11 w-full rounded-sm border border-input bg-card px-3.5 text-[16px] outline-none focus:border-ink";
+  // field-focus: ink border + 1.5px ink ring on focus, red border when aria-invalid (owner, 10 Oct 2026).
+  "field-focus h-11 w-full rounded-sm border border-input bg-card px-3.5 text-[16px] outline-none";
 
 /**
  * What a `Field` knows that its control needs: the id to answer to, what describes it, and whether
@@ -331,6 +334,7 @@ export function Field({
   id,
   hint,
   error,
+  required = false,
   children,
 }: {
   label: string;
@@ -340,6 +344,8 @@ export function Field({
   hint?: string;
   /** What is wrong and how to fix it, under the control; nothing when the field is fine. */
   error?: string | null | undefined;
+  /** Adds a muted " *" after the label (owner, 10 Oct 2026). Never on an "(optional)" label. */
+  required?: boolean | undefined;
   children: ReactNode;
 }) {
   const controlId = `${id}-control`;
@@ -362,7 +368,11 @@ export function Field({
     const props = node.props as { id?: string; children?: ReactNode };
     if (typeof node.type === "string" && labelable.has(node.type)) {
       named = true;
-      return cloneElement(node, { ...control, ...props });
+      return cloneElement(node, {
+        ...control,
+        ...(required ? { "aria-required": true } : {}),
+        ...props,
+      });
     }
     if (props.children === undefined) return node;
     return cloneElement(node, {
@@ -374,8 +384,17 @@ export function Field({
 
   return (
     <div>
-      <label htmlFor={controlId} id={id} className="block text-1 font-medium text-foreground">
+      {/* 14px medium like every field label; red while the field is wrong (owner, 10 Oct 2026). */}
+      <label
+        htmlFor={controlId}
+        id={id}
+        className={cn(
+          "block text-sm font-medium transition-colors duration-125 ease-standard",
+          error ? "text-destructive" : "text-foreground",
+        )}
+      >
         {label}
+        {required ? <RequiredMark /> : null}
       </label>
       {hint ? (
         <span id={`${id}-hint`} className="mt-0.5 block text-1 text-muted-foreground">
@@ -545,7 +564,8 @@ export function SheetSelect({
         onClick={() => setOpen(true)}
         // The trigger is the field's control: it takes the label, the hint and the error.
         {...field}
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-[16px] ${className}`}
+        // Red border when its Field is wrong, like the text fields (owner, 10 Oct 2026).
+        className={`flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-[16px] aria-invalid:border-destructive ${className}`}
       >
         {/*
          * A stored value the options don't contain — a city typed before this was a picker, one
@@ -614,6 +634,7 @@ export function CityField({
   state,
   hint,
   error,
+  required = false,
 }: {
   id: string;
   label?: string;
@@ -623,11 +644,18 @@ export function CityField({
   state?: string | null;
   hint?: string;
   error?: string | null | undefined;
+  required?: boolean | undefined;
 }) {
   const all = useTaxonomy().options?.cities ?? [];
   const options = choicesFor(state ? all.filter((c) => c.metadata?.state === state) : all);
   return (
-    <Field label={label} id={id} {...(hint ? { hint } : {})} {...(error ? { error } : {})}>
+    <Field
+      label={label}
+      id={id}
+      required={required}
+      {...(hint ? { hint } : {})}
+      {...(error ? { error } : {})}
+    >
       <SheetSelect
         title={label}
         value={value}
@@ -660,10 +688,22 @@ function productTypeOptions(taxonomy: GearTaxonomy) {
   }));
 }
 
-type StepProps = { value: ListingDraft; onChange: (patch: Partial<ListingDraft>) => void };
+type StepProps = {
+  value: ListingDraft;
+  onChange: (patch: Partial<ListingDraft>) => void;
+  /**
+   * Continue or Publish was pressed with the step incomplete: every empty required field says so
+   * under itself instead of the button greying out (owner, 10 Oct 2026).
+   */
+  showErrors?: boolean | undefined;
+};
+
+/** The message for an empty required field, once the person has tried to move on. */
+const missing = (show: boolean | undefined, empty: boolean, message: string) =>
+  show && empty ? message : null;
 
 /** Step 1 — what it is and what it costs. */
-export function ListingWhatStep({ value, onChange }: StepProps) {
+export function ListingWhatStep({ value, onChange, showErrors }: StepProps) {
   const taxonomy = useGearTaxonomy();
   const rental = value.mode === "rent";
   return (
@@ -676,7 +716,12 @@ export function ListingWhatStep({ value, onChange }: StepProps) {
         labels={listingModeLabels}
         onChange={(mode) => onChange({ mode })}
       />
-      <Field label="Product type" id="listing-type">
+      <Field
+        label="Product type"
+        id="listing-type"
+        required
+        error={missing(showErrors, !value.sub, "Choose a product type")}
+      >
         <SheetSelect
           title="Product type"
           value={value.sub}
@@ -688,12 +733,18 @@ export function ListingWhatStep({ value, onChange }: StepProps) {
       </Field>
       {(
         [
-          { key: "name", label: "Name", ph: "Shure SM7B" },
-          { key: "brand", label: "Brand", ph: "Shure" },
-          { key: "model", label: "Model", ph: "SM7B" },
+          { key: "name", label: "Name", ph: "Shure SM7B", empty: "Add a name" },
+          { key: "brand", label: "Brand", ph: "Shure", empty: "Add the brand" },
+          { key: "model", label: "Model", ph: "SM7B", empty: "Add the model" },
         ] as const
       ).map((f) => (
-        <Field key={f.key} label={f.label} id={`listing-${f.key}`}>
+        <Field
+          key={f.key}
+          label={f.label}
+          id={`listing-${f.key}`}
+          required
+          error={missing(showErrors, !value[f.key].trim(), f.empty)}
+        >
           <input
             value={value[f.key]}
             onChange={(e) => onChange({ [f.key]: e.target.value })}
@@ -702,7 +753,7 @@ export function ListingWhatStep({ value, onChange }: StepProps) {
           />
         </Field>
       ))}
-      <Field label="Condition" id="listing-condition">
+      <Field label="Condition" id="listing-condition" required>
         <SheetSelect
           title="Condition"
           value={value.condition}
@@ -711,7 +762,12 @@ export function ListingWhatStep({ value, onChange }: StepProps) {
           placeholder="Condition"
         />
       </Field>
-      <Field label="Price (₹)" id="listing-price">
+      <Field
+        label="Price (₹)"
+        id="listing-price"
+        required
+        error={missing(showErrors, !(rupees(value.price) > 0), "Add a price")}
+      >
         <div className={rental ? "grid grid-cols-5 gap-2" : ""}>
           <input
             value={value.price}
@@ -838,30 +894,34 @@ function PhotoSlots({
 }
 
 /** Step 2 — photos, a short video link (optional) and the description. */
-export function ListingMediaStep({ value, onChange }: StepProps) {
+export function ListingMediaStep({ value, onChange, showErrors }: StepProps) {
   const problem = videoProblem(value.videoUrl);
   return (
     <div className="space-y-4">
       <PhotoSlots photos={value.photos} onChange={(photos) => onChange({ photos })} />
       <p className="text-1 text-foreground">First photo becomes the cover.</p>
-      <Field label="Short video link (optional)" id="listing-video">
+      {/* The message sits under the field via Field, with role="alert" (owner, 10 Oct 2026). */}
+      <Field label="Short video link (optional)" id="listing-video" error={problem}>
         <input
           value={value.videoUrl}
           onChange={(e) => onChange({ videoUrl: e.target.value })}
           inputMode="url"
           placeholder="https://youtu.be/…"
-          aria-invalid={Boolean(problem)}
           className={inputClass}
         />
       </Field>
-      {problem ? <p className="-mt-2 px-1 text-1 text-destructive">{problem}</p> : null}
-      <Field label="Description" id="listing-description">
+      <Field
+        label="Description"
+        id="listing-description"
+        required
+        error={missing(showErrors, !value.description.trim(), "Add a description")}
+      >
         <textarea
           rows={4}
           value={value.description}
           onChange={(e) => onChange({ description: e.target.value })}
           placeholder="Condition, history, what's included..."
-          className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
+          className="field-focus w-full rounded-lg border border-input bg-card p-4 text-sm outline-none"
         />
       </Field>
       <TagListField
@@ -993,29 +1053,34 @@ function SpecsField({
 }
 
 /** Step 3 — where it is and how it changes hands, then the card as it will show in Market. */
-export function ListingWhereStep({ value, onChange }: StepProps) {
-  const pin = pinProblem(value.pin);
+export function ListingWhereStep({ value, onChange, showErrors }: StepProps) {
+  const pin = pinProblem(value.pin) ?? missing(showErrors, !value.pin.trim(), "Add the PIN code");
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-5 gap-2">
         <div className="col-span-3">
-          <CityField id="listing-city" value={value.city} onChange={(city) => onChange({ city })} />
+          <CityField
+            id="listing-city"
+            value={value.city}
+            onChange={(city) => onChange({ city })}
+            required
+            error={missing(showErrors, !value.city.trim(), "Choose a city")}
+          />
         </div>
         <div className="col-span-2">
-          <Field label="PIN code" id="listing-pin">
+          {/* The message sits under the field via Field, with role="alert" (owner, 10 Oct 2026). */}
+          <Field label="PIN code" id="listing-pin" required error={pin}>
             <input
               value={value.pin}
               onChange={(e) => onChange({ pin: e.target.value.replace(/\D/g, "").slice(0, 6) })}
               inputMode="numeric"
               placeholder="400053"
-              aria-invalid={Boolean(pin)}
               className={inputClass}
             />
           </Field>
         </div>
       </div>
-      {pin ? <p className="-mt-2 px-1 text-1 text-destructive">{pin}</p> : null}
-      <Field label="Fulfilment" id="listing-fulfilment">
+      <Field label="Fulfilment" id="listing-fulfilment" required>
         <SheetSelect
           title="Fulfilment"
           value={value.fulfilment}
