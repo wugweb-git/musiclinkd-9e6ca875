@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed / changed — Find a match gone; Home is the default screen (10 Oct, owner)
+
+- Search: no Studios tab (every business is under Businesses) and no Verified chip; "Gear" is
+  "Market" and "Work" is "Portfolio". Profiles stay as rows on Search.
+- Discover role lists show profiles as cards, two to a row.
+- Discover, its lists and Search use the setup screens' warm ground (#F3F1EC).
+
+- Songs and videos play where they are, expanded, instead of opening a separate page: Discover →
+  Music and a service's Examples use the same audio and video cards as a profile's Portfolio.
+- marketplace_categories deleted from the database (listings store the tool they list).
+
+- Find a match is removed (Search does this job): the screen, its menu row, the "Describe who you
+  need" / "Describe a hiring need" cards on Discover and Home, and the AI match server function.
+  /discover/match redirects to Search.
+- Home is the default screen: signing in and opening the app land on /home (was /discover);
+  "Explore MusicLinkd First" on skip goes Home.
+
 ### Changed — screens follow the cleaned taxonomy (10 Oct, owner)
 
 - Post an opportunity: "Role needed" picks one person type from the taxonomy (the onboarding
@@ -26,6 +43,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - Select screen: the Business banner's art pieces are spread so none covers another's text.
 - Removed hardcoded lists no screen used: service categories, service availability states,
   "Available for", role specialisations and market categories.
+### Changed — forms: one field focus, inline errors, required marks (10 Oct, owner)
+
+- Every text field focuses the same way: ink border and a 1.5px ink ring (`field-focus` in
+  styles.css, `--field-ring`). TextField, InlineField, the listing `inputClass` and the remaining
+  hand-rolled inputs and textareas use it.
+- Errors: red border, red label and a message under the field (role="alert", aria-invalid) on
+  TextField, InlineField and Field; `inputClass` inputs and SheetSelect turn red when their Field
+  has an error.
+- Required fields show a muted " *" after the label (`required` on TextField, InlineField, Field,
+  CityField); never on an "(optional)" label. Field labels are 14px medium.
+- Every form has `noValidate`, so the browser's own bubble never shows.
+- Create listing, Make an offer and Settings → Account no longer grey out Continue / Publish /
+  Send while a field is missing: pressing it shows what is missing under each field.
+### Added — Search filters on every tab, "N of M" count, offline banner (10 Oct, owner)
+
+- Search's count line reads "**N** of M results": N on screen, M the database's exact count
+  for the tab (or every tab on All). Hidden while loading. The "Showing the first N" line it
+  replaces is gone.
+- Filters on every tab, in the same Filters panel, "Filters · N" pill and removable ink chips:
+  People (role, genre, city), Businesses (business type, city), Opportunities (role needed,
+  city), Gear (tool category from instruments, equipment categories and DAW tools, city), Studios,
+  Collabs and Services (city), Work (Music or video, genre). Every option shows a real count;
+  every filter is in the address, so Back and a shared link restore it. Changing tab drops them.
+- A Work tab: published music and video from public profiles, counted in full (searchEverything
+  `work` group); genre is the owner's genres, since work carries none. No "Why" link on work yet:
+  search_feedback only takes the existing kinds.
+- The offline banner shows on Search when the device loses its connection, with Retry.
+- `searchFacets` (global-search.functions.ts) counts each tab's filter options; `peopleFacets`
+  also counts cities, and `searchPeople` takes `cities`.
 
 ### Changed — amenities and equipment belong to every business (10 Oct, owner)
 

@@ -399,22 +399,6 @@ function BusinessHome({ data }: { data: HomeData }) {
           </div>
         </section>
 
-        <section className="px-5">
-          <Link
-            to="/discover/match"
-            search={{ intent: "hire" }}
-            className="state-layer flex items-center gap-3 rounded-lg bg-ink p-4 text-ink-foreground"
-          >
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold">Describe a hiring need</span>
-              <span className="mt-0.5 block text-1 opacity-80">
-                AI matches it with MusicLinkd professionals who fit.
-              </span>
-            </span>
-            <ArrowRight size={iconSize.sm} aria-hidden />
-          </Link>
-        </section>
-
         {pendingBookings.length ? (
           <section>
             <SectionHeader title="Needs attention" />

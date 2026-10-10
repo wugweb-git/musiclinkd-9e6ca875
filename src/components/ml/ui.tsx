@@ -210,7 +210,6 @@ const menuGroups: {
       { to: "/opportunities", label: "Opportunities", icon: Megaphone },
       { to: "/opportunities/mine", label: "My opportunities", icon: Megaphone },
       { to: "/opportunities/applications", label: "Applications", icon: Briefcase },
-      { to: "/discover/match", label: "Find a match", icon: Sparkles },
       { to: "/collab", label: "Collaborations", icon: Handshake },
       { to: "/collab/new", label: "New collaboration", icon: Handshake },
       { to: "/bands", label: "Bands", icon: UsersRound },
@@ -552,6 +551,7 @@ function SearchJump({ to, placeholder, onClose, label = "Search" }: SearchJumpPr
 
   return (
     <form
+      noValidate
       role="search"
       aria-label={label}
       className="animate-in fade-in slide-in-from-top-2 duration-200"

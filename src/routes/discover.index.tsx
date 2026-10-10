@@ -10,7 +10,7 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { BookableCard, PersonCard, PersonRow } from "@/components/ml/cards";
+import { BookableCard, PersonCard } from "@/components/ml/cards";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { NotificationsBell, SearchIconButton } from "@/components/ml/tab-header";
 import { Chip, Screen, SearchBar, SectionHeader } from "@/components/ml/ui";
@@ -147,8 +147,8 @@ function DiscoverScreen() {
   );
 
   return (
-    <Screen className="pb-nav-clear">
-      <header className="bg-card px-5 pb-5 pt-safe">
+    <Screen tone="warm" className="pb-nav-clear">
+      <header className="bg-warm px-5 pb-5 pt-safe">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-3">Discover</h1>
@@ -178,20 +178,6 @@ function DiscoverScreen() {
       </header>
 
       <main className="space-y-9 py-6">
-        <section className="px-5">
-          <Link
-            to="/discover/match"
-            className="state-layer flex items-center gap-3 rounded-lg bg-ink p-4 text-ink-foreground"
-          >
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold">Describe who you need</span>
-              <span className="mt-0.5 block text-1 opacity-80">
-                AI matches you with real profiles and open opportunities.
-              </span>
-            </span>
-            <ArrowRight size={iconSize.sm} aria-hidden />
-          </Link>
-        </section>
         {mode === "For you" ? (
           <section className="px-5">
             <Link

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { PersonRow } from "@/components/ml/cards";
+import { PersonCard } from "@/components/ml/cards";
 import { Card, EmptyState, StatusPill, StateCard } from "@/components/ml/kit";
 
 import { CollabKindSheet } from "@/components/ml/collab";
@@ -14,7 +14,7 @@ import { listNewWork, type NewWorkItem } from "@/lib/trending.functions";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { joinParts } from "@/lib/utils";
-import { useWorkLikes, WorkLinkRow } from "@/components/ml/portfolio";
+import { AudioTrackCard, VideoCard } from "@/components/ml/profile";
 
 /*
  * One Discover slug, every subject. `/discover/<slug>` is the shareable form of a Discover filter
@@ -79,7 +79,7 @@ function PeopleList({ role, label }: { role: string; label: string | null }) {
   const heading = label ?? options?.person_types?.find((o) => o.slug === role)?.label ?? role;
 
   return (
-    <Screen>
+    <Screen tone="warm">
       <TopBar title={heading} back="/discover" />
       <div className="px-5 py-5">
         {people.isLoading ? (
@@ -99,11 +99,12 @@ function PeopleList({ role, label }: { role: string; label: string | null }) {
             body="Nobody with this role has a public profile at the moment."
           />
         ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+          // Discover shows profiles as cards, two to a row (owner, 10 Oct 2026); Search keeps rows.
+          <div className="grid grid-cols-2 gap-3">
             {people.data.map((p) => (
-              <PersonRow key={p.id} person={p} roleLabels={options?.person_types} />
+              <PersonCard key={p.id} person={p} roleLabels={options?.person_types} fill />
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </Screen>
@@ -112,16 +113,47 @@ function PeopleList({ role, label }: { role: string; label: string | null }) {
 
 /** Work published by people you can actually hire, not a chart. */
 function MusicList({ tracks }: { tracks: NewWorkItem[] }) {
-  const likes = useWorkLikes(tracks.slice(0, 60).map((t) => t.id));
+  // A tap plays the work right here, expanded, like a profile's Portfolio (owner, 10 Oct 2026):
+  // never a separate screen.
+  const [playingId, setPlayingId] = useState<string | null>(null);
   return (
-    <Screen>
+    <Screen tone="warm">
       <TopBar title="Music" subtitle="New work from the community" back="/discover" />
       <div className="space-y-4 px-5 pt-4 pb-8">
         {tracks.length ? (
           <div className="space-y-3">
-            {tracks.map((t) => (
-              <WorkLinkRow key={t.id} work={t} likes={likes} />
-            ))}
+            {tracks.map((t) =>
+              workType(t.kind).media === "video" ? (
+                <VideoCard
+                  key={t.id}
+                  layout="row"
+                  v={{
+                    id: t.id,
+                    title: t.title,
+                    context: t.display_name ?? "",
+                    duration: "",
+                    thumb: t.cover_url ?? "",
+                    ...(t.media_url ? { media: t.media_url } : {}),
+                  }}
+                />
+              ) : (
+                <AudioTrackCard
+                  key={t.id}
+                  layout="stacked"
+                  track={{
+                    id: t.id,
+                    title: t.title,
+                    role: t.display_name ?? "",
+                    project: "",
+                    duration: "",
+                    artwork: t.cover_url ?? "",
+                    ...(t.media_url ? { media: t.media_url } : {}),
+                  }}
+                  playing={playingId === t.id}
+                  onToggle={() => setPlayingId((id) => (id === t.id ? null : t.id))}
+                />
+              ),
+            )}
           </div>
         ) : (
           <EmptyState
@@ -151,7 +183,7 @@ function ProjectList({
   const projects = opportunities.filter((o) => o.kind === "Project" || o.kind === "Collaborator");
 
   return (
-    <Screen>
+    <Screen tone="warm">
       <TopBar title="Projects" subtitle="Work in progress you can join" back="/discover" />
       <div className="space-y-4 px-5 pt-4 pb-8">
         {projects.length ? (

@@ -17,21 +17,27 @@ import {
   VerifiedBadge,
 } from "@/components/ml/ui";
 import { PersonRow } from "@/components/ml/cards";
-import { EMPTY_ART, EmptyState, LoadError, Segmented, StateCard } from "@/components/ml/kit";
+import { EMPTY_ART, EmptyState, LoadError, OfflineBanner, Segmented } from "@/components/ml/kit";
 import { SectionActionLink } from "@/components/ml/links";
 import { ListingGrid } from "@/components/ml/market";
 import { OpportunityCard } from "@/components/ml/opportunity";
+import { useWorkLikes, WorkLinkRow } from "@/components/ml/portfolio";
+import { workMediaFilters } from "@/data/portfolio";
 
 import { useAuth } from "@/hooks/use-auth";
 import { peopleFacets, searchPeople } from "@/lib/profile-groups.functions";
 import {
   listMySearchFeedback,
   searchEverything,
+  searchFacets,
   SEARCH_GROUPS,
   type ResultKind,
+  type SearchFacets,
+  type SearchFilters,
   type SearchGroup,
   type SearchHit,
 } from "@/lib/global-search.functions";
+import { sameCity } from "@/lib/place";
 import {
   listMySavedSearches,
   popularSearches,
@@ -42,13 +48,20 @@ import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.function
 import { listingFromRow } from "@/lib/market-view";
 import { opportunityFromRow } from "@/lib/opportunity-view";
 import { useSearchRecorder } from "@/lib/search-events";
-import { labelFor, talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
+import {
+  businessTypes,
+  labelFor,
+  talentTypes,
+  useTaxonomy,
+  type TaxonomyOption,
+} from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
 
 /*
  * Search over everything public: people (the live profiles table, narrowed by a role from the
- * taxonomy), businesses, studios, collabs and bands, open opportunities, Market gear and services.
+ * taxonomy), businesses, studios, collabs and bands, open opportunities, Market gear, services
+ * and published music and video work.
  * Every count is the count the database returns — there is no estimate, and no filter that does
  * not narrow anything. With nothing typed it shows this device's recent searches, the account's
  * saved ones and what people search most, above what there is to browse.
@@ -58,27 +71,66 @@ const TABS = [
   "all",
   "people",
   "businesses",
-  "studios",
   "collabs",
   "opportunities",
   "gear",
   "services",
+  "work",
 ] as const;
 type Tab = (typeof TABS)[number];
+type OneTab = Exclude<Tab, "all">;
 
 const TAB_LABEL: Record<Tab, string> = {
   all: "All",
   people: "People",
   businesses: "Businesses",
-  studios: "Studios",
   collabs: "Collabs",
   opportunities: "Opportunities",
-  gear: "Gear",
+  // The Market's listings: instruments and gear for sale or rent (owner, 10 Oct 2026: "Market").
+  gear: "Market",
   services: "Services",
+  // Published portfolio work (owner, 10 Oct 2026: "Portfolio", not "Work").
+  work: "Portfolio",
 };
 const tabOf = (label: string) => TABS.find((t) => TAB_LABEL[t] === label) ?? "all";
 
-type SearchParams = { q?: string; tab?: Tab; role?: string; genre?: string; verified?: true };
+/** Every filter a tab can have; each is "any of these", comma-separated in the address. */
+const FILTER_KEYS = ["role", "genre", "type", "category", "media", "city"] as const;
+type FilterKey = (typeof FILTER_KEYS)[number];
+type FilterValues = Record<FilterKey, string[]>;
+
+/*
+ * Filters on every tab, not only People (owner, 10 Oct 2026). Each tab narrows by what its rows
+ * actually store: a business by its type, an opportunity by the role it needs, Market gear by its
+ * tool category, work by Music/Video and genre, and a city wherever there is one.
+ */
+const TAB_FILTERS: Record<OneTab, { key: FilterKey; title: string }[]> = {
+  people: [
+    { key: "role", title: "Role" },
+    { key: "genre", title: "Genre" },
+    { key: "city", title: "City" },
+  ],
+  businesses: [
+    { key: "type", title: "Business type" },
+    { key: "city", title: "City" },
+  ],
+  collabs: [{ key: "city", title: "City" }],
+  opportunities: [
+    { key: "role", title: "Role needed" },
+    { key: "city", title: "City" },
+  ],
+  gear: [
+    { key: "category", title: "Category" },
+    { key: "city", title: "City" },
+  ],
+  services: [{ key: "city", title: "City" }],
+  work: [
+    { key: "media", title: "Music or video" },
+    { key: "genre", title: "Genre" },
+  ],
+};
+
+type SearchParams = { q?: string; tab?: Tab; verified?: true } & Partial<Record<FilterKey, string>>;
 
 export const Route = createFileRoute("/search/")({
   validateSearch: (search: Record<string, unknown>): SearchParams => {
@@ -88,8 +140,10 @@ export const Route = createFileRoute("/search/")({
     if (typeof tab === "string" && tab !== "all" && (TABS as readonly string[]).includes(tab))
       out.tab = tab as Tab;
     // Filters live in the address too, so Back and a shared link bring them back (plan §9).
-    if (typeof search["role"] === "string" && search["role"]) out.role = search["role"];
-    if (typeof search["genre"] === "string" && search["genre"]) out.genre = search["genre"];
+    for (const key of FILTER_KEYS) {
+      const v = search[key];
+      if (typeof v === "string" && v) out[key] = v;
+    }
     if (search["verified"] === true || search["verified"] === "true") out.verified = true;
     return out;
   },
@@ -99,7 +153,7 @@ export const Route = createFileRoute("/search/")({
       {
         name: "description",
         content:
-          "Find people, businesses, studios, bands, opportunities, gear and services in India's music industry.",
+          "Find people, businesses, studios, bands, opportunities, gear, services and work in India's music industry.",
       },
       { property: "og:title", content: "Search Results | MusicLinkd" },
       { property: "og:description", content: "Search everything on MusicLinkd." },
@@ -118,6 +172,23 @@ function useSettled(value: string, ms = 300) {
   return settled;
 }
 
+/** Whether the device has a connection, kept current (the offline banner, plan §9). */
+function useOffline() {
+  const [offline, setOffline] = useState(false);
+  useEffect(() => {
+    const online = () => setOffline(false);
+    const offlineNow = () => setOffline(true);
+    setOffline(navigator.onLine === false);
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offlineNow);
+    return () => {
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offlineNow);
+    };
+  }, []);
+  return offline;
+}
+
 /** Results the person said were not a good match go after the rest, in the same order. */
 function lastIfFlagged<T>(items: T[], key: (t: T) => string, flagged: Set<string>) {
   if (!flagged.size) return items;
@@ -127,19 +198,81 @@ function lastIfFlagged<T>(items: T[], key: (t: T) => string, flagged: Set<string
   ];
 }
 
+type Taxonomy = ReturnType<typeof useTaxonomy>["options"];
+
+/** A business type or tool category by the value rows store (app_key where set, else the slug). */
+const asStored = (list: TaxonomyOption[]) =>
+  list.map((o) => ({ ...o, slug: o.metadata?.app_key ?? o.slug }));
+
+/** Market tools: instruments, hardware and software in one list, each value once. */
+function toolOptions(options: Taxonomy): TaxonomyOption[] {
+  const seen = new Set<string>();
+  return asStored([
+    ...(options?.instruments ?? []),
+    ...(options?.equipment_categories ?? []),
+    ...(options?.daw_tools ?? []),
+  ]).filter((o) => !seen.has(o.slug) && Boolean(seen.add(o.slug)));
+}
+
+/** The options a filter offers on a tab. */
+function optionsFor(tab: OneTab, key: FilterKey, options: Taxonomy): TaxonomyOption[] {
+  switch (key) {
+    case "role":
+      // People are talent; an opportunity can ask for any person type.
+      return tab === "people"
+        ? talentTypes(options?.person_types ?? [])
+        : (options?.person_types ?? []);
+    case "genre":
+      return options?.genres ?? [];
+    case "type":
+      return asStored(businessTypes(options?.person_types ?? []));
+    case "category":
+      return toolOptions(options);
+    case "media":
+      return workMediaFilters.map((m) => ({ ...m, metadata: null }));
+    case "city":
+      return options?.cities ?? [];
+  }
+}
+
+/** The values a tab's server reads take: cities and opportunity roles as labels, the rest as stored. */
+function serverFilters(tab: Tab, v: FilterValues, options: Taxonomy) {
+  if (tab === "all") return {};
+  const cities = v.city.map((c) => labelFor(options?.cities, c));
+  if (tab === "people")
+    return {
+      ...(v.role.length ? { roles: v.role } : {}),
+      ...(v.genre.length ? { genres: v.genre } : {}),
+      ...(cities.length ? { cities } : {}),
+    };
+  const f: SearchFilters = {};
+  if (cities.length) f.cities = cities;
+  if (tab === "businesses" && v.type.length) f.types = v.type;
+  if (tab === "opportunities" && v.role.length)
+    f.roleLabels = v.role.map((r) => labelFor(options?.person_types, r));
+  if (tab === "gear" && v.category.length) f.categories = v.category;
+  if (tab === "work") {
+    const media = v.media.filter((m): m is "music" | "video" => m === "music" || m === "video");
+    if (media.length) f.media = media;
+    if (v.genre.length) f.genres = v.genre;
+  }
+  return { filters: f };
+}
+
 function SearchResults() {
   const params = Route.useSearch();
   const tab: Tab = params.tab ?? "all";
   const navigate = useNavigate({ from: "/search/" });
   const [q, setQ] = useState(params.q ?? "");
   // Several of each, comma-separated in the address (?role=singer,composer).
-  const roleList = (params.role ?? "").split(",").filter(Boolean);
-  const genreList = (params.genre ?? "").split(",").filter(Boolean);
-  const role = roleList.join(",");
-  const genre = genreList.join(",");
+  const values = Object.fromEntries(
+    FILTER_KEYS.map((k) => [k, (params[k] ?? "").split(",").filter(Boolean)]),
+  ) as FilterValues;
+  const tabFilters = tab === "all" ? [] : TAB_FILTERS[tab];
   const [filtersOpen, setFiltersOpen] = useState(false);
   const verifiedOnly = params.verified === true;
   const term = useSettled(q).trim();
+  const offline = useOffline();
   // The address follows the query once typing stops, and every filter as it changes.
   const setParams = (next: { [K in keyof SearchParams]?: SearchParams[K] | undefined }) =>
     void navigate({
@@ -151,7 +284,6 @@ function SearchResults() {
       },
       replace: true,
     });
-  const setRole = (next: string) => setParams({ role: next || undefined });
   const setVerifiedOnly = (fn: (v: boolean) => boolean) =>
     setParams({ verified: fn(verifiedOnly) ? true : undefined });
   useEffect(() => {
@@ -166,40 +298,46 @@ function SearchResults() {
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
 
+  // Filters only narrow their own tab, and cities and roles go to the server as labels, so a read
+  // with either waits for the taxonomy rather than sending a slug.
+  const active = tabFilters.flatMap(({ key }) => values[key].map((value) => ({ key, value })));
+  const filterArgs = serverFilters(tab, values, options);
+  const ready = options !== null || !active.some((a) => a.key === "city" || a.key === "role");
+
   const showPeople = tab === "all" || tab === "people";
   const groups: SearchGroup[] = tab === "all" ? [...SEARCH_GROUPS] : tab === "people" ? [] : [tab];
   const limit = tab === "all" ? 6 : 40;
 
   const find = useServerFn(searchPeople);
   const people = useQuery({
-    queryKey: ["search", "people", term, role, genre, verifiedOnly, limit],
+    queryKey: ["search", "people", term, filterArgs, verifiedOnly, limit],
     queryFn: () =>
       find({
         data: {
           ...(term ? { q: term } : {}),
-          ...(roleList.length ? { roles: roleList } : {}),
-          ...(genreList.length ? { genres: genreList } : {}),
+          ...(tab === "people" ? filterArgs : {}),
           ...(verifiedOnly ? { verifiedOnly: true } : {}),
           talentOnly: true,
           limit,
         },
       }),
-    enabled: showPeople,
+    enabled: showPeople && ready,
   });
 
   const findRest = useServerFn(searchEverything);
   const rest = useQuery({
-    queryKey: ["search", "everything", term, verifiedOnly, groups.join(","), limit],
+    queryKey: ["search", "everything", term, verifiedOnly, groups.join(","), filterArgs, limit],
     queryFn: () =>
       findRest({
         data: {
           ...(term ? { q: term } : {}),
           ...(verifiedOnly ? { verifiedOnly: true } : {}),
+          ...(tab === "people" ? {} : filterArgs),
           groups,
           limit,
         },
       }),
-    enabled: groups.length > 0,
+    enabled: groups.length > 0 && ready,
   });
 
   const labels = useQuery({
@@ -235,19 +373,22 @@ function SearchResults() {
       flagged,
     ),
     services: lastIfFlagged(r?.services.items ?? [], hitKey, flagged),
+    work: r?.work.items ?? [],
   };
-  const totals: Record<Exclude<Tab, "all">, number> = {
+  const totals: Record<OneTab, number> = {
     people: people.data?.total ?? 0,
     businesses: r?.businesses.total ?? 0,
-    studios: r?.studios.total ?? 0,
     collabs: r?.collabs.total ?? 0,
     opportunities: r?.opportunities.total ?? 0,
     gear: r?.gear.total ?? 0,
     services: (r?.services.total ?? 0) + (r?.serviceListings.total ?? 0),
+    work: r?.work.total ?? 0,
   };
   const total = Object.values(totals).reduce((a, b) => a + b, 0);
+  const workLikes = useWorkLikes(lists.work.map((w) => w.id));
 
-  const loading = (showPeople && people.isLoading) || (groups.length > 0 && rest.isLoading);
+  const loading =
+    !ready || (showPeople && people.isLoading) || (groups.length > 0 && rest.isLoading);
   const failed = (showPeople && people.isError) || (groups.length > 0 && rest.isError);
   const settled = !loading && !failed && (people.isSuccess || rest.isSuccess);
 
@@ -283,13 +424,11 @@ function SearchResults() {
   });
 
   const toTab = (next: Tab) => {
-    // Roles narrow people only, and only show on People; leaving it drops the role.
+    // Filters narrow one tab and mean something else on another, so changing tab drops them.
     void navigate({
       search: {
         ...(q.trim() ? { q: q.trim() } : {}),
         ...(next === "all" ? {} : { tab: next }),
-        ...(next === "people" && role ? { role } : {}),
-        ...(next === "people" && genre ? { genre } : {}),
         ...(verifiedOnly ? { verified: true as const } : {}),
       },
       replace: true,
@@ -306,85 +445,122 @@ function SearchResults() {
 
   const whyFor = (kind: ResultKind, id: string) => ({ kind, id, q: term });
 
-  const sections: { tab: Exclude<Tab, "all">; count: number; body: (all: boolean) => ReactNode }[] =
-    [
-      {
-        tab: "people",
-        count: lists.people.length,
-        body: (all) => (
-          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
-            {(all ? lists.people.slice(0, 3) : lists.people).map((p) => (
-              <WithWhy key={p.id} why={whyFor("person", p.id)} name={p.name}>
-                <PersonRow person={p} roleLabels={options?.person_types} />
-              </WithWhy>
-            ))}
-          </ul>
-        ),
-      },
-      ...(["businesses", "studios", "collabs"] as const).map((key) => ({
-        tab: key,
-        count: lists[key].length,
-        body: (all: boolean) => (
-          <HitList hits={all ? lists[key].slice(0, 3) : lists[key]} q={term} />
-        ),
-      })),
-      {
-        tab: "opportunities",
-        count: opportunityCards.length,
-        body: (all) => (
-          <div className="space-y-3">
-            {(all ? opportunityCards.slice(0, 2) : opportunityCards).map(({ row, card }) => (
-              <div key={row.id} className="relative">
-                <OpportunityCard o={card} />
-                <WhyLink why={whyFor("opportunity", row.id)} name={row.title} corner />
-              </div>
-            ))}
-          </div>
-        ),
-      },
-      {
-        tab: "gear",
-        count: gear.length,
-        body: (all) => <ListingGrid items={all ? gear.slice(0, 4) : gear} />,
-      },
-      {
-        tab: "services",
-        count: lists.services.length + serviceListings.length,
-        body: (all) => (
-          <div className="space-y-3">
-            {lists.services.length ? (
-              <HitList hits={all ? lists.services.slice(0, 3) : lists.services} q={term} />
-            ) : null}
-            {serviceListings.length ? (
-              <ListingGrid items={all ? serviceListings.slice(0, 2) : serviceListings} />
-            ) : null}
-          </div>
-        ),
-      },
-    ];
+  // `shown` is how many of a section's results are on screen: All shows a few of each.
+  const sections: {
+    tab: OneTab;
+    count: number;
+    shown: (all: boolean) => number;
+    body: (all: boolean) => ReactNode;
+  }[] = [
+    {
+      tab: "people",
+      count: lists.people.length,
+      shown: (all) => (all ? Math.min(3, lists.people.length) : lists.people.length),
+      body: (all) => (
+        <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+          {(all ? lists.people.slice(0, 3) : lists.people).map((p) => (
+            <WithWhy key={p.id} why={whyFor("person", p.id)} name={p.name}>
+              <PersonRow person={p} roleLabels={options?.person_types} />
+            </WithWhy>
+          ))}
+        </ul>
+      ),
+    },
+    // No Studios tab: every business is under Businesses (owner, 10 Oct 2026).
+    ...(["businesses", "collabs"] as const).map((key) => ({
+      tab: key,
+      count: lists[key].length,
+      shown: (all: boolean) => (all ? Math.min(3, lists[key].length) : lists[key].length),
+      body: (all: boolean) => <HitList hits={all ? lists[key].slice(0, 3) : lists[key]} q={term} />,
+    })),
+    {
+      tab: "opportunities",
+      count: opportunityCards.length,
+      shown: (all) => (all ? Math.min(2, opportunityCards.length) : opportunityCards.length),
+      body: (all) => (
+        <div className="space-y-3">
+          {(all ? opportunityCards.slice(0, 2) : opportunityCards).map(({ row, card }) => (
+            <div key={row.id} className="relative">
+              <OpportunityCard o={card} />
+              <WhyLink why={whyFor("opportunity", row.id)} name={row.title} corner />
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      tab: "gear",
+      count: gear.length,
+      shown: (all) => (all ? Math.min(4, gear.length) : gear.length),
+      body: (all) => <ListingGrid items={all ? gear.slice(0, 4) : gear} />,
+    },
+    {
+      tab: "services",
+      count: lists.services.length + serviceListings.length,
+      shown: (all) =>
+        all
+          ? Math.min(3, lists.services.length) + Math.min(2, serviceListings.length)
+          : lists.services.length + serviceListings.length,
+      body: (all) => (
+        <div className="space-y-3">
+          {lists.services.length ? (
+            <HitList hits={all ? lists.services.slice(0, 3) : lists.services} q={term} />
+          ) : null}
+          {serviceListings.length ? (
+            <ListingGrid items={all ? serviceListings.slice(0, 2) : serviceListings} />
+          ) : null}
+        </div>
+      ),
+    },
+    {
+      tab: "work",
+      count: lists.work.length,
+      shown: (all) => (all ? Math.min(3, lists.work.length) : lists.work.length),
+      // No "Why" link: search feedback does not take work yet (search_feedback.subject_kind).
+      body: (all) => (
+        <ul className="space-y-2">
+          {(all ? lists.work.slice(0, 3) : lists.work).map((w) => (
+            <li key={w.id}>
+              <WorkLinkRow work={w} likes={workLikes} />
+            </li>
+          ))}
+        </ul>
+      ),
+    },
+  ];
   const shown = sections.filter((s) => (tab === "all" || s.tab === tab) && s.count > 0);
-  const filtering = Boolean(term || role || genre || verifiedOnly);
-  const activeFilters = roleList.length + genreList.length;
+  const filtering = Boolean(term || active.length || verifiedOnly);
   const popularItems = popular.data?.items ?? [];
+  // "N of M" (plan §9): N on screen, M every match the database counted.
+  const onScreen = shown.reduce((n, s) => n + s.shown(tab === "all"), 0);
+  const matched = tab === "all" ? total : totals[tab];
+  const removeFilter = (key: FilterKey, value: string) =>
+    setParams({ [key]: values[key].filter((x) => x !== value).join(",") || undefined });
 
   return (
-    <Screen>
+    <Screen tone="warm">
       {/* Outside the blurred sticky header: its backdrop-filter would trap the fixed sheet. */}
-      <PeopleFilters
-        open={filtersOpen}
-        onClose={() => setFiltersOpen(false)}
-        term={term}
-        verifiedOnly={verifiedOnly}
-        role={role}
-        genre={genre}
-        roleOptions={talentTypes(options?.person_types ?? [])}
-        genreOptions={options?.genres ?? []}
-        onApply={(next) => {
-          setParams({ role: next.role || undefined, genre: next.genre || undefined });
-          setFiltersOpen(false);
-        }}
-      />
-      <div className="pt-safe sticky top-0 z-bar bg-background/95 px-5 backdrop-blur">
+      {tab !== "all" ? (
+        <SearchFiltersSheet
+          key={tab}
+          tab={tab}
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          term={term}
+          verifiedOnly={verifiedOnly}
+          values={values}
+          options={options}
+          onApply={(next) => {
+            setParams(
+              Object.fromEntries(
+                TAB_FILTERS[tab].map(({ key }) => [key, next[key].join(",") || undefined]),
+              ),
+            );
+            setFiltersOpen(false);
+          }}
+        />
+      ) : null}
+      <div className="pt-safe sticky top-0 z-bar bg-warm/95 px-5 backdrop-blur">
         <div className="mb-3 flex items-center gap-3">
           <Link
             to="/discover"
@@ -397,32 +573,20 @@ function SearchResults() {
         </div>
         <SearchBar value={q} onChange={setQ} />
         <div className="rail mt-3 flex gap-2 overflow-x-auto no-scrollbar">
-          <Chip active={verifiedOnly} onClick={() => setVerifiedOnly((v) => !v)}>
-            Verified
-          </Chip>
-          {tab === "people" ? (
-            <Chip active={activeFilters > 0} onClick={() => setFiltersOpen(true)}>
-              {activeFilters ? `Filters · ${activeFilters}` : "Filters"}
+          {tab !== "all" ? (
+            <Chip active={active.length > 0} onClick={() => setFiltersOpen(true)}>
+              {active.length ? `Filters · ${active.length}` : "Filters"}
             </Chip>
           ) : null}
         </div>
-        {tab === "people" && activeFilters ? (
+        {active.length ? (
           // Active filters as removable ink chips (plan §9).
           <div className="mt-2 flex flex-wrap gap-2">
-            {roleList.map((r) => (
+            {active.map(({ key, value }) => (
               <ActiveFilterChip
-                key={`r-${r}`}
-                label={labelFor(options?.person_types, r)}
-                onRemove={() => setRole(roleList.filter((x) => x !== r).join(","))}
-              />
-            ))}
-            {genreList.map((g) => (
-              <ActiveFilterChip
-                key={`g-${g}`}
-                label={labelFor(options?.genres, g)}
-                onRemove={() =>
-                  setParams({ genre: genreList.filter((x) => x !== g).join(",") || undefined })
-                }
+                key={`${key}-${value}`}
+                label={labelFor(optionsFor(tab as OneTab, key, options), value)}
+                onRemove={() => removeFilter(key, value)}
               />
             ))}
           </div>
@@ -435,6 +599,18 @@ function SearchResults() {
           />
         </div>
       </div>
+
+      {offline ? (
+        <div className="px-5 pt-4">
+          <OfflineBanner
+            body="Results show again when you're back online."
+            onRetry={() => {
+              void people.refetch();
+              void rest.refetch();
+            }}
+          />
+        </div>
+      ) : null}
 
       {!term && tab === "all" ? (
         <div className="space-y-5 px-5 pt-4">
@@ -501,10 +677,8 @@ function SearchResults() {
           <>
             <div className="flex items-center justify-between gap-3 px-5 pb-3">
               <p className="text-1 text-muted-foreground">
-                <strong className="text-foreground">
-                  {tab === "all" ? total : totals[tab]}{" "}
-                  {(tab === "all" ? total : totals[tab]) === 1 ? "result" : "results"}
-                </strong>
+                <strong className="text-foreground">{onScreen.toLocaleString("en-IN")}</strong>
+                {` of ${matched.toLocaleString("en-IN")} ${matched === 1 ? "result" : "results"}`}
                 {term ? ` for “${term}”` : ""}
               </p>
               {term ? (
@@ -525,32 +699,25 @@ function SearchResults() {
               ) : null}
             </div>
             <div className="space-y-6">
-              {shown.map((s) => {
-                const count = totals[s.tab];
-                return (
-                  <section key={s.tab}>
-                    {tab === "all" ? (
-                      <SectionHeader
-                        title={`${TAB_LABEL[s.tab]} · ${count}`}
-                        action={
-                          <SectionActionLink
-                            to="/search"
-                            search={{ ...(term ? { q: term } : {}), tab: s.tab }}
-                            replace
-                          >
-                            See All
-                          </SectionActionLink>
-                        }
-                      />
-                    ) : count > s.count ? (
-                      <p className="px-5 pb-3 text-1 text-muted-foreground">
-                        Showing the first {s.count}
-                      </p>
-                    ) : null}
-                    <div className="px-5">{s.body(tab === "all")}</div>
-                  </section>
-                );
-              })}
+              {shown.map((s) => (
+                <section key={s.tab}>
+                  {tab === "all" ? (
+                    <SectionHeader
+                      title={`${TAB_LABEL[s.tab]} · ${totals[s.tab]}`}
+                      action={
+                        <SectionActionLink
+                          to="/search"
+                          search={{ ...(term ? { q: term } : {}), tab: s.tab }}
+                          replace
+                        >
+                          See All
+                        </SectionActionLink>
+                      }
+                    />
+                  ) : null}
+                  <div className="px-5">{s.body(tab === "all")}</div>
+                </section>
+              ))}
             </div>
           </>
         )}
@@ -674,62 +841,99 @@ const toggle = (list: string[], v: string) =>
   list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
 
 /**
- * The People filters panel (plan §9): Role and Genre, each searchable, a real count on every
- * option, "Show N more", and a footer with Clear all and a live "Show N results". Pick several
- * roles and genres: a person matches with any picked role and any picked genre.
+ * A filter's counts keyed by option value. Cities are counted by the city each row shows and
+ * matched with sameCity, so "Mumbai 400053" counts for Mumbai; opportunity roles are text, so they
+ * match on the option's label.
  */
-function PeopleFilters({
+function countsFor(
+  tab: OneTab,
+  key: FilterKey,
+  list: TaxonomyOption[],
+  facets: SearchFacets | undefined,
+): Record<string, number> | undefined {
+  const raw = facets?.[key];
+  if (!raw) return undefined;
+  if (key === "city") {
+    const places = Object.entries(raw);
+    return Object.fromEntries(
+      list.map((o) => [
+        o.slug,
+        places.reduce((n, [place, c]) => (sameCity(place, o.label) ? n + c : n), 0),
+      ]),
+    );
+  }
+  if (key === "role" && tab === "opportunities")
+    return Object.fromEntries(list.map((o) => [o.slug, raw[o.label.toLowerCase()] ?? 0]));
+  return raw;
+}
+
+/**
+ * The Filters panel for one tab (plan §9): its groups, each searchable, a real count on every
+ * option, "Show N more", and a footer with Clear all and a live "Show N results". Several picks
+ * in a group match any of them; picks in different groups must all match.
+ */
+function SearchFiltersSheet({
+  tab,
   open,
   onClose,
   term,
   verifiedOnly,
-  role,
-  genre,
-  roleOptions,
-  genreOptions,
+  values,
+  options,
   onApply,
 }: {
+  tab: OneTab;
   open: boolean;
   onClose: () => void;
   term: string;
   verifiedOnly: boolean;
-  role: string;
-  genre: string;
-  roleOptions: TaxonomyOption[];
-  genreOptions: TaxonomyOption[];
-  onApply: (next: { role: string; genre: string }) => void;
+  values: FilterValues;
+  options: Taxonomy;
+  onApply: (next: FilterValues) => void;
 }) {
-  const split = (v: string) => v.split(",").filter(Boolean);
-  const [draft, setDraft] = useState({ roles: split(role), genres: split(genre) });
-  const [openGroup, setOpenGroup] = useState<"Role" | "Genre" | "">("Role");
+  const groups = TAB_FILTERS[tab];
+  const [draft, setDraft] = useState<FilterValues>(values);
+  const [openGroup, setOpenGroup] = useState<string>(groups[0]?.title ?? "");
+  const valuesKey = JSON.stringify(values);
   useEffect(() => {
-    if (open) setDraft({ roles: split(role), genres: split(genre) });
-  }, [open, role, genre]);
-  const loadFacets = useServerFn(peopleFacets);
+    if (open) setDraft(JSON.parse(valuesKey) as FilterValues);
+  }, [open, valuesKey]);
+
+  const loadPeopleFacets = useServerFn(peopleFacets);
+  const loadFacets = useServerFn(searchFacets);
   const facets = useQuery({
-    queryKey: ["search", "people", "facets"],
-    queryFn: () => loadFacets(),
+    queryKey: ["search", tab, "facets"],
+    queryFn: async (): Promise<SearchFacets> => {
+      if (tab !== "people") return loadFacets({ data: { group: tab } });
+      const p = await loadPeopleFacets();
+      return { role: p.roles, genre: p.genres, city: p.cities };
+    },
     enabled: open,
     staleTime: 5 * 60_000,
   });
-  const find = useServerFn(searchPeople);
+
+  const findPeople = useServerFn(searchPeople);
+  const findRest = useServerFn(searchEverything);
+  const args = serverFilters(tab, draft, options);
   const live = useQuery({
-    queryKey: ["search", "people", "count", term, draft.roles, draft.genres, verifiedOnly],
-    queryFn: () =>
-      find({
-        data: {
-          ...(term ? { q: term } : {}),
-          ...(draft.roles.length ? { roles: draft.roles } : {}),
-          ...(draft.genres.length ? { genres: draft.genres } : {}),
-          ...(verifiedOnly ? { verifiedOnly: true } : {}),
-          talentOnly: true,
-          limit: 1,
-          withTotal: true,
-        },
-      }),
+    queryKey: ["search", tab, "count", term, args, verifiedOnly],
+    queryFn: async () => {
+      const base = {
+        ...(term ? { q: term } : {}),
+        ...(verifiedOnly ? { verifiedOnly: true } : {}),
+        limit: 1,
+      };
+      if (tab === "people")
+        return (await findPeople({ data: { ...base, ...args, talentOnly: true, withTotal: true } }))
+          .total;
+      const r = await findRest({ data: { ...base, ...args, groups: [tab] } });
+      return tab === "services" ? r.services.total + r.serviceListings.total : r[tab].total;
+    },
     enabled: open,
   });
-  const total = live.data?.total;
+  const total = live.data;
+  const empty = Object.fromEntries(FILTER_KEYS.map((k) => [k, []])) as unknown as FilterValues;
+
   return (
     <Sheet
       open={open}
@@ -739,40 +943,32 @@ function PeopleFilters({
         <button
           type="button"
           className="hit-area text-sm font-semibold underline-offset-4 hover:underline"
-          onClick={() => setDraft({ roles: [], genres: [] })}
+          onClick={() => setDraft(empty)}
         >
           Clear all
         </button>
       }
     >
       <div className="divide-y divide-border">
-        <FilterGroup
-          title="Role"
-          open={openGroup === "Role"}
-          onToggle={() => setOpenGroup((g) => (g === "Role" ? "" : "Role"))}
-          picked={draft.roles.map((r) => labelFor(roleOptions, r)).join(", ")}
-          options={roleOptions}
-          counts={facets.data?.roles}
-          value={draft.roles}
-          onPick={(v) => setDraft((d) => ({ ...d, roles: toggle(d.roles, v) }))}
-        />
-        <FilterGroup
-          title="Genre"
-          open={openGroup === "Genre"}
-          onToggle={() => setOpenGroup((g) => (g === "Genre" ? "" : "Genre"))}
-          picked={draft.genres.map((g) => labelFor(genreOptions, g)).join(", ")}
-          options={genreOptions}
-          counts={facets.data?.genres}
-          value={draft.genres}
-          onPick={(v) => setDraft((d) => ({ ...d, genres: toggle(d.genres, v) }))}
-        />
+        {groups.map(({ key, title }) => {
+          const list = optionsFor(tab, key, options);
+          return (
+            <FilterGroup
+              key={key}
+              title={title}
+              open={openGroup === title}
+              onToggle={() => setOpenGroup((g) => (g === title ? "" : title))}
+              picked={draft[key].map((v) => labelFor(list, v)).join(", ")}
+              options={list}
+              counts={countsFor(tab, key, list, facets.data)}
+              value={draft[key]}
+              onPick={(v) => setDraft((d) => ({ ...d, [key]: toggle(d[key], v) }))}
+            />
+          );
+        })}
       </div>
       <div className="sticky bottom-0 mt-4 bg-card pt-3 pb-safe">
-        <Btn
-          className="w-full"
-          loading={live.isFetching}
-          onClick={() => onApply({ role: draft.roles.join(","), genre: draft.genres.join(",") })}
-        >
+        <Btn className="w-full" loading={live.isFetching} onClick={() => onApply(draft)}>
           {total === undefined ? "Show results" : `Show ${total.toLocaleString("en-IN")} results`}
         </Btn>
       </div>

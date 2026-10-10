@@ -345,7 +345,7 @@ function NewService() {
             <Loading rows={3} />
           ) : (
             <div className="space-y-4">
-              <Field label="Title" id="service-title">
+              <Field label="Title" id="service-title" required>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -353,13 +353,13 @@ function NewService() {
                   className={inputClass}
                 />
               </Field>
-              <Field label="Description" id="service-description">
+              <Field label="Description" id="service-description" required>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
                   placeholder="What the client gets, how you work, what makes it yours."
-                  className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
+                  className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none field-focus"
                 />
               </Field>
               <TagListField
@@ -450,7 +450,7 @@ function NewService() {
 
         {step === "price" ? (
           <div className="space-y-4">
-            <Field label="Starting price (₹)" id="service-price">
+            <Field label="Starting price (₹)" id="service-price" required>
               <input
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
@@ -459,7 +459,7 @@ function NewService() {
                 className={inputClass}
               />
             </Field>
-            <Field label="Delivery time" id="service-delivery">
+            <Field label="Delivery time" id="service-delivery" required>
               <SheetSelect
                 title="Delivery time"
                 value={turnaround}
@@ -468,7 +468,7 @@ function NewService() {
                 placeholder="How long it takes"
               />
             </Field>
-            <Field label="Where you work" id="service-mode">
+            <Field label="Where you work" id="service-mode" required>
               <SheetSelect
                 title="Where you work"
                 value={mode}

@@ -149,7 +149,7 @@ export function BandLiveVideoSheet({
   return (
     <Sheet open={open} onClose={onClose} title="Add live video">
       <div className="space-y-4">
-        <Field label="Title" id="live-video-title" error={tried ? titleProblem : null}>
+        <Field label="Title" id="live-video-title" required error={tried ? titleProblem : null}>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -161,6 +161,7 @@ export function BandLiveVideoSheet({
         </Field>
         <Field
           label="Link"
+          required
           id="live-video-link"
           hint="YouTube or any https link"
           error={tried ? linkProblem : null}
@@ -396,7 +397,7 @@ export function BandStagePlotSheet({
             onChange={(e) => setNote(e.target.value)}
             placeholder="Drum riser size, where the keys go"
             aria-labelledby="band-stage-plot-note"
-            className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none focus:border-ink"
+            className="w-full rounded-lg border border-input bg-card p-4 text-sm outline-none field-focus"
           />
         </Field>
         <Btn
@@ -493,7 +494,7 @@ export function BandReleaseSheet({
   return (
     <Sheet open={open} onClose={onClose} title="Add a release">
       <div className="space-y-4">
-        <Field label="Title" id="release-title" error={tried ? titleProblem : null}>
+        <Field label="Title" id="release-title" required error={tried ? titleProblem : null}>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -504,7 +505,7 @@ export function BandReleaseSheet({
           />
         </Field>
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Kind" id="release-kind" error={tried ? kindProblem : null}>
+          <Field label="Kind" id="release-kind" required error={tried ? kindProblem : null}>
             <SheetSelect
               title="Kind"
               value={kind}

@@ -61,6 +61,8 @@ function Sell() {
   const [step, setStep] = useState(0);
   const [draft, patch] = useListingDraft(type === "rent" ? "rent" : "sell", Boolean(edit));
   const [publishing, setPublishing] = useState(false);
+  // Continue never greys out for a missing field; pressing it shows what is missing (owner, 10 Oct 2026).
+  const [tried, setTried] = useState(false);
   const taxonomy = useGearTaxonomy();
   const last = listingSteps.length - 1;
   const exit = "/marketplace/mine";
@@ -116,9 +118,11 @@ function Sell() {
       <div className="px-5 pt-4">
         <StepProgress total={listingSteps.length} current={step} />
 
-        {step === 0 ? <ListingWhatStep value={draft} onChange={patch} /> : null}
-        {step === 1 ? <ListingMediaStep value={draft} onChange={patch} /> : null}
-        {step === last ? <ListingWhereStep value={draft} onChange={patch} /> : null}
+        {step === 0 ? <ListingWhatStep value={draft} onChange={patch} showErrors={tried} /> : null}
+        {step === 1 ? <ListingMediaStep value={draft} onChange={patch} showErrors={tried} /> : null}
+        {step === last ? (
+          <ListingWhereStep value={draft} onChange={patch} showErrors={tried} />
+        ) : null}
       </div>
 
       <div className="px-5 py-6">
@@ -126,10 +130,19 @@ function Sell() {
           step={step}
           last={step === last}
           onCancel={() => void navigate({ to: exit })}
-          onBack={() => setStep(step - 1)}
-          onNext={() =>
-            step === last ? void (edit ? saveChanges() : publish()) : setStep(step + 1)
-          }
+          onBack={() => {
+            setTried(false);
+            setStep(step - 1);
+          }}
+          onNext={() => {
+            if (!listingStepComplete(draft, step)) {
+              setTried(true);
+              return;
+            }
+            setTried(false);
+            if (step === last) void (edit ? saveChanges() : publish());
+            else setStep(step + 1);
+          }}
           {...(edit
             ? {}
             : {
@@ -138,7 +151,7 @@ function Sell() {
                     ? toast.success("Draft saved on this device")
                     : toast.error("Couldn't save the draft here"),
               })}
-          disabled={!listingStepComplete(draft, step) || (step === last && !signedIn)}
+          disabled={step === last && !signedIn}
           busy={publishing}
           publishLabel={edit ? "Save changes" : "Publish"}
         />

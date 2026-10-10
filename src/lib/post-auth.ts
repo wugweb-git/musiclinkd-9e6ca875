@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /** Where a signed-in user lands. Every sign-in path returns to `/`, and the splash decides. */
-export type PostAuthTarget = "/discover" | "/onboarding" | "/onboarding/resume";
+export type PostAuthTarget = "/home" | "/onboarding" | "/onboarding/resume";
 
 type OnboardingState = {
   onboarding_complete?: boolean | null;
@@ -43,7 +43,8 @@ export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
    * app (owner call, 23 Sep). Finishing a half-done profile stays something you opt into from
    * inside the app, via a CTA to /onboarding/resume.
    */
-  return "/discover";
+  // Home is the default screen (owner, 10 Oct 2026).
+  return "/home";
 }
 
 /**

@@ -8,6 +8,7 @@ import { anonClient, getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfo
 import { taxonomyLabel, type ListingRow, type OpportunityRow } from "@/lib/catalog.functions";
 import { shownPlace } from "@/lib/place";
 import { toolLabel } from "@/lib/listing-category";
+import { workTypes } from "@/data/portfolio";
 
 /*
  * /search: one box over everything public. People come from searchPeople
@@ -54,6 +55,15 @@ export type SearchHit = {
 
 export type Found<T> = { items: T[]; total: number };
 
+/** One piece of published portfolio work, for Search → Work. */
+export type WorkHit = {
+  id: string;
+  title: string;
+  kind: string;
+  cover_url: string | null;
+  display_name: string | null;
+};
+
 export type EverythingResults = {
   businesses: Found<SearchHit>;
   studios: Found<SearchHit>;
@@ -65,7 +75,58 @@ export type EverythingResults = {
   serviceListings: Found<ListingRow>;
   /** Services on people's profiles. */
   services: Found<SearchHit>;
+  /** Published portfolio work, music and video. */
+  work: Found<WorkHit>;
 };
+
+/**
+ * What a tab narrows by (owner, 10 Oct 2026: filters on every tab, not only People). Each list is
+ * "any of these"; values are what the rows store, except cities and opportunity roles, which come
+ * as labels because those columns hold text ("Mumbai 400053", "Singer, Guitarist").
+ */
+export type SearchFilters = {
+  /** Business type: person_types values (flow business) in profiles.roles. */
+  types?: string[] | undefined;
+  /** Role needed on an opportunity: person type labels, matched in role_required. */
+  roleLabels?: string[] | undefined;
+  /** Market tool category: item_category (instruments, equipment_categories, daw_tools). */
+  categories?: string[] | undefined;
+  /** City labels. */
+  cities?: string[] | undefined;
+  /** Work: music and/or video. */
+  media?: ("music" | "video")[] | undefined;
+  /** Work: the owner's genres (portfolio items carry none of their own). */
+  genres?: string[] | undefined;
+};
+
+const filtersSchema = z
+  .object({
+    types: z.array(z.string().max(60)).max(30).optional(),
+    roleLabels: z.array(z.string().max(60)).max(30).optional(),
+    categories: z.array(z.string().max(80)).max(40).optional(),
+    cities: z.array(z.string().max(60)).max(10).optional(),
+    media: z
+      .array(z.enum(["music", "video"]))
+      .max(2)
+      .optional(),
+    genres: z.array(z.string().max(60)).max(20).optional(),
+  })
+  .optional();
+
+/** Work kinds by what they play: audio is music, video is video (src/data/portfolio.ts). */
+const WORK_KINDS = {
+  music: workTypes.filter((t) => t.media === "audio").map((t): string => t.kind),
+  video: workTypes.filter((t) => t.media === "video").map((t): string => t.kind),
+};
+
+/** A label safe inside a PostgREST or(): no comma, bracket, quote, backslash or wildcard. */
+const clean = (v: string) => v.replace(/[,()"'\\%*]/g, " ").trim();
+
+/** Any of the labels inside the column, as one or(). Null when there is nothing to match. */
+function anyLike(column: string, labels: string[] | undefined): string | null {
+  const parts = (labels ?? []).map(clean).filter(Boolean);
+  return parts.length ? parts.map((l) => `${column}.ilike.%${l}%`).join(",") : null;
+}
 
 const OWNER = "id, username, display_name, avatar_url, city, is_verified";
 const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note,
@@ -124,6 +185,7 @@ async function businesses(
   words: string[],
   verified: boolean,
   limit: number,
+  f: SearchFilters,
 ): Soft<SearchHit> {
   let query = client
     .from("profile_business")
@@ -139,6 +201,9 @@ async function businesses(
     "profile",
   );
   if (verified) query = query.eq("profile.is_verified", true);
+  if (f.types?.length) query = query.overlaps("profile.roles", f.types);
+  const city = anyLike("city", f.cities);
+  if (city) query = query.or(city, { referencedTable: "profile" });
   const { data, count, error } = await query.limit(limit);
   if (error) return none();
   const items = ((data ?? []) as unknown as BusinessRow[])
@@ -179,6 +244,7 @@ async function studios(
   words: string[],
   verified: boolean,
   limit: number,
+  f: SearchFilters,
 ): Soft<SearchHit> {
   let query = client
     .from("bookables")
@@ -188,6 +254,8 @@ async function studios(
     );
   query = everyWord(query, words, ["name", "location", "description", "console_type"]);
   if (verified) query = query.eq("verified_gold", true);
+  const city = anyLike("location", f.cities);
+  if (city) query = query.or(city);
   const { data, count, error } = await query
     .order("rating", { ascending: false, nullsFirst: false })
     .limit(limit);
@@ -227,6 +295,7 @@ async function collabs(
   words: string[],
   verified: boolean,
   limit: number,
+  f: SearchFilters,
 ): Soft<SearchHit> {
   let query = client
     .from("collabs")
@@ -235,6 +304,8 @@ async function collabs(
     .neq("status", "archived");
   query = everyWord(query, words, ["name", "tagline", "bio", "city"]);
   if (verified) query = query.eq("is_verified", true);
+  const city = anyLike("city", f.cities);
+  if (city) query = query.or(city);
   const { data, count, error } = await query
     .order("is_verified", { ascending: false })
     .order("name")
@@ -260,6 +331,7 @@ async function opportunities(
   words: string[],
   verified: boolean,
   limit: number,
+  f: SearchFilters,
 ): Soft<OpportunityRow> {
   const creator = `creator:profiles!opportunities_creator_profile_id_fkey${verified ? "!inner" : ""}(${OWNER})`;
   let query = client
@@ -268,6 +340,11 @@ async function opportunities(
     .eq("status", "open");
   query = everyWord(query, words, ["title", "role_required", "location"]);
   if (verified) query = query.eq("creator.is_verified", true);
+  // role_required holds the role's label, several comma-separated (opportunities.new).
+  const role = anyLike("role_required", f.roleLabels);
+  if (role) query = query.or(role);
+  const city = anyLike("location", f.cities);
+  if (city) query = query.or(city);
   const { data, count, error } = await query.order("created_at", { ascending: false }).limit(limit);
   if (error) return none();
   const items = (data ?? []) as unknown as OpportunityRow[];
@@ -280,6 +357,7 @@ async function listings(
   verified: boolean,
   limit: number,
   gear: boolean,
+  f: SearchFilters,
 ): Soft<ListingRow> {
   const seller = `seller:profiles!marketplace_listings_seller_profile_id_fkey${verified ? "!inner" : ""}(${OWNER}, rating, review_count, followers_count)`;
   let query = client
@@ -297,6 +375,9 @@ async function listings(
     "seller_name",
   ]);
   if (verified) query = query.eq("seller.is_verified", true);
+  if (gear && f.categories?.length) query = query.in("item_category", f.categories);
+  const city = anyLike("pickup_location", f.cities);
+  if (city) query = query.or(city);
   const { data, count, error } = await query.order("created_at", { ascending: false }).limit(limit);
   if (error) return none();
   const items = (data ?? []) as unknown as ListingRow[];
@@ -321,6 +402,7 @@ async function services(
   words: string[],
   verified: boolean,
   limit: number,
+  f: SearchFilters,
 ): Soft<SearchHit> {
   let query = client
     .from("profile_services")
@@ -332,6 +414,8 @@ async function services(
     .eq("profile.visibility", "public");
   query = everyWord(query, words, ["name", "description"]);
   if (verified) query = query.eq("profile.is_verified", true);
+  const city = anyLike("city", f.cities);
+  if (city) query = query.or(city, { referencedTable: "profile" });
   const { data, count, error } = await query.order("created_at", { ascending: false }).limit(limit);
   if (error) return none();
   const items = ((data ?? []) as unknown as ServiceHitRow[]).map((r): SearchHit => ({
@@ -347,6 +431,100 @@ async function services(
   return { items, total: count ?? items.length };
 }
 
+type WorkRow = {
+  id: string;
+  title: string;
+  kind: string;
+  cover_url: string | null;
+  owner: { display_name: string | null; username: string | null; genres: string[] };
+};
+
+const PAGE = 1000;
+
+/**
+ * Every published music and video item matching the words and filters, newest first, from public
+ * profiles. portfolio_items has no link to profiles the API can join on, so owners are read
+ * separately and the rows are counted here, page by page to the last one: the count is every
+ * matching row, never a sample (owner, 10 Oct 2026). Null when a read fails.
+ */
+async function workRows(
+  client: SupabaseClient,
+  words: string[],
+  verified: boolean,
+  f: SearchFilters,
+): Promise<WorkRow[] | null> {
+  const media = f.media?.length ? f.media : (["music", "video"] as const);
+  const kinds = media.flatMap((m) => WORK_KINDS[m]);
+  type Item = Omit<WorkRow, "owner"> & { user_id: string };
+  const items: Item[] = [];
+  for (let from = 0; ; from += PAGE) {
+    let query = client
+      .from("portfolio_items")
+      .select("id, title, kind, cover_url, user_id")
+      .eq("published", true)
+      .in("kind", kinds);
+    query = everyWord(query, words, ["title", "description", "role"]);
+    const { data, error } = await query
+      .order("created_at", { ascending: false })
+      .order("id")
+      .range(from, from + PAGE - 1);
+    if (error) return null;
+    const page = (data ?? []) as Item[];
+    items.push(...page);
+    if (page.length < PAGE) break;
+  }
+  const ownerIds = [...new Set(items.map((i) => i.user_id))];
+  const owners = new Map<string, WorkRow["owner"]>();
+  // In batches, so the id list stays well inside a request's length.
+  for (let i = 0; i < ownerIds.length; i += 150) {
+    let query = client
+      .from("profiles")
+      .select("id, display_name, username, genres")
+      .in("id", ownerIds.slice(i, i + 150))
+      .eq("visibility", "public");
+    if (verified) query = query.eq("is_verified", true);
+    if (f.genres?.length) query = query.overlaps("genres", f.genres);
+    const { data, error } = await query;
+    if (error) return null;
+    for (const o of (data ?? []) as {
+      id: string;
+      display_name: string | null;
+      username: string | null;
+      genres: string[] | null;
+    }[])
+      owners.set(o.id, {
+        display_name: o.display_name,
+        username: o.username,
+        genres: o.genres ?? [],
+      });
+  }
+  return items.flatMap(({ user_id, ...i }) => {
+    const owner = owners.get(user_id);
+    return owner ? [{ ...i, owner }] : [];
+  });
+}
+
+async function work(
+  client: SupabaseClient,
+  words: string[],
+  verified: boolean,
+  limit: number,
+  f: SearchFilters,
+): Soft<WorkHit> {
+  const rows = await workRows(client, words, verified, f);
+  if (!rows) return none();
+  return {
+    items: rows.slice(0, limit).map((r) => ({
+      id: r.id,
+      title: r.title,
+      kind: r.kind,
+      cover_url: r.cover_url,
+      display_name: r.owner.display_name ?? r.owner.username,
+    })),
+    total: rows.length,
+  };
+}
+
 export const SEARCH_GROUPS = [
   "businesses",
   "studios",
@@ -354,6 +532,7 @@ export const SEARCH_GROUPS = [
   "opportunities",
   "gear",
   "services",
+  "work",
 ] as const;
 export type SearchGroup = (typeof SEARCH_GROUPS)[number];
 
@@ -369,6 +548,7 @@ export const searchEverything = createServerFn({ method: "GET" })
         verifiedOnly: z.boolean().optional(),
         groups: z.array(z.enum(SEARCH_GROUPS)).min(1).max(SEARCH_GROUPS.length).optional(),
         limit: z.number().int().min(1).max(40).optional(),
+        filters: filtersSchema,
       })
       .parse(d),
   )
@@ -378,17 +558,21 @@ export const searchEverything = createServerFn({ method: "GET" })
     const verified = Boolean(data.verifiedOnly);
     const limit = data.limit ?? 20;
     const want = new Set<SearchGroup>(data.groups ?? SEARCH_GROUPS);
+    const f: SearchFilters = data.filters ?? {};
     const skip = <T>(): Promise<Found<T>> => Promise.resolve(none<T>());
-    const [b, s, c, o, g, sl, sv] = await Promise.all([
-      want.has("businesses") ? businesses(client, words, verified, limit) : skip<SearchHit>(),
-      want.has("studios") ? studios(client, words, verified, limit) : skip<SearchHit>(),
-      want.has("collabs") ? collabs(client, words, verified, limit) : skip<SearchHit>(),
+    const [b, s, c, o, g, sl, sv, w] = await Promise.all([
+      want.has("businesses") ? businesses(client, words, verified, limit, f) : skip<SearchHit>(),
+      want.has("studios") ? studios(client, words, verified, limit, f) : skip<SearchHit>(),
+      want.has("collabs") ? collabs(client, words, verified, limit, f) : skip<SearchHit>(),
       want.has("opportunities")
-        ? opportunities(client, words, verified, limit)
+        ? opportunities(client, words, verified, limit, f)
         : skip<OpportunityRow>(),
-      want.has("gear") ? listings(client, words, verified, limit, true) : skip<ListingRow>(),
-      want.has("services") ? listings(client, words, verified, limit, false) : skip<ListingRow>(),
-      want.has("services") ? services(client, words, verified, limit) : skip<SearchHit>(),
+      want.has("gear") ? listings(client, words, verified, limit, true, f) : skip<ListingRow>(),
+      want.has("services")
+        ? listings(client, words, verified, limit, false, f)
+        : skip<ListingRow>(),
+      want.has("services") ? services(client, words, verified, limit, f) : skip<SearchHit>(),
+      want.has("work") ? work(client, words, verified, limit, f) : skip<WorkHit>(),
     ]);
     return {
       businesses: b,
@@ -398,7 +582,126 @@ export const searchEverything = createServerFn({ method: "GET" })
       gear: g,
       serviceListings: sl,
       services: sv,
+      work: w,
     };
+  });
+
+/** Counts per filter option: dimension → stored value (cities: the shown city) → rows. */
+export type SearchFacets = Partial<
+  Record<"type" | "role" | "category" | "city" | "media" | "genre", Record<string, number>>
+>;
+
+function tally(out: Record<string, number>, value: string | null | undefined) {
+  const v = value?.trim();
+  if (v) out[v] = (out[v] ?? 0) + 1;
+}
+
+/**
+ * The counts beside each option in a tab's Filters panel: every public row of that kind, read
+ * once and counted here, so an option shows only when something has it. Opportunity roles come
+ * back lower-case by label (role_required is text); cities by the city part of the stored place.
+ */
+export const searchFacets = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ group: z.enum(SEARCH_GROUPS) }).parse(d))
+  .handler(async ({ data }): Promise<SearchFacets> => {
+    const client = (await anonClient()) as unknown as SupabaseClient;
+    const city: Record<string, number> = {};
+    switch (data.group) {
+      case "businesses": {
+        const { data: rows, error } = await client
+          .from("profile_business")
+          .select("profile:profiles!inner(roles, city, visibility)")
+          .eq("profile.visibility", "public")
+          .limit(5000);
+        if (error) throw new Error(error.message);
+        const type: Record<string, number> = {};
+        for (const r of (rows ?? []) as unknown as {
+          profile: { roles: string[] | null; city: string | null };
+        }[]) {
+          for (const t of r.profile.roles ?? []) tally(type, t);
+          tally(city, shownPlace(r.profile.city));
+        }
+        return { type, city };
+      }
+      case "opportunities": {
+        const { data: rows, error } = await client
+          .from("opportunities")
+          .select("role_required, location")
+          .eq("status", "open")
+          .limit(5000);
+        if (error) throw new Error(error.message);
+        const role: Record<string, number> = {};
+        for (const r of (rows ?? []) as {
+          role_required: string | null;
+          location: string | null;
+        }[]) {
+          for (const x of (r.role_required ?? "").split(",")) tally(role, x.toLowerCase());
+          tally(city, shownPlace(r.location));
+        }
+        return { role, city };
+      }
+      case "gear":
+      case "services": {
+        const gear = data.group === "gear";
+        let query = client
+          .from("marketplace_listings")
+          .select("item_category, pickup_location")
+          .not("listing_status", "in", "(unavailable,archived)");
+        query = gear
+          ? query.in("category", GEAR)
+          : query.not("category", "in", `(${GEAR.join(",")})`);
+        const { data: rows, error } = await query.limit(5000);
+        if (error) throw new Error(error.message);
+        const category: Record<string, number> = {};
+        for (const r of (rows ?? []) as {
+          item_category: string | null;
+          pickup_location: string | null;
+        }[]) {
+          tally(category, r.item_category);
+          tally(city, shownPlace(r.pickup_location));
+        }
+        if (gear) return { category, city };
+        const { data: offered, error: offeredError } = await client
+          .from("profile_services")
+          .select("profile:profiles!inner(city, visibility)")
+          .eq("status", "active")
+          .eq("profile.visibility", "public")
+          .limit(5000);
+        if (offeredError) throw new Error(offeredError.message);
+        for (const r of (offered ?? []) as unknown as { profile: { city: string | null } }[])
+          tally(city, shownPlace(r.profile.city));
+        return { city };
+      }
+      case "studios": {
+        const { data: rows, error } = await client.from("bookables").select("location").limit(5000);
+        if (error) throw new Error(error.message);
+        for (const r of (rows ?? []) as { location: string | null }[])
+          tally(city, shownPlace(r.location));
+        return { city };
+      }
+      case "collabs": {
+        const { data: rows, error } = await client
+          .from("collabs")
+          .select("city")
+          .eq("visibility", "public")
+          .neq("status", "archived")
+          .limit(5000);
+        if (error) throw new Error(error.message);
+        for (const r of (rows ?? []) as { city: string | null }[]) tally(city, shownPlace(r.city));
+        return { city };
+      }
+      case "work": {
+        const rows = await workRows(client, [], false, {});
+        if (!rows) throw new Error("Work could not be read");
+        const media: Record<string, number> = {};
+        const genre: Record<string, number> = {};
+        for (const r of rows) {
+          tally(media, WORK_KINDS.music.includes(r.kind) ? "music" : "video");
+          for (const g of r.owner.genres) tally(genre, g);
+        }
+        return { media, genre };
+      }
+    }
   });
 
 /*
