@@ -10,7 +10,7 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { BookableCard, PersonCard, PersonRow } from "@/components/ml/cards";
+import { BookableCard, PersonCard } from "@/components/ml/cards";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { NotificationsBell, SearchIconButton } from "@/components/ml/tab-header";
 import { Chip, Screen, SearchBar, SectionHeader } from "@/components/ml/ui";
@@ -147,8 +147,8 @@ function DiscoverScreen() {
   );
 
   return (
-    <Screen className="pb-nav-clear">
-      <header className="bg-card px-5 pb-5 pt-safe">
+    <Screen tone="warm" className="pb-nav-clear">
+      <header className="bg-warm px-5 pb-5 pt-safe">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-3">Discover</h1>

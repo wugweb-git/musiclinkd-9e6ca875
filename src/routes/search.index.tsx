@@ -71,7 +71,6 @@ const TABS = [
   "all",
   "people",
   "businesses",
-  "studios",
   "collabs",
   "opportunities",
   "gear",
@@ -85,12 +84,13 @@ const TAB_LABEL: Record<Tab, string> = {
   all: "All",
   people: "People",
   businesses: "Businesses",
-  studios: "Studios",
   collabs: "Collabs",
   opportunities: "Opportunities",
-  gear: "Gear",
+  // The Market's listings: instruments and gear for sale or rent (owner, 10 Oct 2026: "Market").
+  gear: "Market",
   services: "Services",
-  work: "Work",
+  // Published portfolio work (owner, 10 Oct 2026: "Portfolio", not "Work").
+  work: "Portfolio",
 };
 const tabOf = (label: string) => TABS.find((t) => TAB_LABEL[t] === label) ?? "all";
 
@@ -114,7 +114,6 @@ const TAB_FILTERS: Record<OneTab, { key: FilterKey; title: string }[]> = {
     { key: "type", title: "Business type" },
     { key: "city", title: "City" },
   ],
-  studios: [{ key: "city", title: "City" }],
   collabs: [{ key: "city", title: "City" }],
   opportunities: [
     { key: "role", title: "Role needed" },
@@ -379,7 +378,6 @@ function SearchResults() {
   const totals: Record<OneTab, number> = {
     people: people.data?.total ?? 0,
     businesses: r?.businesses.total ?? 0,
-    studios: r?.studios.total ?? 0,
     collabs: r?.collabs.total ?? 0,
     opportunities: r?.opportunities.total ?? 0,
     gear: r?.gear.total ?? 0,
@@ -468,7 +466,8 @@ function SearchResults() {
         </ul>
       ),
     },
-    ...(["businesses", "studios", "collabs"] as const).map((key) => ({
+    // No Studios tab: every business is under Businesses (owner, 10 Oct 2026).
+    ...(["businesses", "collabs"] as const).map((key) => ({
       tab: key,
       count: lists[key].length,
       shown: (all: boolean) => (all ? Math.min(3, lists[key].length) : lists[key].length),
@@ -539,7 +538,7 @@ function SearchResults() {
     setParams({ [key]: values[key].filter((x) => x !== value).join(",") || undefined });
 
   return (
-    <Screen>
+    <Screen tone="warm">
       {/* Outside the blurred sticky header: its backdrop-filter would trap the fixed sheet. */}
       {tab !== "all" ? (
         <SearchFiltersSheet
@@ -561,7 +560,7 @@ function SearchResults() {
           }}
         />
       ) : null}
-      <div className="pt-safe sticky top-0 z-bar bg-background/95 px-5 backdrop-blur">
+      <div className="pt-safe sticky top-0 z-bar bg-warm/95 px-5 backdrop-blur">
         <div className="mb-3 flex items-center gap-3">
           <Link
             to="/discover"
@@ -574,9 +573,6 @@ function SearchResults() {
         </div>
         <SearchBar value={q} onChange={setQ} />
         <div className="rail mt-3 flex gap-2 overflow-x-auto no-scrollbar">
-          <Chip active={verifiedOnly} onClick={() => setVerifiedOnly((v) => !v)}>
-            Verified
-          </Chip>
           {tab !== "all" ? (
             <Chip active={active.length > 0} onClick={() => setFiltersOpen(true)}>
               {active.length ? `Filters · ${active.length}` : "Filters"}

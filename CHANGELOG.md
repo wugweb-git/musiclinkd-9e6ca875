@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Removed / changed — Find a match gone; Home is the default screen (10 Oct, owner)
 
+- Search: no Studios tab (every business is under Businesses) and no Verified chip; "Gear" is
+  "Market" and "Work" is "Portfolio". Profiles stay as rows on Search.
+- Discover role lists show profiles as cards, two to a row.
+- Discover, its lists and Search use the setup screens' warm ground (#F3F1EC).
+
 - Songs and videos play where they are, expanded, instead of opening a separate page: Discover →
   Music and a service's Examples use the same audio and video cards as a profile's Portfolio.
 - marketplace_categories deleted from the database (listings store the tool they list).
