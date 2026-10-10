@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — CI green again (10 Oct)
+
+- `bun.lock` matches `package.json` (@lovable.dev/vite-tanstack-config 2.25.3); CI's frozen install
+  had failed on every push since the bump.
+- CI no longer runs Storybook tests (retired by the owner, 4 Oct); typecheck, lint and build gate.
+
 ### Removed / changed — owner round (10 Oct, owner)
 
 - Post an opportunity: no "Role needed" field; opportunities are not pointed at person types.
