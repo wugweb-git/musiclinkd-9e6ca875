@@ -189,7 +189,27 @@ function Conversation() {
     }
   }
 
-  const messages: Shown[] = [...older, ...(q.data?.messages ?? []), ...outbox];
+  /*
+   * The newest page is a sliding window of the latest messages. Once earlier ones are loaded, a new
+   * message pushes the window's oldest out of it, and that message was not in `older` either (that
+   * page ends just before it), so it vanished. Anything that slides out is kept with the older
+   * pages, and every message is shown once by id.
+   */
+  const lastPage = useRef<Message[]>([]);
+  useEffect(() => {
+    const page = q.data?.messages ?? [];
+    const prev = lastPage.current;
+    lastPage.current = page;
+    if (!older.length || !prev.length || !page.length) return;
+    const inPage = new Set(page.map((m) => m.id));
+    const slid = prev.filter((m) => !inPage.has(m.id) && m.created_at < page[0]!.created_at);
+    if (slid.length) setOlder((o) => [...o, ...slid.filter((m) => !o.some((x) => x.id === m.id))]);
+  }, [q.data?.messages, older.length]);
+
+  const seen = new Set<string>();
+  const messages: Shown[] = [...older, ...(q.data?.messages ?? []), ...outbox].filter((m) =>
+    seen.has(m.id) ? false : (seen.add(m.id), true),
+  );
   const newestId = messages[messages.length - 1]?.id;
 
   // Newest at the bottom, in view; after loading older ones, stay where the reader was.

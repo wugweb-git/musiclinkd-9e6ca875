@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — portfolio play counts and disappearing chat messages (10 Oct, owner reports)
+
+- Play counts on an artist's own work no longer fail: they come from my_portfolio_play_counts
+  (20261010180000), which counts plays for the caller's own works only, instead of a read that
+  needed the service key on the live server.
+- Long chats: after "Load earlier messages", a new message no longer makes one from the middle
+  vanish; messages that slide out of the newest page are kept, and each shows once.
+
 ### Removed — retired taxonomy, service categories and role details (10 Oct, owner)
 
 - Services have no categories: the picker, card label and category icons are gone; the database

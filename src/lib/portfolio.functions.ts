@@ -50,34 +50,21 @@ export const myPortfolioPlays = createServerFn({ method: "GET" })
       .parse(d),
   )
   .handler(async ({ context, data: input }): Promise<Record<string, number>> => {
-    const client = context.supabase as unknown as SupabaseClient;
-    const { data: mine, error: mineError } = await client
-      .from("portfolio_items")
-      .select("id")
-      .eq("user_id", context.userId);
-    if (mineError) throw new Error(mineError.message);
-    const ids = ((mine ?? []) as { id: string }[]).map((m) => m.id);
-    if (!ids.length) return {};
-
     /*
-     * Through the service client, because `authenticated` has no grant on portfolio_item_plays at
-     * all — a play is written by record_portfolio_play (SECURITY DEFINER) and read by nobody else.
-     * This used the caller's client, so the query came back "permission denied for table
-     * portfolio_item_plays" and the `throw` below turned an artist's own analytics screen into an
-     * error. The rows read are already narrowed to `ids`, which is this account's own work.
+     * my_portfolio_play_counts (20261010180000) counts plays for the caller's own works only, as
+     * definer: `authenticated` has no grant on portfolio_item_plays, and the service key this used
+     * to read through is not reliably present on the live server (the screen failed every time,
+     * owner report, 10 Oct 2026).
      */
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const plays = supabaseAdmin as unknown as SupabaseClient;
-    let query = plays.from("portfolio_item_plays").select("item_id").in("item_id", ids);
-    if (input?.days)
-      query = query.gte("played_at", new Date(Date.now() - input.days * 86_400_000).toISOString());
-    const { data, error } = await query;
+    const rpc = context.supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ data: { item_id: string; plays: number }[] | null; error: Error | null }>;
+    const { data, error } = await rpc.call(context.supabase, "my_portfolio_play_counts", {
+      p_days: input?.days ?? null,
+    });
     if (error) throw new Error(error.message);
-    const counts: Record<string, number> = Object.fromEntries(ids.map((id) => [id, 0]));
-    for (const row of (data ?? []) as { item_id: string }[]) {
-      counts[row.item_id] = (counts[row.item_id] ?? 0) + 1;
-    }
-    return counts;
+    return Object.fromEntries((data ?? []).map((r) => [r.item_id, Number(r.plays)]));
   });
 
 /**
