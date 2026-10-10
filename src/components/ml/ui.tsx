@@ -600,6 +600,7 @@ export function Chip({
   atLimit = false,
   variant = "default",
   size = "md",
+  count,
 }: {
   children: ReactNode;
   /**
@@ -620,6 +621,11 @@ export function Chip({
    * a11y gate) — because it's aria-disabled, not disabled: still reachable and tappable on purpose.
    */
   atLimit?: boolean;
+  /**
+   * How many results this filter holds, said quietly after the label. A real count only — leave
+   * it out rather than guess (owner, 10 Oct 2026).
+   */
+  count?: number | undefined;
 }) {
   const [refused, setRefused] = useState(false);
   // Only a chip the person just picked springs; chips already selected when the screen opens do not.
@@ -670,6 +676,11 @@ export function Chip({
         </span>
       ) : null}
       {children}
+      {count != null ? (
+        <span className={active ? "text-selected-text/70" : "text-muted-foreground"}>
+          {count.toLocaleString("en-IN")}
+        </span>
+      ) : null}
       {variant === "select" ? (
         active ? (
           <Minus size={iconSize.xs} strokeWidth={3} aria-hidden className="animate-pop" />

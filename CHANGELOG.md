@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — Discover: every business page, one Work feed, screen states (10 Oct, owner)
+
+- Discover's Studios tab is now Businesses: every public business page, not only ones with a
+  booking calendar, on the business card with Follow and no price. A business with no photo
+  shows its logo on ink. A sideways row of type chips (All, Recording Studio, Music Label…) shows
+  real counts and hides types with no pages; "Showing N of M" and Show more, 24 at a time.
+- For you: one Work feed (All · Trending · New · Music · Video) replaces the separate Trending
+  audio and Trending videos rails, on the same portrait tiles with Like and Share; 24 at a time
+  with Show more. Trending businesses gets See all, which opens Businesses.
+- Skeletons while businesses and work load, an empty state with an action, an error with Try
+  again, and the offline banner when the device is offline.
+- The tab, business type and work filter live in the address (?mode, ?type, ?work), so Back
+  restores them.
+- Chip takes an optional real `count`, shown quietly after its label.
+
 ### Changed — amenities and equipment belong to every business (10 Oct, owner)
 
 - Amenities and equipment are the business's own, for every business type, not a studio record:

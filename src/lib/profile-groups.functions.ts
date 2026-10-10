@@ -126,10 +126,18 @@ export type BusinessRecord = {
 
 /** A business account in a list: enough for a row that links to its page. */
 export type BusinessSummary = {
+  id: string;
   username: string;
   display_name: string | null;
   headline: string | null;
   city: string | null;
+  /** Person-type slugs; the business type is the one that is a business type. */
+  roles: string[];
+  verified: boolean;
+  /** The page's own photo: its banner, else its profile cover. */
+  photo: string | null;
+  /** Its logo (profile photo, else the business logo), for a card with no photo. */
+  logo: string | null;
 };
 
 /** Private and deactivated profiles are left out of every public read. */
@@ -402,14 +410,42 @@ export const removeTeamMember = createServerFn({ method: "POST" })
 export const listPublicBusinesses = createServerFn({ method: "GET" }).handler(
   async (): Promise<BusinessSummary[]> => {
     const client = await anonClient();
+    // Every business page, not only ones with a booking calendar (owner, 10 Oct 2026).
     const { data, error } = await client
       .from("profile_business")
-      .select("profile:profiles!inner(username, display_name, headline, city, visibility)");
+      .select(
+        "logo_url, hero_banner_url, profile:profiles!inner(id, username, display_name, headline, city, visibility, roles, avatar_url, cover_url, is_verified)",
+      );
     if (error) throw new Error(error.message);
-    return ((data ?? []) as unknown as { profile: BusinessSummary & { visibility: string } }[])
-      .map((r) => r.profile)
-      .filter((p) => p.username && !isHidden(p.visibility))
-      .map(({ visibility: _visibility, ...p }) => p)
+    type Row = {
+      logo_url: string | null;
+      hero_banner_url: string | null;
+      profile: {
+        id: string;
+        username: string | null;
+        display_name: string | null;
+        headline: string | null;
+        city: string | null;
+        visibility: string | null;
+        roles: string[] | null;
+        avatar_url: string | null;
+        cover_url: string | null;
+        is_verified: boolean | null;
+      };
+    };
+    return ((data ?? []) as unknown as Row[])
+      .filter((r) => r.profile.username && !isHidden(r.profile.visibility))
+      .map((r): BusinessSummary => ({
+        id: r.profile.id,
+        username: r.profile.username ?? "",
+        display_name: r.profile.display_name,
+        headline: r.profile.headline,
+        city: r.profile.city,
+        roles: r.profile.roles ?? [],
+        verified: Boolean(r.profile.is_verified),
+        photo: r.hero_banner_url || r.profile.cover_url || null,
+        logo: r.profile.avatar_url || r.logo_url || null,
+      }))
       .sort((a, b) => (a.display_name ?? "").localeCompare(b.display_name ?? ""));
   },
 );

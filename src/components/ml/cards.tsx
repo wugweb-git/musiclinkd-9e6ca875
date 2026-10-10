@@ -544,16 +544,50 @@ function studioLink(studio: DiscoverBookable) {
  * on the scrim) that replaces StudioMediaCard. A
  * business with nowhere to open, or a preview, is the same card with no link: nothing to focus.
  */
+/**
+ * A business with no photo: its logo on ink, else the building mark on ink — never a blank grey
+ * tile (owner, 10 Oct 2026: every business page shows on Discover, many without a photo yet).
+ */
+function BusinessNoPhoto({
+  logo,
+  className,
+}: {
+  logo?: string | null | undefined;
+  className?: string | undefined;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={cn("flex items-center justify-center bg-ink text-ink-foreground", className)}
+    >
+      {logo ? (
+        <img
+          src={sized(logo, { width: 128 })}
+          alt=""
+          loading="lazy"
+          className="h-14 w-14 rounded-full object-cover"
+        />
+      ) : (
+        <Building2 size={iconSize.lg} />
+      )}
+    </span>
+  );
+}
+
 export function BookableCard({
   studio,
   featured = false,
   disabled = false,
+  fill = false,
 }: {
   studio: DiscoverBookable;
   featured?: boolean | undefined;
   /** A preview, not a real business to open — renders the same card with no link. */
   disabled?: boolean | undefined;
+  /** Fill a grid cell (Discover's Businesses grid) instead of a fixed rail width. */
+  fill?: boolean | undefined;
 }) {
+  const width = fill ? "w-full min-w-0" : "w-rail-md shrink-0";
   const link = disabled ? null : studioLink(studio);
   const place = shownPlace(studio.location);
   const body = featured ? (
@@ -566,9 +600,7 @@ export function BookableCard({
           className="h-full w-full object-cover"
         />
       ) : (
-        <span className="flex h-full w-full items-center justify-center bg-ink/5 text-muted-foreground">
-          <Building2 size={28} aria-hidden />
-        </span>
+        <BusinessNoPhoto logo={studio.logo} className="h-full w-full" />
       )}
       <div className="media-scrim" />
       <span className="absolute inset-x-3 bottom-3 text-background">
@@ -602,12 +634,7 @@ export function BookableCard({
           />
         </div>
       ) : (
-        <span
-          className="flex h-28 w-full items-center justify-center bg-ink/5 text-muted-foreground"
-          aria-hidden
-        >
-          <Building2 size={28} />
-        </span>
+        <BusinessNoPhoto logo={studio.logo} className="h-28 w-full" />
       )}
       <span className="block p-3">
         <span className="flex min-w-0 items-center gap-1">
@@ -630,13 +657,18 @@ export function BookableCard({
     </>
   );
   const shape = featured
-    ? "relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
-    : "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card";
-  if (!link) return <div className={shape}>{body}</div>;
+    ? "relative block aspect-[4/3] overflow-hidden rounded-lg text-left"
+    : "block overflow-hidden rounded-lg border border-border/80 bg-card";
+  if (!link) return <div className={cn(shape, width)}>{body}</div>;
   // The card frame holds the link and, at its bottom, the action — beside the link, never inside
   // it (no button inside a link).
   return (
-    <div className="flex w-rail-md shrink-0 flex-col overflow-hidden rounded-lg border border-border/80 bg-card">
+    <div
+      className={cn(
+        "flex flex-col overflow-hidden rounded-lg border border-border/80 bg-card",
+        width,
+      )}
+    >
       <Link
         {...link}
         className={cn(
@@ -655,9 +687,14 @@ export function BookableCard({
   );
 }
 
-export function BookableCardSkeleton() {
+export function BookableCardSkeleton({ fill = false }: { fill?: boolean | undefined }) {
   return (
-    <div className="w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card">
+    <div
+      className={cn(
+        "overflow-hidden rounded-lg border border-border/60 bg-card",
+        fill ? "w-full min-w-0" : "w-rail-md shrink-0",
+      )}
+    >
       <div className="h-28 w-full animate-pulse bg-ink/5" />
       <div className="space-y-1.5 p-3">
         <div className="h-3.5 w-28 animate-pulse rounded bg-ink/5" />

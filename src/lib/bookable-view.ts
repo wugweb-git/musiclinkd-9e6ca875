@@ -5,6 +5,7 @@ import { hasWeeklyHours, type WeeklyHours } from "@/lib/bookable-slots";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import type { BookablePhoto } from "@/lib/bookable-photos.functions";
 import { parsePlace, shownPlace } from "@/lib/place";
+import type { BusinessSummary } from "@/lib/profile-groups.functions";
 
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
@@ -29,8 +30,32 @@ export type DiscoverBookable = {
   verified: boolean;
   rate: PriceParts | null;
   photo: string;
+  /** The business's logo, shown on ink when there is no photo. */
+  logo?: string | null | undefined;
   gear: string[];
 };
+
+/**
+ * A business page with no booking calendar, as the same card (owner, 10 Oct 2026: Discover shows
+ * every business page). It opens the profile; no price, no rating it doesn't have.
+ */
+export function discoverBookableFromBusiness(business: BusinessSummary): DiscoverBookable {
+  return {
+    id: business.id,
+    slug: "",
+    username: business.username,
+    ownerId: business.id,
+    name: business.display_name ?? business.username,
+    location: shownPlace(business.city),
+    rating: null,
+    reviewCount: 0,
+    verified: business.verified,
+    rate: null,
+    photo: business.photo ?? "",
+    logo: business.logo,
+    gear: [],
+  };
+}
 
 export function discoverBookableFromRow(
   row: BookableRow,

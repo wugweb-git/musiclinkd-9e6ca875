@@ -1,19 +1,22 @@
-import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowRight,
   BriefcaseBusiness,
   Building2,
-  Search,
+  Music2,
   Sparkles,
   Store,
   UsersRound,
 } from "lucide-react";
 
-import { BookableCard, PersonCard, PersonRow } from "@/components/ml/cards";
+import { BookableCard, BookableCardSkeleton, PersonCard } from "@/components/ml/cards";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { NotificationsBell, SearchIconButton } from "@/components/ml/tab-header";
-import { Chip, Screen, SearchBar, SectionHeader } from "@/components/ml/ui";
+import { Btn, BtnLink, Chip, Screen, SearchBar, SectionHeader } from "@/components/ml/ui";
+import { EmptyState, LoadError, OfflineBanner } from "@/components/ml/kit";
 import { listBookables, listOpportunities } from "@/lib/catalog.functions";
 import {
   listTrendingPages,
@@ -28,16 +31,53 @@ import { listBands, type BandRow } from "@/lib/bands.functions";
 import { joinParts } from "@/lib/utils";
 import { sized } from "@/lib/image-url";
 import { AudioTrackCard, VideoCard } from "@/components/ml/profile";
-import { discoverBookableFromRow } from "@/lib/bookable-view";
+import { discoverBookableFromBusiness, discoverBookableFromRow } from "@/lib/bookable-view";
 import { iconSize } from "@/lib/tokens";
 import { opportunityFromRow } from "@/lib/opportunity-view";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
+import {
+  listPublicBusinesses,
+  searchPeople,
+  type DirectoryPerson,
+} from "@/lib/profile-groups.functions";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 import { useMyBusinessIdentity } from "@/hooks/use-my-business-identity";
-import { labelFor, useTaxonomy } from "@/lib/taxonomy";
+import { businessTypes, labelFor, useTaxonomy } from "@/lib/taxonomy";
+
+const MODES = ["for_you", "people", "opportunities", "businesses"] as const;
+type Mode = (typeof MODES)[number];
+const WORK_FILTERS = ["all", "trending", "new", "music", "video"] as const;
+type WorkFilter = (typeof WORK_FILTERS)[number];
+const WORK_LABELS: Record<WorkFilter, string> = {
+  all: "All",
+  trending: "Trending",
+  new: "New",
+  music: "Music",
+  video: "Video",
+};
+
+/** One page of the Businesses grid and the Work feed (owner, 10 Oct 2026). */
+const PAGE = 24;
+
+type DiscoverSearch = { mode?: Mode; type?: string; work?: WorkFilter };
+
+const isOneOf = <T extends string>(list: readonly T[], value: unknown): value is T =>
+  typeof value === "string" && (list as readonly string[]).includes(value);
 
 export const Route = createFileRoute("/discover/")({
+  // The tab, the business type and the work filter live in the address, so Back brings them back
+  // (owner, 10 Oct 2026).
+  validateSearch: (search: Record<string, unknown>): DiscoverSearch => ({
+    ...(isOneOf(MODES, search["mode"]) && search["mode"] !== "for_you"
+      ? { mode: search["mode"] }
+      : {}),
+    ...(typeof search["type"] === "string" && /^[a-z0-9_]{2,40}$/.test(search["type"])
+      ? { type: search["type"] }
+      : {}),
+    ...(isOneOf(WORK_FILTERS, search["work"]) && search["work"] !== "all"
+      ? { work: search["work"] }
+      : {}),
+  }),
   head: () => ({
     meta: [
       { title: "Discover Music Professionals | MusicLinkd" },
@@ -56,34 +96,21 @@ export const Route = createFileRoute("/discover/")({
     ],
   }),
   loader: async () => {
-    const [
-      studioRows,
-      opportunityRows,
-      labels,
-      people,
-      trendingWork,
-      trendingPages,
-      bands,
-      newWork,
-    ] = await Promise.all([
+    const [studioRows, opportunityRows, labels, people, trendingPages, bands] = await Promise.all([
       listBookables().catch(() => []),
       listOpportunities().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
       searchPeople({ data: { limit: 20, withTotal: false } })
         .then((result) => result.people)
         .catch((): DirectoryPerson[] => []),
-      listTrendingWork().catch((): TrendingItem[] => []),
       listTrendingPages().catch((): TrendingPage[] => []),
       listBands().catch((): BandRow[] => []),
-      listNewWork().catch((): NewWorkItem[] => []),
     ]);
     return {
       studios: studioRows.map((row) => discoverBookableFromRow(row, labels)),
       opportunities: opportunityRows.map((row) => opportunityFromRow(row, labels)),
       people,
-      trendingWork,
       trendingPages,
-      newWork,
       // Collabs, newest first (owner, 5 Oct: no ranking, new to old).
       collabs: [...bands]
         .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""))
@@ -95,34 +122,66 @@ export const Route = createFileRoute("/discover/")({
   component: DiscoverScreen,
 });
 
-const TALENT_MODES = ["For you", "People", "Opportunities", "Studios"] as const;
-const BUSINESS_MODES = ["For you", "Talent", "Studios", "Opportunities"] as const;
-type Mode = (typeof TALENT_MODES)[number] | (typeof BUSINESS_MODES)[number];
+/** navigator.onLine, kept current; false on the server. */
+function useOffline() {
+  const [offline, setOffline] = useState(false);
+  useEffect(() => {
+    const online = () => setOffline(false);
+    const offlineNow = () => setOffline(true);
+    setOffline(navigator.onLine === false);
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offlineNow);
+    return () => {
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offlineNow);
+    };
+  }, []);
+  return offline;
+}
 
 function DiscoverScreen() {
   const loaded = Route.useLoaderData();
-  const navigate = useNavigate();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const business = useMyBusinessIdentity();
   const recommendations = useRecommendations();
   const saved = useSavedOpportunities();
   const { options } = useTaxonomy();
-  const modes = business.hasBusiness ? BUSINESS_MODES : TALENT_MODES;
-  const [mode, setMode] = useState<Mode>("For you");
-  // People means talent: business pages never show here (owner, 5 Oct); they have Studios.
+  const offline = useOffline();
+  const mode: Mode = search.mode ?? "for_you";
+  const modeLabels: Record<Mode, string> = {
+    for_you: "For you",
+    people: business.hasBusiness ? "Talent" : "People",
+    opportunities: "Opportunities",
+    businesses: "Businesses",
+  };
+  const modes: readonly Mode[] = business.hasBusiness
+    ? ["for_you", "people", "businesses", "opportunities"]
+    : ["for_you", "people", "opportunities", "businesses"];
+  // undefined clears a param, so the address only carries what differs from the default.
+  const setSearch = (next: { [K in keyof DiscoverSearch]?: DiscoverSearch[K] | undefined }) =>
+    void navigate({
+      search: (prev) =>
+        Object.fromEntries(
+          Object.entries({ ...prev, ...next }).filter(([, value]) => value !== undefined),
+        ) as DiscoverSearch,
+      replace: true,
+      resetScroll: false,
+    });
+  // People means talent: business pages never show here (owner, 5 Oct); they have Businesses.
   const people = (recommendations?.people.length ? recommendations.people : loaded.people).filter(
     (p) => !p.isBusiness,
   );
-  const studios = rankBy(loaded.studios, recommendations?.studios, (studio) => studio.id);
   const opportunities = rankBy(
     loaded.opportunities,
     recommendations?.opportunities,
     (opportunity) => opportunity.id,
   );
   // On For you the trending rails (below) carry people and businesses; these lists are their tabs'.
-  const showPeople = mode === "People" || mode === "Talent";
-  const showStudios = mode === "Studios";
-  const showOpportunities = mode === "For you" || mode === "Opportunities";
+  const showPeople = mode === "people";
+  const showOpportunities = mode === "for_you" || mode === "opportunities";
 
   // Trending (owner, 5 Oct): each section is real activity from the last 7 days, and a section
   // with nothing in it is left out rather than shown empty. Collabs have no trending signal yet.
@@ -137,14 +196,11 @@ function DiscoverScreen() {
     return studio ? [studio] : [];
   });
   const trendingBusinessesShown = trendingBusinesses.length ? trendingBusinesses : loaded.studios;
-  // A quiet week falls back to the newest work of that kind, so a section is never empty.
-  const workPool = loaded.trendingWork.length ? loaded.trendingWork : loaded.newWork;
-  const trendingAudio = workPool.filter((w) => workType(w.kind).media === "audio");
-  const trendingVideo = workPool.filter((w) => workType(w.kind).media === "video");
-  const [playingId, setPlayingId] = useState<string | null>(null);
   const trendingOpportunities = [...loaded.opportunities].sort(
     (a, b) => b.applicants - a.applicants,
   );
+
+  const retryAll = () => void router.invalidate();
 
   return (
     <Screen className="pb-nav-clear">
@@ -170,14 +226,26 @@ function DiscoverScreen() {
         ) : null}
         <div className="rail no-scrollbar -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1">
           {modes.map((item) => (
-            <Chip key={item} active={mode === item} onClick={() => setMode(item)}>
-              {item}
+            <Chip
+              key={item}
+              active={mode === item}
+              onClick={() => setSearch({ mode: item === "for_you" ? undefined : item })}
+            >
+              {modeLabels[item]}
             </Chip>
           ))}
         </div>
       </header>
 
       <main className="space-y-9 py-6">
+        {offline ? (
+          <div className="px-5">
+            <OfflineBanner
+              body="Discover shows what was loaded last. New results come in once you're back online."
+              onRetry={retryAll}
+            />
+          </div>
+        ) : null}
         <section className="px-5">
           <Link
             to="/discover/match"
@@ -192,7 +260,7 @@ function DiscoverScreen() {
             <ArrowRight size={iconSize.sm} aria-hidden />
           </Link>
         </section>
-        {mode === "For you" ? (
+        {mode === "for_you" ? (
           <section className="px-5">
             <Link
               to="/search/why/$id"
@@ -224,24 +292,16 @@ function DiscoverScreen() {
                 </Link>
               }
             />
-            {mode === "People" || mode === "Talent" ? (
-              <div className="mx-5 grid grid-cols-2 gap-3">
-                {people.slice(0, 10).map((person) => (
-                  <PersonCard
-                    key={person.id}
-                    person={person}
-                    roleLabels={options?.person_types}
-                    fill
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
-                {people.slice(0, 8).map((person) => (
-                  <PersonCard key={person.id} person={person} roleLabels={options?.person_types} />
-                ))}
-              </div>
-            )}
+            <div className="mx-5 grid grid-cols-2 gap-3">
+              {people.slice(0, 10).map((person) => (
+                <PersonCard
+                  key={person.id}
+                  person={person}
+                  roleLabels={options?.person_types}
+                  fill
+                />
+              ))}
+            </div>
           </section>
         ) : null}
 
@@ -260,7 +320,7 @@ function DiscoverScreen() {
               }
             />
             <div className="space-y-3 px-5">
-              {opportunities.slice(0, mode === "Opportunities" ? 8 : 3).map((opportunity) => (
+              {opportunities.slice(0, mode === "opportunities" ? 8 : 3).map((opportunity) => (
                 <OpportunityCard
                   key={opportunity.id}
                   o={opportunity}
@@ -272,29 +332,15 @@ function DiscoverScreen() {
           </section>
         ) : null}
 
-        {showStudios && studios.length ? (
-          <section>
-            <SectionHeader
-              title="Studios and spaces"
-              action={
-                <Link
-                  to="/discover/$slug"
-                  params={{ slug: "studios" }}
-                  className="link-action text-sm font-semibold"
-                >
-                  See all
-                </Link>
-              }
-            />
-            <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
-              {studios.slice(0, 8).map((studio) => (
-                <BookableCard key={studio.id} studio={studio} featured />
-              ))}
-            </div>
-          </section>
+        {mode === "businesses" ? (
+          <BusinessesSection
+            type={search.type}
+            onType={(type) => setSearch({ type })}
+            canCreate={!business.hasBusiness}
+          />
         ) : null}
 
-        {mode === "For you" ? (
+        {mode === "for_you" ? (
           <>
             {trendingTalent.length ? (
               <section>
@@ -312,7 +358,18 @@ function DiscoverScreen() {
             ) : null}
             {trendingBusinessesShown.length ? (
               <section>
-                <SectionHeader title="Trending businesses" />
+                <SectionHeader
+                  title="Trending businesses"
+                  action={
+                    <Link
+                      to="/discover"
+                      search={(prev) => ({ ...prev, mode: "businesses" as const })}
+                      className="link-action text-sm font-semibold"
+                    >
+                      See all
+                    </Link>
+                  }
+                />
                 <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
                   {trendingBusinessesShown.slice(0, 8).map((studio) => (
                     <BookableCard key={studio.id} studio={studio} featured />
@@ -320,61 +377,10 @@ function DiscoverScreen() {
                 </div>
               </section>
             ) : null}
-            {trendingAudio.length ? (
-              <section>
-                <SectionHeader title="Trending audio" />
-                {/* Side-scrolling portrait tiles (owner, 5 Oct); a playing tile widens to the
-                    full row, the same selected state as a profile's Portfolio. */}
-                <div className="rail no-scrollbar flex items-start gap-3 overflow-x-auto px-5">
-                  {trendingAudio.slice(0, 8).map((work) => (
-                    <div
-                      key={work.id}
-                      className="w-rail-sm shrink-0 has-[.col-span-full]:w-[calc(min(100vw,var(--container-app))-2.5rem)]"
-                    >
-                      <AudioTrackCard
-                        track={{
-                          id: work.id,
-                          title: work.title,
-                          role: work.display_name ?? "",
-                          project: "",
-                          duration: "",
-                          artwork: work.cover_url ?? "",
-                          ...(work.media_url ? { media: work.media_url } : {}),
-                        }}
-                        layout="portrait"
-                        playing={playingId === work.id}
-                        onToggle={() => setPlayingId((id) => (id === work.id ? null : work.id))}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-            {trendingVideo.length ? (
-              <section>
-                <SectionHeader title="Trending videos" />
-                <div className="rail no-scrollbar flex items-start gap-3 overflow-x-auto px-5">
-                  {trendingVideo.slice(0, 8).map((work) => (
-                    <div
-                      key={work.id}
-                      className="w-rail-sm shrink-0 has-[.col-span-full]:w-[calc(min(100vw,var(--container-app))-2.5rem)]"
-                    >
-                      <VideoCard
-                        layout="grid"
-                        v={{
-                          id: work.id,
-                          title: work.title,
-                          context: work.display_name ?? "",
-                          duration: "",
-                          thumb: work.cover_url ?? "",
-                          ...(work.media_url ? { media: work.media_url } : {}),
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ) : null}
+            <WorkSection
+              filter={search.work ?? "all"}
+              onFilter={(work) => setSearch({ work: work === "all" ? undefined : work })}
+            />
             {loaded.collabs.length ? (
               <section>
                 <SectionHeader
@@ -464,6 +470,301 @@ function DiscoverScreen() {
         </section>
       </main>
     </Screen>
+  );
+}
+
+/** "Showing 24 of 61" and Show more — the same footer under both paged lists. */
+function PageFooter({
+  shown,
+  total,
+  onMore,
+}: {
+  shown: number;
+  total: number;
+  onMore: () => void;
+}) {
+  return (
+    <div className="mt-4 space-y-3 px-5">
+      <p className="text-center text-1 text-muted-foreground" aria-live="polite">
+        Showing {shown.toLocaleString("en-IN")} of {total.toLocaleString("en-IN")}
+      </p>
+      {shown < total ? (
+        <Btn variant="outline" className="w-full" onClick={onMore}>
+          Show more
+        </Btn>
+      ) : null}
+    </div>
+  );
+}
+
+/*
+ * Businesses (owner, 10 Oct 2026): every business page, not only ones with a booking calendar,
+ * on the same business card with Follow and no price. The type chips count real pages; a type
+ * with none is left out rather than shown at 0.
+ */
+function BusinessesSection({
+  type,
+  onType,
+  canCreate,
+}: {
+  type: string | undefined;
+  onType: (type: string | undefined) => void;
+  canCreate: boolean;
+}) {
+  const { options } = useTaxonomy();
+  const load = useServerFn(listPublicBusinesses);
+  const q = useQuery({ queryKey: ["discover", "businesses"], queryFn: () => load() });
+  const [pages, setPages] = useState(1);
+  const types = useMemo(() => businessTypes(options?.person_types ?? []), [options]);
+  const typeOf = useMemo(() => {
+    const slugs = new Set(types.map((t) => t.metadata?.app_key ?? t.slug));
+    return (roles: string[]) => roles.find((r) => slugs.has(r));
+  }, [types]);
+  const all = q.data ?? [];
+  const counts = new Map<string, number>();
+  for (const b of all) {
+    const t = typeOf(b.roles);
+    if (t) counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
+  const typeChips = types
+    .map((t) => ({ key: t.metadata?.app_key ?? t.slug, label: t.label }))
+    .filter((t) => counts.has(t.key));
+  // A type from an old link that has no pages now falls back to All.
+  const active = type && counts.has(type) ? type : undefined;
+  const matching = active ? all.filter((b) => typeOf(b.roles) === active) : all;
+  const shown = matching.slice(0, pages * PAGE);
+  const pick = (next: string | undefined) => {
+    setPages(1);
+    onType(next);
+  };
+
+  return (
+    <section aria-busy={q.isPending || undefined}>
+      <SectionHeader title="Businesses" />
+      {q.isError ? (
+        <div className="px-5">
+          <LoadError
+            what="businesses"
+            action={
+              <Btn variant="outline" onClick={() => void q.refetch()} loading={q.isFetching}>
+                Try again
+              </Btn>
+            }
+          />
+        </div>
+      ) : q.isPending ? (
+        <div role="status" aria-label="Loading businesses" className="grid grid-cols-2 gap-3 px-5">
+          {[0, 1, 2, 3].map((i) => (
+            <BookableCardSkeleton key={i} fill />
+          ))}
+        </div>
+      ) : !all.length ? (
+        <div className="px-5">
+          <EmptyState
+            icon={<Building2 size={iconSize.lg} aria-hidden />}
+            title="No business pages yet"
+            body="Labels, venues, studios and schools show here once they make a page."
+          >
+            {canCreate ? (
+              <BtnLink to="/business/new" search={{ step: "type" }} className="w-full">
+                Create a business page
+              </BtnLink>
+            ) : (
+              <BtnLink to="/search" variant="outline" className="w-full">
+                Search MusicLinkd
+              </BtnLink>
+            )}
+          </EmptyState>
+        </div>
+      ) : (
+        <>
+          <div
+            role="group"
+            aria-label="Business type"
+            className="rail no-scrollbar mb-4 flex gap-2 overflow-x-auto px-5 pb-1"
+          >
+            <Chip active={!active} onClick={() => pick(undefined)} count={all.length}>
+              All
+            </Chip>
+            {typeChips.map((t) => (
+              <Chip
+                key={t.key}
+                active={active === t.key}
+                onClick={() => pick(t.key)}
+                count={counts.get(t.key)}
+              >
+                {t.label}
+              </Chip>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-3 px-5">
+            {shown.map((b) => (
+              <BookableCard key={b.id} studio={discoverBookableFromBusiness(b)} fill />
+            ))}
+          </div>
+          <PageFooter
+            shown={shown.length}
+            total={matching.length}
+            onMore={() => setPages((p) => p + 1)}
+          />
+        </>
+      )}
+    </section>
+  );
+}
+
+/*
+ * Work (owner, 10 Oct 2026): one feed in place of the separate Trending audio and Trending video
+ * rails. Trending is real plays from the last 7 days, New the newest published work; All is
+ * trending first, then new. The portrait tiles are the profile Portfolio's own, with its Like and
+ * Share; a playing tile widens across the grid.
+ */
+function WorkSection({
+  filter,
+  onFilter,
+}: {
+  filter: WorkFilter;
+  onFilter: (filter: WorkFilter) => void;
+}) {
+  const loadTrending = useServerFn(listTrendingWork);
+  const loadNew = useServerFn(listNewWork);
+  const q = useQuery({
+    queryKey: ["discover", "work"],
+    queryFn: async () => {
+      // Trending is a ranking on top of the feed: if plays can't be read, the feed still shows
+      // the newest work rather than an error (and Trending says nothing is trending).
+      const [trending, fresh] = await Promise.all([
+        loadTrending().catch((): TrendingItem[] => []),
+        loadNew(),
+      ]);
+      return { trending, fresh };
+    },
+  });
+  const [pages, setPages] = useState(1);
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const playable = (w: NewWorkItem) => {
+    const media = workType(w.kind).media;
+    return media === "audio" || media === "video";
+  };
+  const trending = (q.data?.trending ?? []).filter(playable);
+  const fresh = (q.data?.fresh ?? []).filter(playable);
+  const trendingIds = new Set(trending.map((w) => w.id));
+  const all: NewWorkItem[] = [...trending, ...fresh.filter((w) => !trendingIds.has(w.id))];
+  const items =
+    filter === "trending"
+      ? trending
+      : filter === "new"
+        ? fresh
+        : filter === "music"
+          ? all.filter((w) => workType(w.kind).media === "audio")
+          : filter === "video"
+            ? all.filter((w) => workType(w.kind).media === "video")
+            : all;
+  const shown = items.slice(0, pages * PAGE);
+  const pick = (next: WorkFilter) => {
+    setPages(1);
+    setPlayingId(null);
+    onFilter(next);
+  };
+
+  return (
+    <section aria-busy={q.isPending || undefined}>
+      <SectionHeader title="Work" />
+      <div
+        role="group"
+        aria-label="Filter work"
+        className="rail no-scrollbar mb-4 flex gap-2 overflow-x-auto px-5 pb-1"
+      >
+        {WORK_FILTERS.map((f) => (
+          <Chip key={f} active={filter === f} onClick={() => pick(f)}>
+            {WORK_LABELS[f]}
+          </Chip>
+        ))}
+      </div>
+      {q.isError ? (
+        <div className="px-5">
+          <LoadError
+            what="work"
+            action={
+              <Btn variant="outline" onClick={() => void q.refetch()} loading={q.isFetching}>
+                Try again
+              </Btn>
+            }
+          />
+        </div>
+      ) : q.isPending ? (
+        <div role="status" aria-label="Loading work" className="grid grid-cols-2 gap-3 px-5">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="aspect-square w-full animate-pulse rounded-md bg-ink/5" />
+          ))}
+        </div>
+      ) : !items.length ? (
+        <div className="px-5">
+          <EmptyState
+            kind={filter === "all" ? "default" : "filtered"}
+            icon={<Music2 size={iconSize.lg} aria-hidden />}
+            title={filter === "trending" ? "Nothing trending this week" : "No work here yet"}
+            body={
+              filter === "all"
+                ? "Published music and video from the community shows here."
+                : "Try another filter, or see everything published."
+            }
+          >
+            {filter === "all" ? (
+              <BtnLink to="/portfolio/new" className="w-full">
+                Add your work
+              </BtnLink>
+            ) : (
+              <Btn variant="outline" className="w-full" onClick={() => pick("all")}>
+                Show all work
+              </Btn>
+            )}
+          </EmptyState>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 items-start gap-3 px-5">
+            {shown.map((work) =>
+              workType(work.kind).media === "audio" ? (
+                <AudioTrackCard
+                  key={work.id}
+                  track={{
+                    id: work.id,
+                    title: work.title,
+                    role: work.display_name ?? "",
+                    project: "",
+                    duration: "",
+                    artwork: work.cover_url ?? "",
+                    ...(work.media_url ? { media: work.media_url } : {}),
+                  }}
+                  layout="portrait"
+                  playing={playingId === work.id}
+                  onToggle={() => setPlayingId((id) => (id === work.id ? null : work.id))}
+                />
+              ) : (
+                <VideoCard
+                  key={work.id}
+                  layout="grid"
+                  v={{
+                    id: work.id,
+                    title: work.title,
+                    context: work.display_name ?? "",
+                    duration: "",
+                    thumb: work.cover_url ?? "",
+                    ...(work.media_url ? { media: work.media_url } : {}),
+                  }}
+                />
+              ),
+            )}
+          </div>
+          <PageFooter
+            shown={shown.length}
+            total={items.length}
+            onMore={() => setPages((p) => p + 1)}
+          />
+        </>
+      )}
+    </section>
   );
 }
 
