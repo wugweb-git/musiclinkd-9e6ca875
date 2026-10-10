@@ -7,6 +7,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Removed / changed — Find a match gone; Home is the default screen (10 Oct, owner)
 
+- Songs and videos play where they are, expanded, instead of opening a separate page: Discover →
+  Music and a service's Examples use the same audio and video cards as a profile's Portfolio.
+- marketplace_categories deleted from the database (listings store the tool they list).
+
 - Find a match is removed (Search does this job): the screen, its menu row, the "Describe who you
   need" / "Describe a hiring need" cards on Discover and Home, and the AI match server function.
   /discover/match redirects to Search.

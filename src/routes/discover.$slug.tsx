@@ -14,7 +14,7 @@ import { listNewWork, type NewWorkItem } from "@/lib/trending.functions";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { joinParts } from "@/lib/utils";
-import { useWorkLikes, WorkLinkRow } from "@/components/ml/portfolio";
+import { AudioTrackCard, VideoCard } from "@/components/ml/profile";
 
 /*
  * One Discover slug, every subject. `/discover/<slug>` is the shareable form of a Discover filter
@@ -112,16 +112,47 @@ function PeopleList({ role, label }: { role: string; label: string | null }) {
 
 /** Work published by people you can actually hire, not a chart. */
 function MusicList({ tracks }: { tracks: NewWorkItem[] }) {
-  const likes = useWorkLikes(tracks.slice(0, 60).map((t) => t.id));
+  // A tap plays the work right here, expanded, like a profile's Portfolio (owner, 10 Oct 2026):
+  // never a separate screen.
+  const [playingId, setPlayingId] = useState<string | null>(null);
   return (
     <Screen>
       <TopBar title="Music" subtitle="New work from the community" back="/discover" />
       <div className="space-y-4 px-5 pt-4 pb-8">
         {tracks.length ? (
           <div className="space-y-3">
-            {tracks.map((t) => (
-              <WorkLinkRow key={t.id} work={t} likes={likes} />
-            ))}
+            {tracks.map((t) =>
+              workType(t.kind).media === "video" ? (
+                <VideoCard
+                  key={t.id}
+                  layout="row"
+                  v={{
+                    id: t.id,
+                    title: t.title,
+                    context: t.display_name ?? "",
+                    duration: "",
+                    thumb: t.cover_url ?? "",
+                    ...(t.media_url ? { media: t.media_url } : {}),
+                  }}
+                />
+              ) : (
+                <AudioTrackCard
+                  key={t.id}
+                  layout="stacked"
+                  track={{
+                    id: t.id,
+                    title: t.title,
+                    role: t.display_name ?? "",
+                    project: "",
+                    duration: "",
+                    artwork: t.cover_url ?? "",
+                    ...(t.media_url ? { media: t.media_url } : {}),
+                  }}
+                  playing={playingId === t.id}
+                  onToggle={() => setPlayingId((id) => (id === t.id ? null : t.id))}
+                />
+              ),
+            )}
           </div>
         ) : (
           <EmptyState

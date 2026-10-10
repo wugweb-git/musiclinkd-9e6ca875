@@ -16,7 +16,8 @@ import {
   ServiceRequestSheet,
   useServiceRequest,
 } from "@/components/ml/booking";
-import { ChipGroup, ChipGroupList } from "@/components/ml/profile";
+import { AudioTrackCard, ChipGroup, ChipGroupList, VideoCard } from "@/components/ml/profile";
+import { workType } from "@/data/portfolio";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -76,6 +77,7 @@ function ServiceDetail() {
   const updateStatus = useServerFn(setServiceStatus);
   const remove = useServerFn(deleteService);
   const [manage, setManage] = useState(false);
+  const [playingExample, setPlayingExample] = useState<string | null>(null);
   const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
@@ -176,34 +178,41 @@ function ServiceDetail() {
           {s.examples.length ? (
             <Card className="space-y-2">
               <h2 className="text-sm">Examples</h2>
-              <ul className="space-y-2">
-                {s.examples.map((w) => (
-                  <li key={w.id}>
-                    <Link
-                      to="/portfolio/$id"
-                      params={{ id: w.id }}
-                      className="state-layer flex items-center gap-3 rounded-lg p-1"
-                    >
-                      {w.cover_url ? (
-                        <img
-                          src={sized(w.cover_url, { width: 48 })}
-                          alt=""
-                          className="h-12 w-12 shrink-0 rounded-sm object-cover"
-                        />
-                      ) : (
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip text-ink-foreground">
-                          <FolderKanban size={18} aria-hidden />
-                        </span>
-                      )}
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-semibold">{w.title}</span>
-                        <span className="block text-1 capitalize text-foreground">{w.kind}</span>
-                      </span>
-                      <ChevronRight size={iconSize.sm} className="shrink-0" aria-hidden />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              {/* Examples play here, expanded (owner, 10 Oct 2026): never a separate screen. */}
+              <div className="space-y-2">
+                {s.examples.map((w) =>
+                  workType(w.kind).media === "video" ? (
+                    <VideoCard
+                      key={w.id}
+                      layout="row"
+                      v={{
+                        id: w.id,
+                        title: w.title,
+                        context: "",
+                        duration: "",
+                        thumb: w.cover_url ?? "",
+                        ...(w.media_url ? { media: w.media_url } : {}),
+                      }}
+                    />
+                  ) : (
+                    <AudioTrackCard
+                      key={w.id}
+                      layout="stacked"
+                      track={{
+                        id: w.id,
+                        title: w.title,
+                        role: "",
+                        project: "",
+                        duration: "",
+                        artwork: w.cover_url ?? "",
+                        ...(w.media_url ? { media: w.media_url } : {}),
+                      }}
+                      playing={playingExample === w.id}
+                      onToggle={() => setPlayingExample((id) => (id === w.id ? null : w.id))}
+                    />
+                  ),
+                )}
+              </div>
             </Card>
           ) : null}
 
