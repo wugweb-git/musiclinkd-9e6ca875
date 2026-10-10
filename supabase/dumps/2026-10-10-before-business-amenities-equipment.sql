@@ -1,0 +1,11 @@
+-- Snapshot before 20261010190000_business_amenities_equipment.sql (10 Oct 2026). Definitions and
+-- counts only, no user data.
+-- bookables 22 (21 with amenities); bookable_equipment 117 (bookable_id NOT NULL);
+-- bookable_photos 61 (bookable_id NOT NULL); profile_business 45; every bookable owner has a
+-- profile_business row.
+-- Policies replaced:
+--   bookable_equipment "Owners write their own" ALL USING/CHECK
+--     (EXISTS (SELECT 1 FROM bookables s WHERE s.id = bookable_equipment.bookable_id AND s.owner_profile_id = auth.uid()))
+--   bookable_photos "Owner manages their studio photos" ALL USING/CHECK (bookable_is_mine(bookable_id))
+-- Undo: restore those two policies, set bookable_id NOT NULL on both tables, drop the profile_id
+-- columns and profile_business.amenities. bookables.amenities is left untouched by the migration.

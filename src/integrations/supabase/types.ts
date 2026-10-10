@@ -51,29 +51,32 @@ export type Database = {
       }
       bookable_equipment: {
         Row: {
-          bookable_id: string
+          bookable_id: string | null
           category: string | null
           id: string
           included: boolean
           name: string
+          profile_id: string
           quantity: number | null
           sort_order: number
         }
         Insert: {
-          bookable_id: string
+          bookable_id?: string | null
           category?: string | null
           id?: string
           included?: boolean
           name: string
+          profile_id?: string
           quantity?: number | null
           sort_order?: number
         }
         Update: {
-          bookable_id?: string
+          bookable_id?: string | null
           category?: string | null
           id?: string
           included?: boolean
           name?: string
+          profile_id?: string
           quantity?: number | null
           sort_order?: number
         }
@@ -85,31 +88,41 @@ export type Database = {
             referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bookable_equipment_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       bookable_photos: {
         Row: {
-          bookable_id: string
+          bookable_id: string | null
           created_at: string
           id: string
+          profile_id: string
           sort_order: number
           subject_id: string
           subject_type: string
           url: string
         }
         Insert: {
-          bookable_id: string
+          bookable_id?: string | null
           created_at?: string
           id?: string
+          profile_id?: string
           sort_order?: number
           subject_id: string
           subject_type: string
           url: string
         }
         Update: {
-          bookable_id?: string
+          bookable_id?: string | null
           created_at?: string
           id?: string
+          profile_id?: string
           sort_order?: number
           subject_id?: string
           subject_type?: string
@@ -121,6 +134,13 @@ export type Database = {
             columns: ["bookable_id"]
             isOneToOne: false
             referencedRelation: "bookables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookable_photos_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1800,6 +1820,7 @@ export type Database = {
       }
       profile_business: {
         Row: {
+          amenities: string[]
           artist_roster: string[]
           business_address: string | null
           capacity: number | null
@@ -1820,6 +1841,7 @@ export type Database = {
           venue_features: string[]
         }
         Insert: {
+          amenities?: string[]
           artist_roster?: string[]
           business_address?: string | null
           capacity?: number | null
@@ -1840,6 +1862,7 @@ export type Database = {
           venue_features?: string[]
         }
         Update: {
+          amenities?: string[]
           artist_roster?: string[]
           business_address?: string | null
           capacity?: number | null

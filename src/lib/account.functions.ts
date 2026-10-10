@@ -22,6 +22,8 @@ const OWNED: [string, string[]][] = [
   ["profile_service_addons", ["profile_id"]],
   ["portfolio_items", ["user_id"]],
   ["bookables", ["owner_profile_id"]],
+  ["bookable_equipment", ["profile_id"]],
+  ["bookable_photos", ["profile_id"]],
   ["opportunities", ["creator_profile_id"]],
   ["opportunity_applications", ["applicant_profile_id"]],
   ["marketplace_listings", ["seller_profile_id"]],

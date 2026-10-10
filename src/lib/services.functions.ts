@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
+import { AMENITY } from "@/lib/bookable-photos.functions";
 
 /*
  * Services a profile offers: profile_services with its packages and add-ons. Pricing model and
@@ -32,7 +33,7 @@ export type ServiceRow = {
   requirements: string[];
   /** portfolio_items ids shown as examples, in order. */
   example_ids: string[];
-  /** A studio's service: the amenities (amenities slugs) and equipment ids it uses. */
+  /** A business's service: the amenities (slugs or its own labels) and equipment ids it uses. */
   amenity_slugs: string[];
   equipment_ids: string[];
   status: ServiceStatus;
@@ -144,7 +145,11 @@ function serviceFrom(row: Record<string, unknown>): ServiceRow {
   };
 }
 
-/** What a studio's service uses: its amenities and equipment, with their photos. */
+/**
+ * What a business's service uses: its amenities and equipment, with their photos. Both belong to
+ * the business by profile_id, for every business type (owner, 10 Oct 2026); a custom amenity is
+ * its own label.
+ */
 async function serviceUses(
   client: SupabaseClient,
   ownerId: string,
@@ -153,14 +158,6 @@ async function serviceUses(
 ): Promise<ServiceDetail["uses"]> {
   const none = { amenities: [], equipment: [] };
   if (!amenitySlugs.length && !equipmentIds.length) return none;
-  const { data: studio } = await client
-    .from("bookables")
-    .select("id")
-    .eq("owner_profile_id", ownerId)
-    .limit(1)
-    .maybeSingle();
-  const studioId = (studio as { id: string } | null)?.id;
-  if (!studioId) return none;
   const [labels, equipment, photos] = await Promise.all([
     amenitySlugs.length
       ? client
@@ -173,13 +170,13 @@ async function serviceUses(
       ? client
           .from("bookable_equipment")
           .select("id, name")
-          .eq("bookable_id", studioId)
+          .eq("profile_id", ownerId)
           .in("id", equipmentIds)
       : { data: [] },
     client
       .from("bookable_photos")
       .select("subject_type, subject_id, url")
-      .eq("bookable_id", studioId)
+      .eq("profile_id", ownerId)
       .order("sort_order"),
   ]);
   const photoRows = (photos.data ?? []) as {
@@ -196,9 +193,11 @@ async function serviceUses(
     ((equipment.data ?? []) as { id: string; name: string }[]).map((e) => [e.id, e.name]),
   );
   return {
-    amenities: amenitySlugs
-      .filter((a) => label.has(a))
-      .map((a) => ({ slug: a, label: label.get(a)!, photos: photosOf("amenity", a) })),
+    amenities: amenitySlugs.map((a) => ({
+      slug: a,
+      label: label.get(a) ?? a,
+      photos: photosOf("amenity", a),
+    })),
     equipment: equipmentIds
       .filter((e) => items.has(e))
       .map((e) => ({ id: e, name: items.get(e)!, photos: photosOf("equipment", e) })),
@@ -379,7 +378,11 @@ export const listPublicServices = createServerFn({ method: "GET" })
             .in("slug", slugs)
         : { data: [] },
       ids.length
-        ? client.from("bookable_equipment").select("id, name").in("id", ids)
+        ? client
+            .from("bookable_equipment")
+            .select("id, name")
+            .eq("profile_id", data.profileId)
+            .in("id", ids)
         : { data: [] },
     ]);
     const label = new Map(
@@ -392,7 +395,7 @@ export const listPublicServices = createServerFn({ method: "GET" })
       ...r,
       price_paise: r.price_paise == null ? null : Number(r.price_paise),
       uses: [
-        ...(amenity_slugs ?? []).map((a) => label.get(a)).filter((x): x is string => !!x),
+        ...(amenity_slugs ?? []).map((a) => label.get(a) ?? a),
         ...(equipment_ids ?? []).map((e) => item.get(e)).filter((x): x is string => !!x),
       ],
     }));
@@ -423,10 +426,8 @@ const saveSchema = z.object({
   name: text(120).min(1),
   description: text(2000).nullable(),
   example_ids: z.array(z.string().uuid()).max(6).optional(),
-  amenity_slugs: z
-    .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
-    .max(40)
-    .optional(),
+  /** The business's amenities: taxonomy slugs or its own labels (owner, 10 Oct 2026). */
+  amenity_slugs: z.array(AMENITY).max(40).optional(),
   equipment_ids: z.array(z.string().uuid()).max(40).optional(),
   pricing_model: slug.nullable(),
   price_paise: z.number().int().min(0).nullable(),

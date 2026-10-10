@@ -1,0 +1,7 @@
+-- Snapshot before 20261010200000_drop_retired_work_type.sql (10 Oct 2026). Definitions and counts.
+-- opportunities.collaboration_type text: session_payment 6, royalties_split 2, co_write 2,
+--   work_for_hire 2, "On-site" 1. One opportunity with no budget and no note gets its pay line
+--   written to budget_note before the column goes (owner: "update them").
+-- collabs.project_type text (project types for the retired "project" collaboration kind).
+-- person_type_instruments: 199 rows (persona → instrument); no function, view or code reads it.
+-- Taxonomy categories deleted: collaboration_types 4, project_types 10, available_for 9, work_types 10.

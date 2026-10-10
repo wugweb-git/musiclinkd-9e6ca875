@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — amenities and equipment belong to every business (10 Oct, owner)
+
+- Amenities and equipment are the business's own, for every business type, not a studio record:
+  amenities in profile_business.amenities, equipment and photos by profile_id
+  (20261010190000). Equipment ids are kept, so services that use them still do.
+- Create business asks for amenities and equipment after Create for every type (no studio-only
+  steps, no "Business created" dialog); both steps open from Edit profile as Amenities and
+  Equipment rows, showing what is saved, and Save returns there.
+- Amenities: pick from the offered list or add your own; your own show as pills you can remove,
+  and each amenity keeps its photos.
+- Equipment types are Production tools: hardware (equipment_categories) and software
+  (daw_tools); instruments are no longer offered.
+- The business profile, booking page and services read amenities, equipment and photos from the
+  business. New photos upload into the business's own folder in business-media, which needs
+  20261010230000_business_media_own_folder.sql applied.
+
 ### Fixed — portfolio play counts and disappearing chat messages (10 Oct, owner reports)
 
 - Play counts on an artist's own work no longer fail: they come from my_portfolio_play_counts
