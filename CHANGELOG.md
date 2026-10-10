@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed / changed — owner round (10 Oct, owner)
+
+- Post an opportunity: no "Role needed" field; opportunities are not pointed at person types.
+  Search's Opportunities tab drops its Role needed filter (City stays).
+- Discover: no Studios tab; businesses still show in For you's Trending businesses.
+- Setup: instruments is one question; the "how long have you played" screen is gone. Career
+  experience is asked on "How do you work?".
+- Every app screen sits on the setup screens' warm ground (#F3F1EC); settings and forms stay white.
+- Sign-in and sign-up titles use the screen-title weight (bold, tight); the email field is unchanged.
+
 ### Removed / changed — Find a match gone; Home is the default screen (10 Oct, owner)
 
 - Search: no Studios tab (every business is under Businesses) and no Verified chip; "Gear" is

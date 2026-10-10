@@ -241,7 +241,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
       <AuthComposition footer={<AuthFooter />}>
         <main className="flex flex-col" style={beat(2)}>
           <div className="mb-8 mt-6">
-            <h1 className="text-3 font-medium leading-normal text-foreground">
+            <h1 className="text-3 font-bold leading-tight text-foreground">
               {signup ? "Create your account" : "Sign in"}
             </h1>
             {signup ? (

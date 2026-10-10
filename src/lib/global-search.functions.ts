@@ -81,14 +81,12 @@ export type EverythingResults = {
 
 /**
  * What a tab narrows by (owner, 10 Oct 2026: filters on every tab, not only People). Each list is
- * "any of these"; values are what the rows store, except cities and opportunity roles, which come
- * as labels because those columns hold text ("Mumbai 400053", "Singer, Guitarist").
+ * "any of these"; values are what the rows store, except cities, which come as labels because
+ * that column holds text ("Mumbai 400053").
  */
 export type SearchFilters = {
   /** Business type: person_types values (flow business) in profiles.roles. */
   types?: string[] | undefined;
-  /** Role needed on an opportunity: person type labels, matched in role_required. */
-  roleLabels?: string[] | undefined;
   /** Market tool category: item_category (instruments, equipment_categories, daw_tools). */
   categories?: string[] | undefined;
   /** City labels. */
@@ -340,9 +338,6 @@ async function opportunities(
     .eq("status", "open");
   query = everyWord(query, words, ["title", "role_required", "location"]);
   if (verified) query = query.eq("creator.is_verified", true);
-  // role_required holds the role's label, several comma-separated (opportunities.new).
-  const role = anyLike("role_required", f.roleLabels);
-  if (role) query = query.or(role);
   const city = anyLike("location", f.cities);
   if (city) query = query.or(city);
   const { data, count, error } = await query.order("created_at", { ascending: false }).limit(limit);
@@ -598,8 +593,8 @@ function tally(out: Record<string, number>, value: string | null | undefined) {
 
 /**
  * The counts beside each option in a tab's Filters panel: every public row of that kind, read
- * once and counted here, so an option shows only when something has it. Opportunity roles come
- * back lower-case by label (role_required is text); cities by the city part of the stored place.
+ * once and counted here, so an option shows only when something has it. Cities are counted by the
+ * city part of the stored place.
  */
 export const searchFacets = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ group: z.enum(SEARCH_GROUPS) }).parse(d))
@@ -626,19 +621,13 @@ export const searchFacets = createServerFn({ method: "GET" })
       case "opportunities": {
         const { data: rows, error } = await client
           .from("opportunities")
-          .select("role_required, location")
+          .select("location")
           .eq("status", "open")
           .limit(5000);
         if (error) throw new Error(error.message);
-        const role: Record<string, number> = {};
-        for (const r of (rows ?? []) as {
-          role_required: string | null;
-          location: string | null;
-        }[]) {
-          for (const x of (r.role_required ?? "").split(",")) tally(role, x.toLowerCase());
+        for (const r of (rows ?? []) as { location: string | null }[])
           tally(city, shownPlace(r.location));
-        }
-        return { role, city };
+        return { city };
       }
       case "gear":
       case "services": {

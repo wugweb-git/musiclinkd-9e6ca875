@@ -171,7 +171,7 @@ export function AuthHeading({
 }) {
   return (
     <div className={cn("mb-5", className)}>
-      <h1 className="text-3 font-medium leading-normal text-foreground">{title}</h1>
+      <h1 className="text-3 font-bold leading-tight text-foreground">{title}</h1>
       {sub ? <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{sub}</p> : null}
     </div>
   );

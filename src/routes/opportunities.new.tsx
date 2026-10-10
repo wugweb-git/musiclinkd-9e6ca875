@@ -9,9 +9,6 @@ import { Card, StatusPill } from "@/components/ml/kit";
 import { createOpportunity } from "@/lib/applications.functions";
 import { draftHiringCopy } from "@/lib/hiring-copy.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { PersonTypePicker } from "@/components/ml/onboarding";
-import { labelFor, talentGroups, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
-import { roleIcon } from "@/lib/role-icons";
 import { CityField, Field as SharedField, inputClass } from "@/components/ml/listing-form";
 import { iconSize } from "@/lib/tokens";
 import type { ReactNode } from "react";
@@ -60,13 +57,6 @@ export const Route = createFileRoute("/opportunities/new")({
 
 const modes = ["On-site", "Remote", "Hybrid"] as const;
 
-// Every person type, talent groups then business types: the same list onboarding asks from.
-const roleGroups = [...talentGroups, { key: "business", label: "Business" }] as const;
-
-function typeIcon(o: TaxonomyOption) {
-  const Icon = roleIcon(o);
-  return <Icon size={16} aria-hidden />;
-}
 const payTypes = ["Paid", "Revenue share", "Unpaid"] as const;
 
 function CreateOpportunity() {
@@ -75,10 +65,7 @@ function CreateOpportunity() {
   const idx = order.indexOf(step);
 
   const [title, setTitle] = useState("");
-  // The role needed is a person-type slug from the taxonomy (owner, 10 Oct 2026).
-  const [cat, setCat] = useState<string | null>(null);
-  const { options: taxonomy } = useTaxonomy();
-  const roleLabel = cat ? labelFor(taxonomy?.person_types, cat) : null;
+  // No "Role needed" picker: an opportunity is not pointed at a person type (owner, 10 Oct 2026).
   const [summary, setSummary] = useState("");
   const [roughBrief, setRoughBrief] = useState("");
   const [approvedCopy, setApprovedCopy] = useState("");
@@ -100,7 +87,6 @@ function CreateOpportunity() {
       writeCopy({
         data: {
           title: title.trim(),
-          ...(roleLabel ? { role: roleLabel } : {}),
           ...(summary.trim() ? { summary: summary.trim() } : {}),
           ...(city.trim() ? { city: city.trim() } : {}),
           ...(dates.trim() ? { dates: dates.trim() } : {}),
@@ -123,11 +109,9 @@ function CreateOpportunity() {
       ? Math.round(Number(budget.replace(/[₹,\s]/g, "")) * 100)
       : undefined;
 
-  // Stored rows hold the person-type slug; screens show its label (owner, 10 Oct 2026).
   const payload = (status: "draft" | "open") => ({
     title: title.trim(),
     status,
-    ...(cat ? { roleRequired: cat } : {}),
     ...(budgetPaise === undefined ? {} : { budgetPaise }),
     ...(payType === "Paid"
       ? budget.trim() && budgetPaise === undefined
@@ -163,7 +147,7 @@ function CreateOpportunity() {
 
   const canContinue =
     step === "basics"
-      ? title.trim().length > 4 && !!cat
+      ? title.trim().length > 4
       : step === "location"
         ? city.trim().length > 1
         : true;
@@ -193,15 +177,6 @@ function CreateOpportunity() {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Female playback singer for indie-pop single"
                 className={inputClass}
-              />
-            </Field>
-            <Field label="Role needed">
-              <PersonTypePicker
-                groups={roleGroups}
-                options={taxonomy?.person_types ?? []}
-                selected={cat ? [cat] : []}
-                icon={typeIcon}
-                onToggle={(slug) => setCat(slug === cat ? null : slug)}
               />
             </Field>
             <Field label="Short summary" hint="Two lines. Detail comes later.">
@@ -384,7 +359,6 @@ function CreateOpportunity() {
             <h2 className="text-3 leading-tight">This is what applicants see</h2>
             <Card className="space-y-2">
               <div className="flex flex-wrap gap-2">
-                <StatusPill label={roleLabel ?? "Role needed"} tone="brand" />
                 <StatusPill label={mode} />
               </div>
               <h3 className="text-2 leading-snug">{title || "Untitled opportunity"}</h3>

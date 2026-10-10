@@ -149,10 +149,7 @@ export function SectionTabs<K extends string>({
   label: string;
 }) {
   return (
-    <nav
-      aria-label={label}
-      className="pt-inset sticky top-0 z-tabs bg-background/95 px-2 backdrop-blur"
-    >
+    <nav aria-label={label} className="pt-inset sticky top-0 z-tabs bg-warm/95 px-2 backdrop-blur">
       {/*
         A group of exclusive toggles, not a tablist — same call as Segmented (audit B5,
         29 Sep 2026). There is no aria-controls, no element with role="tabpanel" and no arrow-key

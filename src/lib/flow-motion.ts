@@ -59,12 +59,7 @@ const flowPath = (loc: ParsedLocation) => {
   return p;
 };
 
-/** A two-question screen's second question (`?q=2`) sits just after its first. */
-const position = (loc: ParsedLocation) => {
-  const i = ORDER.indexOf(flowPath(loc));
-  const q = Number((loc.search as { q?: unknown }).q);
-  return i < 0 ? -1 : q === 2 ? i + 0.5 : i;
-};
+const position = (loc: ParsedLocation) => ORDER.indexOf(flowPath(loc));
 
 export function flowTransitionTypes({
   fromLocation,

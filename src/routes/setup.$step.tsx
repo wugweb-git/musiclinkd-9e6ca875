@@ -65,20 +65,14 @@ function typeIcon(o: TaxonomyOption) {
 }
 
 /**
- * `q=2` is a two-question screen's second question (role: anything else; instruments: how long).
- * It is a real history entry, so the Android back gesture returns to the first question and the
- * page motion slides between them like it does between screens.
- */
-/**
  * `from=edit`: opened from Edit profile; Save returns there instead of going on.
  * `persona=business` (role only; the screen variable setupPersona): the same screen asks a business its type, then business setup goes on
  * (owner, 10 Oct 2026: one set of screens for every account type). `type` is the type picked.
  */
-type StepSearch = { q?: 2; from?: "edit"; persona?: "business"; type?: string };
+type StepSearch = { from?: "edit"; persona?: "business"; type?: string };
 
 export const Route = createFileRoute("/setup/$step")({
   validateSearch: (search: Record<string, unknown>): StepSearch => ({
-    ...(Number(search["q"]) === 2 ? { q: 2 as const } : {}),
     ...(search["from"] === "edit" ? { from: "edit" as const } : {}),
     ...(search["persona"] === "business" ? { persona: "business" as const } : {}),
     ...(typeof search["type"] === "string" && search["type"] ? { type: search["type"] } : {}),
@@ -108,7 +102,6 @@ export const Route = createFileRoute("/setup/$step")({
 });
 
 type Banner = "none" | "error" | "claim";
-type RoleStage = "primary" | "secondary";
 
 /** Each goal and the "Show me more" topics it implies, by label (taxonomy intents → discovery_prefs). */
 const SHOW_MORE: Record<string, string[]> = {
@@ -157,14 +150,9 @@ function BusinessTypeQuestion({
   );
 }
 
-/** Steps with a second question, and whether it applies yet. */
-const secondQuestionReady = (id: string, d: OnboardingDraft) =>
-  // Roles are one screen, up to three (owner, 6 Oct 2026); only instruments has a second question.
-  id === "instruments" && d.instruments.length > 0;
-
 function StepRoute() {
   const { step: id } = Route.useParams();
-  const { q, from, persona: setupPersona, type: typeParam } = Route.useSearch();
+  const { from, persona: setupPersona, type: typeParam } = Route.useSearch();
   const editing = from === "edit";
   const {
     draft,
@@ -251,9 +239,6 @@ function StepRoute() {
       })
       .catch(() => undefined);
   }, [hydrated, id, draft.state, draft.country, locate, set]);
-  // Role and instruments ask twice on one screen: the choice, then a follow-up (extra roles; how
-  // long each instrument has been played). The second question is `?q=2`.
-  const stageReady = secondQuestionReady(id, draft);
 
   const list = visibleSteps(draft);
   const def = steps.find((s) => s.id === id);
@@ -358,7 +343,7 @@ function StepRoute() {
         void navigate({
           to: "/setup/$step",
           params: { step: prev.id },
-          search: secondQuestionReady(prev.id, draft) ? { q: 2 } : {},
+          search: {},
           replace: true,
         }),
     );
@@ -386,42 +371,12 @@ function StepRoute() {
     }
   };
 
-  // Second stage: same screen, new question, optional.
-  const secondStage = stageReady && q === 2;
-  const copy = !secondStage
-    ? def
-    : def.id === "role"
-      ? {
-          title: "What else do you do?",
-          subtitle: `Your main role is ${labelFor(taxonomy.options?.person_types, draft.primaryRole ?? "")}. Add up to two supporting roles.`,
-          why: "Extra roles widen the work you show up for, without diluting your main one.",
-          optional: true,
-        }
-      : {
-          title: "How long have you played?",
-          subtitle: "Not a ranking — just context.",
-          why: "Helps match you to the right briefs. Never shown as a score.",
-          optional: true,
-        };
-  const toFirstStage = () => {
-    flowBack(
-      `/setup/${def.id}`,
-      () =>
-        void navigate({
-          to: "/setup/$step",
-          params: { step: def.id },
-          search: editing ? { from: "edit" } : {},
-          replace: true,
-        }),
-    );
-  };
   // From Edit profile: save now (not on the 700ms autosave) and go back there.
   const saveAndReturn = () => {
     haptic("confirm");
     // Awaited, so Edit profile reloads the saved answer and its own Save can't write an old one.
     void flush().then(() => navigate({ to: "/profile/edit" }));
   };
-  // Editing walks the same screens as setup (instruments then "how long"), saving at the end.
   const submit = business
     ? valid
       ? editing
@@ -438,22 +393,13 @@ function StepRoute() {
       : blocked
     : editing && !valid
       ? blocked
-      : stageReady && !secondStage
-        ? () => {
-            haptic("select");
-            void navigate({
-              to: "/setup/$step",
-              params: { step: def.id },
-              search: editing ? { q: 2, from: "edit" } : { q: 2 },
-            });
-          }
-        : editing && !(def.id === "identity" && !claimedUsername)
-          ? saveAndReturn
-          : def.id === "identity" && valid
-            ? () => void claimAndAdvance()
-            : valid
-              ? () => advance(true)
-              : blocked;
+      : editing && !(def.id === "identity" && !claimedUsername)
+        ? saveAndReturn
+        : def.id === "identity" && valid
+          ? () => void claimAndAdvance()
+          : valid
+            ? () => advance(true)
+            : blocked;
 
   return (
     <StepShell
@@ -461,20 +407,18 @@ function StepRoute() {
       step={business ? 1 : steps.findIndex((s) => s.id === def.id) + 1}
       total={business ? BUSINESS_SETUP_STEPS : steps.length}
       group={def.group}
-      title={business ? "What kind of business?" : copy.title}
-      subtitle={business ? "Pick the one that fits best." : copy.subtitle}
-      why={copy.why}
-      optional={copy.optional}
+      title={business ? "What kind of business?" : def.title}
+      subtitle={business ? "Pick the one that fits best." : def.subtitle}
+      why={def.why}
+      optional={def.optional}
       status={<SyncStatus state={sync} />}
       editing={editing}
       onBack={
         business
           ? () => void navigate({ to: "/onboarding" })
-          : secondStage
-            ? toFirstStage
-            : editing
-              ? () => void navigate({ to: "/profile/edit" })
-              : back
+          : editing
+            ? () => void navigate({ to: "/profile/edit" })
+            : back
       }
       onSubmit={submit}
       banner={
@@ -523,7 +467,6 @@ function StepRoute() {
           usernameStatus={usernameStatus}
           claimedUsername={claimedUsername}
           claimError={claimError}
-          roleStage={secondStage ? "secondary" : "primary"}
           showErrors={showErrors}
         />
       )}
@@ -566,7 +509,6 @@ function StepBody({
   usernameStatus,
   claimedUsername,
   claimError,
-  roleStage,
   showErrors,
 }: {
   id: string;
@@ -576,7 +518,6 @@ function StepBody({
   usernameStatus: UsernameStatus;
   claimedUsername: string | null;
   claimError: string | null;
-  roleStage: RoleStage;
   showErrors: boolean;
 }) {
   const taxonomy = useTaxonomy();
@@ -769,62 +710,33 @@ function StepBody({
       );
     }
 
-    case "instruments": {
-      if (roleStage === "primary" || !d.instruments.length) {
-        return (
-          <ChipPicker
-            // One instrument list for every persona (persona_bucket retired, owner 10 Oct 2026).
-            options={(tx?.instruments ?? []).map((o) => {
-              const Icon = instrumentIcon(o.slug);
-              return { value: o.slug, label: o.label, media: <Icon size={16} aria-hidden /> };
-            })}
-            selected={d.instruments}
-            max={2}
-            onToggle={(slug) => {
-              if (d.instruments.includes(slug)) {
-                const map = { ...d.instrumentExperience };
-                delete map[slug];
-                set({
-                  instruments: d.instruments.filter((x) => x !== slug),
-                  primaryInstrument: null,
-                  instrumentExperience: map,
-                });
-                return;
-              }
-              set({ instruments: [...d.instruments, slug], primaryInstrument: null });
-            }}
-          />
-        );
-      }
-      // Back returns to the instruments. The career question comes first: it is the one the
-      // profile header shows; the per-instrument answers stay with each instrument.
+    case "instruments":
+      // One question (owner, 10 Oct 2026): the second "how long" screen is gone; career
+      // experience is asked on "How do you work?".
       return (
-        <div key="secondary" className="space-y-4">
-          <DrawerField label="How long have you worked in music?">
-            <SheetSelect
-              title="How long have you worked in music?"
-              value={d.experience}
-              options={choicesFor(tx?.experience_levels)}
-              placeholder="Choose"
-              onChange={(v) => set({ experience: v as OnboardingDraft["experience"] })}
-            />
-          </DrawerField>
-          {d.instruments.map((slug) => (
-            <DrawerField key={slug} label={labelFor(tx?.instruments, slug)}>
-              <SheetSelect
-                title={labelFor(tx?.instruments, slug)}
-                value={d.instrumentExperience[slug] ?? null}
-                options={choicesFor(tx?.experience_levels)}
-                placeholder="Choose"
-                onChange={(v) =>
-                  set({ instrumentExperience: { ...d.instrumentExperience, [slug]: v } })
-                }
-              />
-            </DrawerField>
-          ))}
-        </div>
+        <ChipPicker
+          // One instrument list for every persona (persona_bucket retired, owner 10 Oct 2026).
+          options={(tx?.instruments ?? []).map((o) => {
+            const Icon = instrumentIcon(o.slug);
+            return { value: o.slug, label: o.label, media: <Icon size={16} aria-hidden /> };
+          })}
+          selected={d.instruments}
+          max={2}
+          onToggle={(slug) => {
+            if (d.instruments.includes(slug)) {
+              const map = { ...d.instrumentExperience };
+              delete map[slug];
+              set({
+                instruments: d.instruments.filter((x) => x !== slug),
+                primaryInstrument: null,
+                instrumentExperience: map,
+              });
+              return;
+            }
+            set({ instruments: [...d.instruments, slug], primaryInstrument: null });
+          }}
+        />
       );
-    }
 
     case "languages":
       return (
@@ -864,8 +776,7 @@ function StepBody({
               onChange={(v) => set({ workModes: v })}
             />
           </DrawerField>
-          {/* Experience sits under Where you work too (owner, 10 Oct 2026): the same question and
-              drawer as after the instruments, one answer (draft.experience). */}
+          {/* Experience is asked here only (owner, 10 Oct 2026): one answer (draft.experience). */}
           <DrawerField label="How long have you worked in music?">
             <SheetSelect
               title="How long have you worked in music?"
