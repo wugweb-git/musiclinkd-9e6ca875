@@ -2,11 +2,7 @@
 // Only stored fields are filled; everything the table does not hold stays empty and the screens
 // skip it.
 
-import {
-  opportunityCategories,
-  type Opportunity,
-  type PostedOpportunity,
-} from "@/data/opportunities";
+import { type Opportunity, type PostedOpportunity } from "@/data/opportunities";
 import {
   getOpportunityRow,
   listMyOpportunities,
@@ -15,22 +11,6 @@ import {
   type OpportunityRow,
 } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-
-/**
- * A single role that names an existing person category ("Guitarist", "Singer") uses that category.
- * Roles are single names (no "/", 15 Sep 2026). Several roles, or a role with no matching category,
- * is a collaborator request.
- */
-function categoryFromRole(role: string | null): Pick<Opportunity, "categoryKey" | "kind"> {
-  if (role && !role.includes(",")) {
-    const name = role.trim().toLowerCase();
-    const match = opportunityCategories.find(
-      (c) => c.kind === "Person" && c.label.toLowerCase() === name,
-    );
-    if (match) return { categoryKey: match.key, kind: match.kind };
-  }
-  return { categoryKey: "collab", kind: "Collaborator" };
-}
 
 function compensationFromRow(row: OpportunityRow): Opportunity["compensation"] {
   const note = row.budget_note ? { note: row.budget_note } : {};
@@ -53,7 +33,12 @@ export function opportunityFromRow(row: OpportunityRow, labels: TaxonomyLabels):
   return {
     id: row.slug,
     title: row.title,
-    ...categoryFromRole(row.role_required),
+    // A person-type slug shows its taxonomy label; older free-text rows show as stored
+    // (owner, 10 Oct 2026).
+    roleKey: row.role_required ?? "",
+    role: row.role_required ? taxonomyLabel(labels, "person_types", row.role_required) : "",
+    kind:
+      row.role_required && labels["person_types"]?.[row.role_required] ? "Person" : "Collaborator",
     status: row.status,
     poster: {
       id: creator?.username ?? "",
@@ -76,10 +61,7 @@ export function opportunityFromRow(row: OpportunityRow, labels: TaxonomyLabels):
     compensation: compensationFromRow(row),
     summary: row.summary ?? "",
     brief: [],
-    requirements: (row.requirements?.length
-      ? row.requirements
-      : (row.role_required ?? "").split(",")
-    )
+    requirements: (row.requirements ?? [])
       .map((r) => r.trim())
       .filter(Boolean)
       .map((label) => ({ label, must: true })),

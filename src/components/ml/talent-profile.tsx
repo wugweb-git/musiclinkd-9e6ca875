@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
+  Award,
   Check,
   UserPlus,
   Send,
@@ -1100,7 +1101,8 @@ export function MessageCard({ name, profileId }: { name: string; profileId: stri
 
 /**
  * At a glance as one bento (owner, 5 Oct): Type, Genres (wide), Instruments, Languages, City and
- * Experience — every fact once, from real values only; no per-role tiles (owner, 10 Oct 2026). A lone tile
+ * Experience, then Badges (wide, persona_badges) — every fact once, from real values only; no
+ * per-role tiles (owner, 10 Oct 2026). A lone tile
  * at the end of a row spans it, so there is never an empty half cell.
  */
 function AtAGlance({ p }: { p: TalentProfile }) {
@@ -1119,6 +1121,15 @@ function AtAGlance({ p }: { p: TalentProfile }) {
   if (p.location) tiles.push({ key: "city", icon: MapPin, label: "City", body: text(p.location) });
   if (p.yearsActive)
     tiles.push({ key: "exp", icon: Clock3, label: "Experience", body: text(p.yearsActive) });
+  // The person's persona badges, one wide tile when any exist (owner, 10 Oct 2026).
+  if (p.personaBadges?.length)
+    tiles.push({
+      key: "badges",
+      icon: Award,
+      label: "Badges",
+      body: chips(p.personaBadges),
+      wide: true,
+    });
   if (!tiles.length) return null;
   // Fill rows of two: a single tile left alone before a wide one, or at the end, spans the row.
   let col = 0;

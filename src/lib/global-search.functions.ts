@@ -4,9 +4,10 @@ import { isCollabType } from "@/lib/collab-types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { anonClient } from "@/lib/portfolio.functions";
-import type { ListingRow, OpportunityRow } from "@/lib/catalog.functions";
+import { anonClient, getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { taxonomyLabel, type ListingRow, type OpportunityRow } from "@/lib/catalog.functions";
 import { shownPlace } from "@/lib/place";
+import { toolLabel } from "@/lib/listing-category";
 
 /*
  * /search: one box over everything public. People come from searchPeople
@@ -516,12 +517,17 @@ async function subjectFields(
         created_at: string;
       }>("opportunities", "title, role_required, location, created_at");
       if (!o) return null;
+      // A person-type slug reads as its label; older free text as stored (owner, 10 Oct 2026).
+      const labels = await getTaxonomyLabels().catch((): TaxonomyLabels => ({}));
       return {
         title: o.title,
         verified: false,
         fields: [
           { label: "title", value: o.title, strong: true },
-          { label: "role wanted", value: o.role_required },
+          {
+            label: "role wanted",
+            value: o.role_required ? taxonomyLabel(labels, "person_types", o.role_required) : null,
+          },
           { label: "location", value: o.location },
         ],
         extra: [{ label: "Posted", detail: postedOn(o.created_at), weight: "light" }],
@@ -542,6 +548,8 @@ async function subjectFields(
         "title, brand, model, item_category, listing_description, pickup_location, seller_name, created_at",
       );
       if (!l) return null;
+      // The category is the tool listed, labelled from the Tools lists (owner, 10 Oct 2026).
+      const tools = await getTaxonomyLabels().catch((): TaxonomyLabels => ({}));
       return {
         title: l.title,
         verified: false,
@@ -549,7 +557,7 @@ async function subjectFields(
           { label: "title", value: l.title, strong: true },
           { label: "brand", value: l.brand, strong: true },
           { label: "model", value: l.model, strong: true },
-          { label: "category", value: l.item_category?.replace(/_/g, " ") },
+          { label: "category", value: l.item_category ? toolLabel(tools, l.item_category) : null },
           { label: "description", value: l.listing_description },
           { label: "pickup place", value: shownPlace(l.pickup_location) },
           { label: "seller", value: l.seller_name },

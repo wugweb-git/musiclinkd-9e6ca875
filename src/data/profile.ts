@@ -15,15 +15,8 @@ export type ProfileRole = "Vocal Artist" | "Producer" | "Musician" | "Engineer" 
 
 export type VerificationTier = "Basic" | "Email Verified" | "Professional" | "Industry Verified";
 
-export type AvailabilityState =
-  | "Available"
-  | "In Studio"
-  | "Busy"
-  | "Available for Shows"
-  | "Looking for Collaboration"
-  | "Available for Session Work"
-  | "Selective"
-  | "Touring";
+/** profiles.availability is "Available" or unset; nothing else exists (owner, 10 Oct 2026). */
+export type AvailabilityState = "Available";
 
 export type AudioTrack = {
   id: string;
@@ -135,6 +128,8 @@ export type TalentProfile = {
   roleSlugs?: string[] | undefined;
   location: string;
   availability?: AvailabilityState | undefined;
+  /** Labels of the person's persona_badges (taxonomy persona_badges); empty when none. */
+  personaBadges?: string[] | undefined;
   verification: VerificationTier;
   privacy: "Public" | "MusicLinkd members" | "Limited";
   yearsActive: string;
@@ -253,7 +248,7 @@ const rahul: TalentProfile = {
   primaryRole: "Music Producer",
   secondaryRoles: ["Mixing Engineer", "Keyboardist"],
   location: "Indiranagar, Bengaluru",
-  availability: "Available for Session Work",
+  availability: "Available",
   verification: "Industry Verified",
   privacy: "Public",
   yearsActive: "11 years active",

@@ -649,7 +649,12 @@ function productTypeOptions(taxonomy: GearTaxonomy) {
       ? { icon: instrumentIcon(t.slug) }
       : {
           iconNode: (
-            <MarketCategoryIcon slug={t.slug} size={iconSize.md} className="text-ink-foreground" />
+            // An equipment type is its own category; a DAW tool shows Software's icon.
+            <MarketCategoryIcon
+              slug={t.category}
+              size={iconSize.md}
+              className="text-ink-foreground"
+            />
           ),
         }),
   }));

@@ -54,7 +54,9 @@ function BandEvents() {
     );
   }
 
-  const gigs = dbOpportunities.filter((o) => o.kind === "Gig").slice(0, 4);
+  // No stored opportunity has ever carried a gig kind: it came from the hardcoded category list,
+  // retired with it (owner, 10 Oct 2026). Gigs show here once opportunities record one.
+  const gigs: typeof dbOpportunities = [];
 
   return (
     <Screen>

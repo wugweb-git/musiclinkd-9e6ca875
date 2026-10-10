@@ -148,14 +148,6 @@ export const sellers: Seller[] = [
   },
 ];
 
-export const marketCategories = [
-  { slug: "instruments", label: "Instruments", emoji: "🎸", count: "12,480" },
-  { slug: "audio-gear", label: "Audio Gear", emoji: "🎙", count: "8,205" },
-  { slug: "studio", label: "Studio", emoji: "🎛", count: "3,914" },
-  { slug: "rentals", label: "Rentals", emoji: "📦", count: "2,760" },
-  { slug: "spaces", label: "Spaces", emoji: "🏢", count: "1,208" },
-];
-
 export const subcategories: Record<string, string[]> = {
   instruments: [
     "Guitar",

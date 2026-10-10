@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { listOpportunities, type OpportunityRow } from "@/lib/catalog.functions";
+import { listOpportunities, taxonomyLabel, type OpportunityRow } from "@/lib/catalog.functions";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
 
 export type AiMatchResult =
@@ -21,9 +22,10 @@ export const findAiMatches = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ brief: z.string().trim().min(10).max(600) }).parse(d))
   .handler(async ({ data, context }): Promise<AiMatchResult> => {
     const { pickMatches, MatchError } = await import("./ai-match.server");
-    const [people, opps] = await Promise.all([
+    const [people, opps, labels] = await Promise.all([
       searchPeople({ data: { limit: 60, withTotal: false } }).then((r) => r.people),
       listOpportunities().catch((): OpportunityRow[] => []),
+      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
     ]);
     const others = people.filter((p) => p.id !== context.userId);
     const candidates = {
@@ -39,7 +41,8 @@ export const findAiMatches = createServerFn({ method: "POST" })
       opportunities: opps.slice(0, 40).map((o) => ({
         id: o.id,
         title: o.title,
-        role: o.role_required,
+        // The role's person-type label; older free-text rows as stored (owner, 10 Oct 2026).
+        role: o.role_required ? taxonomyLabel(labels, "person_types", o.role_required) : null,
         genres: o.genres,
         location: o.location,
       })),

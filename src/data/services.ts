@@ -66,17 +66,6 @@ export const pricingModelUnit: Record<PricingModel, string | undefined> = {
   custom: undefined,
 };
 
-export const serviceCategories = [
-  { key: "vocals", label: "Vocals", emoji: "🎤" },
-  { key: "mixing", label: "Mixing", emoji: "🎚️" },
-  { key: "mastering", label: "Mastering", emoji: "💿" },
-  { key: "production", label: "Production", emoji: "🎹" },
-  { key: "instrument", label: "Instrument", emoji: "🎸" },
-  { key: "songwriting", label: "Songwriting", emoji: "✍️" },
-  { key: "live", label: "Live", emoji: "🎫" },
-  { key: "studio", label: "Studio", emoji: "🏠" },
-];
-
 export const myServices: Service[] = [
   {
     id: "svc-1",
@@ -203,14 +192,6 @@ export const timeOff = [
   { id: "off-1", label: "Chennai session block", range: "12–16 Sep" },
   { id: "off-2", label: "Family holiday", range: "2–9 Oct" },
 ];
-
-export const availabilityStates = [
-  "Available now",
-  "Booking ahead",
-  "Selective",
-  "Not available",
-] as const;
-export type AvailabilityState = (typeof availabilityStates)[number];
 
 export const bookingWindows = ["Same day", "24 hours", "3 days", "1 week"];
 export const noticeDefault = "24 hours notice";

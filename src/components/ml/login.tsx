@@ -13,6 +13,7 @@ import {
   AuthSurface,
   Divider,
   EMAIL_PATTERN,
+  AppleIcon,
   GoogleIcon,
   PasswordInput,
   PasswordRequirements,
@@ -54,7 +55,7 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
   // Login only (owner, 4 Oct 2026): sign-up has neither Remember me nor Forgot Password.
   const [remember, setRemember] = useState(true);
   const [step, setStep] = useState<"email" | "password">("email");
-  const [busy, setBusy] = useState<"email" | "google" | "linkedin" | null>(null);
+  const [busy, setBusy] = useState<"email" | "google" | "apple" | "linkedin" | null>(null);
   // Only offer a way in that the server will actually accept. LinkedIn is offered the moment the
   // provider is switched on for the project, and hidden until then, so the button never fails —
   // it was on this screen while linkedin_oidc was off, and every tap ended in an error.
@@ -171,6 +172,25 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
     void navigate({ to: "/", replace: true });
   }
 
+  // Apple goes through Lovable's managed sign-in, like Google (owner, 10 Oct 2026).
+  async function apple() {
+    setBusy("apple");
+    setError(null);
+    const result = await lovable.auth.signInWithOAuth("apple", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setBusy(null);
+      setError({
+        title: "Apple sign-in didn't finish",
+        body: "Try again, or use your email and password.",
+      });
+      return;
+    }
+    if (result.redirected) return;
+    void navigate({ to: "/", replace: true });
+  }
+
   async function linkedin() {
     setBusy("linkedin");
     setError(null);
@@ -259,6 +279,17 @@ export function LoginScreen({ mode }: { mode: LoginMode }) {
                 <GoogleIcon />
               </span>
               Continue with Google
+            </Btn>
+            <Btn
+              variant="outline"
+              className={provider}
+              loading={busy === "apple"}
+              onClick={() => void apple()}
+            >
+              <span className="absolute left-3.5 flex items-center" aria-hidden>
+                <AppleIcon />
+              </span>
+              Continue with Apple
             </Btn>
             {showLinkedIn ? (
               <Btn

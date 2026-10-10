@@ -71,8 +71,6 @@ export const Badges: Story = {
       <VerificationBadge tier="Email Verified" />
       <VerificationBadge tier="Industry Verified" compact />
       <StatusBadge status="Available" />
-      <StatusBadge status="Busy" />
-      <StatusBadge status="Touring" />
     </div>
   ),
 };

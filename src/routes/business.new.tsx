@@ -139,6 +139,9 @@ function NewBusiness() {
   const [place, setPlace] = useState<MapsPlace | null>(null);
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
+  // How long the business has run, optional: the talent experience question's drawer, saved to
+  // profiles.experience_level (owner, 10 Oct 2026).
+  const [experience, setExperience] = useState<string | null>(null);
   // The @username, suggested from the name until the owner types their own.
   const [username, setUsername] = useState("");
   const [usernameTouched, setUsernameTouched] = useState(false);
@@ -166,6 +169,7 @@ function NewBusiness() {
         display_name?: string | null;
         username?: string | null;
         headline?: string | null;
+        experience_level?: string | null;
         city?: string | null;
         state?: string | null;
         pin_code?: string | null;
@@ -178,6 +182,7 @@ function NewBusiness() {
         setUsername(row.username ?? "");
         setUsernameTouched(true);
         setTagline(row.headline ?? "");
+        setExperience(row.experience_level ?? null);
         setCity(row.city ?? "");
         setState(row.state ?? "");
         setPinCode(row.pin_code ?? "");
@@ -261,6 +266,7 @@ function NewBusiness() {
           state,
           pinCode,
           ...(tagline.trim() ? { tagline } : {}),
+          ...(experience ? { experienceLevel: experience } : {}),
           ...(link ? { mapsUrl: link } : {}),
           languages,
           genres,
@@ -297,7 +303,13 @@ function NewBusiness() {
   const update = useMutation({
     mutationFn: async () => {
       if (step === "basics")
-        await persistProfile({ data: { display_name: name.trim(), headline: tagline || null } });
+        await persistProfile({
+          data: {
+            display_name: name.trim(),
+            headline: tagline || null,
+            experience_level: experience,
+          },
+        });
       if (step === "location") {
         await persistProfile({ data: { state, city: city.trim(), pin_code: pinCode || null } });
         await persistBusiness({ data: { maps_url: link } });
@@ -369,7 +381,7 @@ function NewBusiness() {
     genres: {
       group: "Genres",
       title: "Which genres do you serve?",
-      subtitle: "Choose all that apply.",
+      subtitle: "Pick up to three.",
       why: "",
     },
     policies: {
@@ -467,6 +479,15 @@ function NewBusiness() {
               maxLength={160}
               hint="Highlight what sets your facility or agency apart."
             />
+            <DrawerField label="How long has the business been running? (optional)">
+              <SheetSelect
+                title="How long has the business been running?"
+                value={experience}
+                options={choicesFor(tx.experience_levels)}
+                placeholder="Choose"
+                onChange={setExperience}
+              />
+            </DrawerField>
           </div>
         ) : step === "location" ? (
           <div className="space-y-5">
@@ -589,8 +610,16 @@ function NewBusiness() {
           <ChipPicker
             options={(tx.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}
             selected={genres}
+            // Up to three genres, as for talent (Notion Master Taxonomy; owner, 10 Oct 2026).
+            max={3}
             onToggle={(v) =>
-              setGenres(genres.includes(v) ? genres.filter((g) => g !== v) : [...genres, v])
+              setGenres(
+                genres.includes(v)
+                  ? genres.filter((g) => g !== v)
+                  : genres.length < 3
+                    ? [...genres, v]
+                    : genres,
+              )
             }
           />
         ) : step === "policies" ? (

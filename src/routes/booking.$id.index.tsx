@@ -248,7 +248,8 @@ function BookingEntry() {
 
       <StickyBar
         price={from === null ? undefined : `From ${inr(from)}`}
-        hint={[b.timezone, b.responseTime].filter(Boolean).join(" · ") || undefined}
+        // Response time is no longer shown anywhere (owner, 10 Oct 2026).
+        hint={b.timezone || undefined}
         primaryLabel="Book"
         onPrimary={() => navigate({ to: "/booking/$id/service", params: { id: b.id } })}
       />

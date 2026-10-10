@@ -169,18 +169,6 @@ export const workModes = [
   { key: "touring", label: "Touring", hint: "Happy to travel for work" },
 ];
 
-export const availabilityFor = [
-  "Shows",
-  "Session Work",
-  "Collaborations",
-  "Projects",
-  "Teaching",
-  "Recording",
-  "Production",
-  "Freelance Work",
-  "Touring",
-];
-
 export const intents = [
   "Find Collaborators",
   "Find Work",
@@ -314,7 +302,6 @@ export const citiesByState: Record<string, string[]> = {
   Puducherry: ["Puducherry"],
 };
 
-/* Role-adaptive specialisation sets. */
 /*
  * Older names the location edge still reports, mapped to the spelling `citiesByState` lists.
  * Lives here so the city list and the names for it are one thing to keep in step.
@@ -328,88 +315,6 @@ export const cityAliases: Record<string, string> = {
   calcutta: "kolkata",
   madras: "chennai",
   delhi: "new delhi",
-};
-
-export const specialisationByRole: Record<
-  string,
-  { title: string; groups: { label: string; options: string[] }[] }
-> = {
-  singer: {
-    title: "How do you sing?",
-    groups: [
-      { label: "Vocal type", options: ["Male", "Female", "Baritone", "Tenor", "Soprano", "Alto"] },
-      { label: "Vocal range", options: ["Low", "Mid", "High", "Wide range"] },
-      {
-        label: "Performance type",
-        options: ["Playback", "Live shows", "Studio sessions", "Backing vocals", "Jingles"],
-      },
-    ],
-  },
-  musician: {
-    title: "How do you play professionally?",
-    groups: [
-      {
-        label: "Work type",
-        options: ["Session work", "Live performance", "Touring band", "Studio recording"],
-      },
-      {
-        label: "Strengths",
-        options: ["Sight reading", "Improvisation", "Arrangement", "Programming"],
-      },
-    ],
-  },
-  producer: {
-    title: "What do you produce?",
-    groups: [
-      {
-        label: "Production",
-        options: ["Full production", "Arrangement", "Beat making", "Topline", "Remixing"],
-      },
-      {
-        label: "Tools",
-        options: ["Ableton Live", "Logic Pro", "FL Studio", "Pro Tools", "Cubase", "Reaper"],
-      },
-    ],
-  },
-  composer: {
-    title: "What do you compose for?",
-    groups: [
-      {
-        label: "Composition type",
-        options: ["Film", "Advertising", "Background score", "Series", "Games", "Independent"],
-      },
-    ],
-  },
-  sound_engineer: {
-    title: "What's your engineering focus?",
-    groups: [
-      {
-        label: "Discipline",
-        options: ["Recording", "Mixing", "Mastering", "Live sound", "Post production"],
-      },
-      {
-        label: "Tools",
-        options: ["Pro Tools", "Logic Pro", "Nuendo", "Ableton Live", "Analog console"],
-      },
-    ],
-  },
-  dj: {
-    title: "Where do you play?",
-    groups: [
-      {
-        label: "Event types",
-        options: ["Clubs", "Weddings", "Corporate", "Festivals", "Private parties"],
-      },
-      { label: "Setup", options: ["Own CDJs", "Own controller", "Own PA", "Venue gear only"] },
-    ],
-  },
-  music_teacher: {
-    title: "What do you teach?",
-    groups: [
-      { label: "Format", options: ["One to one", "Group classes", "Online", "At student's place"] },
-      { label: "Level", options: ["Beginner", "Intermediate", "Advanced", "Exam prep"] },
-    ],
-  },
 };
 
 /* ------------------------------------------------------------------ */
@@ -438,6 +343,7 @@ export type OnboardingDraft = {
   intents: string[]; // PROPOSED preferences.intents
   experience: string | null; // EXISTING professionalProfiles.experienceLevel (highest per-instrument level when instruments are set)
   instrumentExperience: Record<string, string>; // PROPOSED instrument slug → experienceLevels key
+  headline: string; // EXISTING profiles.headline — asked on About you, optional (owner, 10 Oct 2026)
   bio: string; // EXISTING
   links: Record<string, string>; // EXISTING profileLinks
   contact: string[]; // EXISTING preferences.contactChannels
@@ -469,6 +375,7 @@ export const emptyDraft: OnboardingDraft = {
   intents: [],
   experience: null,
   instrumentExperience: {},
+  headline: "",
   bio: "",
   links: {},
   contact: ["messages"],
@@ -552,7 +459,7 @@ export const steps: StepDef[] = [
     id: "genres",
     group: "Music",
     title: "Which genres do you work in?",
-    subtitle: "Choose all that apply.",
+    subtitle: "Pick up to three.",
     why: "Genres drive your recommendations and who gets matched with you.",
     optional: true,
     contract: contract("ONB-08", "Genres", "/setup/genres", ["taxonomy_options"], ["genre"]),

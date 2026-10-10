@@ -6,7 +6,6 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  Clock,
   MapPin,
   Star,
   AlertTriangle,
@@ -168,11 +167,7 @@ export function EntityMetaRow({ b }: { b: Bookable }) {
           <MapPin size={iconSize.xs} /> {where}
         </span>
       ) : null}
-      {b.responseTime ? (
-        <span className="inline-flex items-center gap-1">
-          <Clock size={iconSize.xs} /> {b.responseTime}
-        </span>
-      ) : null}
+      {/* Response time is no longer shown anywhere (owner, 10 Oct 2026). */}
     </div>
   );
 }

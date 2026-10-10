@@ -3,15 +3,35 @@ import { supabase } from "@/integrations/supabase/client";
 
 /*
  * Market's categories and product types come from the taxonomy (taxonomy_options), not from code:
- * the instruments list (each with a metadata.family) and equipment_categories. A listing stores
- * its product type's slug in item_category and the kind (instrument or equipment) beside it.
+ * a listing's category is the tool being listed (owner, 10 Oct 2026) — an instrument (each with a
+ * metadata.family), production hardware (equipment_categories) or software (daw_tools). A listing
+ * stores its product type's slug in item_category and the kind (instrument or equipment) beside
+ * it; software is stored as equipment, the kinds the column's check allows.
  *
- * Categories are the instrument families (Guitars, Keys, Percussion…) followed by the equipment
- * categories (Microphones, Audio Interfaces…). An instrument's category is its family; an equipment
- * category is its own product type.
+ * Categories are the instrument families (Guitars, Keys, Percussion…), then the equipment
+ * categories (Microphones, Audio Interfaces…), then Software. An instrument's category is its
+ * family; an equipment category is its own product type; every DAW tool sits under Software.
  */
 
 export type GearKind = "instrument" | "equipment";
+
+/** The three Tools lists a listing's category comes from, in label-lookup order. */
+export const TOOL_LISTS = ["instruments", "equipment_categories", "daw_tools"] as const;
+
+/**
+ * A stored item_category → its label from whichever Tools list holds it, else the stored value, so
+ * listings saved under a retired category still show what they were saved as.
+ */
+export function toolLabel(
+  labels: Record<string, Record<string, string>> | undefined,
+  slug: string,
+): string {
+  for (const list of TOOL_LISTS) {
+    const label = labels?.[list]?.[slug];
+    if (label) return label;
+  }
+  return slug;
+}
 
 export type GearType = { slug: string; label: string; kind: GearKind; category: string };
 export type GearCategory = { slug: string; label: string; kind: GearKind };
@@ -45,7 +65,7 @@ export const popularCategories = [
 ];
 
 type Row = {
-  category_key: "instruments" | "equipment_categories";
+  category_key: (typeof TOOL_LISTS)[number];
   slug: string;
   label: string;
   metadata: { family?: string } | null;
@@ -55,7 +75,7 @@ let cached: Promise<GearTaxonomy> | null = null;
 let loadedAt = 0;
 const TTL_MS = 5 * 60 * 1000;
 
-/** Published instruments and equipment categories, as product types and categories. Cached. */
+/** Published instruments, equipment categories and DAW tools, as product types and categories. Cached. */
 export function loadGearTaxonomy(): Promise<GearTaxonomy> {
   if (!cached || Date.now() - loadedAt > TTL_MS) {
     loadedAt = Date.now();
@@ -76,7 +96,7 @@ export function loadGearTaxonomy(): Promise<GearTaxonomy> {
     };
     cached = query
       .select("category_key,slug,label,metadata")
-      .in("category_key", ["instruments", "equipment_categories"])
+      .in("category_key", [...TOOL_LISTS])
       .eq("is_published", true)
       .order("sort_order")
       .then(({ data, error }) => {
@@ -92,7 +112,12 @@ export function loadGearTaxonomy(): Promise<GearTaxonomy> {
                   r.metadata?.family ??
                   "other_instruments",
               }
-            : { slug: r.slug, label: r.label, kind: "equipment" as const, category: r.slug },
+            : {
+                slug: r.slug,
+                label: r.label,
+                kind: "equipment" as const,
+                category: r.category_key === "daw_tools" ? "software" : r.slug,
+              },
         );
         const families = [
           ...new Set(types.filter((t) => t.kind === "instrument").map((t) => t.category)),
@@ -104,8 +129,11 @@ export function loadGearTaxonomy(): Promise<GearTaxonomy> {
             kind: "instrument" as const,
           })),
           ...types
-            .filter((t) => t.kind === "equipment")
+            .filter((t) => t.kind === "equipment" && t.category === t.slug)
             .map((t) => ({ slug: t.slug, label: t.label, kind: "equipment" as const })),
+          ...(types.some((t) => t.category === "software")
+            ? [{ slug: "software", label: "Software", kind: "equipment" as const }]
+            : []),
         ];
         return { types, categories };
       })

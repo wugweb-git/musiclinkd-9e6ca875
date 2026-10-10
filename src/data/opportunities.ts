@@ -9,51 +9,27 @@
 import { inr, type PriceParts } from "@/lib/price";
 import { unsplash } from "./unsplash";
 
-export type OpportunityKind =
-  "Person" | "Gig" | "Project" | "Studio" | "Venue" | "Equipment" | "Collaborator";
-
 export type OpportunityStatus = "open" | "reviewing" | "closed" | "draft" | "filled";
 
 export type ApplicationStatus =
   "draft" | "submitted" | "viewed" | "shortlisted" | "accepted" | "rejected" | "withdrawn";
 
-export type OpportunityCategory = {
-  key: string;
-  label: string;
-  kind: OpportunityKind;
-  emoji: string;
-  count: number;
-};
-
-export const opportunityCategories: OpportunityCategory[] = [
-  { key: "singer", label: "Singer", kind: "Person", emoji: "🎤", count: 42 },
-  { key: "guitarist", label: "Guitarist", kind: "Person", emoji: "🎸", count: 28 },
-  { key: "producer", label: "Producer", kind: "Person", emoji: "🎛", count: 35 },
-  { key: "composer", label: "Composer", kind: "Person", emoji: "🎼", count: 12 },
-  { key: "lyricist", label: "Lyricist", kind: "Person", emoji: "✍️", count: 9 },
-  { key: "mixing", label: "Mixing engineer", kind: "Person", emoji: "🎚", count: 17 },
-  { key: "mastering", label: "Mastering engineer", kind: "Person", emoji: "📀", count: 8 },
-  { key: "session", label: "Session musician", kind: "Person", emoji: "🥁", count: 21 },
-  { key: "dj", label: "DJ", kind: "Person", emoji: "🎧", count: 14 },
-  { key: "sound", label: "Sound engineer", kind: "Person", emoji: "🔊", count: 11 },
-  { key: "studio", label: "Studio", kind: "Studio", emoji: "🏠", count: 19 },
-  { key: "venue", label: "Venue", kind: "Venue", emoji: "🎪", count: 7 },
-  { key: "equipment", label: "Equipment", kind: "Equipment", emoji: "🎹", count: 6 },
-  { key: "bandmember", label: "Band member", kind: "Collaborator", emoji: "🤝", count: 16 },
-  { key: "collab", label: "Collaborator", kind: "Collaborator", emoji: "✨", count: 23 },
-  { key: "gig", label: "Gig", kind: "Gig", emoji: "🎫", count: 31 },
-  { key: "recording", label: "Recording project", kind: "Project", emoji: "🎙", count: 25 },
-  { key: "film", label: "Film", kind: "Project", emoji: "🎬", count: 10 },
-  { key: "podcast", label: "Podcast production", kind: "Project", emoji: "🎚", count: 5 },
-  { key: "event", label: "Event requirement", kind: "Gig", emoji: "📅", count: 13 },
-];
-
 export type Opportunity = {
   /** opportunity.id */
   id: string;
   title: string;
-  categoryKey: string;
-  kind: OpportunityKind;
+  /**
+   * opportunities.role_required as stored: a person-type slug, or free text on older rows. Roles
+   * come from taxonomy person_types, not a hardcoded list (owner, 10 Oct 2026).
+   */
+  roleKey: string;
+  /** The role's person-type label, else the stored text. */
+  role: string;
+  /**
+   * "Person" when the role is one person type; "Collaborator" when it is free text or empty —
+   * the open requests Discover's Projects lists.
+   */
+  kind: "Person" | "Collaborator";
   status: OpportunityStatus;
   /** poster is a profile or business_profile */
   poster: {
@@ -106,7 +82,8 @@ export const opportunities: Opportunity[] = [
   {
     id: "op-1",
     title: "Female playback singer for indie-pop single",
-    categoryKey: "singer",
+    roleKey: "singer",
+    role: "Singer",
     kind: "Person",
     status: "open",
     poster: {
@@ -154,7 +131,8 @@ export const opportunities: Opportunity[] = [
   {
     id: "op-2",
     title: "Mixing engineer — 6-track alt-rock EP",
-    categoryKey: "mixing",
+    roleKey: "mixing",
+    role: "Mixing Engineer",
     kind: "Person",
     status: "open",
     poster: {
@@ -196,8 +174,9 @@ export const opportunities: Opportunity[] = [
   {
     id: "op-3",
     title: "Session drummer for 2-night club run",
-    categoryKey: "session",
-    kind: "Gig",
+    roleKey: "session",
+    role: "Session Musician",
+    kind: "Person",
     status: "open",
     poster: {
       id: "biz-antisocial",
@@ -237,8 +216,9 @@ export const opportunities: Opportunity[] = [
   {
     id: "op-4",
     title: "Recording studio needed — 3 days, live tracking",
-    categoryKey: "studio",
-    kind: "Studio",
+    roleKey: "studio",
+    role: "Recording Studio",
+    kind: "Person",
     status: "open",
     poster: {
       id: "usr-meera",
@@ -279,8 +259,9 @@ export const opportunities: Opportunity[] = [
   {
     id: "op-5",
     title: "Lyricist — Hindi, brand film for a sneaker launch",
-    categoryKey: "lyricist",
-    kind: "Project",
+    roleKey: "lyricist",
+    role: "Lyricist",
+    kind: "Person",
     status: "open",
     poster: {
       id: "biz-northlight",
@@ -321,10 +302,6 @@ export const opportunities: Opportunity[] = [
 
 export function getOpportunity(id: string) {
   return opportunities.find((o) => o.id === id);
-}
-
-export function categoryLabel(key: string) {
-  return opportunityCategories.find((c) => c.key === key)?.label ?? key;
 }
 
 /** The pay as amount ("₹25,000–₹40,000"), unit ("song") and note; null when nothing is known. */

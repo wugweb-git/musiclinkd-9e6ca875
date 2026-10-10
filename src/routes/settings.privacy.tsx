@@ -23,12 +23,7 @@ import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { SoonBadge, Switch } from "@/components/ml/kit";
 import { ChipPicker, OptionList } from "@/components/ml/onboarding";
 import { privacyControls } from "@/data/settings";
-import {
-  availabilityFor,
-  contactChannels,
-  intents as intentOptions,
-  workModes,
-} from "@/data/onboarding";
+import { contactChannels, intents as intentOptions, workModes } from "@/data/onboarding";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { exportMyData } from "@/lib/account.functions";
 import { iconSize } from "@/lib/tokens";
@@ -106,9 +101,7 @@ function PrivacyScreen() {
         contact_channels?: string[] | null;
         work_modes?: string[] | null;
         intents?: string[] | null;
-        // "Available for" has no array column yet; it rides in `availability` (text) as a
-        // comma-joined list. Lossy only in that empty entries can't round-trip — fine here,
-        // since availabilityFor labels never contain commas.
+        // "Available" or null: the one "Open to work" switch (owner, 10 Oct 2026).
         availability?: string | null;
       }
     | null
@@ -121,9 +114,9 @@ function PrivacyScreen() {
   // Three more, each a multi-select drawer, each saving straight to its own column on tap.
   const [reach, setReach] = useState<string[]>([]);
   const [modes, setModes] = useState<string[]>([]);
-  const [availableFor, setAvailableFor] = useState<string[]>([]);
+  const [openToWork, setOpenToWork] = useState(false);
   const [myIntents, setMyIntents] = useState<string[]>([]);
-  const [drawer, setDrawer] = useState<"reach" | "modes" | "available" | "intents" | null>(null);
+  const [drawer, setDrawer] = useState<"reach" | "modes" | "intents" | null>(null);
   // Read after mount so the server render and the first client render agree; storage is per device.
   const [analyticsOn, setAnalyticsOn] = useState(false);
   useEffect(() => setAnalyticsOn(analyticsConsent()), []);
@@ -133,7 +126,7 @@ function PrivacyScreen() {
     if (!row) return;
     setReach(row.contact_channels ?? []);
     setModes(row.work_modes ?? []);
-    setAvailableFor((row.availability ?? "").split(", ").filter(Boolean));
+    setOpenToWork(row.availability === "Available");
     setMyIntents(row.intents ?? []);
     setValues((v) => ({
       ...v,
@@ -195,12 +188,6 @@ function PrivacyScreen() {
       icon: Briefcase,
       label: "Where you work",
       hint: summarise(modes, (k) => workModes.find((w) => w.key === k)?.label ?? k),
-    },
-    {
-      key: "available" as const,
-      icon: Calendar,
-      label: "Available for",
-      hint: summarise(availableFor, (v) => v),
     },
   ];
 
@@ -321,6 +308,22 @@ function PrivacyScreen() {
                 </button>
               </li>
             ))}
+            {/* Availability is one switch, "Available" or nothing; the old "Available for" list
+                is retired (owner, 10 Oct 2026). */}
+            <li className="flex min-h-touch items-center gap-3 px-4 py-3.5">
+              <span className="flex h-10 w-7 shrink-0 items-center justify-center">
+                <Calendar size={24} aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1 text-2 font-semibold">Open to work</span>
+              <Switch
+                label="Open to work"
+                checked={openToWork}
+                onChange={(on) => {
+                  setOpenToWork(on);
+                  void saveMulti({ availability: on ? "Available" : null });
+                }}
+              />
+            </li>
           </ul>
         </section>
 
@@ -404,18 +407,6 @@ function PrivacyScreen() {
             const next = toggleIn(modes, k);
             setModes(next);
             void saveMulti({ work_modes: next });
-          }}
-        />
-      </Sheet>
-
-      <Sheet open={drawer === "available"} onClose={() => setDrawer(null)} title="Available for">
-        <ChipPicker
-          options={availabilityFor}
-          selected={availableFor}
-          onToggle={(v) => {
-            const next = toggleIn(availableFor, v);
-            setAvailableFor(next);
-            void saveMulti({ availability: next.join(", ") });
           }}
         />
       </Sheet>

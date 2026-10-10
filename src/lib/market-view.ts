@@ -1,17 +1,16 @@
 import { subcategories, type Listing, type ListingType } from "@/data/market";
 import type { RentalCategory, RentalItem } from "@/data/rentals";
-import {
-  getListing,
-  listListings,
-  listMyListings,
-  taxonomyLabel,
-  type ListingRow,
-} from "@/lib/catalog.functions";
+import { getListing, listListings, listMyListings, type ListingRow } from "@/lib/catalog.functions";
 import { priceParts } from "@/lib/price";
 import { getRentalBookingCounts } from "@/lib/rentals.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { parsePlace, sameCity, samePinArea, shownPlace } from "@/lib/place";
-import { gearCategoryOf, loadGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
+import {
+  gearCategoryOf,
+  loadGearTaxonomy,
+  toolLabel,
+  type GearTaxonomy,
+} from "@/lib/listing-category";
 
 /*
  * Database marketplace listings shaped as the static `Listing` the market screens render.
@@ -45,6 +44,11 @@ const SUBCATEGORIES: Record<string, string> = {
 
 const AUDIO_GEAR = new Set(["microphones", "audio_interfaces", "studio_monitors"]);
 
+/*
+ * A listing's category is the tool listed — instruments, equipment_categories or daw_tools — not
+ * the retired marketplace_categories list (owner, 10 Oct 2026). A value no list holds shows as
+ * stored.
+ */
 function categoryOf(row: ListingRow, labels: TaxonomyLabels) {
   if (row.category === "gear_rental") return "rentals";
   if (TYPES[row.category] === "service") return "services";
@@ -52,17 +56,13 @@ function categoryOf(row: ListingRow, labels: TaxonomyLabels) {
     if (row.item_category_kind === "instrument") return "instruments";
     if (row.item_category && AUDIO_GEAR.has(row.item_category)) return "audio-gear";
   }
-  return taxonomyLabel(labels, "marketplace_categories", row.category);
+  return row.item_category ? toolLabel(labels, row.item_category) : row.category;
 }
 
 function subcategoryOf(row: ListingRow, category: string, labels: TaxonomyLabels) {
   const mapped = row.item_category ? SUBCATEGORIES[row.item_category] : undefined;
   if (mapped && subcategories[category]?.includes(mapped)) return mapped;
-  if (row.item_category) {
-    const key = row.item_category_kind === "instrument" ? "instruments" : "equipment_categories";
-    return taxonomyLabel(labels, key, row.item_category);
-  }
-  return taxonomyLabel(labels, "marketplace_categories", row.category);
+  return row.item_category ? toolLabel(labels, row.item_category) : row.category;
 }
 
 /** Same wording as the static listings: "5 hours ago", "2 days ago". */
@@ -254,11 +254,7 @@ export function rentalFromRow(row: ListingRow, labels: TaxonomyLabels): RentalIt
   const subcategory = mapped
     ? mapped.subcategory
     : row.item_category
-      ? taxonomyLabel(
-          labels,
-          row.item_category_kind === "instrument" ? "instruments" : "equipment_categories",
-          row.item_category,
-        )
+      ? toolLabel(labels, row.item_category)
       : undefined;
   const condition = row.condition ? CONDITIONS[row.condition] : undefined;
   const owner = ownerOf(row);
