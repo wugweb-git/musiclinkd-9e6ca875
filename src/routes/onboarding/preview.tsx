@@ -70,10 +70,10 @@ function DetailRow({
 }
 
 function Preview() {
-  const { draft: d, bucket } = useOnboarding();
+  const { draft: d } = useOnboarding();
   const navigate = useNavigate();
   const tx = useTaxonomy().options;
-  const list = visibleSteps(d, bucket);
+  const list = visibleSteps(d);
   const edit = (id: string) => navigate({ to: "/setup/$step", params: { step: id } });
 
   // The real profile header, built from these answers the way the profile page builds it.

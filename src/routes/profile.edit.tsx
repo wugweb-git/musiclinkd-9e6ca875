@@ -5,6 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { Camera, Check, ChevronDown, ChevronRight, Pencil, RefreshCw, Save } from "lucide-react";
 import { ActionBar, Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { Switch } from "@/components/ml/kit";
+import { cn } from "@/lib/utils";
+import { steps as setupSteps } from "@/data/onboarding";
 import { ImagePickButton } from "@/components/ml/profile";
 import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
 import {
@@ -482,6 +484,51 @@ function EditProfile() {
     body: ReactElement;
   }[] = [
     {
+      id: "photos",
+      label: "Photos",
+      detail: "Profile photo and cover",
+      done: Boolean(row?.avatar_url),
+      body: (
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div
+                className="h-16 w-16 rounded-full bg-subtle bg-cover bg-center"
+                style={row?.avatar_url ? { backgroundImage: `url(${row.avatar_url})` } : undefined}
+                aria-hidden
+              />
+              <ImagePickButton
+                kind="avatar"
+                label="Change profile photo"
+                className="absolute -bottom-1 -right-1 h-8 w-8 border border-border bg-card text-foreground"
+                onPick={pickImage}
+              >
+                <Camera size={iconSize.sm} aria-hidden />
+              </ImagePickButton>
+            </div>
+            <div className="relative h-16 flex-1 overflow-hidden rounded-lg bg-subtle">
+              {row?.cover_url ? (
+                <img
+                  src={sized(row.cover_url, { width: 412 })}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : null}
+              <ImagePickButton
+                kind="cover"
+                label="Change cover photo"
+                className="absolute right-2 top-2 h-8 w-8 bg-card/90 text-foreground"
+                onPick={pickImage}
+              >
+                <Pencil size={iconSize.sm} aria-hidden />
+              </ImagePickButton>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
       id: "identity",
       label: "Identity",
       detail: "Name, headline, bio",
@@ -875,6 +922,137 @@ function EditProfile() {
     },
   ];
 
+  /*
+   * Edit profile is the way back to the setup screens (owner, 10 Oct 2026): one row per screen, in
+   * setup order, for every account type; the same screens in their edit state. Screens with no
+   * setup counterpart (photos, role details, a studio's amenities) open on their own here.
+   */
+  const solo = sections.find((sct) => sct.id === openSection && OWN_SECTIONS.includes(sct.id));
+  if (solo) {
+    return (
+      <Screen>
+        <TopBar title={solo.label} back="/profile/edit" />
+        <main className="px-5 pb-40 pt-5">{solo.body}</main>
+        <ActionBar className="space-y-2">
+          {status === "error" ? (
+            <p role="alert" className="text-1 text-destructive">
+              Couldn't save. Your edits are still here — try again.
+            </p>
+          ) : null}
+          <Btn
+            className="w-full"
+            icon={<Check size={iconSize.md} />}
+            onClick={() => void save().then(() => navigate({ to: "/profile/edit" }))}
+            disabled={status === "saving"}
+          >
+            {status === "saving" ? "Saving…" : "Save"}
+          </Btn>
+        </ActionBar>
+      </Screen>
+    );
+  }
+  const names = (cat: keyof NonNullable<typeof taxonomy>, list: string[]) =>
+    list.map((v) => labelFor(taxonomy?.[cat] as never, v));
+  const rows: { key: string; label: string; values: string[]; link: EditLink }[] = isBusiness
+    ? [
+        {
+          key: "type",
+          label: "Business type",
+          values: names("person_types", form.roles.slice(0, 1)),
+          link: {
+            to: "/setup/$step",
+            params: { step: "role" },
+            search: { persona: "business", from: "edit" },
+          },
+        },
+        {
+          key: "basics",
+          label: "Name and tagline",
+          values: [form.first_name, form.headline].filter(Boolean),
+          link: { to: "/business/new", search: { step: "basics", from: "edit" } },
+        },
+        {
+          key: "location",
+          label: "Location",
+          values: [labelFor(taxonomy?.cities, form.city), form.pin_code].filter(Boolean),
+          link: { to: "/business/new", search: { step: "location", from: "edit" } },
+        },
+        {
+          key: "languages",
+          label: "Languages",
+          values: names("languages", form.languages),
+          link: { to: "/business/new", search: { step: "languages", from: "edit" } },
+        },
+        {
+          key: "genres",
+          label: "Genres",
+          values: names("genres", form.genres),
+          link: { to: "/business/new", search: { step: "genres", from: "edit" } },
+        },
+        {
+          key: "policies",
+          label: "Policies",
+          values: policies.filter(Boolean),
+          link: { to: "/business/new", search: { step: "policies", from: "edit" } },
+        },
+      ]
+    : setupSteps.map((st) => ({
+        key: st.id,
+        label: EDIT_LABELS[st.id] ?? st.title,
+        values:
+          {
+            role: names("person_types", form.roles),
+            identity: [
+              [form.first_name, form.last_name].filter(Boolean).join(" "),
+              labelFor(taxonomy?.cities, form.city),
+            ].filter(Boolean),
+            instruments: names("instruments", form.instruments),
+            languages: names("languages", form.languages),
+            genres: names("genres", form.genres),
+            "work-mode": [
+              ...names("work_modes", form.work_modes),
+              ...(form.availability ? ["Open to work"] : []),
+            ],
+            intent: names("intents", row?.intents ?? []),
+            contact: Object.entries(form.links)
+              .filter(([, v]) => v)
+              .map(([k]) => k),
+          }[st.id] ?? [],
+        link: { to: "/setup/$step", params: { step: st.id }, search: { from: "edit" } },
+      }));
+  const own = sections.filter((sct) => OWN_SECTIONS.includes(sct.id));
+  return (
+    <Screen>
+      <TopBar title="Edit profile" back="/profile" />
+      <main className="space-y-4 px-5 pb-16 pt-5">
+        {gaps.missing.length ? <ProfileCompletion gaps={gaps} /> : null}
+        {/* One list, the earlier card style (owner, 10 Oct 2026): a done mark, the row, its answer. */}
+        <div className="space-y-2.5">
+          {[
+            ...own.map((sct) => ({
+              key: sct.id,
+              label: sct.label,
+              values: [] as string[],
+              detail: sct.detail,
+              done: sct.done,
+              link: { to: "/profile/edit", search: { section: sct.id } } as EditLink,
+            })),
+            ...rows.map((r) => ({ ...r, detail: "", done: r.values.length > 0 })),
+          ].map((r) => (
+            <EditRow
+              key={r.key}
+              label={r.label}
+              values={r.values}
+              detail={r.detail}
+              done={r.done}
+              link={r.link}
+            />
+          ))}
+        </div>
+      </main>
+    </Screen>
+  );
+
   return (
     <Screen>
       <TopBar title="Edit profile" subtitle={`${gaps.percent}% complete`} back="/profile" />
@@ -1123,22 +1301,75 @@ function ExperienceEditor({
   );
 }
 
-/** A row that opens an onboarding question to edit it (owner, 10 Oct 2026), with the answer now. */
+/** Edit profile's rows for talent: one per setup screen, labelled for editing. */
+const EDIT_LABELS: Record<string, string> = {
+  role: "Roles",
+  identity: "About you",
+  instruments: "Instruments",
+  languages: "Languages",
+  genres: "Genres",
+  "work-mode": "How you work",
+  intent: "Goals",
+  contact: "Links and visibility",
+};
+/** Sections with no setup screen; each opens on its own from Edit profile. */
+const OWN_SECTIONS: string[] = ["photos", "details", "amenities"];
+
+type EditLink =
+  | { to: "/setup/$step"; params: { step: string }; search: { from: "edit"; persona?: "business" } }
+  | {
+      to: "/business/new";
+      search: { step: "basics" | "location" | "languages" | "genres" | "policies"; from: "edit" };
+    }
+  | { to: "/profile/edit"; search: { section: string } };
+
+/** A row inside a section that opens a setup screen in its edit state. */
 function EditStepRow({ step, label, values }: { step: string; label: string; values: string[] }) {
   return (
+    <EditRow
+      label={label}
+      values={values}
+      link={{ to: "/setup/$step", params: { step }, search: { from: "edit" } }}
+    />
+  );
+}
+
+/** One Edit profile row, as a card: a done mark, the row, the answer now (or what it holds). */
+function EditRow({
+  label,
+  values,
+  link,
+  detail = "",
+  done,
+}: {
+  label: string;
+  values: string[];
+  link: EditLink;
+  detail?: string | undefined;
+  done?: boolean | undefined;
+}) {
+  const set = done ?? values.length > 0;
+  return (
     <Link
-      to="/setup/$step"
-      params={{ step: step }}
-      search={{ from: "edit" }}
-      className="state-layer flex min-h-touch items-center gap-3 px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      {...(link as unknown as { to: "/profile/edit" })}
+      className="state-layer flex min-h-[72px] items-center gap-3 rounded-lg border border-border bg-card px-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
+      <span
+        aria-hidden
+        className={cn(
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+          set ? "bg-foreground text-background" : "border border-border bg-subtle text-foreground",
+        )}
+      >
+        {set ? <Check size={iconSize.sm} /> : <span className="text-1 font-bold">•</span>}
+      </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium text-foreground">{label}</span>
-        <span className="block truncate text-1 text-muted-foreground">
-          {values.length ? values.join(", ") : "Not set"}
+        <span className="block text-sm font-bold text-foreground">{label}</span>
+        <span className="mt-0.5 block truncate text-1 font-medium text-muted-foreground">
+          {values.length ? values.join(", ") : detail || "Not set"}
         </span>
       </span>
-      <ChevronRight size={iconSize.sm} aria-hidden className="shrink-0 text-muted-foreground" />
+      <ChevronRight size={iconSize.sm} aria-hidden className="shrink-0 text-foreground" />
     </Link>
   );
 }

@@ -3,9 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 /*
  * Selection options for roles, instruments, genres and languages live in the database
- * (taxonomy_options, published rows only) and profiles store their slugs. Instruments and genres
- * come from persona_bucket, which narrows them to the person's roles and languages and caps each at
- * 12 per screen. Spec: Claude outputs/specs/PERSONA-BUCKET.md in the guide repo.
+ * (taxonomy_options, published rows only) and profiles store their slugs. One list per category
+ * for every persona (owner, 10 Oct 2026: persona_bucket retired).
  *
  * The generated Supabase types predate these tables, hence the casts at the two call sites.
  */
@@ -67,8 +66,6 @@ export type TaxonomyOption = {
     picker?: boolean;
   } | null;
 };
-
-export type PersonaBucket = { instruments: TaxonomyOption[]; genres: TaxonomyOption[] };
 
 type OptionRow = {
   category_key: TaxonomyCategory;
@@ -198,36 +195,4 @@ export function choicesFor(options: TaxonomyOption[] | undefined) {
  */
 export function labelFor(options: TaxonomyOption[] | undefined, value: string): string {
   return options?.find((o) => o.slug === value || o.metadata?.app_key === value)?.label ?? value;
-}
-
-/**
- * Instruments and genres for this person. An empty instruments list means the step is skipped.
- * Returns null until the first answer arrives, and when there is no primary role yet.
- */
-export async function loadPersonaBucket(
-  primary: string,
-  secondary: string[],
-  languages: string[],
-): Promise<PersonaBucket> {
-  const rpc = supabase.rpc as unknown as (
-    fn: string,
-    args: Record<string, unknown>,
-  ) => Promise<{
-    data: { category_key: string; slug: string; label: string; display_order: number }[] | null;
-    error: Error | null;
-  }>;
-  const { data, error } = await rpc.call(supabase, "persona_bucket", {
-    p_primary: primary,
-    // The function rejects more than two secondaries and any repeat of the primary.
-    p_secondary: secondary.filter((s) => s !== primary).slice(0, 2),
-    p_languages: languages,
-    p_limit: 12,
-  });
-  if (error || !data) throw error ?? new Error("No bucket returned");
-  const pick = (key: string) =>
-    data
-      .filter((r) => r.category_key === key)
-      .sort((a, b) => a.display_order - b.display_order)
-      .map((r) => ({ slug: r.slug, label: r.label, sortOrder: r.display_order, metadata: null }));
-  return { instruments: pick("instruments"), genres: pick("genres") };
 }

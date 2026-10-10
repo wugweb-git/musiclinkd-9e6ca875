@@ -18,8 +18,14 @@ import {
   StepSkeleton,
 } from "@/components/ml/onboarding";
 import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
-import { createMyBusiness } from "@/lib/profile-groups.functions";
-import { AmenitiesEditor, EquipmentEditor, PoliciesEditor } from "@/components/ml/bookable-setup";
+import { createMyBusiness, getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
+import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
+import {
+  AmenitiesEditor,
+  EquipmentEditor,
+  MAX_POLICIES,
+  PoliciesEditor,
+} from "@/components/ml/bookable-setup";
 import { enterLinkedProfile } from "@/lib/pages.functions";
 import { readMapsLink, type MapsPlace } from "@/lib/maps-link.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
@@ -42,9 +48,10 @@ const steps = [
   "type",
   "basics",
   "location",
-  "offer",
+  // The same Languages and Genres screens as talent (owner, 10 Oct 2026), in talent's order.
+  "languages",
+  "genres",
   "policies",
-  "review",
   // After Create, for studios: these need the studio to exist, since photos belong to it.
   "amenities",
   "equipment",
@@ -53,17 +60,25 @@ const AFTER_CREATE: readonly Step[] = ["amenities", "equipment"];
 type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/business/new")({
-  validateSearch: (search: Record<string, unknown>): { step: Step; type?: string } => ({
+  // `from=edit`: opened from Edit profile; the step loads the saved business, Save returns there.
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { step: Step; type?: string; from?: "edit" } => ({
     step: (steps.includes(search["step"] as Step) ? search["step"] : "type") as Step,
     ...(typeof search["type"] === "string" && search["type"] ? { type: search["type"] } : {}),
+    ...(search["from"] === "edit" ? { from: "edit" as const } : {}),
   }),
   // Step 1, the type, is the shared role screen (owner, 10 Oct 2026): one screen for every account.
   beforeLoad: ({ search }) => {
-    if (search.step === "type" || !search.type)
+    if (search.step === "type" || (!search.type && search.from !== "edit"))
       throw redirect({
         to: "/setup/$step",
         params: { step: "role" },
-        search: { as: "business", ...(search.type ? { type: search.type } : {}) },
+        search: {
+          persona: "business",
+          ...(search.type ? { type: search.type } : {}),
+          ...(search.from ? { from: search.from } : {}),
+        },
         replace: true,
       });
   },
@@ -109,7 +124,8 @@ function labelsOf(options: TaxonomyOption[] | undefined, slugs: string[]) {
 const BUSINESS_GROUPS = [{ key: "business", label: "Business" }] as const;
 
 function NewBusiness() {
-  const { step, type: typeParam } = Route.useSearch();
+  const { step, type: typeParam, from } = Route.useSearch();
+  const editing = from === "edit";
   const navigate = useNavigate();
   const router = useRouter();
   const idx = steps.indexOf(step);
@@ -139,6 +155,42 @@ function NewBusiness() {
   const [genres, setGenres] = useState<string[]>([]);
   const [policies, setPolicies] = useState<string[]>([]);
   const isStudio = type === "studio";
+
+  // Edit: fill every step from the saved profile and business, once.
+  const loadProfile = useServerFn(getMyProfile);
+  const loadBusiness = useServerFn(getMyBusiness);
+  const loaded = useRef(false);
+  useEffect(() => {
+    if (!editing || loaded.current) return;
+    loaded.current = true;
+    void Promise.all([loadProfile(), loadBusiness()]).then(([p, b]) => {
+      const row = p as {
+        display_name?: string | null;
+        username?: string | null;
+        headline?: string | null;
+        city?: string | null;
+        state?: string | null;
+        pin_code?: string | null;
+        languages?: string[] | null;
+        genres?: string[] | null;
+        roles?: string[] | null;
+      } | null;
+      if (row) {
+        setName(row.display_name ?? "");
+        setUsername(row.username ?? "");
+        setUsernameTouched(true);
+        setTagline(row.headline ?? "");
+        setCity(row.city ?? "");
+        setState(row.state ?? "");
+        setPinCode(row.pin_code ?? "");
+        setLanguages(row.languages ?? []);
+        setGenres(row.genres ?? []);
+        if (row.roles?.[0]) setType(row.roles[0]);
+      }
+      setPolicies(b?.business.policies ?? []);
+      setMapsUrl(b?.business.maps_url ?? "");
+    });
+  }, [editing, loadProfile, loadBusiness]);
 
   // A pasted Maps link fills in what it can; anything already typed is kept.
   const read = useServerFn(readMapsLink);
@@ -184,13 +236,16 @@ function NewBusiness() {
   const pinError = pinCode ? pinProblem(pinCode) : "Enter the 6-digit PIN code.";
   const valid: Record<Step, boolean> = {
     type: Boolean(type) && !mapsError,
-    basics: Boolean(name.trim()) && usernameOk && usernameStatus !== "taken",
+    basics: Boolean(name.trim()) && (editing || (usernameOk && usernameStatus !== "taken")),
     location: Boolean(state) && !cityError && !pinError,
-    offer: languages.length > 0,
-    policies: policies.some((p) => p.trim()),
+    languages: languages.length > 0,
+    genres: true,
+    policies:
+      policies.some((p) => p.trim()) &&
+      policies.filter((p) => p.trim()).length <= MAX_POLICIES &&
+      policies.every((p) => p.trim().length <= 200),
     amenities: true,
     equipment: true,
-    review: Boolean(type && name.trim() && state && !cityError && !pinError && !mapsError),
   };
 
   const queryClient = useQueryClient();
@@ -239,6 +294,31 @@ function NewBusiness() {
       toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again."),
   });
 
+  const persistProfile = useServerFn(saveMyProfile);
+  const persistBusiness = useServerFn(updateMyBusiness);
+  const update = useMutation({
+    mutationFn: async () => {
+      if (step === "basics")
+        await persistProfile({ data: { display_name: name.trim(), headline: tagline || null } });
+      if (step === "location") {
+        await persistProfile({ data: { state, city: city.trim(), pin_code: pinCode || null } });
+        await persistBusiness({ data: { maps_url: link } });
+      }
+      if (step === "languages") await persistProfile({ data: { languages } });
+      if (step === "genres") await persistProfile({ data: { genres } });
+      if (step === "policies")
+        await persistBusiness({
+          data: { policies: policies.map((p) => p.trim()).filter(Boolean) },
+        });
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+      void navigate({ to: "/profile/edit" });
+    },
+    onError: (e) =>
+      toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again."),
+  });
+
   const [nudge, setNudge] = useState(0);
   const finish = () => void navigate({ to: "/profile" });
   function submit() {
@@ -246,7 +326,13 @@ function NewBusiness() {
       setNudge((n) => n + 1);
       return;
     }
-    if (step === "review") create.mutate();
+    if (editing) {
+      update.mutate();
+      return;
+    }
+    // Policies is the last question; Continue there creates the business (no review step, owner
+    // 10 Oct 2026: Edit profile shows the same rows).
+    if (step === "policies") create.mutate();
     else if (step === "equipment") finish();
     else go(steps[idx + 1]!);
   }
@@ -275,25 +361,23 @@ function NewBusiness() {
       subtitle: "State, city and PIN code.",
       why: "Your page shows the city. The PIN code is never shown; it finds people near you.",
     },
-    offer: {
-      group: "Details",
-      title: "What does it offer?",
-      subtitle: "Genres and languages you work in.",
-      why: "These show on your page and help the right people find you.",
+    languages: {
+      group: "Languages",
+      title: "Which languages do you work in?",
+      subtitle: "Choose all that apply.",
+      why: "",
+    },
+    genres: {
+      group: "Genres",
+      title: "What music do you work with?",
+      subtitle: "Choose all that apply.",
+      why: "",
     },
     policies: {
       group: "Policies",
       title: "What are your rules?",
-      subtitle: "Write your own or tap a suggestion. At least one.",
+      subtitle: "Write them in one place, one per line.",
       why: "Customers see these on your page before they book or visit.",
-    },
-    review: {
-      group: "Review",
-      title: "Review your business",
-      subtitle: "Tap a row to change it.",
-      why: isStudio
-        ? "Next you'll add amenities and equipment, with photos."
-        : "You can edit all of this later from Manage.",
     },
     amenities: {
       group: "Amenities",
@@ -313,6 +397,7 @@ function NewBusiness() {
   return (
     <>
       <StepShell
+        editing={editing}
         step={idx + 1}
         total={isStudio ? steps.length : steps.length - AFTER_CREATE.length}
         group={c.group}
@@ -320,24 +405,34 @@ function NewBusiness() {
         subtitle={c.subtitle}
         why={c.why}
         onBack={() =>
-          step === "amenities" ? finish() : idx > 0 ? go(steps[idx - 1]!) : router.history.back()
+          editing
+            ? void navigate({ to: "/profile/edit" })
+            : step === "amenities"
+              ? finish()
+              : idx > 0
+                ? go(steps[idx - 1]!)
+                : router.history.back()
         }
         onSubmit={submit}
         footer={
           <Btn
             key={nudge}
             type="submit"
-            loading={create.isPending}
-            {...(step === "review" || step === "equipment"
-              ? {}
-              : { iconEnd: <ArrowRight size={iconSize.md} /> })}
+            loading={create.isPending || update.isPending}
+            {...(editing
+              ? { icon: <Check size={iconSize.md} /> }
+              : step === "policies" || step === "equipment"
+                ? {}
+                : { iconEnd: <ArrowRight size={iconSize.md} /> })}
             className={`w-full ${nudge ? "animate-shake" : ""}`}
           >
-            {step === "review"
-              ? "Create Business Profile"
-              : step === "equipment"
-                ? "Finish"
-                : "Continue"}
+            {editing
+              ? "Save"
+              : step === "policies"
+                ? "Create Business Profile"
+                : step === "equipment"
+                  ? "Finish"
+                  : "Continue"}
           </Btn>
         }
       >
@@ -362,6 +457,7 @@ function NewBusiness() {
                 setUsername(v);
               }}
               status={usernameStatus}
+              locked={editing}
             />
             <InlineField
               inputId="tagline"
@@ -455,7 +551,7 @@ function NewBusiness() {
                     <button
                       type="button"
                       disabled
-                      className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
+                      className="flex h-11 w-full items-center rounded-sm border border-input bg-card px-3.5 text-left text-[16px] text-muted-foreground opacity-60"
                     >
                       State first
                     </button>
@@ -479,123 +575,32 @@ function NewBusiness() {
               />
             </div>
           </div>
-        ) : step === "offer" ? (
-          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">
-            <DrawerField label="Genres">
-              <ChipPicker
-                options={(tx.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}
-                selected={genres}
-                onToggle={(v) =>
-                  setGenres(genres.includes(v) ? genres.filter((g) => g !== v) : [...genres, v])
-                }
-              />
-            </DrawerField>
-            <DrawerField label="Languages supported">
-              <ChipPicker
-                options={(tx.languages ?? []).map((o) => ({ value: o.slug, label: o.label }))}
-                selected={languages}
-                onToggle={(v) =>
-                  setLanguages(
-                    languages.includes(v) ? languages.filter((l) => l !== v) : [...languages, v],
-                  )
-                }
-              />
-            </DrawerField>
-          </div>
+        ) : step === "languages" ? (
+          <ChipPicker
+            layout="script"
+            options={(tx.languages ?? []).map((o) => ({ value: o.slug, label: o.label }))}
+            selected={languages}
+            onToggle={(v) =>
+              setLanguages(
+                languages.includes(v) ? languages.filter((l) => l !== v) : [...languages, v],
+              )
+            }
+          />
+        ) : step === "genres" ? (
+          <ChipPicker
+            options={(tx.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}
+            selected={genres}
+            onToggle={(v) =>
+              setGenres(genres.includes(v) ? genres.filter((g) => g !== v) : [...genres, v])
+            }
+          />
         ) : step === "policies" ? (
           <PoliciesEditor value={policies} onChange={setPolicies} />
         ) : step === "amenities" ? (
           <AmenitiesEditor />
         ) : step === "equipment" ? (
           <EquipmentEditor />
-        ) : (
-          <div className="space-y-3">
-            <section className="rounded-lg bg-ink p-4 text-ink-foreground">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-1 text-ink-foreground/70">{typeLabel}</p>
-                  <h2 className="mt-1 truncate text-2 font-semibold">{name}</h2>
-                  <p className="mt-0.5 truncate text-sm text-ink-foreground/70">@{username}</p>
-                </div>
-                <span className="pill shrink-0 bg-card text-foreground">Preview</span>
-              </div>
-              {tagline.trim() ? (
-                <p className="mt-3 line-clamp-2 text-sm text-ink-foreground/80">{tagline}</p>
-              ) : null}
-              <p className="mt-3 flex items-center gap-1.5 text-1 text-ink-foreground/70">
-                <MapPin size={iconSize.sm} aria-hidden />
-                {[city, state].filter(Boolean).join(", ")}
-              </p>
-            </section>
-            {[
-              {
-                title: "Profile",
-                to: "basics" as const,
-                rows: [
-                  ["Business type", typeLabel],
-                  ["Name", name],
-                  ["Username", `@${username}`],
-                  ["Tagline", tagline.trim() || "Not added"],
-                ],
-              },
-              {
-                title: "Location",
-                to: "location" as const,
-                rows: [
-                  ["Place", [city, state].filter(Boolean).join(", ")],
-                  ["Google Maps", link ? "Connected" : "Not connected"],
-                ],
-              },
-              {
-                title: "What you offer",
-                to: "offer" as const,
-                rows: [
-                  ["Genres", labelsOf(tx.genres, genres)],
-                  ["Languages", labelsOf(tx.languages, languages)],
-                ],
-              },
-              {
-                title: "Policies",
-                to: "policies" as const,
-                rows: [
-                  [
-                    "Customer policies",
-                    policies.filter((p) => p.trim()).length
-                      ? policies.filter((p) => p.trim()).join(" · ")
-                      : "Not added",
-                  ],
-                ],
-              },
-            ].map((group) => (
-              <section
-                key={group.title}
-                className="overflow-hidden rounded-lg border border-border bg-card"
-              >
-                <button
-                  type="button"
-                  onClick={() => go(group.to)}
-                  className="state-layer grid min-h-touch w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3 text-left"
-                >
-                  <h2 className="text-sm font-semibold">{group.title}</h2>
-                  <span className="flex items-center gap-1 text-1 font-semibold text-muted-foreground">
-                    Edit <ChevronRight size={iconSize.sm} aria-hidden />
-                  </span>
-                </button>
-                <dl className="divide-y divide-border">
-                  {group.rows.map(([label, value]) => (
-                    <div
-                      key={label}
-                      className="grid grid-cols-[104px_minmax(0,1fr)] gap-3 px-4 py-2.5"
-                    >
-                      <dt className="text-1 text-muted-foreground">{label}</dt>
-                      <dd className="line-clamp-2 text-sm font-medium text-foreground">{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </section>
-            ))}
-          </div>
-        )}
+        ) : null}
       </StepShell>
 
       <Dialog

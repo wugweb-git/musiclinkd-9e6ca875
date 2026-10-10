@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — Edit profile is the way back to the setup screens; persona_bucket retired (10 Oct, owner)
+
+- Edit profile, for talent and business: one list of rows in setup order (done mark, row, current
+  answer), each opening its setup screen in its edit state (Save ✓, back to Edit profile). Screens
+  with no setup counterpart (photos, role details) open on their own. Experience removed from the
+  list. Talent rows: Roles, About you, Instruments, Languages, Genres, How you work, Goals, Links.
+  Business rows: type, name and tagline, location, languages, genres, policies.
+- Business setup steps take `from=edit`: they load the saved profile and business and save only
+  their own fields. Business type edits on the shared role screen (`persona=business`, the screen
+  variable `setupPersona`). Review step removed; Continue on Policies creates the business.
+- Business setup has its own Languages and Genres screens (same as talent); "What does it offer?"
+  is gone. Policies are one large text box, one rule per line (up to 12).
+- City box matches the PIN code field; pills pack rows by their measured widths.
+- One list per category for every persona: Genres and Instruments read taxonomy_options directly.
+  `persona_bucket` is removed from the app and dropped from the database
+  (20261010120000_drop_persona_bucket.sql; undo in supabase/dumps/2026-10-10-before-drop-persona-bucket.sql).
+
 ### Changed — one set of question screens for setup, editing and both account types (10 Oct, owner)
 
 - The question screens live at `/setup/<question>` (was `/onboarding/step/…`); old addresses

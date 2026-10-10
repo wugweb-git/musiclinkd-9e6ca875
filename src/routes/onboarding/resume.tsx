@@ -34,11 +34,11 @@ export const Route = createFileRoute("/onboarding/resume")({
 });
 
 function Resume() {
-  const { draft, reset, sync, retry, hydrated, bucket } = useOnboarding();
+  const { draft, reset, sync, retry, hydrated } = useOnboarding();
   const navigate = useNavigate();
-  const target = resumeTarget(draft, bucket);
+  const target = resumeTarget(draft);
   const def = steps.find((s) => s.id === target);
-  const list = visibleSteps(draft, bucket);
+  const list = visibleSteps(draft);
   const done = draft.completedSteps.length;
 
   return (

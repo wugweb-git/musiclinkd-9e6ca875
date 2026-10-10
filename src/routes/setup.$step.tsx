@@ -20,10 +20,11 @@ import { usePinFill } from "@/hooks/use-pin-fill";
 import { cityFromDistrict } from "@/lib/place";
 import { pinProblem } from "@/lib/validation";
 import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { useFlowBack } from "@/lib/flow-back";
 import { getLocationGuess } from "@/lib/location-guess.functions";
 import { useUsernameAvailability, type UsernameStatus } from "@/lib/username";
-import { listMyPortfolio, type UsernameClaim } from "@/lib/portfolio.functions";
+import { listMyPortfolio, saveMyProfile, type UsernameClaim } from "@/lib/portfolio.functions";
 import {
   ChipPicker,
   DateDrawerField,
@@ -63,20 +64,6 @@ function typeIcon(o: TaxonomyOption) {
   return <Icon size={16} aria-hidden />;
 }
 
-/** The options to show: the bucket's, plus anything already selected that the bucket left out. */
-function withSelected(
-  shown: TaxonomyOption[],
-  selected: string[],
-  catalogue: TaxonomyOption[] | undefined,
-  icon?: (slug: string) => ReactNode,
-) {
-  const media = (slug: string) => icon?.(slug);
-  const extra = selected
-    .filter((slug) => !shown.some((o) => o.slug === slug))
-    .map((slug) => ({ value: slug, label: labelFor(catalogue, slug), media: media(slug) }));
-  return [...shown.map((o) => ({ value: o.slug, label: o.label, media: media(o.slug) })), ...extra];
-}
-
 /**
  * `q=2` is a two-question screen's second question (role: anything else; instruments: how long).
  * It is a real history entry, so the Android back gesture returns to the first question and the
@@ -84,16 +71,16 @@ function withSelected(
  */
 /**
  * `from=edit`: opened from Edit profile; Save returns there instead of going on.
- * `as=business` (role only): the same screen asks a business its type, then business setup goes on
+ * `persona=business` (role only; the screen variable setupPersona): the same screen asks a business its type, then business setup goes on
  * (owner, 10 Oct 2026: one set of screens for every account type). `type` is the type picked.
  */
-type StepSearch = { q?: 2; from?: "edit"; as?: "business"; type?: string };
+type StepSearch = { q?: 2; from?: "edit"; persona?: "business"; type?: string };
 
 export const Route = createFileRoute("/setup/$step")({
   validateSearch: (search: Record<string, unknown>): StepSearch => ({
     ...(Number(search["q"]) === 2 ? { q: 2 as const } : {}),
     ...(search["from"] === "edit" ? { from: "edit" as const } : {}),
-    ...(search["as"] === "business" ? { as: "business" as const } : {}),
+    ...(search["persona"] === "business" ? { persona: "business" as const } : {}),
     ...(typeof search["type"] === "string" && search["type"] ? { type: search["type"] } : {}),
   }),
   head: () => ({
@@ -177,7 +164,7 @@ const secondQuestionReady = (id: string, d: OnboardingDraft) =>
 
 function StepRoute() {
   const { step: id } = Route.useParams();
-  const { q, from, as, type: typeParam } = Route.useSearch();
+  const { q, from, persona: setupPersona, type: typeParam } = Route.useSearch();
   const editing = from === "edit";
   const {
     draft,
@@ -188,7 +175,6 @@ function StepRoute() {
     sync,
     retry,
     flush,
-    bucket,
     claimedUsername,
     claimUsername,
   } = useOnboarding();
@@ -201,6 +187,12 @@ function StepRoute() {
   // Continue is never greyed out (phone plan): pressing it early marks what is missing, inline.
   const [showErrors, setShowErrors] = useState(false);
   const [bizType, setBizType] = useState<string | null>(typeParam ?? null);
+  const saveType = useServerFn(saveMyProfile);
+  // Editing a business's type starts from the saved one.
+  useEffect(() => {
+    if (setupPersona === "business" && editing && hydrated && !bizType && draft.primaryRole)
+      setBizType(draft.primaryRole);
+  }, [setupPersona, editing, hydrated, bizType, draft.primaryRole]);
   useEffect(() => setShowErrors(false), [id]);
   const flowBack = useFlowBack();
   const usernameStatus = useUsernameAvailability(
@@ -263,7 +255,7 @@ function StepRoute() {
   // long each instrument has been played). The second question is `?q=2`.
   const stageReady = secondQuestionReady(id, draft);
 
-  const list = visibleSteps(draft, bucket);
+  const list = visibleSteps(draft);
   const def = steps.find((s) => s.id === id);
   const index = list.findIndex((s) => s.id === id);
 
@@ -330,20 +322,17 @@ function StepRoute() {
   const advance = (complete: boolean) => {
     haptic(complete ? "confirm" : "select");
     if (complete) markComplete(def.id);
-    const after = visibleSteps(
-      {
-        ...draft,
-        completedSteps: complete ? [...draft.completedSteps, def.id] : draft.completedSteps,
-      },
-      bucket,
-    );
+    const after = visibleSteps({
+      ...draft,
+      completedSteps: complete ? [...draft.completedSteps, def.id] : draft.completedSteps,
+    });
     const pos = after.findIndex((s) => s.id === def.id);
     setBanner("none");
     goto(after[pos + 1]);
   };
 
   // A business on the role screen picks its type here; nothing is written to a talent profile.
-  const business = as === "business" && def.id === "role";
+  const business = setupPersona === "business" && def.id === "role";
   const valid = business ? Boolean(bizType) : isValid(def.id, draft, usernameStatus);
 
   const blocked = () => {
@@ -435,10 +424,17 @@ function StepRoute() {
   // Editing walks the same screens as setup (instruments then "how long"), saving at the end.
   const submit = business
     ? valid
-      ? () => {
-          haptic("select");
-          void navigate({ to: "/business/new", search: { step: "basics", type: bizType! } });
-        }
+      ? editing
+        ? () => {
+            haptic("confirm");
+            void saveType({ data: { roles: [bizType!] } })
+              .then(() => navigate({ to: "/profile/edit" }))
+              .catch(() => toast.error("That didn't save. Try again."));
+          }
+        : () => {
+            haptic("select");
+            void navigate({ to: "/business/new", search: { step: "basics", type: bizType! } });
+          }
       : blocked
     : editing && !valid
       ? blocked
@@ -583,7 +579,6 @@ function StepBody({
   roleStage: RoleStage;
   showErrors: boolean;
 }) {
-  const { bucket, bucketState, retryBucket } = useOnboarding();
   const taxonomy = useTaxonomy();
   /*
    * The city picker offers what the taxonomy carries, and the taxonomy carries two to four cities
@@ -619,7 +614,6 @@ function StepBody({
     "work-mode",
     "intent",
   ].includes(id);
-  const needsBucket = id === "instruments" || id === "genres";
   if (needsTaxonomy && taxonomy.state === "error") {
     return (
       <AuthNotice
@@ -630,17 +624,7 @@ function StepBody({
       </AuthNotice>
     );
   }
-  if (needsBucket && bucketState === "error") {
-    return (
-      <AuthNotice
-        title="We couldn't load the choices for your roles"
-        action={<AuthTextButton onClick={retryBucket}>Try Again</AuthTextButton>}
-      >
-        Check your connection, then try again.
-      </AuthNotice>
-    );
-  }
-  if ((needsTaxonomy && !taxonomy.options) || (needsBucket && !bucket)) return <StepSkeleton />;
+  if (needsTaxonomy && !taxonomy.options) return <StepSkeleton />;
   const tx = taxonomy.options;
 
   switch (id) {
@@ -781,15 +765,11 @@ function StepBody({
       if (roleStage === "primary" || !d.instruments.length) {
         return (
           <ChipPicker
-            options={withSelected(
-              bucket?.instruments ?? [],
-              d.instruments,
-              tx?.instruments,
-              (slug) => {
-                const Icon = instrumentIcon(slug);
-                return <Icon size={16} aria-hidden />;
-              },
-            )}
+            // One instrument list for every persona (persona_bucket retired, owner 10 Oct 2026).
+            options={(tx?.instruments ?? []).map((o) => {
+              const Icon = instrumentIcon(o.slug);
+              return { value: o.slug, label: o.label, media: <Icon size={16} aria-hidden /> };
+            })}
             selected={d.instruments}
             max={2}
             onToggle={(slug) => {
@@ -851,7 +831,8 @@ function StepBody({
     case "genres":
       return (
         <ChipPicker
-          options={withSelected(bucket?.genres ?? [], d.genres, tx?.genres)}
+          // One genre list for every persona: the 47 canonical genres (Notion Master Taxonomy).
+          options={(tx?.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}
           selected={d.genres}
           onToggle={(v) => toggle("genres", v)}
         />

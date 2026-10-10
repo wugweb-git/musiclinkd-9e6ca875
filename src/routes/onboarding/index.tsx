@@ -77,20 +77,20 @@ type AccountKind = (typeof kindOrder)[number];
 const kindInfo: Record<
   AccountKind,
   {
-    goTo?: { to: "/setup/$step"; params: { step: "role" }; search: { as: "business" } };
+    goTo?: { to: "/setup/$step"; params: { step: "role" }; search: { persona: "business" } };
   }
 > = {
   Talent: {},
   Business: {
-    goTo: { to: "/setup/$step", params: { step: "role" }, search: { as: "business" } },
+    goTo: { to: "/setup/$step", params: { step: "role" }, search: { persona: "business" } },
   },
 };
 
 /** The Select screen: talent or business, and a tap continues (owner, 4 Oct 2026). */
 function SelectScreen() {
-  const { draft, hydrated, bucket } = useOnboarding();
+  const { draft, hydrated } = useOnboarding();
   const navigate = useNavigate();
-  const total = visibleSteps(draft, bucket).length;
+  const total = visibleSteps(draft).length;
   const started = draft.completedSteps.length > 0;
   const rise = useArrival("onboarding-intro") ? "animate-rise" : "";
 
@@ -117,7 +117,7 @@ function SelectScreen() {
       void navigate({ to: "/onboarding/resume" });
       return;
     }
-    void navigate({ to: "/setup/$step", params: { step: resumeTarget(draft, bucket) } });
+    void navigate({ to: "/setup/$step", params: { step: resumeTarget(draft) } });
   };
 
   // Touch gesture support: swipe left/right to toggle between Talent and Business

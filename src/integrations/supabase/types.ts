@@ -3778,20 +3778,6 @@ export type Database = {
           views: number
         }[]
       }
-      persona_bucket: {
-        Args: {
-          p_languages?: string[]
-          p_limit?: number
-          p_primary: string
-          p_secondary?: string[]
-        }
-        Returns: {
-          category_key: string
-          display_order: number
-          label: string
-          slug: string
-        }[]
-      }
       popular_searches: {
         Args: { lim?: number; p_city?: string; p_scope: string }
         Returns: {

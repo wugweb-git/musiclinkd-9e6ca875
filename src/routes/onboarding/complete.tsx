@@ -170,7 +170,7 @@ function Complete() {
                 <BtnLink
                   to="/setup/$step"
                   params={{ step: "role" }}
-                  search={{ as: "business" }}
+                  search={{ persona: "business" }}
                   className="w-full h-11 text-sm font-semibold"
                 >
                   Start Business Setup

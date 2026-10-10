@@ -3,6 +3,7 @@ import { SheetSelect } from "./listing-form";
 // FLOW-02 — Onboarding UI kit. Extends Gestalt; no new tokens.
 
 import {
+  useLayoutEffect,
   createContext,
   useCallback,
   useContext,
@@ -58,14 +59,7 @@ import {
   type OnboardingDraft,
 } from "@/data/onboarding";
 import type { UsernameStatus } from "@/lib/username";
-import {
-  choicesFor,
-  loadPersonaBucket,
-  useTaxonomy,
-  type LoadState,
-  type PersonaBucket,
-  type TaxonomyOption,
-} from "@/lib/taxonomy";
+import { choicesFor, useTaxonomy, type LoadState, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { PUBLIC_HOST } from "@/lib/site";
 import { sized } from "@/lib/image-url";
@@ -115,10 +109,6 @@ type Store = {
   retry: () => void;
   /** Save now, skipping the autosave wait, and resolve when it is stored. */
   flush: () => Promise<void>;
-  /** Instruments and genres for the draft's roles and languages (persona_bucket). */
-  bucket: PersonaBucket | null;
-  bucketState: LoadState;
-  retryBucket: () => void;
   /** The username stored on the profile. Once set it cannot change. Null until claimed. */
   claimedUsername: string | null;
   /** Claim draft.username for this account. In dev preview it always succeeds and nothing is stored. */
@@ -194,7 +184,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       }
       setSync("saving");
       try {
-        const step = resumeTarget(next, bucketRef.current);
+        const step = resumeTarget(next);
         await persist({ data: draftToProfile(next, step) });
         setSync("saved");
       } catch {
@@ -262,45 +252,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       .finally(() => setHydrated(true));
   }, [authLoading, signedIn, userId, navigate, loadProfile, writeCache, devPreview]);
 
-  // Refetch the persona bucket whenever the roles or languages change.
-  const [bucket, setBucket] = useState<PersonaBucket | null>(null);
-  const [bucketState, setBucketState] = useState<LoadState>("loading");
-  const [bucketAttempt, setBucketAttempt] = useState(0);
-  const bucketRef = useRef<PersonaBucket | null>(null);
-  const bucketKey = [
-    draft.primaryRole ?? "",
-    draft.secondaryRoles.join(","),
-    draft.languages.join(","),
-  ].join("|");
-  useEffect(() => {
-    if (!hydrated) return;
-    // A stale bucket from the previous roles would hide or show the wrong steps; clear it first.
-    bucketRef.current = null;
-    setBucket(null);
-    const primary = draft.primaryRole;
-    if (!primary) {
-      bucketRef.current = null;
-      setBucket(null);
-      setBucketState("ready");
-      return;
-    }
-    let active = true;
-    setBucketState("loading");
-    loadPersonaBucket(primary, draft.secondaryRoles, draft.languages)
-      .then((b) => {
-        if (!active) return;
-        bucketRef.current = b;
-        setBucket(b);
-        setBucketState("ready");
-      })
-      .catch(() => active && setBucketState("error"));
-    return () => {
-      active = false;
-    };
-    // bucketKey stands in for the three draft fields it is built from.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated, bucketKey, bucketAttempt]);
-
   const persistDraft = useCallback(
     (next: OnboardingDraft) => {
       setDraft(next);
@@ -327,9 +278,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         pending.current = null;
         return push(latest.current);
       },
-      bucket,
-      bucketState,
-      retryBucket: () => setBucketAttempt((n) => n + 1),
       set: (patch) => persistDraft({ ...latest.current, ...patch }),
       toggle: (field, val) => {
         const list = (latest.current[field] as unknown as string[]) ?? [];
@@ -352,18 +300,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         return status;
       },
     }),
-    [
-      draft,
-      hydrated,
-      sync,
-      persistDraft,
-      push,
-      bucket,
-      bucketState,
-      claimedUsername,
-      claim,
-      devPreview,
-    ],
+    [draft, hydrated, sync, persistDraft, push, claimedUsername, claim, devPreview],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -390,8 +327,8 @@ export function useOnboarding(): Store {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
-export function resumeTarget(draft: OnboardingDraft, bucket: PersonaBucket | null = null): string {
-  const list = visibleSteps(draft, bucket);
+export function resumeTarget(draft: OnboardingDraft): string {
+  const list = visibleSteps(draft);
   const next = list.find((s) => !draft.completedSteps.includes(s.id));
   return next ? next.id : "contact";
 }
@@ -649,25 +586,54 @@ export type PickerOption =
 export type PickerLayout = "cloud" | "stack" | "script";
 
 /*
- * Adaptive order for a cloud (owner, 6 Oct 2026): pills may move to fill each row, so a row is
- * not left half empty. First-fit by an estimated width (label length, media, padding) into rows of
- * the phone's content width; the order inside the list is otherwise kept.
+ * Adaptive order for wrapping pills (owner, 6 & 10 Oct 2026): pills move so each row is filled and
+ * none is left half empty. The real pill widths are measured, then packed first-fit, widest first,
+ * into rows of the container's width; repacked when the width changes.
  */
-// The 412px phone less the 20px side gutters, plus the trailing 8px gap the last pill does not use.
-const ROW_PX = 380;
-const pillPx = (o: { label: string; media?: ReactNode }) =>
-  o.label.length * 7.2 + (o.media ? 84 : 48) + 8;
-function packRows<T extends { label: string; media?: ReactNode }>(items: T[]): T[] {
-  const rows: { left: number; items: T[] }[] = [];
-  for (const item of items) {
-    const w = Math.min(pillPx(item), ROW_PX);
-    const row = rows.find((r) => r.left >= w);
-    if (row) {
-      row.items.push(item);
-      row.left -= w;
-    } else rows.push({ left: ROW_PX - w, items: [item] });
+const PILL_GAP = 8;
+function packByWidth(values: string[], widths: Map<string, number>, row: number): string[] {
+  const sorted = [...values].sort((x, y) => (widths.get(y) ?? 0) - (widths.get(x) ?? 0));
+  const rows: { left: number; items: string[] }[] = [];
+  for (const v of sorted) {
+    const w = Math.min((widths.get(v) ?? 0) + PILL_GAP, row);
+    const fit = rows.find((r) => r.left >= w);
+    if (fit) {
+      fit.items.push(v);
+      fit.left -= w;
+    } else rows.push({ left: row - w, items: [v] });
   }
   return rows.flatMap((r) => r.items);
+}
+
+function usePackedOrder(values: string[], enabled: boolean) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [order, setOrder] = useState<string[] | null>(null);
+  const key = values.join("|");
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!enabled || !el) return;
+    const pack = () => {
+      const widths = new Map<string, number>();
+      for (const child of Array.from(el.children) as HTMLElement[]) {
+        const v = child.dataset["value"];
+        if (v) widths.set(v, child.getBoundingClientRect().width);
+      }
+      if (widths.size !== values.length) return;
+      const next = packByWidth(values, widths, el.clientWidth + PILL_GAP);
+      setOrder((cur) => (cur && cur.join("|") === next.join("|") ? cur : next));
+    };
+    pack();
+    const ro = new ResizeObserver(pack);
+    ro.observe(el);
+    return () => ro.disconnect();
+    // `key` stands in for the values list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key, enabled]);
+  const ordered =
+    enabled && order && order.length === values.length && order.every((v) => values.includes(v))
+      ? order
+      : values;
+  return { ref, ordered };
 }
 
 /*
@@ -692,36 +658,39 @@ export function ChipPicker({
   layout?: PickerLayout | undefined;
 }) {
   const full = max !== undefined && max > 1 && selected.length >= max;
+  const items = options.map((opt) => (typeof opt === "string" ? { value: opt, label: opt } : opt));
+  const byValue = new Map(items.map((o) => [o.value, o]));
+  const { ref, ordered } = usePackedOrder(
+    items.map((o) => o.value),
+    layout !== "stack",
+  );
   return (
     <div
+      ref={ref}
       className={cn(
         "flex gap-2",
         layout === "stack" ? "flex-col items-center" : "flex-wrap justify-center",
-        layout === "script" && "gap-2.5",
       )}
     >
-      {(layout === "cloud"
-        ? packRows(
-            options.map((opt) => (typeof opt === "string" ? { value: opt, label: opt } : opt)),
-          )
-        : options.map((opt) => (typeof opt === "string" ? { value: opt, label: opt } : opt))
-      ).map((o) => {
+      {ordered.map((value) => {
+        const o = byValue.get(value)!;
         const on = selected.includes(o.value);
         return (
-          <Chip
-            key={o.value}
-            variant="select"
-            size={layout === "script" ? "lg" : "md"}
-            active={on}
-            media={o.media}
-            atLimit={full && !on}
-            onClick={() => {
-              haptic("select");
-              onToggle(o.value);
-            }}
-          >
-            {o.label}
-          </Chip>
+          <span key={o.value} data-value={o.value} className="inline-flex">
+            <Chip
+              variant="select"
+              size={layout === "script" ? "lg" : "md"}
+              active={on}
+              media={o.media}
+              atLimit={full && !on}
+              onClick={() => {
+                haptic("select");
+                onToggle(o.value);
+              }}
+            >
+              {o.label}
+            </Chip>
+          </span>
         );
       })}
     </div>
