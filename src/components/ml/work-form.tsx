@@ -420,7 +420,7 @@ export function WorkForm({
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-bar mx-auto flex w-full max-w-app gap-2 border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto flex w-full max-w-app gap-2 border-t bg-warm/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border" : "border-transparent",
         )}
       >

@@ -115,10 +115,7 @@ const TAB_FILTERS: Record<OneTab, { key: FilterKey; title: string }[]> = {
     { key: "city", title: "City" },
   ],
   collabs: [{ key: "city", title: "City" }],
-  opportunities: [
-    { key: "role", title: "Role needed" },
-    { key: "city", title: "City" },
-  ],
+  opportunities: [{ key: "city", title: "City" }],
   gear: [
     { key: "category", title: "Category" },
     { key: "city", title: "City" },
@@ -235,7 +232,7 @@ function optionsFor(tab: OneTab, key: FilterKey, options: Taxonomy): TaxonomyOpt
   }
 }
 
-/** The values a tab's server reads take: cities and opportunity roles as labels, the rest as stored. */
+/** The values a tab's server reads take: cities as labels, the rest as stored. */
 function serverFilters(tab: Tab, v: FilterValues, options: Taxonomy) {
   if (tab === "all") return {};
   const cities = v.city.map((c) => labelFor(options?.cities, c));
@@ -248,8 +245,6 @@ function serverFilters(tab: Tab, v: FilterValues, options: Taxonomy) {
   const f: SearchFilters = {};
   if (cities.length) f.cities = cities;
   if (tab === "businesses" && v.type.length) f.types = v.type;
-  if (tab === "opportunities" && v.role.length)
-    f.roleLabels = v.role.map((r) => labelFor(options?.person_types, r));
   if (tab === "gear" && v.category.length) f.categories = v.category;
   if (tab === "work") {
     const media = v.media.filter((m): m is "music" | "video" => m === "music" || m === "video");
@@ -298,11 +293,11 @@ function SearchResults() {
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
 
-  // Filters only narrow their own tab, and cities and roles go to the server as labels, so a read
-  // with either waits for the taxonomy rather than sending a slug.
+  // Filters only narrow their own tab, and cities go to the server as labels, so a read with one
+  // waits for the taxonomy rather than sending a slug.
   const active = tabFilters.flatMap(({ key }) => values[key].map((value) => ({ key, value })));
   const filterArgs = serverFilters(tab, values, options);
-  const ready = options !== null || !active.some((a) => a.key === "city" || a.key === "role");
+  const ready = options !== null || !active.some((a) => a.key === "city");
 
   const showPeople = tab === "all" || tab === "people";
   const groups: SearchGroup[] = tab === "all" ? [...SEARCH_GROUPS] : tab === "people" ? [] : [tab];
@@ -842,8 +837,7 @@ const toggle = (list: string[], v: string) =>
 
 /**
  * A filter's counts keyed by option value. Cities are counted by the city each row shows and
- * matched with sameCity, so "Mumbai 400053" counts for Mumbai; opportunity roles are text, so they
- * match on the option's label.
+ * matched with sameCity, so "Mumbai 400053" counts for Mumbai.
  */
 function countsFor(
   tab: OneTab,
@@ -862,8 +856,6 @@ function countsFor(
       ]),
     );
   }
-  if (key === "role" && tab === "opportunities")
-    return Object.fromEntries(list.map((o) => [o.slug, raw[o.label.toLowerCase()] ?? 0]));
   return raw;
 }
 

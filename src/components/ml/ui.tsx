@@ -89,11 +89,12 @@ export function isNavRoot(path: string) {
 }
 
 /*
- * Page tone by content type (owner, 5 Oct): "app" #F5F5F5 for app screens, "warm" #F3F1EC for
- * people and their work, "white" for settings and forms, "auth" the sign-in ground.
+ * Page tone by content type: "app" and "warm" are both the setup screens' warm #F3F1EC (owner,
+ * 10 Oct 2026: every app page on the setup ground); "white" for settings and forms, "auth" the
+ * sign-in ground.
  */
 const SCREEN_TONE = {
-  app: "bg-background",
+  app: "bg-warm",
   warm: "bg-warm",
   white: "bg-card",
   auth: "bg-auth-ground",

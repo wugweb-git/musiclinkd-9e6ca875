@@ -95,8 +95,8 @@ export const Route = createFileRoute("/discover/")({
   component: DiscoverScreen,
 });
 
-const TALENT_MODES = ["For you", "People", "Opportunities", "Studios"] as const;
-const BUSINESS_MODES = ["For you", "Talent", "Studios", "Opportunities"] as const;
+const TALENT_MODES = ["For you", "People", "Opportunities"] as const;
+const BUSINESS_MODES = ["For you", "Talent", "Opportunities"] as const;
 type Mode = (typeof TALENT_MODES)[number] | (typeof BUSINESS_MODES)[number];
 
 function DiscoverScreen() {
@@ -109,11 +109,10 @@ function DiscoverScreen() {
   const { options } = useTaxonomy();
   const modes = business.hasBusiness ? BUSINESS_MODES : TALENT_MODES;
   const [mode, setMode] = useState<Mode>("For you");
-  // People means talent: business pages never show here (owner, 5 Oct); they have Studios.
+  // People means talent: business pages never show here (owner, 5 Oct).
   const people = (recommendations?.people.length ? recommendations.people : loaded.people).filter(
     (p) => !p.isBusiness,
   );
-  const studios = rankBy(loaded.studios, recommendations?.studios, (studio) => studio.id);
   const opportunities = rankBy(
     loaded.opportunities,
     recommendations?.opportunities,
@@ -121,7 +120,6 @@ function DiscoverScreen() {
   );
   // On For you the trending rails (below) carry people and businesses; these lists are their tabs'.
   const showPeople = mode === "People" || mode === "Talent";
-  const showStudios = mode === "Studios";
   const showOpportunities = mode === "For you" || mode === "Opportunities";
 
   // Trending (owner, 5 Oct): each section is real activity from the last 7 days, and a section
@@ -253,28 +251,6 @@ function DiscoverScreen() {
                   saved={saved.has(opportunity.id)}
                   onSave={() => saved.toggle(opportunity.id)}
                 />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {showStudios && studios.length ? (
-          <section>
-            <SectionHeader
-              title="Studios and spaces"
-              action={
-                <Link
-                  to="/discover/$slug"
-                  params={{ slug: "studios" }}
-                  className="link-action text-sm font-semibold"
-                >
-                  See all
-                </Link>
-              }
-            />
-            <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5">
-              {studios.slice(0, 8).map((studio) => (
-                <BookableCard key={studio.id} studio={studio} featured />
               ))}
             </div>
           </section>

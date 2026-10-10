@@ -172,7 +172,7 @@ function RequestReviewContent({ business }: { business: boolean }) {
     bk.requester?.display_name ?? bk.requester?.username ?? bk.requester_name ?? "Someone";
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-warm pb-32">
       <TopBar
         title="Request"
         subtitle={bk.service?.name ?? bk.studio?.name ?? bk.bookable_name ?? ""}
