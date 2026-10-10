@@ -154,9 +154,9 @@ function SettingsScreen() {
   }
 
   return (
-    <Screen tone="white">
+    <Screen>
       <TopBar title="Settings" back="/profile" />
-      <div className="min-h-[calc(100dvh-4rem)] bg-card px-5 pt-5 pb-6">
+      <div className="min-h-[calc(100dvh-4rem)] px-5 pt-5 pb-6">
         {signedIn ? (
           <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border pb-5">
             <PersonAvatar

@@ -279,7 +279,7 @@ function Conversation() {
   return (
     <Screen className="pb-0">
       <div className="flex h-[100dvh] flex-col">
-        <header className="flex shrink-0 items-center gap-3 border-b border-border bg-card/95 px-5 py-3 pt-safe backdrop-blur">
+        <header className="flex shrink-0 items-center gap-3 border-b border-border bg-warm/90 px-5 py-3 pt-safe backdrop-blur">
           <Link
             to="/inbox"
             search={{ tab: "messages" }}
@@ -452,7 +452,7 @@ function Conversation() {
             grows with the message, and a squared send key that fills in once there is text. */}
         <form
           noValidate
-          className="flex shrink-0 items-end gap-2 border-t border-border bg-card px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2"
+          className="flex shrink-0 items-end gap-2 border-t border-border bg-warm px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2"
           onSubmit={(e) => {
             e.preventDefault();
             submit();
