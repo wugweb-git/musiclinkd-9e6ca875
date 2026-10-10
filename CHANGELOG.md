@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed / changed — Find a match gone; Home is the default screen (10 Oct, owner)
+
+- Find a match is removed (Search does this job): the screen, its menu row, the "Describe who you
+  need" / "Describe a hiring need" cards on Discover and Home, and the AI match server function.
+  /discover/match redirects to Search.
+- Home is the default screen: signing in and opening the app land on /home (was /discover);
+  "Explore MusicLinkd First" on skip goes Home.
+
 ### Changed — screens follow the cleaned taxonomy (10 Oct, owner)
 
 - Post an opportunity: "Role needed" picks one person type from the taxonomy (the onboarding

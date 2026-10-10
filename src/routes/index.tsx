@@ -53,7 +53,7 @@ function SessionCheck() {
     const hold = reducedMotion
       ? 0
       : Math.min(2000, Math.max(0, 900 - (Date.now() - mountedAt.current)));
-    const go = (to: "/welcome" | "/discover" | ReturnType<typeof postAuthTarget>) =>
+    const go = (to: "/welcome" | "/home" | ReturnType<typeof postAuthTarget>) =>
       window.setTimeout(() => {
         if (active) void navigate({ to, replace: true });
       }, hold);
@@ -74,7 +74,7 @@ function SessionCheck() {
     // Unanswered, a sign-in made in the last few minutes is a signup and goes to onboarding, which
     // the saved session can tell without the network; anyone else goes to Discover.
     const createdAt = user?.created_at ? new Date(user.created_at).getTime() : 0;
-    const fallback = Date.now() - createdAt < NEW_ACCOUNT_MS ? "/onboarding" : "/discover";
+    const fallback = Date.now() - createdAt < NEW_ACCOUNT_MS ? "/onboarding" : "/home";
     Promise.race([
       syncIdentity()
         .catch(() => null)

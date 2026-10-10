@@ -178,20 +178,6 @@ function DiscoverScreen() {
       </header>
 
       <main className="space-y-9 py-6">
-        <section className="px-5">
-          <Link
-            to="/discover/match"
-            className="state-layer flex items-center gap-3 rounded-lg bg-ink p-4 text-ink-foreground"
-          >
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold">Describe who you need</span>
-              <span className="mt-0.5 block text-1 opacity-80">
-                AI matches you with real profiles and open opportunities.
-              </span>
-            </span>
-            <ArrowRight size={iconSize.sm} aria-hidden />
-          </Link>
-        </section>
         {mode === "For you" ? (
           <section className="px-5">
             <Link

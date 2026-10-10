@@ -210,7 +210,6 @@ const menuGroups: {
       { to: "/opportunities", label: "Opportunities", icon: Megaphone },
       { to: "/opportunities/mine", label: "My opportunities", icon: Megaphone },
       { to: "/opportunities/applications", label: "Applications", icon: Briefcase },
-      { to: "/discover/match", label: "Find a match", icon: Sparkles },
       { to: "/collab", label: "Collaborations", icon: Handshake },
       { to: "/collab/new", label: "New collaboration", icon: Handshake },
       { to: "/bands", label: "Bands", icon: UsersRound },
