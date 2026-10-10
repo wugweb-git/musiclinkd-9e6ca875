@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient, softSelect } from "@/lib/portfolio.functions";
-import { GOOGLE_MAPS, placeLine } from "@/lib/place";
+import { GOOGLE_MAPS, placeLine, shownPlace } from "@/lib/place";
 import { CITY_PATTERN, INDIAN_STATES } from "@/lib/validation";
 import { createBusinessPage } from "@/lib/pages.functions";
 import { AMENITY } from "@/lib/bookable-photos.functions";
@@ -564,6 +564,8 @@ export const searchPeople = createServerFn({ method: "GET" })
         /** Several roles or genres: anyone with any of them (Search filters, multi-select). */
         roles: z.array(z.string().max(60)).max(20).optional(),
         genres: z.array(z.string().max(60)).max(20).optional(),
+        /** City labels: anyone whose city holds any of them (Search filters, 10 Oct 2026). */
+        cities: z.array(z.string().max(60)).max(10).optional(),
         verifiedOnly: z.boolean().optional(),
         limit: z.number().int().min(1).max(60).optional(),
         /** Skip the exact count when the screen never shows it; the count is the slow part. */
@@ -595,6 +597,10 @@ export const searchPeople = createServerFn({ method: "GET" })
       if (data.genre) query = query.contains("genres", [data.genre]);
       if (data.roles?.length) query = query.overlaps("roles", data.roles);
       if (data.genres?.length) query = query.overlaps("genres", data.genres);
+      const cities = (data.cities ?? [])
+        .map((c) => c.replace(/[,()"'\\%*]/g, " ").trim())
+        .filter(Boolean);
+      if (cities.length) query = query.or(cities.map((c) => `city.ilike.%${c}%`).join(","));
       if (data.verifiedOnly) query = query.eq("is_verified", true);
       if (businessIds.length) query = query.not("id", "in", `(${businessIds.join(",")})`);
       return query.order("is_verified", { ascending: false }).limit(data.limit ?? 40);
@@ -895,12 +901,17 @@ async function setUpBusiness(
  * Search filters (plan §9). Counted from the stored profiles, never estimated.
  */
 export const peopleFacets = createServerFn({ method: "GET" }).handler(
-  async (): Promise<{ roles: Record<string, number>; genres: Record<string, number> }> => {
+  async (): Promise<{
+    roles: Record<string, number>;
+    genres: Record<string, number>;
+    /** By the city part of the stored place (shownPlace). */
+    cities: Record<string, number>;
+  }> => {
     const client = await anonClient();
     const businessIds = await businessProfileIds(client);
     let query = client
       .from("profiles")
-      .select("roles, genres")
+      .select("roles, genres, city")
       .eq("visibility", "public")
       .or(APPEARS_IN_DISCOVER)
       .limit(5000);
@@ -909,11 +920,18 @@ export const peopleFacets = createServerFn({ method: "GET" }).handler(
     if (error) throw new Error(error.message);
     const roles: Record<string, number> = {};
     const genres: Record<string, number> = {};
-    for (const r of (data ?? []) as { roles: string[] | null; genres: string[] | null }[]) {
+    const cities: Record<string, number> = {};
+    for (const r of (data ?? []) as {
+      roles: string[] | null;
+      genres: string[] | null;
+      city: string | null;
+    }[]) {
       for (const x of r.roles ?? []) roles[x] = (roles[x] ?? 0) + 1;
       for (const x of r.genres ?? []) genres[x] = (genres[x] ?? 0) + 1;
+      const city = shownPlace(r.city);
+      if (city) cities[city] = (cities[city] ?? 0) + 1;
     }
-    return { roles, genres };
+    return { roles, genres, cities };
   },
 );
 

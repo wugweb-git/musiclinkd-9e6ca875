@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — Search filters on every tab, "N of M" count, offline banner (10 Oct, owner)
+
+- Search's count line reads "**N** of M results": N on screen, M the database's exact count
+  for the tab (or every tab on All). Hidden while loading. The "Showing the first N" line it
+  replaces is gone.
+- Filters on every tab, in the same Filters panel, "Filters · N" pill and removable ink chips:
+  People (role, genre, city), Businesses (business type, city), Opportunities (role needed,
+  city), Gear (tool category from instruments, equipment categories and DAW tools, city), Studios,
+  Collabs and Services (city), Work (Music or video, genre). Every option shows a real count;
+  every filter is in the address, so Back and a shared link restore it. Changing tab drops them.
+- A Work tab: published music and video from public profiles, counted in full (searchEverything
+  `work` group); genre is the owner's genres, since work carries none. No "Why" link on work yet:
+  search_feedback only takes the existing kinds.
+- The offline banner shows on Search when the device loses its connection, with Retry.
+- `searchFacets` (global-search.functions.ts) counts each tab's filter options; `peopleFacets`
+  also counts cities, and `searchPeople` takes `cities`.
+
 ### Changed — amenities and equipment belong to every business (10 Oct, owner)
 
 - Amenities and equipment are the business's own, for every business type, not a studio record:

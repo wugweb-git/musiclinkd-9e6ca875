@@ -127,6 +127,15 @@ export function workType(kind: string) {
   return workTypes.find((t) => t.kind === kind) ?? workTypes[0]!;
 }
 
+/**
+ * Search → Work narrows by what a piece plays: Music is audio work, Video is video work
+ * (owner, 10 Oct 2026). The kinds behind each come from `workTypes[].media`.
+ */
+export const workMediaFilters: { slug: "music" | "video"; label: string; sortOrder: number }[] = [
+  { slug: "music", label: "Music", sortOrder: 0 },
+  { slug: "video", label: "Video", sortOrder: 1 },
+];
+
 export const creditRoles = [
   "Artist",
   "Singer",
