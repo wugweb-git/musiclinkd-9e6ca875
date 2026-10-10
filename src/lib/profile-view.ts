@@ -51,18 +51,12 @@ function roleLabel(key: string | undefined | null, labels?: TaxonomyLabels): str
   return labels?.["person_types"]?.[key] ?? roleDefs.find((r) => r.key === key)?.label ?? key;
 }
 
-const availabilityFromRow: Record<string, AvailabilityState> = {
-  // The onboarding "Open to work" switch (owner, 6 Oct 2026).
-  Available: "Available",
-  Shows: "Available for Shows",
-  "Session Work": "Available for Session Work",
-  Collaborations: "Looking for Collaboration",
-  Touring: "Touring",
-};
-
-/** profiles.availability as the status the profile header shows (StatusBadge); undefined if none. */
+/**
+ * profiles.availability as the status the profile header shows (StatusBadge); undefined if none.
+ * The only stored value is "Available", the onboarding "Open to work" switch (owner, 10 Oct 2026).
+ */
 export function availabilityOfRow(value: string | null | undefined): AvailabilityState | undefined {
-  return value ? availabilityFromRow[value] : undefined;
+  return value === "Available" ? "Available" : undefined;
 }
 
 const roleTypeFromKey: Record<string, ProfileRole> = {
@@ -103,7 +97,7 @@ export function profileFromRow(row: ProfileRow): TalentProfile {
     primaryRole: "",
     location: "",
     roleType: roleTypeFromKey[row.roles?.[0] ?? ""] ?? "Other",
-    availability: row.availability ? availabilityFromRow[row.availability] : undefined,
+    availability: availabilityOfRow(row.availability),
     yearsActive: experienceLevels.find((e) => e.key === row.experience_level)?.label ?? "",
   };
 }
@@ -345,6 +339,8 @@ export function mergeSections(
     opportunities: pick(base.opportunities, storedOpportunities(sections, labels)),
     market: pick(base.market, storedMarket(sections, labels)),
     studio: base.studio ?? storedStudio(sections),
+    // Persona badges for At a glance, labelled from the taxonomy (owner, 10 Oct 2026).
+    personaBadges: (sections.persona_badges ?? []).map((b) => labels?.["persona_badges"]?.[b] ?? b),
     verification:
       base.verification !== "Basic"
         ? base.verification

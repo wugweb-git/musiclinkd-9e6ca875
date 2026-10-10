@@ -8,7 +8,6 @@ import {
   Camera,
   ChevronDown,
   CircleCheck,
-  CircleSlash,
   Loader2,
   Pencil,
   BadgeCheck,
@@ -320,40 +319,15 @@ export function VerifiedMark({ tier, size = 20 }: { tier: string; size?: number 
   );
 }
 
-/** Busy and Touring mean the person is not taking work; everything else is open. */
-// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
-export function isOpenForWork(status?: string | undefined) {
-  return Boolean(status) && status !== "Busy" && status !== "Touring";
-}
-
-/** Said, in so many words, that they are not taking work. An unset status is not a no. */
-// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
-export function isUnavailableForWork(status?: string | undefined) {
-  return status === "Busy" || status === "Touring";
-}
-
-/** One word for a status, so the label stays a label. */
-const availabilityWord: Record<string, string> = {
-  Available: "Available",
-  "In Studio": "Recording",
-  "Available for Shows": "Available",
-  "Looking for Collaboration": "Collaborating",
-  "Available for Session Work": "Available",
-  Selective: "Selective",
-  Busy: "Busy",
-  Touring: "Touring",
-};
-
+/** "Available" is the only status (owner, 10 Oct 2026); the profile reads it as "Open to work". */
 export function StatusBadge({ status }: { status: string }) {
-  const open = isOpenForWork(status);
-  const Icon = open ? CircleCheck : CircleSlash;
+  if (status !== "Available") return null;
   return (
     <StatusPill
-      label={availabilityWord[status] ?? status}
-      tone={open ? "good" : "neutral"}
-      icon={<Icon size={12} aria-hidden />}
+      label="Open to work"
+      tone="good"
+      icon={<CircleCheck size={12} aria-hidden />}
       className="shrink-0"
-      title={status}
     />
   );
 }

@@ -1481,11 +1481,12 @@ export function AccountTypeCard({
   hollow?: boolean | undefined;
 }) {
   // Resting place of each piece in the top-right composition, and where it fans to on press.
-  // The two back pieces sit smaller and fainter, so the cluster has depth.
+  // The two back pieces sit smaller and fainter, so the cluster has depth. Spread so no piece
+  // covers another's text (owner, 10 Oct 2026: the Studio A slip hid the ticket's words).
   const slots = [
-    "right-32 top-9 h-16 w-14 -rotate-[16deg] opacity-80 group-hover:-rotate-[22deg] group-hover:-translate-x-2 group-active:-rotate-[22deg]",
-    "right-11 top-3 z-10 h-22 w-22 rotate-6 group-hover:-translate-y-1 group-active:-translate-y-1",
-    "right-3 top-14 h-14 w-12 rotate-12 opacity-80 group-hover:rotate-[22deg] group-hover:translate-x-1 group-active:rotate-[22deg]",
+    "right-41 top-9 h-16 w-14 -rotate-[16deg] opacity-80 group-hover:-rotate-[22deg] group-hover:-translate-x-2 group-active:-rotate-[22deg]",
+    "right-16 top-3 z-10 h-22 w-22 rotate-6 group-hover:-translate-y-1 group-active:-translate-y-1",
+    "right-2 top-10 h-14 w-12 rotate-12 opacity-80 group-hover:rotate-[22deg] group-hover:translate-x-1 group-active:rotate-[22deg]",
   ];
   const Root = onSelect ? "button" : "div";
   return (

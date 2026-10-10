@@ -5,8 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { Plus, Search, Bookmark, Briefcase, SlidersHorizontal } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, IconBtnLink, Sheet } from "@/components/ml/ui";
 import { Card, EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
-import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
-import { opportunityCategories } from "@/data/opportunities";
+import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
+import { roleIcon } from "@/lib/role-icons";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { listMyApplications } from "@/lib/applications.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
@@ -81,8 +81,19 @@ function OpportunitiesHome() {
         ? all
         : all.filter((o) => myCity && sameCity(o.city, myCity));
 
-  const openCount = (key: string) =>
-    all.filter((o) => o.status === "open" && o.categoryKey === key).length;
+  const openCount = (slug: string) =>
+    all.filter((o) => o.status === "open" && o.roleKey === slug).length;
+  // Needs are the taxonomy's person types, the list Post an opportunity picks from; the ones with
+  // open posts lead (owner, 10 Oct 2026: the hardcoded category list is retired).
+  const needs = useMemo(
+    () =>
+      [...(taxonomy?.person_types ?? [])].sort(
+        (a, b) => Number(openCount(b.slug) > 0) - Number(openCount(a.slug) > 0),
+      ),
+    // openCount reads `all`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [taxonomy, all],
+  );
 
   // How many applications are still live, from the applications themselves.
   const readApplications = useServerFn(listMyApplications);
@@ -161,11 +172,11 @@ function OpportunitiesHome() {
           <h2 className="mb-2 text-sm font-semibold">Browse by need</h2>
           {/* A side-scrolling row (owner, 5 Oct); each need opens Search with it filled in. */}
           <div className="rail no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
-            {opportunityCategories.map((c) => {
-              const Icon = categoryIcon(c.key);
+            {needs.map((c) => {
+              const Icon = roleIcon(c);
               return (
                 <Link
-                  key={c.key}
+                  key={c.slug}
                   to="/search"
                   search={{ tab: "opportunities", q: c.label }}
                   className="state-layer grid min-h-touch w-44 shrink-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-sm border border-border bg-card p-3"
@@ -174,7 +185,7 @@ function OpportunitiesHome() {
                   <span className="min-w-0">
                     <span className="block truncate text-1 font-semibold">{c.label}</span>
                     <span className="block text-1 text-muted-foreground">
-                      {openCount(c.key)} open
+                      {openCount(c.slug)} open
                     </span>
                   </span>
                 </Link>

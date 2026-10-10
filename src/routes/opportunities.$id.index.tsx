@@ -6,7 +6,7 @@ import { Bookmark, Share2, CalendarDays, MapPin, Wallet, CheckCircle2, Circle } 
 import { ActionBar, Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import { ApplicantFit, statusTone, useSavedOpportunities } from "@/components/ml/opportunity";
-import { categoryLabel, payParts } from "@/data/opportunities";
+import { payParts } from "@/data/opportunities";
 import { loadDbOpportunity, opportunityViewSource } from "@/lib/opportunity-view";
 import { usePreviousPath } from "@/lib/flow-back";
 import { myApplicationTo, recordOpportunityView } from "@/lib/applications.functions";
@@ -92,7 +92,7 @@ function OpportunityDetail() {
   return (
     <Screen>
       <TopBar
-        title={categoryLabel(o.categoryKey)}
+        title={o.role || "Opportunity"}
         subtitle={o.closesAt}
         back="/opportunities"
         right={

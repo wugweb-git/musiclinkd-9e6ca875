@@ -5,6 +5,28 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — screens follow the cleaned taxonomy (10 Oct, owner)
+
+- Post an opportunity: "Role needed" picks one person type from the taxonomy (the onboarding
+  pills) and stores its slug in role_required. Cards, detail, search, matching and Browse by need
+  show the person type's label; older free-text roles show as stored. The hardcoded
+  opportunity category list is gone.
+- Market: a listing's category is the tool listed: instruments, production hardware
+  (equipment_categories) or software (daw_tools, under one Software category). Labels come from
+  those three lists; a stored value no list holds shows as stored.
+- About you asks for an optional Headline (120 characters) before the bio.
+- Sign-in and sign-up offer Continue with Apple under Google.
+- Availability is only "Available": the profile badge reads "Open to work", and Privacy
+  settings' "Available for" list is now one Open to work switch.
+- Genres: up to three, for talent and business ("Pick up to three.").
+- At a glance shows the person's persona badges as one wide tile; response time is no longer
+  shown on bookable pages or cards.
+- Experience: "How long have you worked in music?" also sits under Where you work; Create
+  business asks how long the business has been running (optional, profiles.experience_level).
+- Select screen: the Business banner's art pieces are spread so none covers another's text.
+- Removed hardcoded lists no screen used: service categories, service availability states,
+  "Available for", role specialisations and market categories.
+
 ### Changed — amenities and equipment belong to every business (10 Oct, owner)
 
 - Amenities and equipment are the business's own, for every business type, not a studio record:

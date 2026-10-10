@@ -24,7 +24,7 @@ export type RecommendedPerson = DirectoryPerson & {
   /** Every reason that scored, strongest first; `reason` is the first. */
   reasons: string[];
   score: number;
-  /** profiles.availability as stored ("Shows", "Session Work"); null when not set. */
+  /** profiles.availability as stored: "Available" or null (owner, 10 Oct 2026). */
   availability: string | null;
 };
 export type RecommendedPick = { id: string; reason: string; score: number };
@@ -286,8 +286,11 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
       if (!following.has(c.id) && !savedTalent.has(c.id)) continue;
       for (const r of c.roles ?? []) likedRoles.set(r, (likedRoles.get(r) ?? 0) + 1);
     }
-    // Roles the viewer is casting for, from their own open opportunities (free text).
-    const castingStems = new Set(myOpportunities.flatMap((o) => stems(o.role_required ?? "")));
+    // Roles the viewer is casting for, from their own open opportunities: a person-type slug, or
+    // free text on older rows (owner, 10 Oct 2026).
+    const castingStems = new Set(
+      myOpportunities.flatMap((o) => stems(label("person_types", o.role_required ?? ""))),
+    );
 
     /* People ------------------------------------------------------------------------------ */
     const people: RecommendedPerson[] = [];
@@ -368,7 +371,7 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
       if (o.creator_profile_id === me || applied.has(o.id)) continue;
       if (!inReach(null, o.location)) continue;
       const s = new Scored();
-      const role = (o.role_required ?? "")
+      const role = label("person_types", o.role_required ?? "")
         .split(/,\s*/)
         .find((part) => stems(part).some((w) => skillStems.has(w)));
       if (role) s.add(5, `Matches your skills: ${role.trim()}`);

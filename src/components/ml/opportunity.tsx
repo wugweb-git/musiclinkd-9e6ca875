@@ -5,34 +5,12 @@
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback } from "react";
-import {
-  Bookmark,
-  CalendarDays,
-  Clapperboard,
-  Disc3,
-  Drum,
-  Guitar,
-  Handshake,
-  Headphones,
-  Mic,
-  MicVocal,
-  Music,
-  PenLine,
-  Piano,
-  Podcast,
-  SlidersHorizontal,
-  Sparkles,
-  Speaker,
-  Store,
-  Ticket,
-  type LucideIcon,
-} from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { Price, StatusPill, Stars, type Tone } from "@/components/ml/kit";
 import { Btn, BtnLink, IconBtn, VerifiedBadge } from "@/components/ml/ui";
 import { PersonAvatar } from "./person-avatar";
 import { joinParts } from "@/lib/utils";
 import {
-  categoryLabel,
   payParts,
   savedOpportunityKey,
   type Opportunity,
@@ -51,33 +29,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { fitLine, type Fit } from "@/lib/fit";
 import { sized } from "@/lib/image-url";
-
-/** One icon per requirement type, in place of the emoji the categories carried. */
-const categoryIcons: Record<string, LucideIcon> = {
-  singer: MicVocal,
-  guitarist: Guitar,
-  producer: SlidersHorizontal,
-  composer: Music,
-  lyricist: PenLine,
-  mixing: SlidersHorizontal,
-  mastering: Disc3,
-  session: Drum,
-  dj: Headphones,
-  sound: Speaker,
-  studio: Store,
-  venue: Ticket,
-  equipment: Piano,
-  bandmember: Handshake,
-  collab: Sparkles,
-  gig: Ticket,
-  recording: Mic,
-  film: Clapperboard,
-  podcast: Podcast,
-  event: CalendarDays,
-};
-
-// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
-export const categoryIcon = (key: string): LucideIcon => categoryIcons[key] ?? Music;
 
 // eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function statusTone(s: OpportunityStatus): Tone {
@@ -204,7 +155,7 @@ export function OpportunityCard({
 }) {
   const pay = payParts(o);
   // Who and when first, then what, then the terms as one quiet line. At most one label: Featured.
-  const terms = [categoryLabel(o.categoryKey), o.workMode, o.city].filter(Boolean).join(" · ");
+  const terms = [o.role, o.workMode, o.city].filter(Boolean).join(" · ");
   return (
     <article className="relative overflow-hidden rounded-lg border border-border bg-card">
       <Link to="/opportunities/$id" params={{ id: o.id }} className="block">

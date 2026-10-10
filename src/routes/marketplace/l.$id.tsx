@@ -153,7 +153,10 @@ function ListingDetail() {
   const facts = goods
     ? [
         { label: "Listed for", value: rental ? "Rent" : "Sale" },
-        { label: "Type", value: gearTypeOf(l.itemCategory, taxonomy)?.label ?? "" },
+        {
+          label: "Type",
+          value: gearTypeOf(l.itemCategory, taxonomy)?.label ?? l.itemCategory ?? "",
+        },
         { label: "Brand", value: l.brand ?? "" },
         { label: "Model", value: l.model ?? "" },
         { label: "Fulfilment", value: fulfil },

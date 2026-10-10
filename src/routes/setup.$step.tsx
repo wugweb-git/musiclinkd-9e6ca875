@@ -722,7 +722,15 @@ function StepBody({
             </div>
             <PrivateDetailsFields />
           </section>
-          <section className="border-t border-border p-4">
+          <section className="space-y-4 border-t border-border p-4">
+            {/* The profile's one-line headline, before the bio (owner, 10 Oct 2026). */}
+            <InlineField
+              inputId="headline"
+              label="Headline (optional)"
+              value={d.headline}
+              onChange={(v) => set({ headline: v })}
+              maxLength={120}
+            />
             <InlineField
               inputId="bio"
               label="Short bio (optional)"
@@ -831,10 +839,14 @@ function StepBody({
     case "genres":
       return (
         <ChipPicker
-          // One genre list for every persona: the 47 canonical genres (Notion Master Taxonomy).
+          // One genre list for every persona, up to three (Notion Master Taxonomy; owner, 10 Oct 2026).
           options={(tx?.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}
           selected={d.genres}
-          onToggle={(v) => toggle("genres", v)}
+          max={3}
+          onToggle={(v) => {
+            if (!d.genres.includes(v) && d.genres.length >= 3) return;
+            toggle("genres", v);
+          }}
         />
       );
 
@@ -850,6 +862,17 @@ function StepBody({
               max={tx?.work_modes.length ?? 4}
               placeholder="Choose"
               onChange={(v) => set({ workModes: v })}
+            />
+          </DrawerField>
+          {/* Experience sits under Where you work too (owner, 10 Oct 2026): the same question and
+              drawer as after the instruments, one answer (draft.experience). */}
+          <DrawerField label="How long have you worked in music?">
+            <SheetSelect
+              title="How long have you worked in music?"
+              value={d.experience}
+              options={choicesFor(tx?.experience_levels)}
+              placeholder="Choose"
+              onChange={(v) => set({ experience: v as OnboardingDraft["experience"] })}
             />
           </DrawerField>
           {/* Availability is one switch (owner, 6 Oct 2026), saved as "Available" or nothing. */}

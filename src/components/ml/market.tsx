@@ -15,6 +15,7 @@ import {
   LocateFixed,
   Search,
   Guitar,
+  Laptop,
   MicVocal,
   SlidersVertical,
   Package,
@@ -152,6 +153,8 @@ const categoryIcons: Record<string, LucideIcon> = {
   controllers: Disc3,
   pa_systems: Megaphone,
   backline: Cable,
+  // Every DAW tool (daw_tools) sits under Software (owner, 10 Oct 2026).
+  software: Laptop,
   instruments: Guitar,
   "audio-gear": MicVocal,
   audio: MicVocal,

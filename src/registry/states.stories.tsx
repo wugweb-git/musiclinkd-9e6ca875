@@ -170,12 +170,9 @@ export const Feedback: Story = {
 
       <Group
         title="Status"
-        note="Colour is never the only carrier: availability is a word and an icon, and the grey states read the same without colour."
+        note="Colour is never the only carrier: availability is a word and an icon. Available is the only status."
       >
         <StatusBadge status="Available" />
-        <StatusBadge status="In Studio" />
-        <StatusBadge status="Busy" />
-        <StatusBadge status="Touring" />
       </Group>
 
       <Group title="Verification" note="A trust signal, not decoration. Tier is the tooltip.">

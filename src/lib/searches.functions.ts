@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
+import { TOOL_LISTS } from "@/lib/listing-category";
 
 /*
  * Searches people ran and searches they kept. Every search is recorded as a search_events row
@@ -78,19 +79,14 @@ async function mostListed(client: SupabaseClient, scope: SearchScope): Promise<s
       for (const g of p.genres ?? []) bump("genres", g);
   }
   if (scope !== "discover") {
-    let listings = client.from("marketplace_listings").select("item_category, item_category_kind");
+    let listings = client.from("marketplace_listings").select("item_category");
     if (scope !== "global")
       listings = listings.eq("category", scope === "rent" ? "gear_rental" : "gear_sale");
     const { data } = await listings;
-    for (const l of (data ?? []) as {
-      item_category: string | null;
-      item_category_kind: string | null;
-    }[])
-      if (l.item_category)
-        bump(
-          l.item_category_kind === "instrument" ? "instruments" : "equipment_categories",
-          l.item_category,
-        );
+    // A listing's category is the tool listed: an instrument, production hardware or software
+    // (owner, 10 Oct 2026); its label comes from whichever of the three lists holds the slug.
+    for (const l of (data ?? []) as { item_category: string | null }[])
+      if (l.item_category) bump("tool", l.item_category);
   }
   const top = [...counts.entries()].sort((a, b) => b[1].n - a[1].n).slice(0, 8);
   if (!top.length) return [];
@@ -101,12 +97,15 @@ async function mostListed(client: SupabaseClient, scope: SearchScope): Promise<s
       "slug",
       top.map(([id]) => id.split(":")[1]!),
     );
-  const label = new Map(
-    ((options ?? []) as { category_key: string; slug: string; label: string }[]).map((o) => [
-      `${o.category_key}:${o.slug}`,
-      o.label,
-    ]),
-  );
+  const label = new Map<string, string>();
+  for (const o of (options ?? []) as { category_key: string; slug: string; label: string }[]) {
+    label.set(`${o.category_key}:${o.slug}`, o.label);
+    if (
+      TOOL_LISTS.includes(o.category_key as (typeof TOOL_LISTS)[number]) &&
+      !label.has(`tool:${o.slug}`)
+    )
+      label.set(`tool:${o.slug}`, o.label);
+  }
   return top.map(([id]) => label.get(id)).filter((l): l is string => Boolean(l));
 }
 

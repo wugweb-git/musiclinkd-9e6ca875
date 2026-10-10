@@ -703,6 +703,8 @@ export const createMyBusiness = createServerFn({ method: "POST" })
           .regex(/^[a-z0-9._]{3,30}$/)
           .optional(),
         tagline: z.string().trim().max(160).optional(),
+        /** How long the business has run: an experience_levels value (owner, 10 Oct 2026). */
+        experienceLevel: z.string().trim().max(40).optional(),
         city: z.string().trim().regex(CITY_PATTERN),
         pinCode: z.string().regex(/^[1-9]\d{5}$/),
         state: z
@@ -789,6 +791,7 @@ async function setUpBusiness(
     type: string;
     name: string;
     tagline?: string | undefined;
+    experienceLevel?: string | undefined;
     city: string;
     pinCode: string;
     state?: string | undefined;
@@ -816,6 +819,7 @@ async function setUpBusiness(
       ...(data.genres?.length ? { genres: data.genres } : {}),
       ...(data.pinCode ? { pin_code: data.pinCode } : {}),
       ...(data.tagline ? { headline: data.tagline } : {}),
+      ...(data.experienceLevel ? { experience_level: data.experienceLevel } : {}),
       ...(role && !current?.roles?.length ? { roles: [role] } : {}),
       // Creating the business is the end of a business account's onboarding; without this the
       // next sign-in would send it back to /onboarding.

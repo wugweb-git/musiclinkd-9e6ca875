@@ -13,7 +13,7 @@
  * counted as a miss, so the percentage is out of what could match.
  */
 
-import { categoryLabel, type Opportunity } from "@/data/opportunities";
+import type { Opportunity } from "@/data/opportunities";
 import { sameCity } from "@/lib/place";
 import type { TaxonomyCategory, TaxonomyOption } from "@/lib/taxonomy";
 
@@ -70,11 +70,8 @@ function label(labels: Labels, category: TaxonomyCategory, value: string): strin
 /** What a stored opportunity asks for, from its screen shape. */
 export function fitTarget(o: Opportunity): FitTarget {
   const roles = o.requirements.map((r) => r.label);
-  // A category that is a role ("Guitarist") counts too; the catch-all "Collaborator" does not.
-  if (o.kind === "Person") {
-    const cat = categoryLabel(o.categoryKey);
-    if (cat && !roles.some((r) => norm(r) === norm(cat))) roles.push(cat);
-  }
+  // The role needed (a person type's label, or older free text) counts as a role too.
+  if (o.role && !roles.some((r) => norm(r) === norm(o.role))) roles.push(o.role);
   return { roles, genres: o.genreKeys ?? [], city: o.city };
 }
 

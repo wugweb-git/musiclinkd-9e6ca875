@@ -1,6 +1,6 @@
 import { talents, studios, trending } from "./discover";
 import type { PriceParts } from "@/lib/price";
-import { categoryLabel, myApplications, opportunities } from "./opportunities";
+import { myApplications, opportunities } from "./opportunities";
 
 export type Stat = {
   key: string;
@@ -327,7 +327,7 @@ export function opportunityTiles(): ForYouTile[] {
       label: "Matching you",
       hint: open
         .slice(0, 3)
-        .map((o) => categoryLabel(o.categoryKey))
+        .map((o) => o.role)
         .join(", "),
       to: "/opportunities",
     },
