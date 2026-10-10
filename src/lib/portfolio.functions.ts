@@ -531,13 +531,10 @@ export type ProfileSections = {
     turnaround: string | null;
     mode: string | null;
     availability: string | null;
-    /** service_categories slug. */
-    category: string | null;
     /** pricing_models slug. */
     pricing_model: string | null;
     /** work_modes slugs. */
     work_modes: string[];
-    categories?: string[];
     deliverables?: string[];
   }[];
   experience: {
@@ -581,14 +578,7 @@ export type ProfileSections = {
   rate_unit: string | null;
   /** Measured from messages when there are enough replies (profile_response_time), else as stored. */
   response_time: string | null;
-  /** budget_type slug. */
-  budget_tier: string | null;
   persona_badges: string[];
-  /** Per role, in the order of the profile's roles. Detail values are taxonomy slugs or numbers. */
-  role_details: {
-    role_slug: string;
-    details: Record<string, string | number | boolean | string[] | null>;
-  }[];
   /** Open opportunities this profile posted. */
   opportunities: OpportunityRow[];
   /** Marketplace listings this profile sells, newest first. */
@@ -605,7 +595,7 @@ export type ProfileSections = {
 const REVIEW = "id, author_name, author_org, context, rating, body, response";
 const WORK =
   "id, title, kind, description, role, collaborators, cover_url, media_url, release_year";
-const FLAGS = "roles, trust_badges, is_verified, hourly_rate_paise, budget_tier, persona_badges";
+const FLAGS = "trust_badges, is_verified, hourly_rate_paise, persona_badges";
 
 /**
  * How fast this profile replies, measured from its messages (median over the last 90 days). Null
@@ -629,7 +619,6 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     reviews,
     portfolio,
     profile,
-    roleDetails,
     opportunities,
     listings,
     studios,
@@ -638,7 +627,7 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     client
       .from("profile_services")
       .select(
-        "id, name, description, price_paise, price_unit, price_note, turnaround, mode, availability, category, categories, deliverables, pricing_model, work_modes",
+        "id, name, description, price_paise, price_unit, price_note, turnaround, mode, availability, deliverables, pricing_model, work_modes",
       )
       .eq("profile_id", profileId)
       // Profile cards show live services only: drafts are the owner's, paused ones take no enquiries.
@@ -683,12 +672,11 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
       `${FLAGS}, rate_paise, rate_unit, response_time`,
       FLAGS,
     ),
-    client.from("profile_role_details").select("role_slug, details").eq("profile_id", profileId),
     client
       .from("opportunities")
       // The same columns the Opportunities screen reads, so a profile draws the same card.
       .select(
-        "id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note, collaboration_type, location, status, applicant_count, created_at, creator:profiles!opportunities_creator_profile_id_fkey(id, username, display_name, avatar_url, city, is_verified, visibility)",
+        "id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note, location, status, applicant_count, created_at, creator:profiles!opportunities_creator_profile_id_fkey(id, username, display_name, avatar_url, city, is_verified, visibility)",
       )
       .eq("creator_profile_id", profileId)
       .eq("status", "open")
@@ -714,7 +702,6 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     reviews,
     portfolio,
     profile,
-    roleDetails,
     opportunities,
     listings,
     studios,
@@ -722,21 +709,14 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
   if (failed?.error) throw new Error(failed.error.message);
 
   const flags = profile.data as {
-    roles?: string[] | null;
     trust_badges?: string[];
     is_verified?: boolean;
     hourly_rate_paise?: number | null;
     rate_paise?: number | null;
     rate_unit?: string | null;
     response_time?: string | null;
-    budget_tier?: string | null;
     persona_badges?: string[];
   } | null;
-  const roleOrder = flags?.roles ?? [];
-  const rank = (slug: string) => {
-    const i = roleOrder.indexOf(slug);
-    return i < 0 ? roleOrder.length : i;
-  };
   return {
     services: (services.data ?? []) as ProfileSections["services"],
     experience: (experience.data ?? []) as ProfileSections["experience"],
@@ -763,11 +743,7 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
           rate_unit: flags?.hourly_rate_paise != null ? "hour" : null,
         }),
     response_time: measured ?? flags?.response_time ?? null,
-    budget_tier: flags?.budget_tier ?? null,
     persona_badges: flags?.persona_badges ?? [],
-    role_details: ((roleDetails.data ?? []) as ProfileSections["role_details"]).sort(
-      (a, b) => rank(a.role_slug) - rank(b.role_slug),
-    ),
     // The creator join is one row per opportunity; the generated types read it as a list.
     opportunities: (opportunities.data ?? []) as unknown as ProfileSections["opportunities"],
     listings: ((listings.data ?? []) as Omit<ListingRow, "seller">[]).map((l) => ({
@@ -831,37 +807,6 @@ export const saveMyExperience = createServerFn({ method: "POST" })
     );
     if (error) throw new Error(error.message);
     return { count: data.items.length };
-  });
-
-/** One role's professional details (turnaround, setup…), as Edit profile shows them. */
-export const saveMyRoleDetails = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z
-      .object({
-        roleSlug: z.string().min(1).max(80),
-        details: z.record(
-          z.string().max(80),
-          z.union([
-            z.string().max(300),
-            z.number(),
-            z.boolean(),
-            z.array(z.string().max(80)).max(30),
-            z.null(),
-          ]),
-        ),
-      })
-      .parse(d),
-  )
-  .handler(async ({ context, data }) => {
-    const client = context.supabase as unknown as SupabaseClient;
-    const { error } = await client
-      .from("profile_role_details")
-      .update({ details: data.details, updated_at: new Date().toISOString() } as never)
-      .eq("profile_id", context.userId)
-      .eq("role_slug", data.roleSlug);
-    if (error) throw new Error(error.message);
-    return { ok: true };
   });
 
 export type WorkEventCounts = {

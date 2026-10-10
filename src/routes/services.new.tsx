@@ -5,23 +5,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
   ArrowLeftRight,
-  Building2,
-  Gauge,
-  GraduationCap,
-  Guitar,
   FolderKanban,
   Headphones,
   Hourglass,
   Laptop,
   MapPin,
-  MicVocal,
-  Music,
-  PenLine,
-  Radio,
   Plane,
-  SlidersVertical,
-  Sparkles,
-  Speaker,
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
@@ -44,7 +33,7 @@ import type { ServiceItem } from "@/data/profile";
 import { useAuth } from "@/hooks/use-auth";
 import { useRefreshServices, useService, useServiceOptions } from "@/hooks/use-services";
 import { haptic } from "@/lib/haptics";
-import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
+import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
 import { getMyBookableEquipment } from "@/lib/bookable-owner.functions";
@@ -119,20 +108,6 @@ export const Route = createFileRoute("/services/new")({
   component: NewService,
 });
 
-/** A line icon per service category, for the drawer. */
-const categoryIcons: Record<string, LucideIcon> = {
-  vocals: MicVocal,
-  mixing: SlidersVertical,
-  mastering: Gauge,
-  production: Music,
-  instrument: Guitar,
-  songwriting: PenLine,
-  live: Speaker,
-  studio: Building2,
-  teaching: GraduationCap,
-  hosting: Radio,
-};
-
 function NewService() {
   const search = Route.useSearch();
   const id = search.id;
@@ -151,14 +126,8 @@ function NewService() {
       },
     });
 
-  const { user, signedIn } = useAuth();
+  const { signedIn } = useAuth();
   const { options, pending: optionsPending, error: optionsError } = useServiceOptions();
-  const loadProfile = useServerFn(getMyProfile);
-  const profile = useQuery({
-    queryKey: ["profile", "me", user?.id ?? null],
-    queryFn: () => loadProfile(),
-    enabled: signedIn,
-  });
   const editing = useService(id ?? "");
   const save = useServerFn(saveService);
   const refresh = useRefreshServices();
@@ -170,7 +139,6 @@ function NewService() {
     enabled: signedIn,
   });
 
-  const [categories, setCategories] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deliverables, setDeliverables] = useState<string[]>([]);
@@ -205,7 +173,6 @@ function NewService() {
   useEffect(() => {
     if (!source || filled === source.id) return;
     setFilled(source.id);
-    setCategories(source.categories);
     setTitle(source.name);
     setDescription(source.description ?? "");
     setDeliverables(source.deliverables);
@@ -239,27 +206,6 @@ function NewService() {
       </Screen>
     );
   }
-
-  // Categories this person's roles offer; every category when they have no role, or when none of
-  // their roles maps to a category. Stored categories stay pickable.
-  const roles = ((profile.data as { roles?: string[] | null } | null | undefined)?.roles ??
-    []) as string[];
-  const offered = new Set(roles.flatMap((r) => options?.categoriesByRole[r] ?? []));
-  // The specific categories (Playback singing, Club nights…); a broad one (Vocals, Live) shows only
-  // when nothing specific sits under it, or when this service already uses it.
-  const allCategories = options?.categories ?? [];
-  const broadWithChildren = new Set(allCategories.map((c) => c.parent).filter(Boolean));
-  const categoryOptions = allCategories
-    .filter(
-      (c) =>
-        source?.categories.includes(c.slug) ||
-        ((offered.size === 0 || offered.has(c.slug)) && !broadWithChildren.has(c.slug)),
-    )
-    .map((c) => ({
-      value: c.slug,
-      label: c.label,
-      icon: categoryIcons[c.slug] ?? categoryIcons[c.parent ?? ""] ?? Sparkles,
-    }));
 
   const deliveryOptions = [
     ...deliveryTimes,
@@ -314,7 +260,6 @@ function NewService() {
   const ready =
     step === "details"
       ? Boolean(
-          categories.length &&
           title.trim() &&
           description.trim() &&
           deliverables.length &&
@@ -334,8 +279,6 @@ function NewService() {
           ...(source ? { id: source.id } : {}),
           name: title.trim() || "Untitled service",
           description: description.trim() || null,
-          category: categories[0] ?? null,
-          categories,
           example_ids: band ? [] : exampleIds,
           ...(isBusiness && !band
             ? { amenity_slugs: amenitySlugs, equipment_ids: equipmentIds }
@@ -409,20 +352,6 @@ function NewService() {
             <Loading rows={3} />
           ) : (
             <div className="space-y-4">
-              <Field
-                label="Categories"
-                id="service-categories"
-                hint="Select up to 3 categories to help clients find your service"
-              >
-                <SheetMultiSelect
-                  title="Categories"
-                  value={categories}
-                  options={categoryOptions}
-                  onChange={setCategories}
-                  placeholder="What are you offering?"
-                  max={3}
-                />
-              </Field>
               <Field label="Title" id="service-title">
                 <input
                   value={title}

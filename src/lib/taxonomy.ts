@@ -17,7 +17,6 @@ const CATEGORIES = [
   // Onboarding choices (20260922170000_onboarding_choices.sql and earlier): metadata.app_key is
   // the value profiles store, metadata.description the hint a drawer shows.
   "work_modes",
-  "available_for",
   "intents",
   "discovery_prefs",
   "experience_levels",
@@ -28,10 +27,7 @@ const CATEGORIES = [
   "amenities",
   "equipment_categories",
   "business_policies",
-  // Service cards name their category.
-  "service_categories",
-  // Opportunity types: Work for Hire, Royalties Split, Co-Write, Session Payment.
-  "collaboration_types",
+  // Old opportunity, project and availability categories are retired (owner, 10 Oct 2026).
 ] as const;
 
 export type TaxonomyCategory = (typeof CATEGORIES)[number];

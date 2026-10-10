@@ -1,0 +1,8 @@
+-- Snapshot before 20261010160000_drop_role_details.sql (10 Oct 2026). Definitions and counts only,
+-- no user data (the repo syncs to Lovable).
+-- profile_role_details(profile_id uuid, role_slug text, details jsonb, updated_at timestamptz):
+--   80 rows on 71 profiles; no functions, views or foreign keys depend on it.
+-- Taxonomy categories dropped with it: vocal_range 6, singing_styles 9, lyricist_specializations 6,
+--   composition_styles 5, dj_types 5 options.
+-- Not restorable from this file: the owner decided talent types share one schema with no
+-- role-specific details (10 Oct 2026).

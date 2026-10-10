@@ -12,10 +12,8 @@ import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images"
 import {
   getMyProfile,
   getMyProfileSections,
-  getTaxonomyLabels,
   saveMyExperience,
   saveMyProfile,
-  saveMyRoleDetails,
 } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { ProfileCompletion } from "@/components/ml/profile";
@@ -222,16 +220,10 @@ function EditProfile() {
       return next;
     });
 
-  // Experience and each role's professional details live in their own tables; they load and save
-  // beside the profile row, on the same Save.
+  // Experience lives in its own table; it loads and saves beside the profile row, on the same Save.
   const loadSections = useServerFn(getMyProfileSections);
-  const loadLabels = useServerFn(getTaxonomyLabels);
   const persistExperience = useServerFn(saveMyExperience);
-  const persistRoleDetails = useServerFn(saveMyRoleDetails);
   const [experience, setExperience] = useState<ExperienceDraft[]>([]);
-  const [roleDetails, setRoleDetails] = useState<RoleDetailsDraft[]>([]);
-  const [fieldLabels, setFieldLabels] = useState<Record<string, string>>({});
-  const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
   useEffect(() => {
     if (!signedIn) return;
     void loadSections()
@@ -245,18 +237,9 @@ function EditProfile() {
             detail: e.detail ?? "",
           })),
         );
-        setRoleDetails(
-          sec.role_details.map((r) => ({ roleSlug: r.role_slug, details: r.details })),
-        );
       })
       .catch(() => undefined);
-    void loadLabels()
-      .then((l) => {
-        setFieldLabels(l["profile_fields"] ?? {});
-        setRoleLabels(l["person_types"] ?? {});
-      })
-      .catch(() => undefined);
-  }, [signedIn, loadSections, loadLabels]);
+  }, [signedIn, loadSections]);
   const [form, setForm] = useState<Form>(empty);
   const [row, setRow] = useState<ProfileRow | null>(null);
   // Years on each instrument, asked in onboarding (discovery_prefs.instrumentExperience).
@@ -417,9 +400,6 @@ function EditProfile() {
             })),
         },
       });
-      for (const r of roleDetails) {
-        await persistRoleDetails({ data: { roleSlug: r.roleSlug, details: r.details } });
-      }
       if (isBusiness) {
         const link = mapsUrl.trim();
         const rules = policies
@@ -730,63 +710,6 @@ function EditProfile() {
         </div>
       ),
     },
-    ...(roleDetails.length
-      ? [
-          {
-            id: "details",
-            label: "Professional details",
-            detail: "Setup, tools and working details for each role",
-            done: true,
-            body: (
-              <div className="space-y-5">
-                {roleDetails.map((r) => (
-                  <div key={r.roleSlug} className="space-y-3">
-                    <p className="text-1 font-semibold">{roleLabels[r.roleSlug] ?? r.roleSlug}</p>
-                    {Object.entries(r.details).map(([key, value]) => (
-                      <Field
-                        key={key}
-                        label={fieldLabels[key] ?? key.replace(/_/g, " ")}
-                        value={
-                          Array.isArray(value)
-                            ? value.join(", ")
-                            : value == null
-                              ? ""
-                              : String(value)
-                        }
-                        onChange={(v) =>
-                          setRoleDetails((all) =>
-                            all.map((x) =>
-                              x.roleSlug === r.roleSlug
-                                ? {
-                                    ...x,
-                                    details: {
-                                      ...x.details,
-                                      [key]: Array.isArray(value)
-                                        ? v
-                                            .split(",")
-                                            .map((t) => t.trim())
-                                            .filter(Boolean)
-                                        : typeof value === "number"
-                                          ? Number(v) || null
-                                          : typeof value === "boolean"
-                                            ? v.trim().toLowerCase() === "yes"
-                                            : v,
-                                    },
-                                  }
-                                : x,
-                            ),
-                          )
-                        }
-                        {...(typeof value === "boolean" ? { hint: "Yes or No" } : {})}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ),
-          },
-        ]
-      : []),
     {
       id: "availability",
       label: "Location & availability",
@@ -925,7 +848,7 @@ function EditProfile() {
   /*
    * Edit profile is the way back to the setup screens (owner, 10 Oct 2026): one row per screen, in
    * setup order, for every account type; the same screens in their edit state. Screens with no
-   * setup counterpart (photos, role details, a studio's amenities) open on their own here.
+   * setup counterpart (photos, a studio's amenities) open on their own here.
    */
   const solo = sections.find((sct) => sct.id === openSection && OWN_SECTIONS.includes(sct.id));
   if (solo) {
@@ -1232,10 +1155,6 @@ type ExperienceDraft = {
   endYear: string;
   detail: string;
 };
-type RoleDetailsDraft = {
-  roleSlug: string;
-  details: Record<string, string | number | boolean | string[] | null>;
-};
 
 const yearOf = (v: string) => {
   const n = Number(v.trim());
@@ -1312,8 +1231,11 @@ const EDIT_LABELS: Record<string, string> = {
   intent: "Goals",
   contact: "Links and visibility",
 };
-/** Sections with no setup screen; each opens on its own from Edit profile. */
-const OWN_SECTIONS: string[] = ["photos", "details", "amenities"];
+/**
+ * Sections with no setup screen; each opens on its own from Edit profile. No per-role section: every
+ * type shares one schema (owner, 10 Oct 2026).
+ */
+const OWN_SECTIONS: string[] = ["photos", "amenities"];
 
 type EditLink =
   | { to: "/setup/$step"; params: { step: string }; search: { from: "edit"; persona?: "business" } }

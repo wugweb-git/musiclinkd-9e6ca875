@@ -5,9 +5,9 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
 
 /*
- * Services a profile offers: profile_services with its packages and add-ons. Category, pricing
- * model and work modes are taxonomy slugs (service_categories, pricing_models, work_modes). Money is
- * integer paise with a bare unit. Drafts are readable by their owner only; RLS scopes every read.
+ * Services a profile offers: profile_services with its packages and add-ons. Pricing model and
+ * work modes are taxonomy slugs (pricing_models, work_modes). There is no service category (owner,
+ * 10 Oct 2026). Money is integer paise with a bare unit. Drafts are readable by their owner only; RLS scopes every read.
  * There is no stored count of views, enquiries or bookings for a service.
  * Schema: supabase/migrations/20260915160000_services.sql.
  */
@@ -19,9 +19,6 @@ export type ServiceRow = {
   profile_id: string;
   name: string;
   description: string | null;
-  category: string | null;
-  /** Up to 3 service_categories slugs; `category` is the first. */
-  categories: string[];
   pricing_model: string | null;
   price_paise: number | null;
   price_unit: string | null;
@@ -115,20 +112,17 @@ export type ServiceExample = {
   media_url: string | null;
 };
 
-/** A taxonomy option; a specific service category names its broad one in `parent`. */
-export type ServiceOption = { slug: string; label: string; parent?: string };
+/** A taxonomy option. */
+export type ServiceOption = { slug: string; label: string };
 
-/** The option lists the service screens pick from, and which categories each person type offers. */
+/** The option lists the service screens pick from. */
 export type ServiceOptions = {
-  categories: ServiceOption[];
   pricingModels: ServiceOption[];
   workModes: ServiceOption[];
-  /** person_types slug → service_categories slugs. */
-  categoriesByRole: Record<string, string[]>;
 };
 
 const SERVICE =
-  "id, profile_id, name, description, category, categories, example_ids, amenity_slugs, equipment_ids, pricing_model, price_paise, price_unit, price_note, min_hours, turnaround, notice, mode, work_modes, deliverables, requirements, status, sort_order";
+  "id, profile_id, name, description, example_ids, amenity_slugs, equipment_ids, pricing_model, price_paise, price_unit, price_note, min_hours, turnaround, notice, mode, work_modes, deliverables, requirements, status, sort_order";
 const PACKAGE =
   "id, name, price_paise, price_unit, includes, turnaround, revisions, is_popular, sort_order";
 const ADDON = "id, label, price_paise, price_unit, sort_order";
@@ -144,7 +138,6 @@ function serviceFrom(row: Record<string, unknown>): ServiceRow {
     work_modes: r.work_modes ?? [],
     deliverables: r.deliverables ?? [],
     requirements: r.requirements ?? [],
-    categories: r.categories?.length ? r.categories : r.category ? [r.category] : [],
     example_ids: r.example_ids ?? [],
     amenity_slugs: r.amenity_slugs ?? [],
     equipment_ids: r.equipment_ids ?? [],
@@ -295,49 +288,27 @@ async function serviceDetail(
   };
 }
 
-/** Published service categories, pricing models and work modes, and the role mapping. */
+/** Published pricing models and work modes. */
 export const getServiceOptions = createServerFn({ method: "GET" }).handler(
   async (): Promise<ServiceOptions> => {
     const client = await anonClient();
-    const [options, mapping] = await Promise.all([
-      client
-        .from("taxonomy_options" as never)
-        .select("category_key, slug, label, sort_order, metadata")
-        .in("category_key", ["service_categories", "pricing_models", "work_modes"])
-        .order("sort_order"),
-      client
-        .from("person_type_service_categories" as never)
-        .select("person_type_slug, service_category_slug"),
-    ]);
+    const options = await client
+      .from("taxonomy_options" as never)
+      .select("category_key, slug, label, sort_order")
+      .in("category_key", ["pricing_models", "work_modes"])
+      .order("sort_order");
     if (options.error) throw new Error(options.error.message);
-    if (mapping.error) throw new Error(mapping.error.message);
 
     const rows = (options.data ?? []) as unknown as {
       category_key: string;
       slug: string;
       label: string;
-      metadata: { parent?: string } | null;
     }[];
     const pick = (key: string) =>
-      rows
-        .filter((r) => r.category_key === key)
-        .map(({ slug, label, metadata }) => ({
-          slug,
-          label,
-          ...(metadata?.parent ? { parent: metadata.parent } : {}),
-        }));
-    const categoriesByRole: Record<string, string[]> = {};
-    for (const m of (mapping.data ?? []) as unknown as {
-      person_type_slug: string;
-      service_category_slug: string;
-    }[]) {
-      (categoriesByRole[m.person_type_slug] ??= []).push(m.service_category_slug);
-    }
+      rows.filter((r) => r.category_key === key).map(({ slug, label }) => ({ slug, label }));
     return {
-      categories: pick("service_categories"),
       pricingModels: pick("pricing_models"),
       workModes: pick("work_modes"),
-      categoriesByRole,
     };
   },
 );
@@ -451,8 +422,6 @@ const saveSchema = z.object({
   id: z.string().uuid().optional(),
   name: text(120).min(1),
   description: text(2000).nullable(),
-  category: slug.nullable(),
-  categories: z.array(slug).max(3).optional(),
   example_ids: z.array(z.string().uuid()).max(6).optional(),
   amenity_slugs: z
     .array(z.string().regex(/^[a-z0-9_]{2,40}$/))

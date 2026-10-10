@@ -7,6 +7,7 @@ import {
   Headphones,
   Languages,
   Music,
+  Music2,
   UserRound,
 } from "lucide-react";
 import {
@@ -34,7 +35,6 @@ import {
 
 import { serviceStatusTone } from "@/data/services";
 import {
-  categoryIcon,
   optionLabel,
   useRefreshServices,
   useService,
@@ -124,7 +124,7 @@ function ServiceDetail() {
   return (
     <Screen tone="warm">
       <TopBar
-        title={optionLabel(options?.categories, s?.category) || "Service"}
+        title="Service"
         back="/services"
         right={
           owner ? (
@@ -147,10 +147,8 @@ function ServiceDetail() {
                 aria-hidden
                 className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-subtle"
               >
-                {(() => {
-                  const Icon = categoryIcon(s.category);
-                  return <Icon size={iconSize.md} />;
-                })()}
+                {/* No service category to pick an icon from (owner, 10 Oct 2026). */}
+                <Music2 size={iconSize.md} />
               </span>
               <div className="min-w-0 flex-1">
                 <h1 className="text-2 font-bold leading-snug">{s.name}</h1>

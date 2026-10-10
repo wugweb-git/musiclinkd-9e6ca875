@@ -1,0 +1,12 @@
+-- Snapshot before 20261010150000_drop_service_categories.sql (10 Oct 2026). Definitions and counts
+-- only, no user data (the repo syncs to Lovable).
+-- profile_services: 251 rows, all with category set; columns were
+--   category_taxonomy text DEFAULT 'service_categories', category text, categories text[] DEFAULT '{}'
+--   FOREIGN KEY (category_taxonomy, category) REFERENCES taxonomy_options(category_key, slug)
+--   index profile_services_category_idx.
+-- person_type_service_categories: 390 rows (persona → service category).
+-- service_category_specialties: 4 rows.
+-- taxonomy: service_categories 55 options, engineer_specialties 4 options.
+-- studio_services is renamed business_services (9 options), not dropped.
+-- The per-service categories are not restorable from this file: the owner decided services have
+-- no categories ("there is no service category", 10 Oct 2026).

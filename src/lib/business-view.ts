@@ -41,7 +41,6 @@ export type BusinessView = {
     id: string;
     label: string;
     price: PriceParts | null;
-    category: string;
     status: "active" | "paused" | "draft";
     /** The shared ServiceCard's shape, with what a studio's service uses. */
     card: ServiceItem;
@@ -184,7 +183,6 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
         id: s.id,
         label: s.name,
         price,
-        category: s.category ? taxonomyLabel(labels, "service_categories", s.category) : "",
         status: s.status,
         card: {
           id: s.id,
@@ -192,7 +190,6 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
           description: s.description ?? "",
           ...(price ? { from: price } : {}),
           ...(s.turnaround ? { turnaround: s.turnaround } : {}),
-          categories: s.categories?.length ? s.categories : s.category ? [s.category] : [],
           deliverables: s.deliverables ?? [],
           ...(uses.length ? { uses } : {}),
           timeBased: isTimeBasedService(s.work_modes),

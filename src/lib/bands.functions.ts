@@ -443,7 +443,7 @@ export const listBandServices = createServerFn({ method: "GET" })
     const { data: rows, error } = await db(client)
       .from("profile_services")
       .select(
-        "id, name, description, price_paise, price_unit, price_note, turnaround, mode, availability, category, pricing_model, work_modes, categories, deliverables",
+        "id, name, description, price_paise, price_unit, price_note, turnaround, mode, availability, pricing_model, work_modes, deliverables",
       )
       .eq("collab_id", data.bandId)
       .neq("status", "draft")

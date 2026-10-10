@@ -43,17 +43,9 @@ function compensationFromRow(row: OpportunityRow): Opportunity["compensation"] {
       ...note,
     };
   }
-  // A co-write is paid in the song itself; its stored note ("Co-Write", "Under Discussion") shows
-  // when there is one.
-  const type: Opportunity["compensation"]["type"] =
-    row.collaboration_type === "royalties_split"
-      ? "Revenue share"
-      : row.collaboration_type === "co_write"
-        ? "Co-write"
-        : row.collaboration_type === "session_payment" || row.collaboration_type === "work_for_hire"
-          ? "Paid"
-          : undefined;
-  return { ...(type ? { type } : {}), unit: "", negotiable: false, ...note };
+  // No budget: only the stored note ("Under Discussion") shows. The pay type used to be guessed
+  // from the opportunity's old kind-of-work column, now retired (owner, 10 Oct 2026).
+  return { unit: "", negotiable: false, ...note };
 }
 
 export function opportunityFromRow(row: OpportunityRow, labels: TaxonomyLabels): Opportunity {
@@ -93,7 +85,6 @@ export function opportunityFromRow(row: OpportunityRow, labels: TaxonomyLabels):
       .map((label) => ({ label, must: true })),
     genres: row.genres.map((g) => taxonomyLabel(labels, "genres", g)),
     genreKeys: row.genres,
-    collaborationType: row.collaboration_type,
     languages: [],
     dates: row.date_window ?? "",
     applicants: row.applicant_count,

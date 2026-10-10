@@ -68,7 +68,7 @@ export type EverythingResults = {
 
 const OWNER = "id, username, display_name, avatar_url, city, is_verified";
 const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note,
-  collaboration_type, location, status, applicant_count, created_at`;
+  location, status, applicant_count, created_at`;
 const LISTING = `id, slug, title, category, item_category, item_category_kind, condition, price_paise,
   price_unit, price_note, image_url, created_at, seller_name, pickup_location, brand, model,
   listing_description, specs, included, weekly_price_paise, monthly_price_paise, deposit_paise,
@@ -265,7 +265,7 @@ async function opportunities(
     .from("opportunities")
     .select(`${OPPORTUNITY}, ${creator}`, { count: "exact" })
     .eq("status", "open");
-  query = everyWord(query, words, ["title", "role_required", "location", "collaboration_type"]);
+  query = everyWord(query, words, ["title", "role_required", "location"]);
   if (verified) query = query.eq("creator.is_verified", true);
   const { data, count, error } = await query.order("created_at", { ascending: false }).limit(limit);
   if (error) return none();
@@ -329,7 +329,7 @@ async function services(
     )
     .eq("status", "active")
     .eq("profile.visibility", "public");
-  query = everyWord(query, words, ["name", "description", "category"]);
+  query = everyWord(query, words, ["name", "description"]);
   if (verified) query = query.eq("profile.is_verified", true);
   const { data, count, error } = await query.order("created_at", { ascending: false }).limit(limit);
   if (error) return none();
@@ -513,9 +513,8 @@ async function subjectFields(
         title: string;
         role_required: string | null;
         location: string | null;
-        collaboration_type: string | null;
         created_at: string;
-      }>("opportunities", "title, role_required, location, collaboration_type, created_at");
+      }>("opportunities", "title, role_required, location, created_at");
       if (!o) return null;
       return {
         title: o.title,
@@ -524,7 +523,6 @@ async function subjectFields(
           { label: "title", value: o.title, strong: true },
           { label: "role wanted", value: o.role_required },
           { label: "location", value: o.location },
-          { label: "kind of work", value: o.collaboration_type?.replace(/_/g, " ") },
         ],
         extra: [{ label: "Posted", detail: postedOn(o.created_at), weight: "light" }],
       };
@@ -563,16 +561,14 @@ async function subjectFields(
       const s = await one<{
         name: string;
         description: string | null;
-        category: string | null;
         created_at: string;
-      }>("profile_services", "name, description, category, created_at");
+      }>("profile_services", "name, description, created_at");
       if (!s) return null;
       return {
         title: s.name,
         verified: false,
         fields: [
           { label: "name", value: s.name, strong: true },
-          { label: "category", value: s.category?.replace(/_/g, " ") },
           { label: "description", value: s.description },
         ],
         extra: [{ label: "Added", detail: postedOn(s.created_at), weight: "light" }],

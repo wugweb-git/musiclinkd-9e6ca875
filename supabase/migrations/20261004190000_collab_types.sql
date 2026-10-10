@@ -37,8 +37,11 @@ ALTER TABLE public.collabs DROP CONSTRAINT collabs_type_check;
 ALTER TABLE public.collabs ADD CONSTRAINT collabs_type_check
   CHECK (type IN ('band', 'duo', 'collective', 'ensemble', 'production_team', 'crew'));
 
+-- The live function has parameter defaults, which CREATE OR REPLACE cannot remove (found when
+-- applying, 10 Oct 2026); they are kept, and the type default is band, no longer project.
 CREATE OR REPLACE FUNCTION public.start_collab(
-  p_name text, p_bio text, p_city text, p_visibility text, p_type text, p_ends_on date)
+  p_name text, p_bio text DEFAULT NULL, p_city text DEFAULT NULL, p_visibility text DEFAULT 'private',
+  p_type text DEFAULT 'band', p_ends_on date DEFAULT NULL)
 RETURNS uuid
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
 AS $$

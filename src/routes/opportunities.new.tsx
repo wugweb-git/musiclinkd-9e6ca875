@@ -11,13 +11,7 @@ import { createOpportunity } from "@/lib/applications.functions";
 import { draftHiringCopy } from "@/lib/hiring-copy.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { categoryIcon } from "@/components/ml/opportunity";
-import {
-  CityField,
-  Field as SharedField,
-  SheetSelect,
-  inputClass,
-} from "@/components/ml/listing-form";
-import { useTaxonomy } from "@/lib/taxonomy";
+import { CityField, Field as SharedField, inputClass } from "@/components/ml/listing-form";
 import { iconSize } from "@/lib/tokens";
 import type { ReactNode } from "react";
 
@@ -81,15 +75,8 @@ function CreateOpportunity() {
   const [mode, setMode] = useState<string>("On-site");
   const [dates, setDates] = useState("");
   const [payType, setPayType] = useState<string>("Paid");
-  // The kind of work, from the taxonomy (collaboration_types): Work for Hire, Royalties Split,
-  // Co-Write, Session Payment. Stored as its slug.
-  const [workType, setWorkType] = useState<string | null>(null);
-  const { options: taxonomy } = useTaxonomy();
-  const workTypes = (taxonomy?.collaboration_types ?? []).map((t) => ({
-    value: t.slug,
-    label: t.label,
-  }));
-  const workTypeLabel = workTypes.find((t) => t.value === workType)?.label;
+  // No "kind of work" field: that taxonomy (Work for Hire, Royalties Split…) is retired;
+  // Compensation type below says how it is paid (owner, 10 Oct 2026).
   const [budget, setBudget] = useState("");
   const [reqs, setReqs] = useState<string[]>([]);
   const [req, setReq] = useState("");
@@ -106,7 +93,6 @@ function CreateOpportunity() {
           ...(city.trim() ? { city: city.trim() } : {}),
           ...(dates.trim() ? { dates: dates.trim() } : {}),
           ...(budget.trim() && payType === "Paid" ? { budget: budget.trim() } : {}),
-          ...(workTypeLabel ? { workType: workTypeLabel } : {}),
           requirements: reqs,
           roughBrief,
         },
@@ -138,7 +124,6 @@ function CreateOpportunity() {
         ? { budgetNote: budget.trim() }
         : {}
       : { budgetNote: payType }),
-    ...(workType ? { collaborationType: workType } : {}),
     ...(city.trim() ? { location: city.trim() } : {}),
     ...(approvedCopy ? { summary: approvedCopy } : {}),
     workMode: mode as "On-site" | "Remote" | "Hybrid",
@@ -268,15 +253,6 @@ function CreateOpportunity() {
 
         {step === "compensation" ? (
           <>
-            <Field label="Type" hint="How the work is paid or shared.">
-              <SheetSelect
-                title="Type"
-                value={workType}
-                options={workTypes}
-                onChange={setWorkType}
-                placeholder="Pick a type"
-              />
-            </Field>
             <Field label="Compensation type">
               <div className="flex flex-wrap gap-2">
                 {payTypes.map((p) => (
@@ -416,9 +392,6 @@ function CreateOpportunity() {
                 />
                 <StatusPill label={mode} />
               </div>
-              {workTypeLabel ? (
-                <p className="text-1 text-muted-foreground">{workTypeLabel}</p>
-              ) : null}
               <h3 className="text-2 leading-snug">{title || "Untitled opportunity"}</h3>
               <p className="whitespace-pre-wrap text-1 text-muted-foreground">
                 {approvedCopy || "No description yet."}

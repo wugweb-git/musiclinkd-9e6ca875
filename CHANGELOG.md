@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed — retired taxonomy, service categories and role details (10 Oct, owner)
+
+- Services have no categories: the picker, card label and category icons are gone; the database
+  drops profile_services.category/categories, person_type_service_categories,
+  service_category_specialties, service_categories and engineer_specialties. studio_services is
+  renamed business_services.
+- Every talent type shares one profile schema: role details (Professional details section, edit
+  screen, At a glance detail tiles) are removed and profile_role_details is dropped with the
+  dj_types, vocal_range, singing_styles, lyricist and composition style lists.
+- Opportunity "kind of work" (old payment terms) and the collab project type are removed from the
+  app. Budget tier is removed (profiles.budget_tier dropped).
+- Deleted unused lists: availability_status, session_types, budget_type, session_duration_tiers,
+  project_roles, director_specializations, podcast_categories.
+- Amenities offer the 18 in Notion; the other 15 stay readable for places that already list them.
+- Collaborations take the six types (20261004190000_collab_types.sql applied, keeping the live
+  parameter defaults; the two test project rows deleted).
+- Migrations 20261010140000–170000 with undo snapshots in supabase/dumps; Notion Master Taxonomy
+  updated to match.
+
 ### Changed — one genre list of 14 for every persona (10 Oct, owner)
 
 - Genres are Bollywood, Classical, Folk, Rock, Indie, Jazz, Fusion, Sufi, Devotional, Electronic,

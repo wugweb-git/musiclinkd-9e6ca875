@@ -90,8 +90,6 @@ export type Opportunity = {
   genres: string[];
   /** Stored genre slugs, for matching against a profile. Absent on the static opportunities. */
   genreKeys?: string[];
-  /** Stored collaboration type slug (taxonomy collaboration_types: co_write, work_for_hire…). */
-  collaborationType?: string | null;
   languages: string[];
   dates: string;
   applicants: number;

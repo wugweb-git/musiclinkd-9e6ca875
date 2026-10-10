@@ -50,7 +50,6 @@ import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
 import { LogoMark } from "./logo";
 import { roleIcon } from "@/lib/role-icons";
-import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { MediaEmbed } from "./media-embed";
 import { coverFor, playSource } from "@/lib/embed";
@@ -1395,9 +1394,8 @@ export function ServiceCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const real = /^[0-9a-f-]{36}$/i.test(s.id);
-  const taxonomy = useTaxonomy().options;
-  const category = s.categories?.[0] ? labelFor(taxonomy?.service_categories, s.categories[0]) : "";
-  const meta = [category, s.mode].filter(Boolean).join(" · ");
+  // No service category any more (owner, 10 Oct 2026); the meta line is the work mode.
+  const meta = s.mode ?? "";
   const allDeliverables = s.deliverables ?? [];
   const gets = expanded ? allDeliverables : allDeliverables.slice(0, 3);
   // Collapsed by default, so anything beyond the name and the stub is a detail to open.

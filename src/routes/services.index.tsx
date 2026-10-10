@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { CalendarClock, Plus, Settings2 } from "lucide-react";
+import { CalendarClock, Music2, Plus, Settings2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
   Card,
@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 
 import { serviceStatusTone } from "@/data/services";
-import { categoryIcon, optionLabel, useMyServices, useServiceOptions } from "@/hooks/use-services";
+import { useMyServices } from "@/hooks/use-services";
 import { priceParts } from "@/lib/price";
 import type { ServiceStatus } from "@/lib/services.functions";
 import { iconSize } from "@/lib/tokens";
@@ -45,7 +45,6 @@ function ServicesHome() {
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   // Signed out: no services, so the empty state. Views, enquiries and bookings are not stored.
   const { items, pending, error, retry } = useMyServices();
-  const { options } = useServiceOptions();
   const list = items.filter(
     (s) => filter === "All" || s.status === (filter.toLowerCase() as ServiceStatus),
   );
@@ -96,18 +95,11 @@ function ServicesHome() {
                       aria-hidden
                       className="grid h-10 w-10 shrink-0 place-items-center rounded-sm bg-subtle"
                     >
-                      {(() => {
-                        const Icon = categoryIcon(s.category);
-                        return <Icon size={iconSize.sm} />;
-                      })()}
+                      {/* No service category to pick an icon from (owner, 10 Oct 2026). */}
+                      <Music2 size={iconSize.sm} />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{s.name}</p>
-                      {s.category ? (
-                        <p className="truncate text-1 text-muted-foreground">
-                          {optionLabel(options?.categories, s.category)}
-                        </p>
-                      ) : null}
                       <Price
                         from
                         price={priceParts(s.price_paise, s.price_unit, s.price_note)}
