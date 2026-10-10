@@ -146,23 +146,6 @@ export const instruments = [
   "Other",
 ];
 
-export const genres = [
-  "Bollywood",
-  "Classical",
-  "Folk",
-  "Rock",
-  "Indie",
-  "Jazz",
-  "Fusion",
-  "Sufi",
-  "Devotional",
-  "Electronic",
-  "Hip-Hop",
-  "Regional",
-  "Pop",
-  "Other",
-];
-
 export const languages = [
   "Hindi",
   "Punjabi",
@@ -568,7 +551,7 @@ export const steps: StepDef[] = [
   {
     id: "genres",
     group: "Music",
-    title: "What music do you work with?",
+    title: "Which genres do you work in?",
     subtitle: "Choose all that apply.",
     why: "Genres drive your recommendations and who gets matched with you.",
     optional: true,

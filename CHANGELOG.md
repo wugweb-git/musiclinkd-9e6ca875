@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one genre list of 14 for every persona (10 Oct, owner)
+
+- Genres are Bollywood, Classical, Folk, Rock, Indie, Jazz, Fusion, Sufi, Devotional, Electronic,
+  Hip-Hop, Regional, Pop, Other (taxonomy_options). The 47 stale genres are deleted; every genre
+  stored on profiles (119), bands, collabs and opportunities was mapped to one of the 14, none lost
+  (20261010130000_genres_fourteen.sql; undo snapshot supabase/dumps/2026-10-10-before-genres-14.sql).
+  genre_languages dropped. Notion Master Taxonomy updated to the 14.
+- No hardcoded genre lists: src/data/onboarding.ts and src/data/portfolio.ts lose theirs; the
+  portfolio work form reads the live list.
+- Genre screens: talent "Which genres do you work in?", business "Which genres do you serve?"
+  (4 Oct decisions: Genres / Genres served).
+
 ### Changed — Edit profile is the way back to the setup screens; persona_bucket retired (10 Oct, owner)
 
 - Edit profile, for talent and business: one list of rows in setup order (done mark, row, current

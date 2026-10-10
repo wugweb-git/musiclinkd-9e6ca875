@@ -1130,42 +1130,6 @@ export type Database = {
           },
         ]
       }
-      genre_languages: {
-        Row: {
-          genre_category: string
-          genre_slug: string
-          language_category: string
-          language_slug: string
-        }
-        Insert: {
-          genre_category?: string
-          genre_slug: string
-          language_category?: string
-          language_slug: string
-        }
-        Update: {
-          genre_category?: string
-          genre_slug?: string
-          language_category?: string
-          language_slug?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "genre_languages_genre_category_genre_slug_fkey"
-            columns: ["genre_category", "genre_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-          {
-            foreignKeyName: "genre_languages_language_category_language_slug_fkey"
-            columns: ["language_category", "language_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-        ]
-      }
       help_feedback: {
         Row: {
           created_at: string

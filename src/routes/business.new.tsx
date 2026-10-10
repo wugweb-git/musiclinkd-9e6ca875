@@ -369,7 +369,7 @@ function NewBusiness() {
     },
     genres: {
       group: "Genres",
-      title: "What music do you work with?",
+      title: "Which genres do you serve?",
       subtitle: "Choose all that apply.",
       why: "",
     },

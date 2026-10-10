@@ -2,7 +2,10 @@ import { OfflineBanner } from "./kit";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-import { genres, instruments, visibilityOptions, workModes } from "@/data/onboarding";
+import { instruments, visibilityOptions, workModes } from "@/data/onboarding";
+
+// Story-only sample: the live genre list is taxonomy_options.
+const genres = ["Bollywood", "Classical", "Folk", "Rock", "Indie", "Jazz"];
 import { Btn } from "./ui";
 import {
   ChipPicker,
