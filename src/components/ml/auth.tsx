@@ -54,7 +54,7 @@ export function AuthScreen({
       {/* Measured from lovable.dev/login at 412px: 32px side margins, a 350px column, the whole
           block centred vertically. */}
       <div className="mx-auto flex w-full max-w-[414px] flex-1 flex-col px-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
-        <header className="-ml-3 flex min-h-12 items-center">
+        <header className="-ml-5.5 flex min-h-12 items-center">
           {back ? <AuthBackButton back={back} /> : null}
         </header>
         <div className="flex flex-1 flex-col justify-center pb-12">

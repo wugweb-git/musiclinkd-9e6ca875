@@ -42,7 +42,7 @@ function Resume() {
   const done = draft.completedSteps.length;
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-auth-ground px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-12">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[414px] flex-col justify-between bg-warm px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-12">
       <div>
         <SyncBanner state={hydrated ? sync : "loading"} onRetry={retry} />
 
@@ -92,7 +92,7 @@ function Resume() {
       <div className="mt-8 space-y-2.5">
         <Btn
           className="w-full h-12 text-sm font-semibold"
-          onClick={() => navigate({ to: "/onboarding/step/$id", params: { id: target } })}
+          onClick={() => navigate({ to: "/setup/$step", params: { step: target } })}
         >
           Continue Setup
         </Btn>

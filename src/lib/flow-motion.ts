@@ -16,7 +16,7 @@ const ORDER = [
   "/auth/otp",
   "/auth/verify-email",
   "/onboarding",
-  ...steps.map((s) => `/onboarding/step/${s.id}`),
+  ...steps.map((s) => `/setup/${s.id}`),
   // The new user's first work (`?from=onboarding`), between the last question and Review profile.
   "/portfolio",
   "/portfolio/new/$kind",

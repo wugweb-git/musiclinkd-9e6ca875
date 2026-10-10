@@ -96,7 +96,12 @@ function Accounts() {
           ))}
         </ul>
         {canCreatePage ? (
-          <BtnLink to="/business/new" search={{ step: "type" as const }} className="w-full">
+          <BtnLink
+            to="/setup/$step"
+            params={{ step: "role" }}
+            search={{ as: "business" as const }}
+            className="w-full"
+          >
             <Store size={iconSize.sm} className="mr-1.5" aria-hidden /> Create Business Page
           </BtnLink>
         ) : null}

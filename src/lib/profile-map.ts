@@ -113,13 +113,14 @@ export function asLinkMap(value: unknown): Record<string, string> {
   );
 }
 
-/** Rebuild a draft from the stored record; the raw draft blob wins when present. */
+/** Rebuild a draft from the stored record: its columns, plus the finished steps from the draft copy. */
 export function profileToDraft(row: ProfileRow | null | undefined): OnboardingDraft | null {
   if (!row) return null;
   const blob = row.onboarding_draft;
-  if (blob && typeof blob === "object" && Object.keys(blob as object).length > 0) {
-    return { ...emptyDraft, ...(blob as Partial<OnboardingDraft>) } as OnboardingDraft;
-  }
+  const stored =
+    blob && typeof blob === "object" && Object.keys(blob as object).length > 0
+      ? (blob as Partial<OnboardingDraft>)
+      : null;
   const prefs = (row.discovery_prefs ?? {}) as {
     topics?: string[];
     businessIntent?: string | null;
@@ -129,7 +130,8 @@ export function profileToDraft(row: ProfileRow | null | undefined): OnboardingDr
   return {
     ...emptyDraft,
     displayName: row.display_name ?? emptyDraft.displayName,
-    username: row.username ?? emptyDraft.username,
+    // An unclaimed username typed during onboarding lives only in the draft copy.
+    username: row.username ?? stored?.username ?? emptyDraft.username,
     photo: row.avatar_url ?? null,
     primaryRole: (row.roles?.[0] as RoleKey | undefined) ?? null,
     secondaryRoles: (row.roles ?? []).slice(1),
@@ -153,7 +155,10 @@ export function profileToDraft(row: ProfileRow | null | undefined): OnboardingDr
     visibility: row.visibility ?? "public",
     businessIntent: prefs.businessIntent ?? null,
     instrumentExperience: prefs.instrumentExperience ?? {},
-    completedSteps: emptyDraft.completedSteps,
+    // The saved columns are the truth (owner, 10 Oct 2026: Edit profile opens these screens), so
+    // an answer changed on Edit profile is never shown stale or written back from the old draft.
+    // The draft copy only keeps what has no column: which steps were finished.
+    completedSteps: stored?.completedSteps ?? emptyDraft.completedSteps,
   };
 }
 

@@ -74,7 +74,7 @@ function Preview() {
   const navigate = useNavigate();
   const tx = useTaxonomy().options;
   const list = visibleSteps(d, bucket);
-  const edit = (id: string) => navigate({ to: "/onboarding/step/$id", params: { id } });
+  const edit = (id: string) => navigate({ to: "/setup/$step", params: { step: id } });
 
   // The real profile header, built from these answers the way the profile page builds it.
   const labels: TaxonomyLabels = Object.fromEntries(
@@ -91,11 +91,11 @@ function Preview() {
   const visibility = visibilityOptions.find((v) => v.key === d.visibility)?.label;
 
   return (
-    <Screen tone="auth" bottomNav={false} className="pb-36">
+    <Screen tone="warm" bottomNav={false} className="pb-36">
       <TopBar
         title="Review profile"
         subtitle="This is how other music professionals see you"
-        back={`/onboarding/step/${list[list.length - 1]?.id ?? "contact"}`}
+        back={`/setup/${list[list.length - 1]?.id ?? "contact"}`}
       />
 
       <ProfileHero p={view} />
@@ -129,8 +129,8 @@ function Preview() {
             onEdit={() => edit("languages")}
           />
           <DetailRow
-            label="Available for"
-            values={d.availability}
+            label="Open to work"
+            values={d.availability.includes("Available") ? ["Yes"] : []}
             onEdit={() => edit("work-mode")}
           />
           <DetailRow label="Work mode" values={d.workModes} onEdit={() => edit("work-mode")} />

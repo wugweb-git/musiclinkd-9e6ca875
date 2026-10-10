@@ -520,29 +520,24 @@ export type StepDef = {
 
 export const steps: StepDef[] = [
   {
+    // Step 1 for every persona (owner, 6 Oct 2026). Two stages on one screen: the main role,
+    // then up to two more — one step, not two (see step route).
+    id: "role",
+    group: "Profession",
+    title: "What do you do?",
+    subtitle: "Pick up to three. Your first pick is your main role.",
+    why: "Your primary role shapes the rest of this setup and how you're discovered.",
+    optional: false,
+    contract: contract("ONB-04", "Roles", "/setup/role", ["taxonomy_options"], ["role"]),
+  },
+  {
     id: "identity",
     group: "About you",
     title: "Tell people who you are",
     subtitle: "Your name, where you're based and a short bio.",
     why: "Your name and username appear on every credit, message and search result.",
     optional: false,
-    contract: contract(
-      "ONB-02",
-      "About You",
-      "/onboarding/step/identity",
-      ["users"],
-      ["user", "location"],
-    ),
-  },
-  {
-    // Two stages on one screen: the main role, then up to two more (see step route).
-    id: "role",
-    group: "Profession",
-    title: "What do you do?",
-    subtitle: "Pick the one that describes you best.",
-    why: "Your primary role shapes the rest of this setup and how you're discovered.",
-    optional: false,
-    contract: contract("ONB-04", "Roles", "/onboarding/step/role", ["taxonomy_options"], ["role"]),
+    contract: contract("ONB-02", "About You", "/setup/identity", ["users"], ["user", "location"]),
   },
   {
     id: "instruments",
@@ -557,7 +552,7 @@ export const steps: StepDef[] = [
     contract: contract(
       "ONB-06",
       "Instruments",
-      "/onboarding/step/instruments",
+      "/setup/instruments",
       ["persona_bucket"],
       ["instrument"],
     ),
@@ -572,7 +567,7 @@ export const steps: StepDef[] = [
     contract: contract(
       "ONB-09",
       "Languages",
-      "/onboarding/step/languages",
+      "/setup/languages",
       ["taxonomy_options"],
       ["language"],
     ),
@@ -584,25 +579,19 @@ export const steps: StepDef[] = [
     subtitle: "Choose all that apply.",
     why: "Genres drive your recommendations and who gets matched with you.",
     optional: true,
-    contract: contract(
-      "ONB-08",
-      "Genres",
-      "/onboarding/step/genres",
-      ["persona_bucket"],
-      ["genre"],
-    ),
+    contract: contract("ONB-08", "Genres", "/setup/genres", ["persona_bucket"], ["genre"]),
   },
   {
     id: "work-mode",
     group: "Work",
     title: "How do you work?",
-    subtitle: "Where you work and what you're available for.",
+    subtitle: "Where you work, and whether you're open to work.",
     why: "Remote-friendly profiles get enquiries from outside their city.",
     optional: true,
     contract: contract(
       "ONB-11",
       "Work Mode & Availability",
-      "/onboarding/step/work-mode",
+      "/setup/work-mode",
       ["masterData"],
       ["professionalProfile", "availability"],
     ),
@@ -611,13 +600,13 @@ export const steps: StepDef[] = [
     id: "intent",
     group: "Goals",
     title: "What brings you to MusicLinkd?",
-    subtitle: "And what you'd like to discover.",
+    subtitle: "Pick everything that fits.",
     why: "We'll shape your home feed and recommendations around this.",
     optional: true,
     contract: contract(
       "ONB-12",
       "Intent & Discovery",
-      "/onboarding/step/intent",
+      "/setup/intent",
       ["masterData"],
       ["preferences"],
     ),
@@ -632,7 +621,7 @@ export const steps: StepDef[] = [
     contract: contract(
       "ONB-15",
       "Links, Contact & Visibility",
-      "/onboarding/step/contact",
+      "/setup/contact",
       ["users"],
       ["profileLinks", "preferences", "profile"],
     ),

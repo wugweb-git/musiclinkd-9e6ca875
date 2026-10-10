@@ -1,9 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState, type ComponentProps, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Camera, Check, ChevronDown, ChevronRight, Pencil, RefreshCw, Save } from "lucide-react";
 import { ActionBar, Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
+import { Switch } from "@/components/ml/kit";
 import { ImagePickButton } from "@/components/ml/profile";
 import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
 import {
@@ -22,7 +23,6 @@ import {
   businessTypes,
   choicesFor,
   labelFor,
-  talentTypes,
   useTaxonomy,
   type TaxonomyOption,
 } from "@/lib/taxonomy";
@@ -288,7 +288,6 @@ function EditProfile() {
 
   // Options come from taxonomy_options, the same source onboarding uses; the form stores slugs.
   const { options: taxonomy, state: taxonomyState } = useTaxonomy();
-  const roleOptions = taxonomy ? talentTypes(taxonomy.person_types) : [];
   const genreOptions = taxonomy?.genres ?? [];
   const instrumentOptions = taxonomy?.instruments ?? [];
   const languageOptions = taxonomy?.languages ?? [];
@@ -577,35 +576,55 @@ function EditProfile() {
               />
             </DrawerField>
           ) : (
-            <TaxonomyChips
-              label="Type"
-              options={roleOptions}
-              state={taxonomyState}
-              selected={form.roles}
-              onToggle={(v) => toggle("roles", v)}
-            />
+            // The onboarding screens, recycled (owner, 10 Oct 2026): each row opens its question.
+            <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+              <EditStepRow
+                step="role"
+                label="Roles"
+                values={form.roles.map((v) => labelFor(taxonomy?.person_types, v))}
+              />
+              <EditStepRow
+                step="genres"
+                label="Genres"
+                values={form.genres.map((v) => labelFor(taxonomy?.genres, v))}
+              />
+              <EditStepRow
+                step="instruments"
+                label="Instruments"
+                values={form.instruments.map((v) => labelFor(taxonomy?.instruments, v))}
+              />
+              <EditStepRow
+                step="languages"
+                label="Languages"
+                values={form.languages.map((v) => labelFor(taxonomy?.languages, v))}
+              />
+            </div>
           )}
-          <TaxonomyChips
-            label="Genres"
-            options={genreOptions}
-            state={taxonomyState}
-            selected={form.genres}
-            onToggle={(v) => toggle("genres", v)}
-          />
-          <TaxonomyChips
-            label="Instruments"
-            options={instrumentOptions}
-            state={taxonomyState}
-            selected={form.instruments}
-            onToggle={(v) => toggle("instruments", v)}
-          />
-          <TaxonomyChips
-            label="Languages"
-            options={languageOptions}
-            state={taxonomyState}
-            selected={form.languages}
-            onToggle={(v) => toggle("languages", v)}
-          />
+          {isBusiness ? (
+            <>
+              <TaxonomyChips
+                label="Genres"
+                options={genreOptions}
+                state={taxonomyState}
+                selected={form.genres}
+                onToggle={(v) => toggle("genres", v)}
+              />
+              <TaxonomyChips
+                label="Instruments"
+                options={instrumentOptions}
+                state={taxonomyState}
+                selected={form.instruments}
+                onToggle={(v) => toggle("instruments", v)}
+              />
+              <TaxonomyChips
+                label="Languages"
+                options={languageOptions}
+                state={taxonomyState}
+                selected={form.languages}
+                onToggle={(v) => toggle("languages", v)}
+              />
+            </>
+          ) : null}
         </div>
       ),
     },
@@ -623,17 +642,33 @@ function EditProfile() {
       done: Boolean(form.experience_level || form.work_modes.length),
       body: (
         <div className="space-y-4">
-          {/* Onboarding's own question and list (step "work-mode"), from taxonomy work_modes. */}
-          <DrawerField label="Where you work">
-            <SheetMultiSelect
-              title="Where you work"
-              value={form.work_modes}
-              options={choicesFor(taxonomy?.work_modes)}
-              max={taxonomy?.work_modes.length ?? 4}
-              placeholder="Choose"
-              onChange={(v) => update({ work_modes: v })}
-            />
-          </DrawerField>
+          {isBusiness ? null : (
+            <div className="overflow-hidden rounded-lg border border-border bg-card">
+              <EditStepRow
+                step="work-mode"
+                label="How you work"
+                values={[
+                  ...form.work_modes.map((v) => labelFor(taxonomy?.work_modes, v)),
+                  ...(form.availability ? ["Open to work"] : []),
+                ]}
+              />
+            </div>
+          )}
+          {isBusiness ? (
+            <>
+              {/* Onboarding's own question and list (step "work-mode"), from taxonomy work_modes. */}
+              <DrawerField label="Where you work">
+                <SheetMultiSelect
+                  title="Where you work"
+                  value={form.work_modes}
+                  options={choicesFor(taxonomy?.work_modes)}
+                  max={taxonomy?.work_modes.length ?? 4}
+                  placeholder="Choose"
+                  onChange={(v) => update({ work_modes: v })}
+                />
+              </DrawerField>
+            </>
+          ) : null}
           {/* Onboarding's own questions and lists (step "work-mode"), not free text. */}
           <DrawerField label="How long have you worked in music?">
             <SheetSelect
@@ -644,19 +679,7 @@ function EditProfile() {
               onChange={(v) => update({ experience_level: v })}
             />
           </DrawerField>
-          {isBusiness
-            ? null
-            : form.instruments.map((slug) => (
-                <DrawerField key={slug} label={labelFor(taxonomy?.instruments, slug)}>
-                  <SheetSelect
-                    title={labelFor(taxonomy?.instruments, slug)}
-                    value={instrumentExperience[slug] ?? null}
-                    options={choicesFor(taxonomy?.experience_levels)}
-                    placeholder="Choose"
-                    onChange={(v) => setInstrumentExperience((m) => ({ ...m, [slug]: v }))}
-                  />
-                </DrawerField>
-              ))}
+          {/* How long per instrument is asked on the Instruments screen (row above), not here. */}
         </div>
       ),
     },
@@ -780,24 +803,16 @@ function EditProfile() {
             </div>
           ) : null}
           {isBusiness ? (
-            <Field
-              label="Availability"
-              value={form.availability}
-              onChange={(v) => update({ availability: v })}
-              hint="e.g. Open for studio work"
-            />
-          ) : (
-            // Onboarding's own question and list (step "work-mode"), from taxonomy available_for.
-            <DrawerField label="Available for">
-              <SheetSelect
-                title="Available for"
-                value={form.availability || null}
-                options={choicesFor(taxonomy?.available_for)}
-                placeholder="Choose"
-                onChange={(v) => update({ availability: v })}
+            // One switch for every account type (owner, 10 Oct 2026); talent sets it on How you work.
+            <div className="flex min-h-touch items-center justify-between gap-3 rounded-sm border border-border bg-card px-4">
+              <span className="text-sm font-medium text-foreground">Open to work</span>
+              <Switch
+                label="Open to work"
+                checked={Boolean(form.availability)}
+                onChange={(on) => update({ availability: on ? "Available" : "" })}
               />
-            </DrawerField>
-          )}
+            </div>
+          ) : null}
         </div>
       ),
     },
@@ -822,7 +837,7 @@ function EditProfile() {
       label: "Links",
       detail: "Streaming and social profiles",
       done: Object.values(form.links).some(Boolean),
-      body: (
+      body: isBusiness ? (
         <div className="space-y-3">
           {linkPlatforms.map((p) => {
             const key =
@@ -839,6 +854,22 @@ function EditProfile() {
               />
             );
           })}
+        </div>
+      ) : (
+        // The onboarding screens, recycled: links and visibility, then goals.
+        <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          <EditStepRow
+            step="contact"
+            label="Links and visibility"
+            values={Object.entries(form.links)
+              .filter(([, v]) => v)
+              .map(([k]) => k)}
+          />
+          <EditStepRow
+            step="intent"
+            label="Goals"
+            values={(row?.intents ?? []).map((v) => labelFor(taxonomy?.intents, v))}
+          />
         </div>
       ),
     },
@@ -1089,5 +1120,25 @@ function ExperienceEditor({
         </Btn>
       ) : null}
     </div>
+  );
+}
+
+/** A row that opens an onboarding question to edit it (owner, 10 Oct 2026), with the answer now. */
+function EditStepRow({ step, label, values }: { step: string; label: string; values: string[] }) {
+  return (
+    <Link
+      to="/setup/$step"
+      params={{ step: step }}
+      search={{ from: "edit" }}
+      className="state-layer flex min-h-touch items-center gap-3 px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium text-foreground">{label}</span>
+        <span className="block truncate text-1 text-muted-foreground">
+          {values.length ? values.join(", ") : "Not set"}
+        </span>
+      </span>
+      <ChevronRight size={iconSize.sm} aria-hidden className="shrink-0 text-muted-foreground" />
+    </Link>
   );
 }

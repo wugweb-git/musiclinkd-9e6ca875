@@ -1,9 +1,9 @@
-import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ChevronRight, CircleCheck, Check, MapPin } from "lucide-react";
+import { ArrowRight, ChevronRight, CircleCheck, Check, MapPin } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { Dialog } from "@/components/ml/kit";
 import { haptic } from "@/lib/haptics";
@@ -35,8 +35,8 @@ import { iconSize } from "@/lib/tokens";
 
 /*
  * Create business, on the same wizard as talent onboarding (StepShell, drawers, fixed Continue).
- * Step 1 is the type, picked like a talent's person type, and the Google Maps link, which fills in
- * the name and place (src/lib/maps-link.functions.ts). One business profile per account.
+ * Step 1 is the type, picked like a talent's person type. The Google Maps link, on the location
+ * step, fills in the name and place (src/lib/maps-link.functions.ts). One business profile per account.
  */
 const steps = [
   "type",
@@ -53,9 +53,20 @@ const AFTER_CREATE: readonly Step[] = ["amenities", "equipment"];
 type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/business/new")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { step: Step; type?: string } => ({
     step: (steps.includes(search["step"] as Step) ? search["step"] : "type") as Step,
+    ...(typeof search["type"] === "string" && search["type"] ? { type: search["type"] } : {}),
   }),
+  // Step 1, the type, is the shared role screen (owner, 10 Oct 2026): one screen for every account.
+  beforeLoad: ({ search }) => {
+    if (search.step === "type" || !search.type)
+      throw redirect({
+        to: "/setup/$step",
+        params: { step: "role" },
+        search: { as: "business", ...(search.type ? { type: search.type } : {}) },
+        replace: true,
+      });
+  },
   head: () => ({
     meta: [
       { title: "Create a business | MusicLinkd" },
@@ -98,16 +109,17 @@ function labelsOf(options: TaxonomyOption[] | undefined, slugs: string[]) {
 const BUSINESS_GROUPS = [{ key: "business", label: "Business" }] as const;
 
 function NewBusiness() {
-  const { step } = Route.useSearch();
+  const { step, type: typeParam } = Route.useSearch();
   const navigate = useNavigate();
   const router = useRouter();
   const idx = steps.indexOf(step);
-  const go = (s: Step) => navigate({ to: "/business/new", search: { step: s } });
+  const go = (s: Step) =>
+    navigate({ to: "/business/new", search: { step: s, ...(type ? { type } : {}) } });
   const taxonomy = useTaxonomy();
   const tx = taxonomy.options;
   const types = businessTypes(tx?.person_types ?? []);
 
-  const [type, setType] = useState<string | null>(null);
+  const [type, setType] = useState<string | null>(typeParam ?? null);
   const [mapsUrl, setMapsUrl] = useState("");
   const [place, setPlace] = useState<MapsPlace | null>(null);
   const [name, setName] = useState("");
@@ -248,7 +260,7 @@ function NewBusiness() {
     type: {
       group: "Business",
       title: "What kind of business?",
-      subtitle: "Pick the one that fits best, then add its Google Maps link.",
+      subtitle: "Pick the one that fits best.",
       why: "Your type shapes your page and who finds you. The link fills in the rest.",
     },
     basics: {
@@ -316,7 +328,9 @@ function NewBusiness() {
             key={nudge}
             type="submit"
             loading={create.isPending}
-            pending={!valid[step]}
+            {...(step === "review" || step === "equipment"
+              ? {}
+              : { iconEnd: <ArrowRight size={iconSize.md} /> })}
             className={`w-full ${nudge ? "animate-shake" : ""}`}
           >
             {step === "review"
@@ -329,25 +343,39 @@ function NewBusiness() {
       >
         {!tx ? (
           <StepSkeleton />
-        ) : step === "type" ? (
-          <div className="space-y-6">
-            {/*
-              The same picker a talent uses for their person type (owner, 29 Sep 2026). This was a
-              hand-rolled grid of buttons with its own selected state, ring and hover colours —
-              a second UI for the same question, and PersonTypePicker was already imported in this
-              file. Picking a business type is picking a persona type; only the list differs.
-            */}
-            <PersonTypePicker
-              groups={BUSINESS_GROUPS}
-              options={types}
-              selected={type ? [type] : []}
-              icon={typeIcon}
-              onToggle={(slug) => {
-                haptic("select");
-                setType(slug === type ? "" : slug);
-              }}
+        ) : step === "basics" ? (
+          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">
+            <InlineField
+              inputId="businessName"
+              label="Business name"
+              value={name}
+              onChange={setName}
+              placeholder="Soundhouse Studios Bandra"
+              maxLength={80}
+              hint="Use the official registered or brand name."
             />
-
+            <UsernameField
+              inputId="businessUsername"
+              value={username}
+              onChange={(v) => {
+                setUsernameTouched(true);
+                setUsername(v);
+              }}
+              status={usernameStatus}
+            />
+            <InlineField
+              inputId="tagline"
+              label="Tagline (optional)"
+              value={tagline}
+              onChange={setTagline}
+              placeholder="Two live rooms, analog tape, Dolby Atmos."
+              maxLength={160}
+              hint="Highlight what sets your facility or agency apart."
+            />
+          </div>
+        ) : step === "location" ? (
+          <div className="space-y-5">
+            {/* Google Maps fills the place in; it lives with location, not step 1 (owner, 6 Oct 2026). */}
             <div className="rounded-lg border border-border/80 bg-card p-5">
               <div className="mb-1 flex items-center justify-between">
                 <p className="text-sm font-bold text-foreground">Google Maps Profile (Optional)</p>
@@ -398,89 +426,58 @@ function NewBusiness() {
                 </div>
               ) : null}
             </div>
-          </div>
-        ) : step === "basics" ? (
-          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">
-            <InlineField
-              inputId="businessName"
-              label="Business name"
-              value={name}
-              onChange={setName}
-              placeholder="Soundhouse Studios Bandra"
-              maxLength={80}
-              hint="Use the official registered or brand name."
-            />
-            <UsernameField
-              inputId="businessUsername"
-              value={username}
-              onChange={(v) => {
-                setUsernameTouched(true);
-                setUsername(v);
-              }}
-              status={usernameStatus}
-            />
-            <InlineField
-              inputId="tagline"
-              label="Tagline (optional)"
-              value={tagline}
-              onChange={setTagline}
-              placeholder="Two live rooms, analog tape, Dolby Atmos."
-              maxLength={160}
-              hint="Highlight what sets your facility or agency apart."
-            />
-          </div>
-        ) : step === "location" ? (
-          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">
-            <div className="grid grid-cols-2 gap-3">
-              <DrawerField label="State">
-                <SheetSelect
-                  title="State"
-                  value={state || null}
-                  options={choicesFor(tx.indian_states)}
-                  placeholder="Choose"
-                  searchable
-                  onChange={(v) => {
-                    setState(v);
-                    setCity("");
-                  }}
-                />
-              </DrawerField>
-              <DrawerField label="City">
-                {state ? (
+            <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">
+              <div className="grid grid-cols-2 gap-3">
+                <DrawerField label="State">
                   <SheetSelect
-                    title="City"
-                    value={city || null}
-                    options={cityOptions}
+                    title="State"
+                    value={state || null}
+                    options={choicesFor(tx.indian_states)}
                     placeholder="Choose"
                     searchable
-                    onChange={setCity}
+                    onChange={(v) => {
+                      setState(v);
+                      setCity("");
+                    }}
                   />
-                ) : (
-                  <button
-                    type="button"
-                    disabled
-                    className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
-                  >
-                    State first
-                  </button>
-                )}
-              </DrawerField>
+                </DrawerField>
+                <DrawerField label="City">
+                  {state ? (
+                    <SheetSelect
+                      title="City"
+                      value={city || null}
+                      options={cityOptions}
+                      placeholder="Choose"
+                      searchable
+                      onChange={setCity}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      disabled
+                      className="flex h-13 w-full items-center rounded-full border border-input bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
+                    >
+                      State first
+                    </button>
+                  )}
+                </DrawerField>
+              </div>
+              <InlineField
+                inputId="pinCode"
+                label="PIN code"
+                value={pinCode}
+                onChange={(v) => {
+                  const pin = v.replace(/\D/g, "").slice(0, 6);
+                  setPinCode(pin);
+                  void fillFromPin(pin);
+                }}
+                placeholder="400053"
+                inputMode="numeric"
+                {...(pinCode.length === 6 && pinError
+                  ? { error: pinError }
+                  : { hint: "Never publicly shared. Used for proximity discovery." })}
+              />
             </div>
-            <InlineField
-              inputId="pinCode"
-              label="PIN code"
-              value={pinCode}
-              onChange={(v) => {
-                const pin = v.replace(/\D/g, "").slice(0, 6);
-                setPinCode(pin);
-                void fillFromPin(pin);
-              }}
-              placeholder="400053"
-              inputMode="numeric"
-              {...(pinCode.length === 6 && pinError
-                ? { error: pinError }
-                : { hint: "Never publicly shared. Used for proximity discovery." })}
-            />
           </div>
         ) : step === "offer" ? (
           <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80">

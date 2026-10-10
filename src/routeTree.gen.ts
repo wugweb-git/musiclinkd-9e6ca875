@@ -80,6 +80,7 @@ import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as SettingsPrivacyRouteImport } from './routes/settings.privacy'
 import { Route as SettingsSpotifyRouteImport } from './routes/settings.spotify'
+import { Route as SetupStepRouteImport } from './routes/setup.$step'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
@@ -505,6 +506,11 @@ const SettingsSpotifyRoute = SettingsSpotifyRouteImport.update({
   path: '/settings/spotify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SetupStepRoute = SetupStepRouteImport.update({
+  id: '/setup/$step',
+  path: '/setup/$step',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
@@ -917,6 +923,7 @@ export interface FileRoutesByFullPath {
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/spotify': typeof SettingsSpotifyRoute
+  '/setup/$step': typeof SetupStepRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1058,6 +1065,7 @@ export interface FileRoutesByTo {
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/spotify': typeof SettingsSpotifyRoute
+  '/setup/$step': typeof SetupStepRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1201,6 +1209,7 @@ export interface FileRoutesById {
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/spotify': typeof SettingsSpotifyRoute
+  '/setup/$step': typeof SetupStepRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1345,6 +1354,7 @@ export interface FileRouteTypes {
     | '/settings/delete-account'
     | '/settings/privacy'
     | '/settings/spotify'
+    | '/setup/$step'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1486,6 +1496,7 @@ export interface FileRouteTypes {
     | '/settings/delete-account'
     | '/settings/privacy'
     | '/settings/spotify'
+    | '/setup/$step'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1628,6 +1639,7 @@ export interface FileRouteTypes {
     | '/settings/delete-account'
     | '/settings/privacy'
     | '/settings/spotify'
+    | '/setup/$step'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1771,6 +1783,7 @@ export interface RootRouteChildren {
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   SettingsPrivacyRoute: typeof SettingsPrivacyRoute
   SettingsSpotifyRoute: typeof SettingsSpotifyRoute
+  SetupStepRoute: typeof SetupStepRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
   VerificationBadgeRoute: typeof VerificationBadgeRoute
@@ -2351,6 +2364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsSpotifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/setup/$step': {
+      id: '/setup/$step'
+      path: '/setup/$step'
+      fullPath: '/setup/$step'
+      preLoaderRoute: typeof SetupStepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/talent/$id': {
       id: '/talent/$id'
       path: '/talent/$id'
@@ -2915,6 +2935,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   SettingsPrivacyRoute: SettingsPrivacyRoute,
   SettingsSpotifyRoute: SettingsSpotifyRoute,
+  SetupStepRoute: SetupStepRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
   VerificationBadgeRoute: VerificationBadgeRoute,

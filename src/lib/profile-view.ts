@@ -56,6 +56,8 @@ function roleLabel(key: string | undefined | null, labels?: TaxonomyLabels): str
 }
 
 const availabilityFromRow: Record<string, AvailabilityState> = {
+  // The onboarding "Open to work" switch (owner, 6 Oct 2026).
+  Available: "Available",
   Shows: "Available for Shows",
   "Session Work": "Available for Session Work",
   Collaborations: "Looking for Collaboration",

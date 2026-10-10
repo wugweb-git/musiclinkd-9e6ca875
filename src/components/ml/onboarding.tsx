@@ -113,6 +113,8 @@ type Store = {
   hydrated: boolean;
   sync: SyncState;
   retry: () => void;
+  /** Save now, skipping the autosave wait, and resolve when it is stored. */
+  flush: () => Promise<void>;
   /** Instruments and genres for the draft's roles and languages (persona_bucket). */
   bucket: PersonaBucket | null;
   bucketState: LoadState;
@@ -320,6 +322,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       hydrated,
       sync,
       retry: () => void push(draft),
+      flush: () => {
+        if (timer.current) window.clearTimeout(timer.current);
+        pending.current = null;
+        return push(latest.current);
+      },
       bucket,
       bucketState,
       retryBucket: () => setBucketAttempt((n) => n + 1),
@@ -452,7 +459,10 @@ export function StepShell({
   onSubmit,
   optional = false,
   status,
+  editing = false,
 }: {
+  /** Opened from Edit profile (owner, 10 Oct 2026): no step count or progress, just the question. */
+  editing?: boolean | undefined;
   step: number;
   total: number;
   group: string;
@@ -516,11 +526,11 @@ export function StepShell({
         e.preventDefault();
         onSubmit?.();
       }}
-      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-auth-ground"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-[414px] flex-col bg-warm"
     >
       {/* Modern top app bar: frosted glass with segmented story-style progress track */}
       <header
-        className={`vt-flow-header pt-safe sticky top-0 z-bar border-b bg-auth-ground/90 px-5 pb-3.5 backdrop-blur-md transition-colors duration-200 ease-standard ${
+        className={`vt-flow-header pt-safe sticky top-0 z-bar border-b bg-warm/90 px-5 pb-3.5 backdrop-blur-md transition-colors duration-200 ease-standard ${
           edges.top ? "border-border shadow-2xs" : "border-transparent"
         }`}
       >
@@ -529,7 +539,7 @@ export function StepShell({
             <IconBtn
               label="Back"
               variant="plain"
-              className="-ml-2 hover:bg-subtle active:scale-90"
+              className="-ml-2.5 hover:bg-subtle active:scale-90"
               onClick={onBack}
             >
               <ArrowLeft size={iconSize.md} aria-hidden />
@@ -546,10 +556,8 @@ export function StepShell({
                     titleTucked ? "-translate-y-full opacity-0" : ""
                   }`}
                 >
-                  <span className="font-semibold text-foreground">{group}</span>
-                  <span className="mx-1.5 opacity-50">·</span>
-                  <span>
-                    Step {step} of {total}
+                  <span className="font-semibold text-foreground">
+                    {editing ? "Edit profile" : `Step ${step} of ${total}`}
                   </span>
                 </p>
                 <p
@@ -566,6 +574,7 @@ export function StepShell({
 
             {/* Segmented story-style progress track (Tinder / Snapchat / Instagram story UX) */}
             <div
+              hidden={editing}
               className="mt-2 flex w-full gap-1"
               role="progressbar"
               aria-valuenow={pct}
@@ -589,17 +598,9 @@ export function StepShell({
               })}
             </div>
           </div>
-          {/* Same width with or without Skip, so the progress bar never changes length between steps. */}
-          <span className="flex w-10 shrink-0 justify-end">
-            {onSkip ? (
-              <AuthTextButton
-                onClick={onSkip}
-                className="text-1 font-semibold text-muted-foreground hover:text-foreground"
-              >
-                Skip
-              </AuthTextButton>
-            ) : null}
-          </span>
+          {/* No Skip (owner, 10 Oct 2026): an optional step goes on with Continue, answered or not.
+              The slot keeps the progress bar centred against the back arrow. */}
+          <span aria-hidden className="w-10 shrink-0" />
         </div>
       </header>
 
@@ -613,27 +614,16 @@ export function StepShell({
           <h1 ref={titleRef} className="text-3 font-bold text-foreground leading-tight">
             {title}
           </h1>
-          {optional ? (
-            <span className="mt-1 shrink-0 rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground border border-border/60">
-              Optional
-            </span>
-          ) : null}
+          {/* No Optional chip, group label or "why" note (owner, 6 Oct 2026): Skip says it's optional. */}
         </div>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
-
-        {why ? (
-          <div className="mt-3 flex items-start gap-2 rounded-sm border border-border bg-card px-3 py-2.5 text-1 text-muted-foreground">
-            <Info size={14} className="mt-0.5 shrink-0 text-foreground/60" aria-hidden />
-            <span>{why}</span>
-          </div>
-        ) : null}
 
         <div className="mt-6">{children}</div>
       </main>
 
       {/* Frosted floating bottom footer bar */}
       <div
-        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-auth-ground/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard ${
+        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-[414px] border-t bg-warm/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard ${
           edges.bottom ? "border-border shadow-xs" : "border-transparent"
         }`}
       >
@@ -656,28 +646,72 @@ export type PickerOption =
       media?: ReactNode;
     };
 
-/** Chips from the global `Chip`. Selection is the caller's. */
+export type PickerLayout = "cloud" | "stack" | "script";
+
+/*
+ * Adaptive order for a cloud (owner, 6 Oct 2026): pills may move to fill each row, so a row is
+ * not left half empty. First-fit by an estimated width (label length, media, padding) into rows of
+ * the phone's content width; the order inside the list is otherwise kept.
+ */
+// The 412px phone less the 20px side gutters, plus the trailing 8px gap the last pill does not use.
+const ROW_PX = 380;
+const pillPx = (o: { label: string; media?: ReactNode }) =>
+  o.label.length * 7.2 + (o.media ? 84 : 48) + 8;
+function packRows<T extends { label: string; media?: ReactNode }>(items: T[]): T[] {
+  const rows: { left: number; items: T[] }[] = [];
+  for (const item of items) {
+    const w = Math.min(pillPx(item), ROW_PX);
+    const row = rows.find((r) => r.left >= w);
+    if (row) {
+      row.items.push(item);
+      row.left -= w;
+    } else rows.push({ left: ROW_PX - w, items: [item] });
+  }
+  return rows.flatMap((r) => r.items);
+}
+
+/*
+ * Chips from the global `Chip`, in one of three layouts (owner refs, 6 Oct 2026). Selection is the
+ * caller's.
+ *   cloud  — centred, wrapping: long lists of short labels (roles, instruments, genres, types).
+ *   stack  — one pill per row, centred: short lists where each choice is a statement (intent).
+ *   script — big centred words: languages, written in their own script.
+ */
 export function ChipPicker({
   options,
   selected,
   onToggle,
   max,
+  layout = "cloud",
 }: {
   options: PickerOption[];
   selected: string[];
   onToggle: (v: string) => void;
   /** When this many are selected, unselected chips are disabled. */
   max?: number;
+  layout?: PickerLayout | undefined;
 }) {
-  const full = max !== undefined && selected.length >= max;
+  const full = max !== undefined && max > 1 && selected.length >= max;
   return (
-    <div className="flex flex-wrap gap-2">
-      {options.map((opt) => {
-        const o = typeof opt === "string" ? { value: opt, label: opt } : opt;
+    <div
+      className={cn(
+        "flex gap-2",
+        layout === "stack" ? "flex-col items-center" : "flex-wrap justify-center",
+        layout === "script" && "gap-2.5",
+      )}
+    >
+      {(layout === "cloud"
+        ? packRows(
+            options.map((opt) => (typeof opt === "string" ? { value: opt, label: opt } : opt)),
+          )
+        : options.map((opt) => (typeof opt === "string" ? { value: opt, label: opt } : opt))
+      ).map((o) => {
         const on = selected.includes(o.value);
         return (
           <Chip
             key={o.value}
+            variant="select"
+            size={layout === "script" ? "lg" : "md"}
             active={on}
             media={o.media}
             atLimit={full && !on}
@@ -703,6 +737,7 @@ export function PersonTypePicker({
   max,
   exclude = [],
   icon,
+  layout = "cloud",
 }: {
   groups: readonly { key: string; label: string }[];
   options: TaxonomyOption[];
@@ -711,9 +746,12 @@ export function PersonTypePicker({
   max?: number;
   exclude?: string[];
   icon?: (o: TaxonomyOption) => ReactNode;
+  layout?: PickerLayout | undefined;
 }) {
   return (
+    // One list, in group order, no group headings (owner, 6 Oct 2026). "Other" stays last.
     <ChipPicker
+      layout={layout}
       options={groups
         .flatMap((g) => options.filter((o) => (o.metadata?.group ?? "other") === g.key))
         .filter((o) => !exclude.includes(o.slug))

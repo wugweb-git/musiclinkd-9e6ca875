@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one set of question screens for setup, editing and both account types (10 Oct, owner)
+
+- The question screens live at `/setup/<question>` (was `/onboarding/step/…`); old addresses
+  redirect. Business step 1 is the shared role screen (`/setup/role?as=business`), and the type
+  carries into business setup (`/business/new?step=basics&type=…`).
+- Edit profile (talent) opens these screens for roles, genres, instruments (then "how long"),
+  languages, how you work, links and visibility, and goals; edit mode has no step count or
+  progress bar, a Save ✓ button, and returns to Edit profile after the save lands.
+- Pills: one picker, three layouts (centred cloud, one per row, big words for languages), dashed
+  with + when off and ink with − when on; clouds pack rows to fill space. No group headings.
+- Roles: up to three on step 1, the first is the main role; the second roles screen is gone.
+  Goals are one deduplicated list; "Show me more" follows from them.
+- Availability is one "Open to work" switch, on the work-mode step, on Home (talent and business)
+  and on Edit profile; saved as "Available" or nothing.
+- Onboarding: role first for talent, no Skip, no Optional chip or info note, step count always out
+  of every step, warm ground, 414px column, back arrow locked at 20/26 on every screen checked,
+  Continue → and Save ✓ icons. Drawer triggers use the 44px / 8px field shape.
+- Profile data: the saved columns, not the old draft copy, fill the question screens.
+
 ### Changed — onboarding Select banners and step fields (6 Oct, owner)
 
 - Select screen (`/onboarding`): warm page, back button only, "How will you use MusicLinkd?".

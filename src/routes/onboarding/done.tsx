@@ -51,11 +51,11 @@ function Done() {
           .map((g) => labelFor(tx?.genres, g))
           .join(", ")
       : null,
-    d.availability.length ? `Open for ${d.availability.slice(0, 2).join(", ")}` : null,
+    d.availability.includes("Available") ? "Open to work" : null,
   ].filter(Boolean) as string[];
 
   return (
-    <Screen tone="auth" bottomNav={false} className="pb-40">
+    <Screen tone="warm" bottomNav={false} className="pb-40">
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
@@ -135,7 +135,7 @@ function Done() {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-auth-ground/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-[414px] border-t bg-warm/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >

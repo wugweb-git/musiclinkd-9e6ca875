@@ -29,6 +29,7 @@ import {
   Sparkles,
   MapPin,
   Plus,
+  Minus,
   Search,
   Grid2x2,
   ArrowLeftRight,
@@ -597,8 +598,17 @@ export function Chip({
   media,
   disabled = false,
   atLimit = false,
+  variant = "default",
+  size = "md",
 }: {
   children: ReactNode;
+  /**
+   * `select`: the onboarding pick (owner refs, 6 Oct 2026) — dashed with a + when off, solid ink
+   * with a − when on.
+   */
+  variant?: "default" | "select" | undefined;
+  /** `lg`: big words, for a choice whose label is the point (languages in their own script). */
+  size?: "md" | "lg" | undefined;
   active?: boolean;
   onClick?: () => void;
   /** A leading circle: an icon element, an image URL, or nothing. */
@@ -633,13 +643,17 @@ export function Chip({
       disabled={disabled}
       aria-disabled={atLimit || undefined}
       aria-pressed={active === undefined ? undefined : active}
-      className={`state-layer hit-area inline-flex min-h-control-sm shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
+      className={`state-layer hit-area inline-flex shrink-0 items-center gap-2 rounded-full ${
+        size === "lg" ? "min-h-12 text-2 font-bold" : "min-h-control-sm text-sm font-medium"
+      } ${variant === "select" && !active ? "border-[1.5px] border-dashed" : "border"} transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
         atLimit ? "border-border/50" : ""
       } ${refused ? "animate-shake" : picked && active ? "animate-select" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
         active
           ? "border-transparent bg-selected-bg text-selected-text"
-          : `border-border bg-card ${atLimit ? "text-muted-foreground" : "text-foreground"}`
-      }`}
+          : variant === "select"
+            ? `bg-transparent ${atLimit ? "border-muted-foreground/40 text-muted-foreground" : "border-foreground/60 text-foreground"}`
+            : `border-border bg-card ${atLimit ? "text-muted-foreground" : "text-foreground"}`
+      } ${variant === "select" && !media ? "pl-4 pr-3" : ""}`}
     >
       {media ? (
         <span
@@ -656,6 +670,13 @@ export function Chip({
         </span>
       ) : null}
       {children}
+      {variant === "select" ? (
+        active ? (
+          <Minus size={iconSize.xs} strokeWidth={3} aria-hidden className="animate-pop" />
+        ) : (
+          <Plus size={iconSize.xs} strokeWidth={3} aria-hidden />
+        )
+      ) : null}
     </button>
   );
 }
@@ -760,10 +781,12 @@ function useRipple() {
 
 function BtnContent({
   icon,
+  iconEnd,
   loading,
   children,
 }: {
   icon?: ReactNode;
+  iconEnd?: ReactNode;
   loading?: boolean;
   children: ReactNode;
 }) {
@@ -777,6 +800,11 @@ function BtnContent({
         </span>
       ) : null}
       {children}
+      {iconEnd && !loading ? (
+        <span aria-hidden className="inline-flex shrink-0">
+          {iconEnd}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -784,6 +812,7 @@ function BtnContent({
 export function Btn({
   children,
   icon,
+  iconEnd,
   variant = "primary",
   className = "",
   onClick,
@@ -795,6 +824,8 @@ export function Btn({
   children: ReactNode;
   /** Leading icon. Decorative: the text is the button's name. */
   icon?: ReactNode;
+  /** Trailing icon, e.g. the arrow on Continue. Decorative. */
+  iconEnd?: ReactNode;
   variant?: BtnVariant;
   className?: string;
   onClick?: () => void;
@@ -817,7 +848,7 @@ export function Btn({
       className={btnClass(variant, className)}
     >
       {ripple.layer}
-      <BtnContent icon={icon} loading={loading}>
+      <BtnContent icon={icon} iconEnd={iconEnd} loading={loading}>
         {children}
       </BtnContent>
     </button>

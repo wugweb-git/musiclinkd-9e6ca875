@@ -77,12 +77,12 @@ type AccountKind = (typeof kindOrder)[number];
 const kindInfo: Record<
   AccountKind,
   {
-    goTo?: { to: "/business/new"; search: { step: "type" } };
+    goTo?: { to: "/setup/$step"; params: { step: "role" }; search: { as: "business" } };
   }
 > = {
   Talent: {},
   Business: {
-    goTo: { to: "/business/new", search: { step: "type" } },
+    goTo: { to: "/setup/$step", params: { step: "role" }, search: { as: "business" } },
   },
 };
 
@@ -110,14 +110,14 @@ function SelectScreen() {
     setTouched(true);
     if (next === "Business") {
       const goTo = kindInfo.Business.goTo;
-      if (goTo) void navigate({ to: goTo.to, search: goTo.search });
+      if (goTo) void navigate({ to: goTo.to, params: goTo.params, search: goTo.search });
       return;
     }
     if (hydrated && started) {
       void navigate({ to: "/onboarding/resume" });
       return;
     }
-    void navigate({ to: "/onboarding/step/$id", params: { id: resumeTarget(draft, bucket) } });
+    void navigate({ to: "/setup/$step", params: { step: resumeTarget(draft, bucket) } });
   };
 
   // Touch gesture support: swipe left/right to toggle between Talent and Business
@@ -144,11 +144,11 @@ function SelectScreen() {
     <div
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-warm px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-[414px] flex-col justify-between bg-warm px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]"
     >
       <div>
         {/* Back and the brand mark only (owner, 5 Oct 2026). */}
-        <header className="-ml-3 flex min-h-12 items-center gap-1">
+        <header className="-ml-2.5 flex min-h-12 items-center gap-1">
           <AuthBackButton back={{ to: "/welcome" }} />
           <BrandMark />
         </header>
