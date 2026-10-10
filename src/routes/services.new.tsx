@@ -36,8 +36,7 @@ import { haptic } from "@/lib/haptics";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
-import { getMyBookableEquipment } from "@/lib/bookable-owner.functions";
-import { useMyBookablePhotos } from "@/components/ml/bookable-setup";
+import { useMyBookableEquipment, useMyBookablePhotos } from "@/components/ml/bookable-setup";
 import { sized } from "@/lib/image-url";
 
 /*
@@ -150,13 +149,7 @@ function NewService() {
   const { allowed: isBusiness } = useRequireBusiness();
   const [amenitySlugs, setAmenitySlugs] = useState<string[]>([]);
   const [equipmentIds, setEquipmentIds] = useState<string[]>([]);
-  const loadEquipment = useServerFn(getMyBookableEquipment);
-  const studioEquipment = useQuery({
-    queryKey: ["studio-equipment", "mine"],
-    queryFn: () => loadEquipment(),
-    enabled: signedIn && isBusiness,
-    retry: false,
-  });
+  const studioEquipment = useMyBookableEquipment(signedIn && isBusiness);
   const studioPhotos = useMyBookablePhotos(isBusiness);
   const [price, setPrice] = useState("");
   const [turnaround, setTurnaround] = useState<string | null>(null);
@@ -228,7 +221,7 @@ function NewService() {
     ),
   }));
 
-  // A studio's amenities and equipment, each row showing its first photo when it has one.
+  // The business's amenities and equipment, each row showing its first photo when it has one.
   const photoOf = (type: "amenity" | "equipment", id: string) =>
     studioPhotos.data?.photos.find((p) => p.subject_type === type && p.subject_id === id)?.url;
   const thumb = (url: string | undefined, fallback: ReactNode) =>
@@ -537,9 +530,8 @@ function BookableSetupNote({ what }: { what: "amenities" | "equipment" }) {
         No {what} on your business yet. Add them with photos, then pick them here.
       </p>
       <BtnLink
-        to="/profile/edit"
-        search={{ section: "amenities" }}
-        hash={what === "amenities" ? "amenities" : "equipment"}
+        to="/business/new"
+        search={{ step: what, from: "edit" }}
         variant="outline"
         className="mt-3 w-full"
       >

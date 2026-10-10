@@ -44,6 +44,7 @@ export type BookableRow = {
   review_count: number;
   verified_gold: boolean;
   console_type: string | null;
+  /** The owning business's amenities (profile_business.amenities), filled by withBusinessOffers. */
   amenities: string[];
   cancellation_policy: string | null;
   operating_hours: string | null;
@@ -53,6 +54,7 @@ export type BookableRow = {
   response_time?: string | null;
   add_ons?: BookableAddOn[];
   owner: SellerOwnerSummary | null;
+  /** The owning business's equipment (bookable_equipment by profile_id), by withBusinessOffers. */
   equipment: {
     id: string;
     name: string;
@@ -143,9 +145,8 @@ function fromLiveOwners<T>(rows: T[], owner: "seller" | "creator"): T[] {
 }
 const SELLER = `${OWNER}, rating, review_count, followers_count`;
 const STUDIO_FIELDS = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
-  console_type, amenities, cancellation_policy, operating_hours, image_url, images,
-  owner:profiles!studios_owner_profile_id_fkey(${SELLER}),
-  equipment:bookable_equipment(id, name, category, quantity, included, sort_order)`;
+  console_type, cancellation_policy, operating_hours, image_url, images,
+  owner:profiles!studios_owner_profile_id_fkey(${SELLER})`;
 const STUDIO = `${STUDIO_FIELDS}, response_time, add_ons,
   reviews(id, author_name, author_org, context, response, rating, body, created_at, tags)`;
 /** The studio read before 20260918240000_missing_data.sql, while its columns are not there yet. */
@@ -202,6 +203,44 @@ function shapeStudio(raw: BookableRow): BookableRow {
   };
 }
 
+/**
+ * Amenities and equipment belong to the business that owns the bookable, for every business type
+ * (owner, 10 Oct 2026), not to the bookable (bookables.amenities is no longer read). One read of
+ * each for every row's owner. A failed read leaves them empty rather than failing the page.
+ */
+async function withBusinessOffers(
+  client: Awaited<ReturnType<typeof anonClient>>,
+  rows: BookableRow[],
+): Promise<BookableRow[]> {
+  const owners = [...new Set(rows.map((r) => r.owner?.id).filter((id): id is string => !!id))];
+  if (!owners.length) return rows.map((r) => ({ ...r, amenities: [], equipment: [] }));
+  const db = client as unknown as SupabaseClient;
+  const [business, equipment] = await Promise.all([
+    db.from("profile_business").select("profile_id, amenities").in("profile_id", owners),
+    db
+      .from("bookable_equipment")
+      .select("id, name, category, quantity, included, sort_order, profile_id")
+      .in("profile_id", owners)
+      .order("sort_order")
+      .order("name"),
+  ]);
+  const amenities = new Map(
+    ((business.data ?? []) as { profile_id: string; amenities: string[] | null }[]).map((b) => [
+      b.profile_id,
+      b.amenities ?? [],
+    ]),
+  );
+  type Item = BookableRow["equipment"][number] & { profile_id: string };
+  const items = (equipment.data ?? []) as Item[];
+  return rows.map((r) => ({
+    ...r,
+    amenities: (r.owner?.id && amenities.get(r.owner.id)) || [],
+    equipment: items
+      .filter((e) => e.profile_id === r.owner?.id)
+      .map(({ profile_id: _p, ...e }) => e),
+  }));
+}
+
 export const listBookables = createServerFn({ method: "GET" }).handler(async () => {
   const client = await anonClient();
   const { data, error } = await withFallback(
@@ -217,7 +256,7 @@ export const listBookables = createServerFn({ method: "GET" }).handler(async () 
     [STUDIO, STUDIO_BEFORE],
   );
   if (error) throw new Error(error.message);
-  return ((data ?? []) as unknown as BookableRow[]).map(shapeStudio);
+  return withBusinessOffers(client, ((data ?? []) as unknown as BookableRow[]).map(shapeStudio));
 });
 
 export const getBookableBySlug = createServerFn({ method: "GET" })
@@ -233,7 +272,9 @@ export const getBookableBySlug = createServerFn({ method: "GET" })
       [STUDIO, STUDIO_BEFORE],
     );
     if (error) throw new Error(error.message);
-    return row ? shapeStudio(row as unknown as BookableRow) : null;
+    if (!row) return null;
+    const [studio] = await withBusinessOffers(client, [shapeStudio(row as unknown as BookableRow)]);
+    return studio ?? null;
   });
 
 export const listOpportunities = createServerFn({ method: "GET" }).handler(async () => {

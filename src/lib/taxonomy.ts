@@ -25,7 +25,9 @@ const CATEGORIES = [
   "cities",
   // What a place has (Edit profile → Amenities & equipment).
   "amenities",
+  // Production tools, a business's equipment types: hardware and software (owner, 10 Oct 2026).
   "equipment_categories",
+  "daw_tools",
   "business_policies",
   // Old opportunity, project and availability categories are retired (owner, 10 Oct 2026).
 ] as const;

@@ -1,22 +1,22 @@
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Btn, Chip, IconBtn, Sheet, useConfirm } from "@/components/ml/ui";
+import { Btn, IconBtn, Sheet, useConfirm } from "@/components/ml/ui";
 import { Card, LoadError, Loading, SegmentedField } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
 import { ImagePickButton } from "@/components/ml/profile";
 import { ChipPicker, DrawerField } from "@/components/ml/onboarding";
-import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
+import { SheetSelect, TagListField } from "@/components/ml/listing-form";
 import {
   type MyBookableEquipment,
   type BookableEquipment,
   getMyBookableEquipment,
   removeMyBookableEquipment,
   saveMyBookableEquipment,
-  updateMyBookable,
+  updateMyAmenities,
 } from "@/lib/bookable-owner.functions";
 import {
   MAX_BOOKABLE_PHOTOS,
@@ -33,11 +33,12 @@ import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
 
 /*
- * A studio's amenities, equipment and policies, each with photos where it has them (owner, 22 Sep
- * 2026). One set of editors for Create business and for Edit profile → Amenities & equipment:
- *   amenities — what the place has (studios.amenities, from amenities);
- *   equipment — gear with a type (an instrument or an equipment category, the list Market uses),
- *     quantity and included-or-extra (bookable_equipment);
+ * A business's amenities, equipment and policies, each with photos where it has them (owner, 22 Sep
+ * 2026). One set of editors for Create business and its edit steps (/business/new?from=edit).
+ * Amenities and equipment belong to the business, for every business type (owner, 10 Oct 2026):
+ *   amenities — what it has (profile_business.amenities): taxonomy amenities, or its own labels;
+ *   equipment — gear with a Production tools type (equipment_categories hardware or daw_tools
+ *     software), quantity and included-or-extra (bookable_equipment, by profile_id);
  *   policies — the business's rules (profile_business.policies), with suggestions from the
  *     business_policies taxonomy.
  */
@@ -48,32 +49,30 @@ export const EQUIPMENT_KEY = ["studio-equipment", "mine"];
 const inputCls =
   "min-h-control w-full rounded-lg border border-input bg-card px-4 text-sm outline-none focus:border-ink";
 
-/** The owner's bookable, its amenities and photos. Off for accounts that can't have one. */
+/** The business's amenities and photos. Off for accounts that aren't a business. */
 export function useMyBookablePhotos(enabled = true) {
   const load = useServerFn(listMyBookablePhotos);
   return useQuery({ queryKey: PHOTOS_KEY, queryFn: () => load(), enabled, retry: false });
+}
+
+/** The business's equipment list. Off for accounts that aren't a business. */
+export function useMyBookableEquipment(enabled = true) {
+  const load = useServerFn(getMyBookableEquipment);
+  return useQuery({ queryKey: EQUIPMENT_KEY, queryFn: () => load(), enabled, retry: false });
 }
 
 /* ------------------------------------------------------------------ */
 /* Amenities                                                            */
 /* ------------------------------------------------------------------ */
 
-/** Pick the studio's amenities in a drawer, then add a photo of each. */
+/** Pick the business's amenities, or add its own, then add a photo of each. */
 export function AmenitiesEditor() {
   const queryClient = useQueryClient();
   const q = useMyBookablePhotos();
   const tx = useTaxonomy().options;
-  const save = useServerFn(updateMyBookable);
-  const section = useRef<HTMLElement>(null);
-  // Edit profile > Amenities & equipment lands here (#amenities) once the section has rendered.
-  const shown = Boolean(q.data?.ready);
-  useEffect(() => {
-    if (shown && window.location.hash === "#amenities") {
-      section.current?.scrollIntoView({ block: "start" });
-    }
-  }, [shown]);
+  const save = useServerFn(updateMyAmenities);
 
-  const picked = (q.data?.amenities ?? []).map((f) => f.slug);
+  const saved = (q.data?.amenities ?? []).map((f) => f.slug);
   const update = useMutation({
     mutationFn: (amenities: string[]) => save({ data: { amenities } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: PHOTOS_KEY }),
@@ -89,18 +88,31 @@ export function AmenitiesEditor() {
       />
     );
   if (!q.data?.ready) return null;
+  const picked = update.isPending && update.variables ? update.variables : saved;
+  const offered = tx?.amenities ?? [];
+  // Anything picked that isn't a taxonomy slug is the business's own label (owner, 10 Oct 2026).
+  // Until the taxonomy loads, nothing is known to be custom.
+  const own = tx ? picked.filter((v) => !offered.some((o) => o.slug === v)) : [];
+  const setOwn = (labels: string[]) => {
+    const next = labels
+      .map((l) => l.trim().slice(0, 60))
+      .filter((l) => l.length >= 2)
+      // A typed label that is already offered is that option, not a second copy of it.
+      .map((l) => offered.find((o) => o.label.toLowerCase() === l.toLowerCase())?.slug ?? l);
+    update.mutate([...new Set([...picked.filter((v) => !own.includes(v)), ...next])]);
+  };
   return (
-    <section id="amenities" ref={section} className="scroll-mt-4 space-y-3">
+    <section id="amenities" className="space-y-3">
       {/*
         Chips, like every other "pick several of these" question in onboarding — instruments,
         genres, languages (owner, 29 Sep 2026). This was a drawer, which made the same question
         look like a different one depending on which side of the fork you came in from.
       */}
-      <DrawerField label="Amenities" hint="What the place has. Add a photo of each.">
+      <DrawerField label="Amenities" hint="What your business has. Add a photo of each.">
         <ChipPicker
           options={choicesFor(
-            // The options still offered, and any the place already has so it can remove them.
-            tx?.amenities.filter((o) => o.metadata?.picker !== false || picked.includes(o.slug)),
+            // The options still offered, and any the business already has so it can remove them.
+            offered.filter((o) => o.metadata?.picker !== false || picked.includes(o.slug)),
           ).map((o) => {
             const Icon = amenityIcon(o.value);
             return {
@@ -109,13 +121,20 @@ export function AmenitiesEditor() {
               media: <Icon size={iconSize.sm} aria-hidden />,
             };
           })}
-          selected={update.isPending && update.variables ? update.variables : picked}
-          onToggle={(v) => {
-            const now = update.isPending && update.variables ? update.variables : picked;
-            update.mutate(now.includes(v) ? now.filter((x) => x !== v) : [...now, v]);
-          }}
+          selected={picked}
+          onToggle={(v) =>
+            update.mutate(picked.includes(v) ? picked.filter((x) => x !== v) : [...picked, v])
+          }
         />
       </DrawerField>
+      {/* The same add-a-line field as a service's deliverables; each one shows as a pill. */}
+      <TagListField
+        label="Add your own"
+        id="amenities-own"
+        placeholder="Rooftop terrace"
+        value={own}
+        onChange={setOwn}
+      />
       {q.data.amenities.map((f) => (
         <Card key={f.slug}>
           <p className="truncate text-sm font-semibold">{f.label}</p>
@@ -145,40 +164,33 @@ const INCLUSION_LABELS: Record<(typeof INCLUSION)[number], string> = {
   extra: "Extra cost",
 };
 
-/** Add, change or remove the studio's equipment, each with its photos. */
+/** Add, change or remove the business's equipment, each with its photos. */
 export function EquipmentEditor() {
   const queryClient = useQueryClient();
   const confirm = useConfirm();
-  const load = useServerFn(getMyBookableEquipment);
   const save = useServerFn(saveMyBookableEquipment);
   const remove = useServerFn(removeMyBookableEquipment);
-  const q = useQuery({ queryKey: EQUIPMENT_KEY, queryFn: () => load() });
+  const q = useMyBookableEquipment();
+  const tx = useTaxonomy().options;
+  // Older rows may hold an instrument's slug; only their label is read from the gear list.
   const gear = useGearTaxonomy();
   const [draft, setDraft] = useState<EquipmentDraft | null>(null);
-  const section = useRef<HTMLElement>(null);
 
-  // The manage screen links here as #equipment; the section only exists once the studio loads.
-  useEffect(() => {
-    if (!q.isLoading && window.location.hash === "#equipment") {
-      section.current?.scrollIntoView({ block: "start" });
-    }
-  }, [q.isLoading]);
-
+  // The type is a Production tool (owner, 10 Oct 2026): hardware, then software. Instruments are
+  // not equipment here; they are what talent plays.
+  const tools = [
+    ...(tx?.equipment_categories ?? []).map((o) => ({ ...o, hint: "Hardware" })),
+    ...(tx?.daw_tools ?? []).map((o) => ({ ...o, hint: "Software" })),
+  ];
   const typeLabel = (slug: string | null) =>
     slug
-      ? (gear.types.find((t) => t.slug === slug)?.label ??
-        q.data?.categories.find((c) => c.slug === slug)?.label ??
+      ? (tools.find((t) => t.slug === slug)?.label ??
+        gear.types.find((t) => t.slug === slug)?.label ??
         slug)
       : "";
-  // Instruments first by family (Guitars, Keys, Drums…), then equipment (Microphones, Consoles…).
-  const typeOptions = gear.types.map((t) => ({
-    value: t.slug,
-    label: t.label,
-    hint:
-      t.kind === "instrument"
-        ? (gear.categories.find((c) => c.slug === t.category)?.label ?? "Instrument")
-        : "Equipment",
-  }));
+  const typeOptions = tools
+    .filter((t) => t.metadata?.picker !== false || t.slug === draft?.category)
+    .map((t) => ({ value: t.slug, label: t.label, hint: t.hint }));
 
   const saveItem = useMutation({
     mutationFn: (d: EquipmentDraft) =>
@@ -237,7 +249,7 @@ export function EquipmentEditor() {
     !!draft?.name.trim() && (quantity === null || (Number.isInteger(quantity) && quantity >= 1));
 
   return (
-    <section id="equipment" ref={section} className="scroll-mt-4">
+    <section id="equipment">
       <p className="mb-1.5 block text-sm font-medium text-foreground">Equipment</p>
       <p className="mb-3 text-1 text-muted-foreground">
         The gear customers can use, with a photo of each.
@@ -442,16 +454,15 @@ export function ProofPhotos({
   const add = useServerFn(addMyBookablePhoto);
   const remove = useServerFn(removeMyBookablePhoto);
   const [viewing, setViewing] = useState(false);
-  // A subject (an amenity, a saved item) only exists once the business has its bookable.
-  if (!q.data?.ready || !q.data.studioId) return null;
-  const studioId = q.data.studioId;
+  if (!q.data?.ready) return null;
+  const profileId = q.data.profileId;
   const photos = q.data.photos.filter(
     (p) => p.subject_type === subjectType && p.subject_id === subjectId,
   );
 
   async function onPick(kind: BookablePhotoSubject, file: File) {
     try {
-      const url = await uploadBookablePhoto(studioId, file);
+      const url = await uploadBookablePhoto(profileId, file);
       await add({ data: { subjectType: kind, subjectId, url } });
       await queryClient.invalidateQueries({ queryKey: PHOTOS_KEY });
       toast.success("Photo added");

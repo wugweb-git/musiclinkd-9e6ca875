@@ -128,18 +128,14 @@ function websiteOf(links: unknown): string | null {
   }
 }
 
-function photosOf(
-  photos: NonNullable<BusinessRecord["studio"]>["photos"] | undefined,
-  kind: "amenity" | "equipment",
-  id: string,
-) {
+function photosOf(photos: BusinessRecord["photos"], kind: "amenity" | "equipment", id: string) {
   return (photos ?? [])
     .filter((p) => p.subject_type === kind && p.subject_id === id)
     .map((p) => p.url);
 }
 
 export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels): BusinessView {
-  const { profile, business, studio } = r;
+  const { profile, business, studio, equipment, photos } = r;
   const role = profile.roles?.[0];
   const typeLabel = role ? taxonomyLabel(labels, "person_types", role) : "";
   const place = profile.city ?? "";
@@ -176,7 +172,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
       const uses = [
         ...(s.amenity_slugs ?? []).map((a) => taxonomyLabel(labels, "amenities", a)),
         ...(s.equipment_ids ?? [])
-          .map((id) => studio?.equipment.find((e) => e.id === id)?.name)
+          .map((id) => equipment.find((e) => e.id === id)?.name)
           .filter((n): n is string => Boolean(n)),
       ];
       return {
@@ -199,22 +195,25 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     hours: hoursFrom(business.operating_hours),
     policies: (business.policies ?? []).filter((p) => p.trim()),
     studioSlug: studio?.slug ?? null,
-    amenities: (studio?.amenities ?? []).map((slug) => ({
+    // The business's own, for every business type (owner, 10 Oct 2026); a custom amenity is its
+    // own label.
+    amenities: (business.amenities ?? []).map((slug) => ({
       slug,
       label: taxonomyLabel(labels, "amenities", slug),
-      photos: photosOf(studio?.photos, "amenity", slug),
+      photos: photosOf(photos, "amenity", slug),
     })),
-    equipment: (studio?.equipment ?? []).map((e) => ({
+    equipment: equipment.map((e) => ({
       id: e.id,
       name: e.name,
       type: e.category
         ? (labels["equipment_categories"]?.[e.category] ??
+          labels["daw_tools"]?.[e.category] ??
           labels["instruments"]?.[e.category] ??
           e.category)
         : "",
       quantity: e.quantity,
       included: e.included !== false,
-      photos: photosOf(studio?.photos, "equipment", e.id),
+      photos: photosOf(photos, "equipment", e.id),
     })),
     address: business.business_address ?? "",
     mapsUrl: business.maps_url ?? null,

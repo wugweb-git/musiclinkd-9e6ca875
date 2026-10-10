@@ -46,9 +46,8 @@ import { CityField } from "@/components/ml/listing-form";
 import { usePinFill } from "@/hooks/use-pin-fill";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import {
-  AmenitiesEditor,
-  EquipmentEditor,
   PoliciesEditor,
+  useMyBookableEquipment,
   useMyBookablePhotos,
 } from "@/components/ml/bookable-setup";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
@@ -165,9 +164,10 @@ function EditProfile() {
   // A business's rules live in the same form as the rest of its details, not on a screen of their
   // own (owner, 28 Sep 2026) — /business/policies was the last business field without a home here.
   const [policies, setPolicies] = useState<string[]>([]);
-  // Every business lists what its place has here, with a photo of each (owner, 3 Oct 2026). The
-  // first amenity or equipment item creates the business's bookable on the server.
+  // Every business type has amenities and equipment (owner, 10 Oct 2026); their rows below open the
+  // same steps as Create business, in their edit state.
   const amenities = useMyBookablePhotos(isBusiness);
+  const equipment = useMyBookableEquipment(isBusiness);
   useEffect(() => {
     if (!isBusiness) return;
     void loadBusiness()
@@ -786,22 +786,6 @@ function EditProfile() {
         </div>
       ),
     },
-    ...(isBusiness
-      ? [
-          {
-            id: "amenities",
-            label: "Amenities & equipment",
-            detail: "What your space has, with a photo of each",
-            done: (amenities.data?.amenities ?? []).length > 0,
-            body: (
-              <div className="space-y-8">
-                <AmenitiesEditor />
-                <EquipmentEditor />
-              </div>
-            ),
-          },
-        ]
-      : []),
     {
       id: "links",
       label: "Links",
@@ -848,7 +832,7 @@ function EditProfile() {
   /*
    * Edit profile is the way back to the setup screens (owner, 10 Oct 2026): one row per screen, in
    * setup order, for every account type; the same screens in their edit state. Screens with no
-   * setup counterpart (photos, a studio's amenities) open on their own here.
+   * setup counterpart (photos) open on their own here.
    */
   const solo = sections.find((sct) => sct.id === openSection && OWN_SECTIONS.includes(sct.id));
   if (solo) {
@@ -917,6 +901,18 @@ function EditProfile() {
           label: "Policies",
           values: policies.filter(Boolean),
           link: { to: "/business/new", search: { step: "policies", from: "edit" } },
+        },
+        {
+          key: "amenities",
+          label: "Amenities",
+          values: (amenities.data?.amenities ?? []).map((a) => a.label),
+          link: { to: "/business/new", search: { step: "amenities", from: "edit" } },
+        },
+        {
+          key: "equipment",
+          label: "Equipment",
+          values: (equipment.data?.items ?? []).map((e) => e.name),
+          link: { to: "/business/new", search: { step: "equipment", from: "edit" } },
         },
       ]
     : setupSteps.map((st) => ({
@@ -1235,13 +1231,17 @@ const EDIT_LABELS: Record<string, string> = {
  * Sections with no setup screen; each opens on its own from Edit profile. No per-role section: every
  * type shares one schema (owner, 10 Oct 2026).
  */
-const OWN_SECTIONS: string[] = ["photos", "amenities"];
+const OWN_SECTIONS: string[] = ["photos"];
 
 type EditLink =
   | { to: "/setup/$step"; params: { step: string }; search: { from: "edit"; persona?: "business" } }
   | {
       to: "/business/new";
-      search: { step: "basics" | "location" | "languages" | "genres" | "policies"; from: "edit" };
+      search: {
+        step:
+          "basics" | "location" | "languages" | "genres" | "policies" | "amenities" | "equipment";
+        from: "edit";
+      };
     }
   | { to: "/profile/edit"; search: { section: string } };
 

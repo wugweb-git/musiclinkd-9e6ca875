@@ -4,8 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowRight, ChevronRight, CircleCheck, Check, MapPin } from "lucide-react";
-import { Btn, BtnLink } from "@/components/ml/ui";
-import { Dialog } from "@/components/ml/kit";
+import { Btn } from "@/components/ml/ui";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import {
@@ -52,11 +51,11 @@ const steps = [
   "languages",
   "genres",
   "policies",
-  // After Create, for studios: these need the studio to exist, since photos belong to it.
+  // After Create, for every business type (owner, 10 Oct 2026): they save as they go, so they
+  // need the business to exist; amenities, equipment and their photos belong to it.
   "amenities",
   "equipment",
 ] as const;
-const AFTER_CREATE: readonly Step[] = ["amenities", "equipment"];
 type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/business/new")({
@@ -154,7 +153,6 @@ function NewBusiness() {
   const [languages, setLanguages] = useState<string[]>([]);
   const [genres, setGenres] = useState<string[]>([]);
   const [policies, setPolicies] = useState<string[]>([]);
-  const isStudio = type === "studio";
 
   // Edit: fill every step from the saved profile and business, once.
   const loadProfile = useServerFn(getMyProfile);
@@ -288,7 +286,7 @@ function NewBusiness() {
         }
       }
       await queryClient.invalidateQueries();
-      if (isStudio) go("amenities");
+      go("amenities");
     },
     onError: (e) =>
       toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again."),
@@ -306,6 +304,7 @@ function NewBusiness() {
       }
       if (step === "languages") await persistProfile({ data: { languages } });
       if (step === "genres") await persistProfile({ data: { genres } });
+      // Amenities and equipment save as they change; Save only returns to Edit profile.
       if (step === "policies")
         await persistBusiness({
           data: { policies: policies.map((p) => p.trim()).filter(Boolean) },
@@ -381,15 +380,15 @@ function NewBusiness() {
     },
     amenities: {
       group: "Amenities",
-      title: "What does the place have?",
-      subtitle: "Pick its amenities, then add a photo of each.",
+      title: "What does your business have?",
+      subtitle: "Pick your amenities or add your own, then add a photo of each.",
       why: "Photos show customers it's real. You can add more later.",
     },
     equipment: {
       group: "Equipment",
       title: "What gear can people use?",
       subtitle: "Add each item: make and model, type, quantity, and included or extra.",
-      why: "A photo of each item builds trust. You can add more later under Manage.",
+      why: "A photo of each item builds trust. You can add more later in Edit profile.",
     },
   };
   const c = copy[step];
@@ -399,7 +398,7 @@ function NewBusiness() {
       <StepShell
         editing={editing}
         step={idx + 1}
-        total={isStudio ? steps.length : steps.length - AFTER_CREATE.length}
+        total={steps.length}
         group={c.group}
         title={c.title}
         subtitle={c.subtitle}
@@ -602,17 +601,6 @@ function NewBusiness() {
           <EquipmentEditor />
         ) : null}
       </StepShell>
-
-      <Dialog
-        open={create.isSuccess && !isStudio}
-        title="Business created"
-        body="Add your hours and rates next."
-        onClose={() => create.reset()}
-      >
-        <BtnLink to="/home" className="w-full">
-          Open Business
-        </BtnLink>
-      </Dialog>
     </>
   );
 }

@@ -19,10 +19,10 @@ export const Route = createFileRoute("/booking/$id")({
       // Weekly hours turn the date and time steps on; without them the studio is asked directly.
       getBookableCalendar({ data: { slug: params.id } }).catch(() => null),
     ]);
-    // Amenity and equipment photos need the studio's id; none before the table exists.
+    // Amenity and equipment photos belong to the business that owns it (owner, 10 Oct 2026).
     const ownerId = (row as { owner?: { id?: string } | null } | null)?.owner?.id;
     const [photos, services] = await Promise.all([
-      row ? getBookablePhotos({ data: { studioId: row.id } }).catch(() => []) : [],
+      ownerId ? getBookablePhotos({ data: { profileId: ownerId } }).catch(() => []) : [],
       // The business's services are what a session can be for (details step, and listed here).
       ownerId ? listPublicServices({ data: { profileId: ownerId } }).catch(() => []) : [],
     ]);

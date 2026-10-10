@@ -134,14 +134,22 @@ function AvailabilityContent() {
         <WeeklyHoursEditor studio={q.data} />
         <NoticeAndBlackouts studio={q.data} />
         <ClosedTimes studio={q.data} />
-        {/* Amenities and equipment, with their photos, are edited in Edit profile. */}
+        {/* Amenities and equipment, with their photos, are the business's own setup steps. */}
         <BtnLink
-          to="/profile/edit"
-          search={{ section: "amenities" }}
+          to="/business/new"
+          search={{ step: "amenities", from: "edit" }}
           variant="outline"
           className="mt-8 w-full"
         >
-          Amenities &amp; Equipment
+          Amenities
+        </BtnLink>
+        <BtnLink
+          to="/business/new"
+          search={{ step: "equipment", from: "edit" }}
+          variant="outline"
+          className="mt-2 w-full"
+        >
+          Equipment
         </BtnLink>
 
         <BtnLink to="/business/bookings" variant="ghost" className="mt-2 w-full">

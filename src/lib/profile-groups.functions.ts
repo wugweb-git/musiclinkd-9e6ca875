@@ -6,6 +6,7 @@ import { anonClient, softSelect } from "@/lib/portfolio.functions";
 import { GOOGLE_MAPS, placeLine } from "@/lib/place";
 import { CITY_PATTERN, INDIAN_STATES } from "@/lib/validation";
 import { createBusinessPage } from "@/lib/pages.functions";
+import { AMENITY } from "@/lib/bookable-photos.functions";
 
 /*
  * Business accounts. MusicLinkd has two account kinds, talent and business, in one username
@@ -56,6 +57,8 @@ export type BusinessRecord = {
     maps_url?: string | null;
     /** Its rules, one per entry (20260922180000_amenities_equipment_policies.sql). */
     policies?: string[] | null;
+    /** What it has: taxonomy amenities slugs, or its own labels (owner, 10 Oct 2026). */
+    amenities?: string[] | null;
     /** The registered name ("SoundHouse Studio LLP"). */
     legal_name?: string | null;
   };
@@ -69,7 +72,7 @@ export type BusinessRecord = {
     description?: string | null;
     deliverables?: string[] | null;
     turnaround?: string | null;
-    /** A studio's service: what it uses (amenities slugs, bookable_equipment ids). */
+    /** A business's service: what it uses (its amenities, bookable_equipment ids). */
     amenity_slugs?: string[] | null;
     equipment_ids?: string[] | null;
     /** work_modes slugs: whether it is booked for a time (isTimeBasedService). */
@@ -99,23 +102,25 @@ export type BusinessRecord = {
     response: string | null;
     tags: string[];
   }[];
+  /*
+   * Amenities, equipment and their photos belong to the business, for every business type (owner,
+   * 10 Oct 2026); the bookable below is only its booking calendar and page.
+   */
+  /** Its gear: type is a Production tools slug (older rows: an instrument slug). */
+  equipment: {
+    id: string;
+    name: string;
+    category: string | null;
+    quantity: number | null;
+    included: boolean;
+  }[];
+  /** Proof photos, by amenity or equipment id. */
+  photos: { subject_type: "amenity" | "equipment"; subject_id: string; url: string }[];
   studio: {
     /** The studio's booking address, /booking/<slug>. */
     slug?: string;
     rating: number | null;
     review_count: number;
-    /** amenities slugs: what the place has. */
-    amenities: string[];
-    /** Its gear: type is an equipment category or an instrument slug. */
-    equipment: {
-      id: string;
-      name: string;
-      category: string | null;
-      quantity: number | null;
-      included: boolean;
-    }[];
-    /** Proof photos, by amenity slug or equipment id. */
-    photos: { subject_type: "amenity" | "equipment"; subject_id: string; url: string }[];
   } | null;
 };
 
@@ -137,68 +142,92 @@ const PROFILE =
 const PROFILE_FULL = `${PROFILE}, pin_code, rating, review_count, followers_count`;
 
 const BUSINESS =
-  "business_address, operating_hours, logo_url, hero_banner_url, founded_year, maps_url, policies";
+  "business_address, operating_hours, logo_url, hero_banner_url, founded_year, maps_url, policies, amenities";
 const REVIEW = "id, author_name, author_org, context, rating, body, response, created_at";
 const REVIEW_FULL = `${REVIEW}, tags`;
-const STUDIO = (review: string) =>
-  `id, slug, rating, review_count, amenities, equipment:bookable_equipment(id, name, category, quantity, included, sort_order), photos:bookable_photos(subject_type, subject_id, url, sort_order), reviews(${review})`;
+const STUDIO = (review: string) => `id, slug, rating, review_count, reviews(${review})`;
 
 async function businessRecord(
   client: SupabaseClient,
   profile: ProfileBase,
 ): Promise<BusinessRecord | null> {
-  const [business, services, team, gallery, credits, reviews, studios] = await Promise.all([
-    softSelect(
-      (columns) =>
-        client.from("profile_business").select(columns).eq("profile_id", profile.id).maybeSingle(),
-      `${BUSINESS}, legal_name`,
-      BUSINESS,
-    ),
-    client
-      .from("profile_services")
-      .select(
-        "id, name, description, price_paise, price_unit, price_note, deliverables, turnaround, amenity_slugs, equipment_ids, work_modes, status",
-      )
-      .eq("profile_id", profile.id)
-      .order("sort_order"),
-    client
-      .from("profile_members")
-      .select("id, name, role, experience, photo_url, since_year, status")
-      .eq("profile_id", profile.id)
-      .eq("kind", "team")
-      .order("sort_order"),
-    client
-      .from("profile_gallery")
-      .select("id, image_url")
-      .eq("profile_id", profile.id)
-      .order("sort_order"),
-    client
-      .from("portfolio_items")
-      .select("id, title, role, release_year")
-      .eq("user_id", profile.id)
-      .eq("published", true)
-      .order("sort_order")
-      .order("created_at", { ascending: false }),
-    softSelect(
-      (columns) => client.from("reviews").select(columns).eq("target_profile_id", profile.id),
-      REVIEW_FULL,
-      REVIEW,
-    ),
-    softSelect(
-      (columns) =>
-        client
-          .from("bookables")
-          .select(columns)
-          .eq("owner_profile_id", profile.id)
-          .order("created_at")
-          .limit(1),
-      STUDIO(REVIEW_FULL),
-      STUDIO(REVIEW),
-    ),
-  ]);
-  const failed = [business, services, team, gallery, credits, reviews, studios].find(
-    (r) => r.error,
-  );
+  const [business, services, team, gallery, credits, reviews, studios, equipment, photos] =
+    await Promise.all([
+      softSelect(
+        (columns) =>
+          client
+            .from("profile_business")
+            .select(columns)
+            .eq("profile_id", profile.id)
+            .maybeSingle(),
+        `${BUSINESS}, legal_name`,
+        BUSINESS,
+      ),
+      client
+        .from("profile_services")
+        .select(
+          "id, name, description, price_paise, price_unit, price_note, deliverables, turnaround, amenity_slugs, equipment_ids, work_modes, status",
+        )
+        .eq("profile_id", profile.id)
+        .order("sort_order"),
+      client
+        .from("profile_members")
+        .select("id, name, role, experience, photo_url, since_year, status")
+        .eq("profile_id", profile.id)
+        .eq("kind", "team")
+        .order("sort_order"),
+      client
+        .from("profile_gallery")
+        .select("id, image_url")
+        .eq("profile_id", profile.id)
+        .order("sort_order"),
+      client
+        .from("portfolio_items")
+        .select("id, title, role, release_year")
+        .eq("user_id", profile.id)
+        .eq("published", true)
+        .order("sort_order")
+        .order("created_at", { ascending: false }),
+      softSelect(
+        (columns) => client.from("reviews").select(columns).eq("target_profile_id", profile.id),
+        REVIEW_FULL,
+        REVIEW,
+      ),
+      softSelect(
+        (columns) =>
+          client
+            .from("bookables")
+            .select(columns)
+            .eq("owner_profile_id", profile.id)
+            .order("created_at")
+            .limit(1),
+        STUDIO(REVIEW_FULL),
+        STUDIO(REVIEW),
+      ),
+      client
+        .from("bookable_equipment")
+        .select("id, name, category, quantity, included")
+        .eq("profile_id", profile.id)
+        .order("sort_order")
+        .order("name"),
+      client
+        .from("bookable_photos")
+        .select("subject_type, subject_id, url")
+        .eq("profile_id", profile.id)
+        .order("sort_order")
+        .order("created_at"),
+    ]);
+  const failed = [
+    business,
+    services,
+    team,
+    gallery,
+    credits,
+    reviews,
+    studios,
+    equipment,
+    photos,
+  ].find((r) => r.error);
   if (failed?.error) throw new Error(failed.error.message);
   if (!business.data) return null;
 
@@ -210,20 +239,7 @@ async function businessRecord(
     created_at: string;
   };
   const studio = (studios.data?.[0] ?? null) as
-    | (Omit<NonNullable<BusinessRecord["studio"]>, "equipment" | "photos"> & {
-        equipment:
-          | (NonNullable<BusinessRecord["studio"]>["equipment"][number] & {
-              sort_order: number;
-            })[]
-          | null;
-        photos:
-          | (NonNullable<BusinessRecord["studio"]>["photos"][number] & {
-              sort_order: number;
-            })[]
-          | null;
-        reviews: StoredReview[] | null;
-      })
-    | null;
+    (NonNullable<BusinessRecord["studio"]> & { reviews: StoredReview[] | null }) | null;
   const allReviews = [
     ...((reviews.data ?? []) as unknown as StoredReview[]),
     ...(studio?.reviews ?? []),
@@ -246,18 +262,13 @@ async function businessRecord(
     gallery: (gallery.data ?? []) as BusinessRecord["gallery"],
     credits: (credits.data ?? []) as BusinessRecord["credits"],
     reviews: allReviews,
+    equipment: (equipment.data ?? []) as BusinessRecord["equipment"],
+    photos: (photos.data ?? []) as BusinessRecord["photos"],
     studio: studio
       ? {
           ...(studio.slug ? { slug: studio.slug } : {}),
           rating: studio.rating == null ? null : Number(studio.rating),
           review_count: studio.review_count,
-          amenities: studio.amenities ?? [],
-          equipment: [...(studio.equipment ?? [])]
-            .sort((a, b) => a.sort_order - b.sort_order)
-            .map(({ sort_order: _s, ...e }) => e),
-          photos: [...(studio.photos ?? [])]
-            .sort((a, b) => a.sort_order - b.sort_order)
-            .map(({ sort_order: _s, ...ph }) => ph),
         }
       : null,
   };
@@ -699,7 +710,6 @@ export const createMyBusiness = createServerFn({ method: "POST" })
           .refine((v) => (INDIAN_STATES as readonly string[]).includes(v))
           .optional(),
         mapsUrl: z.string().trim().max(500).regex(GOOGLE_MAPS).optional(),
-        /** Taxonomy slugs: languages, genres, amenities and equipment_categories. */
         policies: z.array(z.string().trim().min(1).max(200)).min(1).max(12),
         genres: z
           .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
@@ -709,10 +719,9 @@ export const createMyBusiness = createServerFn({ method: "POST" })
           .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
           .max(20)
           .optional(),
-        amenities: z
-          .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
-          .max(40)
-          .optional(),
+        /** Taxonomy amenities slugs, or the business's own labels. */
+        amenities: z.array(AMENITY).max(40).optional(),
+        /** Production tools slugs (equipment_categories, daw_tools): the first equipment rows. */
         equipment: z
           .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
           .max(20)
@@ -822,12 +831,42 @@ async function setUpBusiness(
     business_address: placeLine(data.city, data.pinCode) || null,
     maps_url: data.mapsUrl ?? null,
     ...(data.policies?.length ? { policies: data.policies } : {}),
+    // Amenities and equipment belong to the business, whatever its type (owner, 10 Oct 2026).
+    ...(data.amenities?.length ? { amenities: [...new Set(data.amenities)] } : {}),
     updated_at: new Date().toISOString(),
   } as never);
   if (businessError) throw new Error(businessError.message);
 
-  // A studio business gets its studio too, so weekly hours, the calendar, equipment and proof
-  // photos work from day one. Its slug follows the account's username when that is free.
+  // Equipment starts as the Production tools picked (Microphones, Pro Tools…); the business adds
+  // makes and models later. profile_id is explicit: a business page is set up by the admin client,
+  // where the column's auth.uid() default would be no one.
+  // A retry after a failed studio row runs this again: only a business with no equipment yet.
+  const { data: hasEquipment } = data.equipment?.length
+    ? await client.from("bookable_equipment").select("id").eq("profile_id", profileId).limit(1)
+    : { data: [] };
+  if (data.equipment?.length && !hasEquipment?.length) {
+    const { data: labels } = await client
+      .from("taxonomy_options")
+      .select("slug, label")
+      .in("category_key", ["equipment_categories", "daw_tools"])
+      .in("slug", data.equipment);
+    const byslug = new Map(
+      ((labels ?? []) as { slug: string; label: string }[]).map((l) => [l.slug, l.label]),
+    );
+    const rows = data.equipment
+      .filter((e) => byslug.has(e))
+      .map((e, i) => ({ profile_id: profileId, name: byslug.get(e)!, category: e, sort_order: i }));
+    if (rows.length) {
+      const { error: equipmentError } = await client
+        .from("bookable_equipment")
+        .insert(rows as never);
+      if (equipmentError) throw new Error(equipmentError.message);
+    }
+  }
+
+  // A studio business still gets its bookable, for its booking calendar (weekly hours, closed
+  // times) and /booking/<slug> page; amenities, equipment and photos no longer live on it
+  // (owner, 10 Oct 2026). Its slug follows the account's username when that is free.
   if (data.type === "studio") {
     if (!hasStudio) {
       const base =
@@ -840,42 +879,13 @@ async function setUpBusiness(
         "studio";
       const { data: taken } = await client.from("bookables").select("id").eq("slug", base).limit(1);
       const slug = taken?.length ? `${base}-${Math.random().toString(36).slice(2, 7)}` : base;
-      const { data: studio, error: studioError } = await client
-        .from("bookables")
-        .insert({
-          owner_profile_id: profileId,
-          slug,
-          name: data.name,
-          location: placeLine(data.city, data.pinCode) || null,
-          amenities: data.amenities ?? [],
-        } as never)
-        .select("id")
-        .single();
+      const { error: studioError } = await client.from("bookables").insert({
+        owner_profile_id: profileId,
+        slug,
+        name: data.name,
+        location: placeLine(data.city, data.pinCode) || null,
+      } as never);
       if (studioError) throw new Error(studioError.message);
-      // Equipment starts as the categories picked (Microphones, Studio Monitors…); the owner adds
-      // makes and models later under Manage → Equipment.
-      const studioId = (studio as { id: string }).id;
-      if (data.equipment?.length) {
-        const { data: labels } = await client
-          .from("taxonomy_options")
-          .select("slug, label")
-          .eq("category_key", "equipment_categories")
-          .in("slug", data.equipment);
-        const byslug = new Map(
-          ((labels ?? []) as { slug: string; label: string }[]).map((l) => [l.slug, l.label]),
-        );
-        const { error: equipmentError } = await client.from("bookable_equipment").insert(
-          data.equipment
-            .filter((e) => byslug.has(e))
-            .map((e, i) => ({
-              bookable_id: studioId,
-              name: byslug.get(e)!,
-              category: e,
-              sort_order: i,
-            })) as never,
-        );
-        if (equipmentError) throw new Error(equipmentError.message);
-      }
     }
   }
 }
