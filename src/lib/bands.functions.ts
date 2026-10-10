@@ -454,3 +454,91 @@ export const listBandServices = createServerFn({ method: "GET" })
       work_modes: r.work_modes ?? [],
     }));
   });
+
+/*
+ * Band invitations, answered on the band side (owner, 4 Oct 2026: bands are separate from
+ * collaboration). Until now an invitation could only be answered in the collab room (/collab/$id).
+ * An invitation is a collab_members row with status 'invited' that someone else created; a row
+ * whose invited_by is the person themselves is a request to join, not an invitation.
+ */
+export type BandInvite = {
+  bandId: string;
+  slug: string;
+  name: string;
+  avatarUrl: string | null;
+  role: "owner" | "admin" | "member";
+  invitedBy: string | null;
+};
+
+export const listMyBandInvites = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<BandInvite[]> => {
+    const { data, error } = await db(context.supabase)
+      .from("collab_members")
+      .select("role, invited_by, band:collabs!inner(id, slug, name, avatar_url, type)")
+      .eq("profile_id", context.userId)
+      .eq("status", "invited")
+      .eq("band.type", "band");
+    if (error) throw new Error(error.message);
+    type Row = {
+      role: BandInvite["role"];
+      invited_by: string | null;
+      band: { id: string; slug: string; name: string; avatar_url: string | null };
+    };
+    return ((data ?? []) as unknown as Row[])
+      .filter((r) => r.invited_by !== context.userId)
+      .map((r) => ({
+        bandId: r.band.id,
+        slug: r.band.slug,
+        name: r.band.name,
+        avatarUrl: r.band.avatar_url,
+        role: r.role,
+        invitedBy: r.invited_by,
+      }));
+  });
+
+export const answerBandInvite = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ bandId: z.string().uuid(), answer: z.enum(["join", "no"]) }).parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const client = db(context.supabase);
+    const { data: band } = await client
+      .from("collabs")
+      .select("id")
+      .eq("id", data.bandId)
+      .eq("type", "band")
+      .maybeSingle();
+    if (!band) throw new Error("That band no longer exists.");
+    const mine = () =>
+      client
+        .from("collab_members")
+        .select("profile_id")
+        .eq("collab_id", data.bandId)
+        .eq("profile_id", context.userId)
+        .eq("status", "invited");
+    const { data: rows, error } =
+      data.answer === "join"
+        ? await client
+            .from("collab_members")
+            .update({ status: "active" } as never)
+            .eq("collab_id", data.bandId)
+            .eq("profile_id", context.userId)
+            .eq("status", "invited")
+            .select("profile_id")
+        : await client
+            .from("collab_members")
+            .delete()
+            .eq("collab_id", data.bandId)
+            .eq("profile_id", context.userId)
+            .eq("status", "invited")
+            .select("profile_id");
+    if (error) throw new Error(error.message);
+    // Nothing matched: the invitation was withdrawn or already answered.
+    if (!rows?.length) {
+      const { data: still } = await mine();
+      if (!still?.length) throw new Error("This invitation is no longer open.");
+    }
+    return { answered: data.answer };
+  });
