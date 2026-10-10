@@ -147,9 +147,9 @@ function AccountScreen() {
   }
 
   return (
-    <Screen tone="white">
+    <Screen>
       <TopBar title="Account" back="/settings" />
-      <div className="min-h-[calc(100dvh-4rem)] bg-card px-5 pt-2 pb-6">
+      <div className="min-h-[calc(100dvh-4rem)] px-5 pt-2 pb-6">
         <ul className="divide-y divide-border">
           {fields.map((f) => {
             const fixed = FIXED_FIELDS.has(f.key);

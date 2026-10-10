@@ -89,14 +89,12 @@ export function isNavRoot(path: string) {
 }
 
 /*
- * Page tone by content type: "app" and "warm" are both the setup screens' warm #F3F1EC (owner,
- * 10 Oct 2026: every app page on the setup ground); "white" for settings and forms, "auth" the
- * sign-in ground.
+ * Page tone: "app" and "warm" are both the setup screens' warm #F3F1EC (owner, 10 Oct 2026: every
+ * app page on the setup ground, settings and forms too, no white pages); "auth" the sign-in ground.
  */
 const SCREEN_TONE = {
   app: "bg-warm",
   warm: "bg-warm",
-  white: "bg-card",
   auth: "bg-auth-ground",
 } as const;
 
@@ -145,7 +143,7 @@ export function ActionBar({
 }) {
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur ${className}`}
+      className={`fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t border-border bg-warm/90 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur ${className}`}
     >
       {children}
     </div>
@@ -446,7 +444,7 @@ export function TopBar({
   };
   return (
     <header
-      className={`pt-safe sticky top-0 z-bar flex items-center gap-3 border-b border-border/70 bg-card/92 px-5 backdrop-blur transition-[transform,padding] duration-200 ease-standard ${
+      className={`pt-safe sticky top-0 z-bar flex items-center gap-3 border-b border-border/70 bg-warm/90 px-5 backdrop-blur transition-[transform,padding] duration-200 ease-standard ${
         chrome.compact ? "pb-2" : "pb-3.5"
       } ${chrome.hidden ? "-translate-y-full" : ""}`}
     >

@@ -12,7 +12,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - Discover: no Studios tab; businesses still show in For you's Trending businesses.
 - Setup: instruments is one question; the "how long have you played" screen is gone. Career
   experience is asked on "How do you work?".
-- Every app screen sits on the setup screens' warm ground (#F3F1EC); settings and forms stay white.
+- Every app screen sits on the setup screens' warm ground (#F3F1EC), settings and forms included;
+  the top bar, bottom action bar and chat header and composer are warm too. No white pages.
 - Sign-in and sign-up titles use the screen-title weight (bold, tight); the email field is unchanged.
 
 ### Removed / changed — Find a match gone; Home is the default screen (10 Oct, owner)
