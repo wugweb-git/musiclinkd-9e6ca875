@@ -31,12 +31,12 @@ export const Route = createFileRoute("/onboarding/skip")({
 });
 
 function SkipLater() {
-  const { draft, bucket } = useOnboarding();
+  const { draft } = useOnboarding();
   const missing = readiness(draft).filter((r) => !r.done);
-  const target = resumeTarget(draft, bucket);
+  const target = resumeTarget(draft);
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[414px] flex-col justify-between bg-warm px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
       <div>
         <PauseCircle size={40} className="text-ink" />
         <h1 className="mt-4 text-3 leading-tight">We've saved your progress</h1>
@@ -61,7 +61,7 @@ function SkipLater() {
       </div>
 
       <div className="mt-8 space-y-2">
-        <BtnLink to="/onboarding/step/$id" params={{ id: target }} className="w-full">
+        <BtnLink to="/setup/$step" params={{ step: target }} className="w-full">
           Continue Setup
         </BtnLink>
         <p className="flex justify-center pt-2 text-sm">

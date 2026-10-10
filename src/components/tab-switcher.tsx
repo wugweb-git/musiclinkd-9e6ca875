@@ -85,7 +85,7 @@ export function TabSwitcher({ tabs, defaultTab, className, variant = "pill" }: T
 
       <motion.div
         layout
-        className="mt-8 w-full max-w-md bg-white dark:bg-zinc-950 rounded-3xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-800 overflow-hidden"
+        className="mt-8 w-full max-w-md bg-white dark:bg-zinc-950 rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 overflow-hidden"
         transition={{ duration: 0.3 }}
       >
         <AnimatePresence mode="wait">

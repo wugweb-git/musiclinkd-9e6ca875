@@ -79,7 +79,7 @@ function BandsIndex() {
 
   return (
     <Screen>
-      <TopBar title="Bands" subtitle="Groups, line-ups and open seats" />
+      <TopBar back="history" title="Bands" subtitle="Groups, line-ups and open seats" />
       <div className="space-y-4 px-5 pt-4">
         <SearchBar value={q} onChange={setQ} placeholder="Search bands, genres, cities" />
         <Segmented value={tab} options={tabs} onChange={setTab} />

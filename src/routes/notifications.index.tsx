@@ -124,6 +124,7 @@ function NotificationsScreen() {
   return (
     <Screen>
       <TopBar
+        back="history"
         title="Notifications"
         subtitle={unread ? `${unread} unread` : "Everything that needs you"}
         right={

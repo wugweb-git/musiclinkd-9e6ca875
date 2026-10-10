@@ -51,17 +51,17 @@ function Done() {
           .map((g) => labelFor(tx?.genres, g))
           .join(", ")
       : null,
-    d.availability.length ? `Open for ${d.availability.slice(0, 2).join(", ")}` : null,
+    d.availability.includes("Available") ? "Open to work" : null,
   ].filter(Boolean) as string[];
 
   return (
-    <Screen bottomNav={false} className="pb-40">
+    <Screen tone="warm" bottomNav={false} className="pb-40">
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
         <section
           className={cn(
-            "rounded-lg bg-card p-6 text-center border border-border/80 shadow-xs relative overflow-hidden",
+            "rounded-lg bg-card p-6 text-center border border-border/80 relative overflow-hidden",
             rise,
           )}
         >
@@ -105,7 +105,7 @@ function Done() {
             to="/discover"
             className={cn(
               nextCard,
-              "bg-card border border-border/80 shadow-xs hover:border-foreground/40",
+              "bg-card border border-border/80 hover:border-foreground/40",
               rise,
             )}
             style={beat(3 + summary.length)}
@@ -120,7 +120,7 @@ function Done() {
             to="/profile"
             className={cn(
               nextCard,
-              "bg-card border border-border/80 shadow-xs hover:border-foreground/40",
+              "bg-card border border-border/80 hover:border-foreground/40",
               rise,
             )}
             style={beat(4 + summary.length)}
@@ -135,11 +135,11 @@ function Done() {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-[414px] border-t bg-warm/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >
-        <BtnLink to="/profile" className="w-full h-12 text-sm font-semibold shadow-xs">
+        <BtnLink to="/profile" className="w-full h-12 text-sm font-semibold">
           View your profile
         </BtnLink>
       </div>

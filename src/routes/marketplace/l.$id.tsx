@@ -377,14 +377,28 @@ function ListingDetail() {
         {details.length ? (
           <>
             <h2 className="mt-6 text-2">Details</h2>
-            <dl className="mt-2 divide-y divide-border rounded-lg bg-card">
-              {details.map((d) => {
+            {/* A bento like the profile's At a glance (owner, 5 Oct): short facts pair up, a long
+                value or a lone last tile spans the row, so there is never an empty half. */}
+            <dl className="mt-2 grid grid-cols-2 gap-2.5">
+              {details.map((d, i) => {
                 const Icon = detailIcon(d.label);
+                const long = String(d.value).length > 14;
+                const nextLong =
+                  i + 1 < details.length ? String(details[i + 1]!.value).length > 14 : true;
+                const before = details
+                  .slice(0, i)
+                  .reduce((col, x) => (String(x.value).length > 14 ? 0 : (col + 1) % 2), 0);
+                const wide = long || (before === 0 && nextLong);
                 return (
-                  <div key={d.label} className="flex items-center gap-3 px-4 py-3">
-                    <Icon size={iconSize.md} className="shrink-0" aria-hidden />
-                    <dt className="min-w-0 flex-1 text-1 text-foreground">{d.label}</dt>
-                    <dd className="text-right text-1 font-semibold">{d.value}</dd>
+                  <div
+                    key={d.label}
+                    className={`rounded-lg border border-border/80 bg-card p-3.5 ${wide ? "col-span-2" : ""}`}
+                  >
+                    <dt className="flex items-center gap-1.5 text-1 text-muted-foreground">
+                      <Icon size={iconSize.sm} className="shrink-0" aria-hidden />
+                      {d.label}
+                    </dt>
+                    <dd className="mt-1 text-sm font-semibold text-foreground">{d.value}</dd>
                   </div>
                 );
               })}

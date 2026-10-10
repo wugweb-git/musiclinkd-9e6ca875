@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   BriefcaseBusiness,
@@ -16,7 +17,7 @@ import {
 } from "lucide-react";
 
 import { BookableCard, PersonCard } from "@/components/ml/cards";
-import { EmptyState, Loading, StatusPill } from "@/components/ml/kit";
+import { EmptyState, Loading, StatusPill, Switch } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { IdentityPill } from "@/components/ml/accounts";
@@ -34,6 +35,7 @@ import { opportunityFromRow } from "@/lib/opportunity-view";
 import {
   getMyProfile,
   getTaxonomyLabels,
+  saveMyProfile,
   listMyPortfolio,
   type TaxonomyLabels,
 } from "@/lib/portfolio.functions";
@@ -192,6 +194,43 @@ function HomeScreen() {
   );
 }
 
+/*
+ * Open to work (owner, 10 Oct 2026): one switch, on Home for every account type, the same one as
+ * onboarding's "How do you work?". Saved straight to profiles.availability as "Available" or
+ * nothing; any other stored value (an older "Shows", say) reads as on and is replaced when changed.
+ */
+function OpenToWork({ profile }: { profile: ProfileRow | null }) {
+  const save = useServerFn(saveMyProfile);
+  const client = useQueryClient();
+  const [on, setOn] = useState(Boolean(profile?.availability));
+  const [busy, setBusy] = useState(false);
+  useEffect(() => setOn(Boolean(profile?.availability)), [profile?.availability]);
+  if (!profile) return null;
+  return (
+    <section className="px-5">
+      <div className="flex min-h-touch items-center justify-between gap-3 rounded-lg border border-border bg-card px-4">
+        <span className="text-sm font-medium text-foreground">Open to work</span>
+        <Switch
+          label="Open to work"
+          checked={on}
+          onChange={(next) => {
+            if (busy) return;
+            setOn(next);
+            setBusy(true);
+            save({ data: { availability: next ? "Available" : null } })
+              .then(() => client.invalidateQueries({ queryKey: ["home", "workspace"] }))
+              .catch(() => {
+                setOn(!next);
+                toast.error("That didn't save. Try again.");
+              })
+              .finally(() => setBusy(false));
+          }}
+        />
+      </div>
+    </section>
+  );
+}
+
 function greeting() {
   const hour = new Date().getHours();
   return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -239,6 +278,7 @@ function TalentHome({ data }: { data: HomeData }) {
     <>
       <HomeHeader />
       <main className="space-y-8 py-5">
+        <OpenToWork profile={data.profile} />
         <section className="px-5">
           <div className="rounded-lg bg-ink p-5 text-ink-foreground">
             <p className="text-1 font-semibold text-background/70">What matters now</p>
@@ -334,6 +374,7 @@ function BusinessHome({ data }: { data: HomeData }) {
     <>
       <HomeHeader business />
       <main className="space-y-8 py-5">
+        <OpenToWork profile={data.profile} />
         <section className="px-5">
           <div className="flex items-start gap-4 rounded-lg bg-ink p-5 text-ink-foreground">
             <div className="min-w-0 flex-1">
@@ -536,7 +577,7 @@ function WorkspaceLink({
   return (
     <Link
       to={to}
-      className="state-layer flex min-h-32 min-w-0 flex-col rounded-lg border border-border bg-card p-4 shadow-elevation-2"
+      className="state-layer flex min-h-32 min-w-0 flex-col rounded-lg border border-border bg-card p-4"
     >
       <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
         {icon}

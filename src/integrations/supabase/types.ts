@@ -793,7 +793,6 @@ export type Database = {
           is_verified: boolean
           looking_for: string[]
           name: string
-          project_type: string | null
           rate_paise: number | null
           rate_unit: string | null
           rider: string[]
@@ -823,7 +822,6 @@ export type Database = {
           is_verified?: boolean
           looking_for?: string[]
           name: string
-          project_type?: string | null
           rate_paise?: number | null
           rate_unit?: string | null
           rider?: string[]
@@ -853,7 +851,6 @@ export type Database = {
           is_verified?: boolean
           looking_for?: string[]
           name?: string
-          project_type?: string | null
           rate_paise?: number | null
           rate_unit?: string | null
           rider?: string[]
@@ -1467,7 +1464,6 @@ export type Database = {
           budget_note: string | null
           budget_paise: number | null
           budget_unit: string | null
-          collaboration_type: string | null
           created_at: string
           creator_profile_id: string
           date_window: string | null
@@ -1488,7 +1484,6 @@ export type Database = {
           budget_note?: string | null
           budget_paise?: number | null
           budget_unit?: string | null
-          collaboration_type?: string | null
           created_at?: string
           creator_profile_id: string
           date_window?: string | null
@@ -1509,7 +1504,6 @@ export type Database = {
           budget_note?: string | null
           budget_paise?: number | null
           budget_unit?: string | null
-          collaboration_type?: string | null
           created_at?: string
           creator_profile_id?: string
           date_window?: string | null

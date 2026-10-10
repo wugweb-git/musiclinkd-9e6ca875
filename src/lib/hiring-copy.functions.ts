@@ -11,7 +11,6 @@ const facts = z.object({
   city: z.string().max(120).optional(),
   dates: z.string().max(180).optional(),
   budget: z.string().max(160).optional(),
-  workType: z.string().max(120).optional(),
   requirements: z.array(z.string().max(160)).max(20),
   roughBrief: z.string().trim().min(10).max(2000),
 });

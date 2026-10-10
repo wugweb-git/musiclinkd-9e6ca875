@@ -247,7 +247,7 @@ function PortfolioOverview() {
             <span className="flex items-center gap-1">
               <IconBtn
                 label="Grid view"
-                variant={view === "portrait" ? "outline" : "ghost"}
+                variant={view === "portrait" ? "ghost" : "plain"}
                 className="h-10 w-10"
                 onClick={() => setView("portrait")}
               >
@@ -255,7 +255,7 @@ function PortfolioOverview() {
               </IconBtn>
               <IconBtn
                 label="Row view"
-                variant={view === "stacked" ? "outline" : "ghost"}
+                variant={view === "stacked" ? "ghost" : "plain"}
                 className="h-10 w-10"
                 onClick={() => setView("stacked")}
               >

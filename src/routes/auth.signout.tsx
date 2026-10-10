@@ -39,7 +39,7 @@ function SignOutScreen() {
     <AuthScreen back={{ to: "/profile" }}>
       <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
         <div className="my-auto py-1">
-          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-subtle">
               <LogOut size={iconSize.md} className="text-ink" />
             </div>

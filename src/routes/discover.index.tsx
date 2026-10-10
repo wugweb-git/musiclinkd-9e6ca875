@@ -393,7 +393,7 @@ function DiscoverScreen() {
                         key={band.id}
                         to="/bands/$id"
                         params={{ id: band.slug }}
-                        className="state-layer block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs active:scale-[0.985]"
+                        className="state-layer block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card active:scale-[0.985]"
                       >
                         {photo ? (
                           <img

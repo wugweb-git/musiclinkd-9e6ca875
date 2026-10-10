@@ -12,7 +12,7 @@ import {
   Plus,
   Guitar,
 } from "lucide-react";
-import { Screen, IconBtn, SearchBar } from "@/components/ml/ui";
+import { Screen, IconBtn, NavDock, SearchBar } from "@/components/ml/ui";
 import { Segmented, EmptyState } from "@/components/ml/kit";
 import { NotificationsBell, SearchIconButton } from "@/components/ml/tab-header";
 import {
@@ -136,7 +136,9 @@ function MarketHome() {
           <h1 className="text-3 leading-tight">Market</h1>
           <div className="flex items-center gap-2">
             {/* One order on every screen (owner, 5 Oct): page action · Search · Bell · Settings. */}
-            <FilterButton count={active} onClick={() => setFilters(true)} />
+            <NavDock>
+              <FilterButton labelled count={active} onClick={() => setFilters(true)} />
+            </NavDock>
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
             <NotificationsBell />
           </div>
@@ -166,7 +168,12 @@ function MarketHome() {
             />
           </div>
           <span aria-hidden className="h-6 w-px shrink-0 bg-border" />
-          <IconBtn label={`Location: ${city}`} onClick={() => setLocationOpen(true)}>
+          {/* Plain icon like the other header icons, no circle (owner, 5 Oct). */}
+          <IconBtn
+            label={`Location: ${city}`}
+            variant="plain"
+            onClick={() => setLocationOpen(true)}
+          >
             <MapPin size={iconSize.md} />
           </IconBtn>
         </div>

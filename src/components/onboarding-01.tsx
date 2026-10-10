@@ -154,7 +154,7 @@ export function Onboarding01() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background p-4">
       <div className="w-full max-w-lg">
-        <div className="w-md rounded-lg border bg-card p-4 text-card-foreground shadow-xs">
+        <div className="w-md rounded-lg border bg-card p-4 text-card-foreground">
           <div className="mr-2 mb-4 flex flex-col justify-between sm:flex-row sm:items-center">
             <h3 className="ml-2 text-balance font-semibold text-foreground">
               Get started with Acme

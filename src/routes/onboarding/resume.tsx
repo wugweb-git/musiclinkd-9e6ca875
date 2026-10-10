@@ -34,15 +34,15 @@ export const Route = createFileRoute("/onboarding/resume")({
 });
 
 function Resume() {
-  const { draft, reset, sync, retry, hydrated, bucket } = useOnboarding();
+  const { draft, reset, sync, retry, hydrated } = useOnboarding();
   const navigate = useNavigate();
-  const target = resumeTarget(draft, bucket);
+  const target = resumeTarget(draft);
   const def = steps.find((s) => s.id === target);
-  const list = visibleSteps(draft, bucket);
+  const list = visibleSteps(draft);
   const done = draft.completedSteps.length;
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-12">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[414px] flex-col justify-between bg-warm px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-12">
       <div>
         <SyncBanner state={hydrated ? sync : "loading"} onRetry={retry} />
 
@@ -55,7 +55,7 @@ function Resume() {
           You have completed {done} of {list.length} questions. Your progress is saved.
         </p>
 
-        <div className="mt-6 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+        <div className="mt-6 rounded-lg bg-card p-5 border border-border/80">
           <span className="inline-block rounded-full bg-subtle px-2.5 py-0.5 text-1 font-bold text-foreground">
             Next question
           </span>
@@ -91,8 +91,8 @@ function Resume() {
 
       <div className="mt-8 space-y-2.5">
         <Btn
-          className="w-full h-12 text-sm font-semibold shadow-xs"
-          onClick={() => navigate({ to: "/onboarding/step/$id", params: { id: target } })}
+          className="w-full h-12 text-sm font-semibold"
+          onClick={() => navigate({ to: "/setup/$step", params: { step: target } })}
         >
           Continue Setup
         </Btn>

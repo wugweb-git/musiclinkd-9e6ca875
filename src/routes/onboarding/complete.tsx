@@ -85,7 +85,7 @@ function Complete() {
   const edges = useScrollEdges();
 
   return (
-    <Screen bottomNav={false} className="pb-32">
+    <Screen tone="warm" bottomNav={false} className="pb-32">
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
@@ -99,7 +99,7 @@ function Complete() {
         ) : null}
         <section
           className={cn(
-            "rounded-lg bg-card p-6 border border-border/80 shadow-xs relative overflow-hidden",
+            "rounded-lg bg-card p-6 border border-border/80 relative overflow-hidden",
             rise,
           )}
         >
@@ -168,8 +168,9 @@ function Complete() {
               body="Your business gets its own page, team roster, and bookings. Switch seamlessly between personal and business from the top menu."
               action={
                 <BtnLink
-                  to="/business/new"
-                  search={{ step: "type" }}
+                  to="/setup/$step"
+                  params={{ step: "role" }}
+                  search={{ persona: "business" }}
                   className="w-full h-11 text-sm font-semibold"
                 >
                   Start Business Setup
@@ -191,11 +192,11 @@ function Complete() {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-[414px] space-y-2 border-t bg-warm/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >
-        <BtnLink to="/onboarding/done" className="w-full h-12 text-sm font-semibold shadow-xs">
+        <BtnLink to="/onboarding/done" className="w-full h-12 text-sm font-semibold">
           Finish & View Dashboard
         </BtnLink>
       </div>

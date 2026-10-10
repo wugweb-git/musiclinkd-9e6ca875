@@ -13,7 +13,6 @@ const OWNED: [string, string[]][] = [
   ["profiles", ["id"]],
   ["profile_private", ["id"]],
   ["profile_business", ["profile_id"]],
-  ["profile_role_details", ["profile_id"]],
   ["profile_experience", ["profile_id"]],
   ["profile_events", ["profile_id"]],
   ["profile_members", ["profile_id"]],

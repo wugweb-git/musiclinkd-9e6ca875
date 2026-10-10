@@ -41,7 +41,6 @@ export const findAiMatches = createServerFn({ method: "POST" })
         title: o.title,
         role: o.role_required,
         genres: o.genres,
-        type: o.collaboration_type,
         location: o.location,
       })),
     };

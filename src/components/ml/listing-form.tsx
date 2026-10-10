@@ -295,7 +295,7 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
  * page whenever it focuses an input smaller than 16px — every one of these fields did that.
  */
 export const inputClass =
-  "h-13 w-full rounded-full border border-input bg-card px-5 py-3.5 text-2 outline-none focus:border-ink";
+  "h-11 w-full rounded-sm border border-input bg-card px-3.5 text-[16px] outline-none focus:border-ink";
 
 /**
  * What a `Field` knows that its control needs: the id to answer to, what describes it, and whether
@@ -441,7 +441,7 @@ export function SheetMultiSelect({
         type="button"
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
-        className="flex min-h-13 w-full items-center justify-between gap-2 rounded-full border border-input bg-card px-5 py-3 text-left text-sm"
+        className="flex min-h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 py-2.5 text-left text-[16px]"
       >
         <span className="min-w-0 truncate text-foreground">
           {picked.length ? picked.map((o) => o.label).join(", ") : placeholder}
@@ -545,7 +545,7 @@ export function SheetSelect({
         onClick={() => setOpen(true)}
         // The trigger is the field's control: it takes the label, the hint and the error.
         {...field}
-        className={`flex h-13 w-full items-center justify-between gap-2 rounded-full border border-input bg-card px-5 text-left text-sm ${className}`}
+        className={`flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-[16px] ${className}`}
       >
         {/*
          * A stored value the options don't contain — a city typed before this was a picker, one

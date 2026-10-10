@@ -46,8 +46,6 @@ export type Collab = {
   avatar_url: string | null;
   /** A collaboration type; "project" only on rows from before 20261004190000 (none after it). */
   type: CollabType | "project";
-  /** A taxonomy slug from project_types. Null for a band, and for a project that has not said. */
-  project_type: string | null;
   visibility: "public" | "private";
   status: CollabStatus;
   /** Last change to the collab itself, for "Recently updated" on the list. */
@@ -63,27 +61,8 @@ export type Collab = {
   my_status?: "invited" | "active";
 };
 
-const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, project_type, visibility, status, ends_on, starts_on, work_mode, created_at, updated_at,
+const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, visibility, status, ends_on, starts_on, work_mode, created_at, updated_at,
   members:collab_members(profile_id, role, status, instrument, invited_by, inviter:profiles!collab_members_invited_by_fkey(username, display_name), profile:profiles!band_members_profile_id_fkey(username, display_name, avatar_url))`;
-
-/** What kind of project it is, from the taxonomy the database already carries. */
-export const listProjectTypes = createServerFn({ method: "GET" }).handler(
-  async (): Promise<{ slug: string; label: string }[]> => {
-    const client = await anonClient();
-    const { data, error } = await client
-      .from("taxonomy_options" as never)
-      .select("slug, label, sort_order")
-      .eq("category_key", "project_types")
-      .order("sort_order");
-    if (error) throw new Error(error.message);
-    return ((data ?? []) as unknown as { slug: string; label: string }[]).map(
-      ({ slug, label }) => ({
-        slug,
-        label,
-      }),
-    );
-  },
-);
 
 /** Someone asked in: by username, as an admin or a member, with the part they play. */
 const invitee = z.object({
@@ -135,7 +114,6 @@ export const createCollab = createServerFn({ method: "POST" })
         city: z.string().max(80).optional(),
         visibility: z.enum(["public", "private"]).default("private"),
         type: z.enum(COLLAB_TYPES).default("band"),
-        projectType: z.string().trim().max(60).optional(),
         endsOn: z
           .string()
           .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -178,13 +156,8 @@ export const createCollab = createServerFn({ method: "POST" })
         p_ends_on: data.endsOn ?? null,
       });
       if (error) throw new Error(error.message);
-      // What kind of project it is, and its genres, are plain columns — set right after it exists.
-      if (data.projectType) {
-        await db(context.supabase)
-          .from("collabs")
-          .update({ project_type: data.projectType } as never)
-          .eq("id", id as string);
-      }
+      // Its genres are a plain column — set right after it exists. The project-type column is gone:
+      // a collaboration is a band, duo, collective… not a kind of project (owner, 10 Oct 2026).
       if (data.genres?.length) {
         await db(context.supabase)
           .from("collabs")
@@ -447,7 +420,6 @@ export const updateCollab = createServerFn({ method: "POST" })
         name: z.string().trim().min(2).max(80),
         bio: z.string().max(2000),
         city: z.string().max(80),
-        projectType: z.string().trim().max(60),
         endsOn: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]),
         startsOn: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]).optional(),
         workMode: z.union([z.string().regex(/^[a-z_]{2,40}$/), z.literal("")]).optional(),
@@ -461,7 +433,6 @@ export const updateCollab = createServerFn({ method: "POST" })
         name: data.name,
         bio: data.bio.trim() || null,
         city: data.city.trim() || null,
-        project_type: data.projectType || null,
         ends_on: data.endsOn || null,
         ...(data.startsOn !== undefined ? { starts_on: data.startsOn || null } : {}),
         ...(data.workMode !== undefined ? { work_mode: data.workMode || null } : {}),

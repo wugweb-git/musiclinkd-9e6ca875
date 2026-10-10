@@ -70,11 +70,11 @@ function DetailRow({
 }
 
 function Preview() {
-  const { draft: d, bucket } = useOnboarding();
+  const { draft: d } = useOnboarding();
   const navigate = useNavigate();
   const tx = useTaxonomy().options;
-  const list = visibleSteps(d, bucket);
-  const edit = (id: string) => navigate({ to: "/onboarding/step/$id", params: { id } });
+  const list = visibleSteps(d);
+  const edit = (id: string) => navigate({ to: "/setup/$step", params: { step: id } });
 
   // The real profile header, built from these answers the way the profile page builds it.
   const labels: TaxonomyLabels = Object.fromEntries(
@@ -91,18 +91,18 @@ function Preview() {
   const visibility = visibilityOptions.find((v) => v.key === d.visibility)?.label;
 
   return (
-    <Screen bottomNav={false} className="pb-36">
+    <Screen tone="warm" bottomNav={false} className="pb-36">
       <TopBar
         title="Review profile"
         subtitle="This is how other music professionals see you"
-        back={`/onboarding/step/${list[list.length - 1]?.id ?? "contact"}`}
+        back={`/setup/${list[list.length - 1]?.id ?? "contact"}`}
       />
 
       <ProfileHero p={view} />
 
       <main className="px-5 pt-6">
         <h2 className="text-2 font-bold text-foreground">Your details</h2>
-        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg bg-card border border-border/80 shadow-xs">
+        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg bg-card border border-border/80">
           <DetailRow
             label="Roles"
             values={names(
@@ -129,8 +129,8 @@ function Preview() {
             onEdit={() => edit("languages")}
           />
           <DetailRow
-            label="Available for"
-            values={d.availability}
+            label="Open to work"
+            values={d.availability.includes("Available") ? ["Yes"] : []}
             onEdit={() => edit("work-mode")}
           />
           <DetailRow label="Work mode" values={d.workModes} onEdit={() => edit("work-mode")} />
@@ -147,7 +147,7 @@ function Preview() {
       </main>
 
       <ActionBar className="space-y-2">
-        <BtnLink to="/onboarding/complete" className="w-full h-12 text-sm font-semibold shadow-xs">
+        <BtnLink to="/onboarding/complete" className="w-full h-12 text-sm font-semibold">
           Publish My Profile
         </BtnLink>
         <p className="flex justify-center text-1">

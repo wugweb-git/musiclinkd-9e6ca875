@@ -54,7 +54,7 @@ export function AuthScreen({
       {/* Measured from lovable.dev/login at 412px: 32px side margins, a 350px column, the whole
           block centred vertically. */}
       <div className="mx-auto flex w-full max-w-[414px] flex-1 flex-col px-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
-        <header className="-ml-3 flex min-h-12 items-center">
+        <header className="-ml-5.5 flex min-h-12 items-center">
           {back ? <AuthBackButton back={back} /> : null}
         </header>
         <div className="flex flex-1 flex-col justify-center pb-12">
@@ -66,7 +66,7 @@ export function AuthScreen({
   );
 }
 
-function BrandMark() {
+export function BrandMark() {
   return (
     // The owner-supplied icon (4 Oct 2026), drawn bare like the mark on lovable.dev/login.
     <img
@@ -79,7 +79,7 @@ function BrandMark() {
   );
 }
 
-function AuthBackButton({ back }: { back: AuthBack }) {
+export function AuthBackButton({ back }: { back: AuthBack }) {
   const router = useRouter();
   const navigate = useNavigate();
   return (
@@ -540,7 +540,7 @@ export function PhoneField({
       placeholder="98765 43210"
       leading={
         <span className="-ml-0.5 flex shrink-0 items-center gap-2 border-r border-border/80 pr-3 text-2 font-medium text-foreground">
-          <IndiaFlag className="shadow-xs" />
+          <IndiaFlag className="" />
           <span>{ISD_CODE}</span>
         </span>
       }
@@ -618,7 +618,7 @@ export function CodeInput({
                 invalid
                   ? "border-destructive bg-danger-container/20 text-destructive"
                   : active
-                    ? "border-foreground ring-2 ring-foreground/15 shadow-sm scale-[1.03]"
+                    ? "border-foreground ring-2 ring-foreground/15 scale-[1.03]"
                     : value.length === length
                       ? "border-foreground/80 bg-subtle"
                       : value[i]

@@ -3,21 +3,25 @@ import { collabTypeCopy } from "@/data/collab-types";
 import { COLLAB_TYPES, isCollabType } from "@/lib/collab-types";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ArrowUpDown, Plus, Search, UsersRound } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
+import {
+  Screen,
+  TopBar,
+  Btn,
+  BtnLink,
+  IconBtn,
+  IconBtnLink,
+  NavDock,
+  Sheet,
+} from "@/components/ml/ui";
 import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { DrawerSearch } from "@/components/ml/drawer-list";
 import { Field, SheetMultiSelect } from "@/components/ml/listing-form";
 import { FilterButton, SortSheet, SwitchRow } from "@/components/ml/market";
 import { CollabKindSheet } from "@/components/ml/collab";
 import { NotificationsBell } from "@/components/ml/tab-header";
-import {
-  listMyCollabs,
-  listProjectTypes,
-  type Collab,
-  type CollabStatus,
-} from "@/lib/collabs.functions";
+import { listMyCollabs, type Collab, type CollabStatus } from "@/lib/collabs.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
@@ -123,8 +127,6 @@ function Collabs() {
     queryFn: () => load(),
     enabled: signedIn,
   });
-  const readTypes = useServerFn(listProjectTypes);
-  const types = useQuery({ queryKey: ["project-types"], queryFn: () => readTypes() });
 
   const [tab, setTab] = useState<Tab>("Active");
   const [query, setQuery] = useState("");
@@ -133,19 +135,11 @@ function Collabs() {
   const [starting, setStarting] = useState(false);
   const [sort, setSort] = useState(sorts[0]!);
   const [kind, setKind] = useState<string[]>([]);
-  const [projectType, setProjectType] = useState<string[]>([]);
   const [showArchived, setShowArchived] = useState(false);
 
-  const typeLabel = useMemo(
-    () => new Map((types.data ?? []).map((t) => [t.slug, t.label])),
-    [types.data],
-  );
+  // No project-type label or filter: that taxonomy is retired (owner, 10 Oct 2026).
   const kindLabel = (c: Collab) =>
-    isCollabType(c.type)
-      ? collabTypeCopy[c.type].label
-      : c.project_type
-        ? (typeLabel.get(c.project_type) ?? "Project")
-        : "Project";
+    isCollabType(c.type) ? collabTypeCopy[c.type].label : "Project";
 
   const all = q.data ?? [];
   const term = query.trim().toLowerCase();
@@ -153,8 +147,6 @@ function Collabs() {
   const narrowed = all.filter((c) => {
     if (c.status === "archived" && !showArchived) return false;
     if (kind.length && !kind.includes(c.type)) return false;
-    if (projectType.length && !(c.project_type && projectType.includes(c.project_type)))
-      return false;
     if (!term) return true;
     return [c.name, kindLabel(c), c.city ?? ""].some((s) => s.toLowerCase().includes(term));
   });
@@ -167,7 +159,7 @@ function Collabs() {
     );
   const bands = shown.filter((c) => isCollabType(c.type));
   const projects = shown.filter((c) => c.type === "project");
-  const filterCount = kind.length + projectType.length + (showArchived ? 1 : 0);
+  const filterCount = kind.length + (showArchived ? 1 : 0);
   const narrowing = Boolean(term) || filterCount > 0;
 
   return (
@@ -187,7 +179,9 @@ function Collabs() {
                 <IconBtn label={`Sort: ${sort}`} onClick={() => setSortOpen(true)}>
                   <ArrowUpDown size={iconSize.sm} aria-hidden />
                 </IconBtn>
-                <FilterButton count={filterCount} onClick={() => setFiltersOpen(true)} />
+                <NavDock>
+                  <FilterButton labelled count={filterCount} onClick={() => setFiltersOpen(true)} />
+                </NavDock>
               </>
             ) : null}
             <Btn
@@ -294,16 +288,6 @@ function Collabs() {
               max={kinds.length}
             />
           </Field>
-          <Field label="Project type" id="collab-filter-type">
-            <SheetMultiSelect
-              title="Project type"
-              value={projectType}
-              options={(types.data ?? []).map((t) => ({ value: t.slug, label: t.label }))}
-              onChange={setProjectType}
-              placeholder="Any type"
-              max={Math.max(1, types.data?.length ?? 1)}
-            />
-          </Field>
           <div className="rounded-lg border border-border">
             <SwitchRow label="Show archived" value={showArchived} onChange={setShowArchived} />
           </div>
@@ -317,7 +301,6 @@ function Collabs() {
               className="w-full"
               onClick={() => {
                 setKind([]);
-                setProjectType([]);
                 setShowArchived(false);
               }}
             >

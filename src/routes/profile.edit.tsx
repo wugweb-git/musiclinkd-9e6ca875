@@ -1,18 +1,19 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState, type ComponentProps, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Camera, Check, ChevronDown, ChevronRight, Pencil, RefreshCw, Save } from "lucide-react";
 import { ActionBar, Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
+import { Switch } from "@/components/ml/kit";
+import { cn } from "@/lib/utils";
+import { steps as setupSteps } from "@/data/onboarding";
 import { ImagePickButton } from "@/components/ml/profile";
 import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
 import {
   getMyProfile,
   getMyProfileSections,
-  getTaxonomyLabels,
   saveMyExperience,
   saveMyProfile,
-  saveMyRoleDetails,
 } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { ProfileCompletion } from "@/components/ml/profile";
@@ -22,7 +23,6 @@ import {
   businessTypes,
   choicesFor,
   labelFor,
-  talentTypes,
   useTaxonomy,
   type TaxonomyOption,
 } from "@/lib/taxonomy";
@@ -220,16 +220,10 @@ function EditProfile() {
       return next;
     });
 
-  // Experience and each role's professional details live in their own tables; they load and save
-  // beside the profile row, on the same Save.
+  // Experience lives in its own table; it loads and saves beside the profile row, on the same Save.
   const loadSections = useServerFn(getMyProfileSections);
-  const loadLabels = useServerFn(getTaxonomyLabels);
   const persistExperience = useServerFn(saveMyExperience);
-  const persistRoleDetails = useServerFn(saveMyRoleDetails);
   const [experience, setExperience] = useState<ExperienceDraft[]>([]);
-  const [roleDetails, setRoleDetails] = useState<RoleDetailsDraft[]>([]);
-  const [fieldLabels, setFieldLabels] = useState<Record<string, string>>({});
-  const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
   useEffect(() => {
     if (!signedIn) return;
     void loadSections()
@@ -243,18 +237,9 @@ function EditProfile() {
             detail: e.detail ?? "",
           })),
         );
-        setRoleDetails(
-          sec.role_details.map((r) => ({ roleSlug: r.role_slug, details: r.details })),
-        );
       })
       .catch(() => undefined);
-    void loadLabels()
-      .then((l) => {
-        setFieldLabels(l["profile_fields"] ?? {});
-        setRoleLabels(l["person_types"] ?? {});
-      })
-      .catch(() => undefined);
-  }, [signedIn, loadSections, loadLabels]);
+  }, [signedIn, loadSections]);
   const [form, setForm] = useState<Form>(empty);
   const [row, setRow] = useState<ProfileRow | null>(null);
   // Years on each instrument, asked in onboarding (discovery_prefs.instrumentExperience).
@@ -288,7 +273,6 @@ function EditProfile() {
 
   // Options come from taxonomy_options, the same source onboarding uses; the form stores slugs.
   const { options: taxonomy, state: taxonomyState } = useTaxonomy();
-  const roleOptions = taxonomy ? talentTypes(taxonomy.person_types) : [];
   const genreOptions = taxonomy?.genres ?? [];
   const instrumentOptions = taxonomy?.instruments ?? [];
   const languageOptions = taxonomy?.languages ?? [];
@@ -416,9 +400,6 @@ function EditProfile() {
             })),
         },
       });
-      for (const r of roleDetails) {
-        await persistRoleDetails({ data: { roleSlug: r.roleSlug, details: r.details } });
-      }
       if (isBusiness) {
         const link = mapsUrl.trim();
         const rules = policies
@@ -482,6 +463,51 @@ function EditProfile() {
     done: boolean;
     body: ReactElement;
   }[] = [
+    {
+      id: "photos",
+      label: "Photos",
+      detail: "Profile photo and cover",
+      done: Boolean(row?.avatar_url),
+      body: (
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div
+                className="h-16 w-16 rounded-full bg-subtle bg-cover bg-center"
+                style={row?.avatar_url ? { backgroundImage: `url(${row.avatar_url})` } : undefined}
+                aria-hidden
+              />
+              <ImagePickButton
+                kind="avatar"
+                label="Change profile photo"
+                className="absolute -bottom-1 -right-1 h-8 w-8 border border-border bg-card text-foreground"
+                onPick={pickImage}
+              >
+                <Camera size={iconSize.sm} aria-hidden />
+              </ImagePickButton>
+            </div>
+            <div className="relative h-16 flex-1 overflow-hidden rounded-lg bg-subtle">
+              {row?.cover_url ? (
+                <img
+                  src={sized(row.cover_url, { width: 412 })}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : null}
+              <ImagePickButton
+                kind="cover"
+                label="Change cover photo"
+                className="absolute right-2 top-2 h-8 w-8 bg-card/90 text-foreground"
+                onPick={pickImage}
+              >
+                <Pencil size={iconSize.sm} aria-hidden />
+              </ImagePickButton>
+            </div>
+          </div>
+        </div>
+      ),
+    },
     {
       id: "identity",
       label: "Identity",
@@ -577,35 +603,55 @@ function EditProfile() {
               />
             </DrawerField>
           ) : (
-            <TaxonomyChips
-              label="Type"
-              options={roleOptions}
-              state={taxonomyState}
-              selected={form.roles}
-              onToggle={(v) => toggle("roles", v)}
-            />
+            // The onboarding screens, recycled (owner, 10 Oct 2026): each row opens its question.
+            <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+              <EditStepRow
+                step="role"
+                label="Roles"
+                values={form.roles.map((v) => labelFor(taxonomy?.person_types, v))}
+              />
+              <EditStepRow
+                step="genres"
+                label="Genres"
+                values={form.genres.map((v) => labelFor(taxonomy?.genres, v))}
+              />
+              <EditStepRow
+                step="instruments"
+                label="Instruments"
+                values={form.instruments.map((v) => labelFor(taxonomy?.instruments, v))}
+              />
+              <EditStepRow
+                step="languages"
+                label="Languages"
+                values={form.languages.map((v) => labelFor(taxonomy?.languages, v))}
+              />
+            </div>
           )}
-          <TaxonomyChips
-            label="Genres"
-            options={genreOptions}
-            state={taxonomyState}
-            selected={form.genres}
-            onToggle={(v) => toggle("genres", v)}
-          />
-          <TaxonomyChips
-            label="Instruments"
-            options={instrumentOptions}
-            state={taxonomyState}
-            selected={form.instruments}
-            onToggle={(v) => toggle("instruments", v)}
-          />
-          <TaxonomyChips
-            label="Languages"
-            options={languageOptions}
-            state={taxonomyState}
-            selected={form.languages}
-            onToggle={(v) => toggle("languages", v)}
-          />
+          {isBusiness ? (
+            <>
+              <TaxonomyChips
+                label="Genres"
+                options={genreOptions}
+                state={taxonomyState}
+                selected={form.genres}
+                onToggle={(v) => toggle("genres", v)}
+              />
+              <TaxonomyChips
+                label="Instruments"
+                options={instrumentOptions}
+                state={taxonomyState}
+                selected={form.instruments}
+                onToggle={(v) => toggle("instruments", v)}
+              />
+              <TaxonomyChips
+                label="Languages"
+                options={languageOptions}
+                state={taxonomyState}
+                selected={form.languages}
+                onToggle={(v) => toggle("languages", v)}
+              />
+            </>
+          ) : null}
         </div>
       ),
     },
@@ -623,17 +669,33 @@ function EditProfile() {
       done: Boolean(form.experience_level || form.work_modes.length),
       body: (
         <div className="space-y-4">
-          {/* Onboarding's own question and list (step "work-mode"), from taxonomy work_modes. */}
-          <DrawerField label="Where you work">
-            <SheetMultiSelect
-              title="Where you work"
-              value={form.work_modes}
-              options={choicesFor(taxonomy?.work_modes)}
-              max={taxonomy?.work_modes.length ?? 4}
-              placeholder="Choose"
-              onChange={(v) => update({ work_modes: v })}
-            />
-          </DrawerField>
+          {isBusiness ? null : (
+            <div className="overflow-hidden rounded-lg border border-border bg-card">
+              <EditStepRow
+                step="work-mode"
+                label="How you work"
+                values={[
+                  ...form.work_modes.map((v) => labelFor(taxonomy?.work_modes, v)),
+                  ...(form.availability ? ["Open to work"] : []),
+                ]}
+              />
+            </div>
+          )}
+          {isBusiness ? (
+            <>
+              {/* Onboarding's own question and list (step "work-mode"), from taxonomy work_modes. */}
+              <DrawerField label="Where you work">
+                <SheetMultiSelect
+                  title="Where you work"
+                  value={form.work_modes}
+                  options={choicesFor(taxonomy?.work_modes)}
+                  max={taxonomy?.work_modes.length ?? 4}
+                  placeholder="Choose"
+                  onChange={(v) => update({ work_modes: v })}
+                />
+              </DrawerField>
+            </>
+          ) : null}
           {/* Onboarding's own questions and lists (step "work-mode"), not free text. */}
           <DrawerField label="How long have you worked in music?">
             <SheetSelect
@@ -644,79 +706,10 @@ function EditProfile() {
               onChange={(v) => update({ experience_level: v })}
             />
           </DrawerField>
-          {isBusiness
-            ? null
-            : form.instruments.map((slug) => (
-                <DrawerField key={slug} label={labelFor(taxonomy?.instruments, slug)}>
-                  <SheetSelect
-                    title={labelFor(taxonomy?.instruments, slug)}
-                    value={instrumentExperience[slug] ?? null}
-                    options={choicesFor(taxonomy?.experience_levels)}
-                    placeholder="Choose"
-                    onChange={(v) => setInstrumentExperience((m) => ({ ...m, [slug]: v }))}
-                  />
-                </DrawerField>
-              ))}
+          {/* How long per instrument is asked on the Instruments screen (row above), not here. */}
         </div>
       ),
     },
-    ...(roleDetails.length
-      ? [
-          {
-            id: "details",
-            label: "Professional details",
-            detail: "Setup, tools and working details for each role",
-            done: true,
-            body: (
-              <div className="space-y-5">
-                {roleDetails.map((r) => (
-                  <div key={r.roleSlug} className="space-y-3">
-                    <p className="text-1 font-semibold">{roleLabels[r.roleSlug] ?? r.roleSlug}</p>
-                    {Object.entries(r.details).map(([key, value]) => (
-                      <Field
-                        key={key}
-                        label={fieldLabels[key] ?? key.replace(/_/g, " ")}
-                        value={
-                          Array.isArray(value)
-                            ? value.join(", ")
-                            : value == null
-                              ? ""
-                              : String(value)
-                        }
-                        onChange={(v) =>
-                          setRoleDetails((all) =>
-                            all.map((x) =>
-                              x.roleSlug === r.roleSlug
-                                ? {
-                                    ...x,
-                                    details: {
-                                      ...x.details,
-                                      [key]: Array.isArray(value)
-                                        ? v
-                                            .split(",")
-                                            .map((t) => t.trim())
-                                            .filter(Boolean)
-                                        : typeof value === "number"
-                                          ? Number(v) || null
-                                          : typeof value === "boolean"
-                                            ? v.trim().toLowerCase() === "yes"
-                                            : v,
-                                    },
-                                  }
-                                : x,
-                            ),
-                          )
-                        }
-                        {...(typeof value === "boolean" ? { hint: "Yes or No" } : {})}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ),
-          },
-        ]
-      : []),
     {
       id: "availability",
       label: "Location & availability",
@@ -780,24 +773,16 @@ function EditProfile() {
             </div>
           ) : null}
           {isBusiness ? (
-            <Field
-              label="Availability"
-              value={form.availability}
-              onChange={(v) => update({ availability: v })}
-              hint="e.g. Open for studio work"
-            />
-          ) : (
-            // Onboarding's own question and list (step "work-mode"), from taxonomy available_for.
-            <DrawerField label="Available for">
-              <SheetSelect
-                title="Available for"
-                value={form.availability || null}
-                options={choicesFor(taxonomy?.available_for)}
-                placeholder="Choose"
-                onChange={(v) => update({ availability: v })}
+            // One switch for every account type (owner, 10 Oct 2026); talent sets it on How you work.
+            <div className="flex min-h-touch items-center justify-between gap-3 rounded-sm border border-border bg-card px-4">
+              <span className="text-sm font-medium text-foreground">Open to work</span>
+              <Switch
+                label="Open to work"
+                checked={Boolean(form.availability)}
+                onChange={(on) => update({ availability: on ? "Available" : "" })}
               />
-            </DrawerField>
-          )}
+            </div>
+          ) : null}
         </div>
       ),
     },
@@ -822,7 +807,7 @@ function EditProfile() {
       label: "Links",
       detail: "Streaming and social profiles",
       done: Object.values(form.links).some(Boolean),
-      body: (
+      body: isBusiness ? (
         <div className="space-y-3">
           {linkPlatforms.map((p) => {
             const key =
@@ -840,9 +825,156 @@ function EditProfile() {
             );
           })}
         </div>
+      ) : (
+        // The onboarding screens, recycled: links and visibility, then goals.
+        <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          <EditStepRow
+            step="contact"
+            label="Links and visibility"
+            values={Object.entries(form.links)
+              .filter(([, v]) => v)
+              .map(([k]) => k)}
+          />
+          <EditStepRow
+            step="intent"
+            label="Goals"
+            values={(row?.intents ?? []).map((v) => labelFor(taxonomy?.intents, v))}
+          />
+        </div>
       ),
     },
   ];
+
+  /*
+   * Edit profile is the way back to the setup screens (owner, 10 Oct 2026): one row per screen, in
+   * setup order, for every account type; the same screens in their edit state. Screens with no
+   * setup counterpart (photos, a studio's amenities) open on their own here.
+   */
+  const solo = sections.find((sct) => sct.id === openSection && OWN_SECTIONS.includes(sct.id));
+  if (solo) {
+    return (
+      <Screen>
+        <TopBar title={solo.label} back="/profile/edit" />
+        <main className="px-5 pb-40 pt-5">{solo.body}</main>
+        <ActionBar className="space-y-2">
+          {status === "error" ? (
+            <p role="alert" className="text-1 text-destructive">
+              Couldn't save. Your edits are still here — try again.
+            </p>
+          ) : null}
+          <Btn
+            className="w-full"
+            icon={<Check size={iconSize.md} />}
+            onClick={() => void save().then(() => navigate({ to: "/profile/edit" }))}
+            disabled={status === "saving"}
+          >
+            {status === "saving" ? "Saving…" : "Save"}
+          </Btn>
+        </ActionBar>
+      </Screen>
+    );
+  }
+  const names = (cat: keyof NonNullable<typeof taxonomy>, list: string[]) =>
+    list.map((v) => labelFor(taxonomy?.[cat] as never, v));
+  const rows: { key: string; label: string; values: string[]; link: EditLink }[] = isBusiness
+    ? [
+        {
+          key: "type",
+          label: "Business type",
+          values: names("person_types", form.roles.slice(0, 1)),
+          link: {
+            to: "/setup/$step",
+            params: { step: "role" },
+            search: { persona: "business", from: "edit" },
+          },
+        },
+        {
+          key: "basics",
+          label: "Name and tagline",
+          values: [form.first_name, form.headline].filter(Boolean),
+          link: { to: "/business/new", search: { step: "basics", from: "edit" } },
+        },
+        {
+          key: "location",
+          label: "Location",
+          values: [labelFor(taxonomy?.cities, form.city), form.pin_code].filter(Boolean),
+          link: { to: "/business/new", search: { step: "location", from: "edit" } },
+        },
+        {
+          key: "languages",
+          label: "Languages",
+          values: names("languages", form.languages),
+          link: { to: "/business/new", search: { step: "languages", from: "edit" } },
+        },
+        {
+          key: "genres",
+          label: "Genres",
+          values: names("genres", form.genres),
+          link: { to: "/business/new", search: { step: "genres", from: "edit" } },
+        },
+        {
+          key: "policies",
+          label: "Policies",
+          values: policies.filter(Boolean),
+          link: { to: "/business/new", search: { step: "policies", from: "edit" } },
+        },
+      ]
+    : setupSteps.map((st) => ({
+        key: st.id,
+        label: EDIT_LABELS[st.id] ?? st.title,
+        values:
+          {
+            role: names("person_types", form.roles),
+            identity: [
+              [form.first_name, form.last_name].filter(Boolean).join(" "),
+              labelFor(taxonomy?.cities, form.city),
+            ].filter(Boolean),
+            instruments: names("instruments", form.instruments),
+            languages: names("languages", form.languages),
+            genres: names("genres", form.genres),
+            "work-mode": [
+              ...names("work_modes", form.work_modes),
+              ...(form.availability ? ["Open to work"] : []),
+            ],
+            intent: names("intents", row?.intents ?? []),
+            contact: Object.entries(form.links)
+              .filter(([, v]) => v)
+              .map(([k]) => k),
+          }[st.id] ?? [],
+        link: { to: "/setup/$step", params: { step: st.id }, search: { from: "edit" } },
+      }));
+  const own = sections.filter((sct) => OWN_SECTIONS.includes(sct.id));
+  return (
+    <Screen>
+      <TopBar title="Edit profile" back="/profile" />
+      <main className="space-y-4 px-5 pb-16 pt-5">
+        {gaps.missing.length ? <ProfileCompletion gaps={gaps} /> : null}
+        {/* One list, the earlier card style (owner, 10 Oct 2026): a done mark, the row, its answer. */}
+        <div className="space-y-2.5">
+          {[
+            ...own.map((sct) => ({
+              key: sct.id,
+              label: sct.label,
+              values: [] as string[],
+              detail: sct.detail,
+              done: sct.done,
+              link: { to: "/profile/edit", search: { section: sct.id } } as EditLink,
+            })),
+            ...rows.map((r) => ({ ...r, detail: "", done: r.values.length > 0 })),
+          ].map((r) => (
+            <EditRow
+              key={r.key}
+              label={r.label}
+              values={r.values}
+              detail={r.detail}
+              done={r.done}
+              link={r.link}
+            />
+          ))}
+        </div>
+      </main>
+    </Screen>
+  );
 
   return (
     <Screen>
@@ -1023,10 +1155,6 @@ type ExperienceDraft = {
   endYear: string;
   detail: string;
 };
-type RoleDetailsDraft = {
-  roleSlug: string;
-  details: Record<string, string | number | boolean | string[] | null>;
-};
 
 const yearOf = (v: string) => {
   const n = Number(v.trim());
@@ -1089,5 +1217,81 @@ function ExperienceEditor({
         </Btn>
       ) : null}
     </div>
+  );
+}
+
+/** Edit profile's rows for talent: one per setup screen, labelled for editing. */
+const EDIT_LABELS: Record<string, string> = {
+  role: "Roles",
+  identity: "About you",
+  instruments: "Instruments",
+  languages: "Languages",
+  genres: "Genres",
+  "work-mode": "How you work",
+  intent: "Goals",
+  contact: "Links and visibility",
+};
+/**
+ * Sections with no setup screen; each opens on its own from Edit profile. No per-role section: every
+ * type shares one schema (owner, 10 Oct 2026).
+ */
+const OWN_SECTIONS: string[] = ["photos", "amenities"];
+
+type EditLink =
+  | { to: "/setup/$step"; params: { step: string }; search: { from: "edit"; persona?: "business" } }
+  | {
+      to: "/business/new";
+      search: { step: "basics" | "location" | "languages" | "genres" | "policies"; from: "edit" };
+    }
+  | { to: "/profile/edit"; search: { section: string } };
+
+/** A row inside a section that opens a setup screen in its edit state. */
+function EditStepRow({ step, label, values }: { step: string; label: string; values: string[] }) {
+  return (
+    <EditRow
+      label={label}
+      values={values}
+      link={{ to: "/setup/$step", params: { step }, search: { from: "edit" } }}
+    />
+  );
+}
+
+/** One Edit profile row, as a card: a done mark, the row, the answer now (or what it holds). */
+function EditRow({
+  label,
+  values,
+  link,
+  detail = "",
+  done,
+}: {
+  label: string;
+  values: string[];
+  link: EditLink;
+  detail?: string | undefined;
+  done?: boolean | undefined;
+}) {
+  const set = done ?? values.length > 0;
+  return (
+    <Link
+      {...(link as unknown as { to: "/profile/edit" })}
+      className="state-layer flex min-h-[72px] items-center gap-3 rounded-lg border border-border bg-card px-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span
+        aria-hidden
+        className={cn(
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+          set ? "bg-foreground text-background" : "border border-border bg-subtle text-foreground",
+        )}
+      >
+        {set ? <Check size={iconSize.sm} /> : <span className="text-1 font-bold">•</span>}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-bold text-foreground">{label}</span>
+        <span className="mt-0.5 block truncate text-1 font-medium text-muted-foreground">
+          {values.length ? values.join(", ") : detail || "Not set"}
+        </span>
+      </span>
+      <ChevronRight size={iconSize.sm} aria-hidden className="shrink-0 text-foreground" />
+    </Link>
   );
 }

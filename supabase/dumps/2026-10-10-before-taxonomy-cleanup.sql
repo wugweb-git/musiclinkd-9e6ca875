@@ -1,0 +1,11 @@
+-- Snapshot before 20261010170000_taxonomy_cleanup.sql (10 Oct 2026). Definitions and counts only.
+-- Deleted categories (option counts): availability_status 6, session_types 5, budget_type 3,
+--   session_duration_tiers 3. None is read by the app.
+-- profiles.budget_tier (text): 72 rows set (budget 18, mid_range 34, premium 20); dropped.
+-- amenities: before this change 21 of 33 published; picker flags per Notion (owner, 10 Oct 2026).
+--   Offered (18): dolby_atmos vocal_booth live_room rehearsal_room parking_space instruments_support
+--   acoustics_optimized fiber_internet stage_monitors green_room wifi attended_sessions stem_mastering
+--   analogue_chain backline_included four_mic_positions multicam_video air_conditioning.
+--   Not offered, kept for places that have them (15): access_24x7 bar_and_diner_access cafe catering
+--   chill_lounge drinking_water drums_included lockers open_till_2am private_lounge producer
+--   reference_library resident_engineers same_day_audio valet_parking.

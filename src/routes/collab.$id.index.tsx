@@ -35,7 +35,6 @@ import {
   getCollab,
   getCollabInviteLink,
   letInCollabMember,
-  listProjectTypes,
   leaveCollab,
   setCollabInviteLink,
   removeMember,
@@ -135,9 +134,6 @@ function CollabRoom() {
     enabled: signedIn,
   });
 
-  const readTypes = useServerFn(listProjectTypes);
-  const types = useQuery({ queryKey: ["project-types"], queryFn: () => readTypes() });
-
   const c = q.data ?? null;
   const myId = (profile.data as { id?: string } | null)?.id;
   const myMembership = c?.members.find((m) => m.profile_id === myId);
@@ -161,9 +157,6 @@ function CollabRoom() {
       : false;
   const inRoom = c?.members.filter((m) => m.status === "active") ?? [];
   const asked = c?.members.filter((m) => m.status === "invited") ?? [];
-  const kind = c?.project_type
-    ? (types.data?.find((t) => t.slug === c.project_type)?.label ?? c.project_type)
-    : "";
 
   // Asking someone in: type a name and pick them, or type their exact username.
   const term = username.trim().replace(/^@/, "");
@@ -387,7 +380,7 @@ function CollabRoom() {
       >
         <p className="mt-1 text-1 text-muted-foreground">
           {joinParts(
-            isCollabType(c.type) ? collabTypeCopy[c.type].label : kind || "Project",
+            isCollabType(c.type) ? collabTypeCopy[c.type].label : "Project",
             c.visibility === "private" ? "Private" : "Public",
             c.city ?? "",
             c.ends_on ? `Wraps up ${formatDay(c.ends_on)}` : "",
@@ -722,7 +715,6 @@ function CollabRoom() {
         <EditCollabSheet
           open={editing}
           collab={c}
-          types={types.data ?? []}
           budgetPaise={budgetQ.data?.budgetPaise ?? null}
           onClose={() => setEditing(false)}
         />
@@ -840,13 +832,11 @@ function formatDay(day: string) {
 function EditCollabSheet({
   open,
   collab,
-  types,
   budgetPaise,
   onClose,
 }: {
   open: boolean;
   collab: Collab;
-  types: { slug: string; label: string }[];
   /** What the budget is now, for the people in it; null when none was set. */
   budgetPaise: number | null;
   onClose: () => void;
@@ -858,7 +848,6 @@ function EditCollabSheet({
   const [name, setName] = useState(collab.name);
   const [about, setAbout] = useState(collab.bio ?? "");
   const [city, setCity] = useState(collab.city ?? "");
-  const [kind, setKind] = useState(collab.project_type ?? "");
   const [startsOn, setStartsOn] = useState(collab.starts_on ?? "");
   const [endsOn, setEndsOn] = useState(collab.ends_on ?? "");
   const [workMode, setWorkMode] = useState(collab.work_mode ?? "");
@@ -870,7 +859,6 @@ function EditCollabSheet({
     setName(collab.name);
     setAbout(collab.bio ?? "");
     setCity(collab.city ?? "");
-    setKind(collab.project_type ?? "");
     setStartsOn(collab.starts_on ?? "");
     setEndsOn(collab.ends_on ?? "");
     setWorkMode(collab.work_mode ?? "");
@@ -890,7 +878,6 @@ function EditCollabSheet({
           name: name.trim(),
           bio: about,
           city,
-          projectType: kind,
           endsOn,
           ...(isProject ? { startsOn, workMode } : {}),
         },
@@ -927,18 +914,6 @@ function EditCollabSheet({
             className={inputClass}
           />
         </Field>
-
-        {isProject ? (
-          <Field label="What kind (optional)" id="edit-collab-kind">
-            <SheetSelect
-              title="What kind"
-              value={kind || null}
-              options={types.map((t) => ({ value: t.slug, label: t.label }))}
-              onChange={setKind}
-              placeholder="Song, EP, film score…"
-            />
-          </Field>
-        ) : null}
 
         <Field label="What it is" id="edit-collab-about">
           <textarea

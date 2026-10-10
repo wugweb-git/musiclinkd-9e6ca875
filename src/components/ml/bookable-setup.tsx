@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ImagePlus, Plus, Trash2, X } from "lucide-react";
@@ -369,9 +370,11 @@ export function EquipmentEditor() {
 /* ------------------------------------------------------------------ */
 
 /**
- * The business's rules, one per line: edit, remove, or add a suggestion in one tap. Controlled;
- * the screen saves. Suggestions come from the business_policies taxonomy.
+ * The business's rules (owner, 10 Oct 2026): one large text box, one rule per line. Stored as a
+ * list (profile_business.policies), so each line is a rule; blank lines are dropped on save.
+ * Controlled; the screen saves.
  */
+export const MAX_POLICIES = 12;
 export function PoliciesEditor({
   value,
   onChange,
@@ -379,46 +382,39 @@ export function PoliciesEditor({
   value: string[];
   onChange: (v: string[]) => void;
 }) {
-  const tx = useTaxonomy().options;
-  const unused = (tx?.business_policies ?? []).filter((o) => !value.includes(o.label));
+  const rules = value.filter((p) => p.trim());
+  const tooMany = rules.length > MAX_POLICIES;
+  const tooLong = rules.some((p) => p.trim().length > 200);
+  const problem = tooMany
+    ? `Keep it to ${MAX_POLICIES} rules.`
+    : tooLong
+      ? "Keep each rule under 200 characters."
+      : null;
   return (
-    <div className="space-y-3">
-      {value.map((p, i) => (
-        <div key={i} className="flex items-start gap-2">
-          <textarea
-            aria-label={`Policy ${i + 1}`}
-            value={p}
-            maxLength={200}
-            rows={2}
-            onChange={(e) => onChange(value.map((x, j) => (j === i ? e.target.value : x)))}
-            className="min-h-control flex-1 resize-none rounded-lg border border-input bg-card px-4 py-3 text-2 outline-none focus:border-ink"
-          />
-          <IconBtn
-            label={`Remove policy ${i + 1}`}
-            variant="ghost"
-            onClick={() => onChange(value.filter((_, j) => j !== i))}
-          >
-            <X size={iconSize.sm} aria-hidden />
-          </IconBtn>
-        </div>
-      ))}
-      {value.length < 12 ? (
-        <Btn variant="outline" className="w-full" onClick={() => onChange([...value, ""])}>
-          <Plus size={iconSize.sm} className="mr-1.5" aria-hidden /> Write a Policy
-        </Btn>
-      ) : null}
-      {unused.length && value.length < 12 ? (
-        <div>
-          <p className="mb-2 text-sm font-medium text-muted-foreground">Suggestions</p>
-          <div className="flex flex-wrap gap-2">
-            {unused.map((o) => (
-              <Chip key={o.slug} onClick={() => onChange([...value, o.label])}>
-                <Plus size={iconSize.xs} className="mr-1" aria-hidden /> {o.label}
-              </Chip>
-            ))}
-          </div>
-        </div>
-      ) : null}
+    <div>
+      <label htmlFor="policies" className="mb-1.5 block text-sm font-medium text-foreground">
+        Rules
+      </label>
+      <textarea
+        id="policies"
+        value={value.join("\n")}
+        rows={10}
+        onChange={(e) => onChange(e.target.value.split("\n"))}
+        placeholder={"No smoking inside the rooms.\nReschedule at least 24 hours before."}
+        aria-invalid={problem ? true : undefined}
+        aria-describedby="policies-message"
+        className={cn(
+          "w-full resize-none rounded-sm border bg-card px-3.5 py-3 text-[16px] leading-relaxed outline-none focus:border-ink",
+          problem ? "border-destructive" : "border-input",
+        )}
+      />
+      <p
+        id="policies-message"
+        role={problem ? "alert" : undefined}
+        className={cn("mt-1.5 text-1", problem ? "text-destructive" : "text-muted-foreground")}
+      >
+        {problem ?? "One rule per line."}
+      </p>
     </div>
   );
 }

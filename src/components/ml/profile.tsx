@@ -16,6 +16,7 @@ import {
   Pause,
   Play,
   X,
+  ExternalLink,
   Share2,
   User,
   ArrowLeft,
@@ -49,7 +50,6 @@ import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
 import { LogoMark } from "./logo";
 import { roleIcon } from "@/lib/role-icons";
-import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { MediaEmbed } from "./media-embed";
 import { coverFor, playSource } from "@/lib/embed";
@@ -870,10 +870,10 @@ export function AudioTrackCard({
               src={sized((track.artwork || coverFor(track.media))!, { width: 412 })}
               alt=""
               loading="lazy"
-              className="aspect-square w-full rounded-md object-cover shadow-xs"
+              className="aspect-square w-full rounded-md object-cover"
             />
           ) : (
-            <NoCover className="aspect-square w-full rounded-md shadow-xs" />
+            <NoCover className="aspect-square w-full rounded-md" />
           )}
           {track.media ? (
             <button
@@ -967,46 +967,87 @@ export function AudioTrackCard({
 
   if (!isExpanded) return <article className="overflow-hidden rounded-lg">{row}</article>;
 
-  // Selected audio (owner, 5 Oct): on the card surface, following the system theme. The title
-  // once (tap it to stop), the player, then what the owner added with the work, Like and Share.
+  // Selected audio = a now-playing card (owner's refs: Spotify / Apple Music widgets): the cover,
+  // blurred, fills the card behind a dark scrim; the cover, title and artist in white with the
+  // source's mark; the player; then what the owner added, Like and Share. Tap the title to stop.
+  const source = playSource(track.media);
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-lg bg-card shadow-elevation-2 ring-1 ring-border animate-in fade-in duration-200",
+        "relative overflow-hidden rounded-lg bg-ink text-ink-foreground animate-in fade-in duration-200",
         layout === "portrait" && "col-span-full",
       )}
     >
-      <button
-        type="button"
-        onClick={() => {
-          if (playing) onToggle();
-          setExpanded(false);
-        }}
-        aria-label={`Stop ${track.title}`}
-        className="state-layer block w-full min-w-0 px-4 pb-2 pt-3 text-left"
-      >
-        <span className="block truncate text-2 font-semibold">{track.title}</span>
-        {track.role ? (
-          <span className="block truncate text-1 text-muted-foreground">{track.role}</span>
-        ) : null}
-      </button>
-      {track.media ? (
-        <div className="px-3">
-          <MediaEmbed
-            url={track.media}
-            title={track.title}
-            onOpen={() => recordWorkEvent(track.id, "link_click")}
-            onPlay={() => recordPlay(track.id)}
-          />
-        </div>
+      {cover ? (
+        <img
+          src={sized(cover, { width: 412 })}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full scale-125 object-cover opacity-60 blur-2xl"
+        />
       ) : null}
-      <WorkDetails
-        id={track.id}
-        title={track.title}
-        description={track.project}
-        collaborators={track.collaborators}
-        year={track.year}
-      />
+      <div aria-hidden className="absolute inset-0 bg-ink/55" />
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => {
+            if (playing) onToggle();
+            setExpanded(false);
+          }}
+          aria-label={`Stop ${track.title}`}
+          className="state-layer flex w-full min-w-0 items-center gap-3 p-4 text-left"
+        >
+          <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md shadow-elevation-3">
+            {cover ? (
+              <img
+                src={sized(cover, { width: 160 })}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <NoCover className="h-full w-full" />
+            )}
+            {playing ? <Equaliser /> : null}
+          </span>
+          <span className="min-w-0 flex-1">
+            {source ? (
+              <span className="mb-1 inline-flex items-center gap-1.5 text-1 font-semibold text-ink-foreground/80">
+                <span
+                  aria-hidden
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: source.bg }}
+                />
+                {source.label}
+              </span>
+            ) : null}
+            <span className="block truncate text-2 font-semibold text-ink-foreground">
+              {track.title}
+            </span>
+            {track.role ? (
+              <span className="block truncate text-sm text-ink-foreground/70">{track.role}</span>
+            ) : null}
+          </span>
+          <Pause size={iconSize.lg} fill="currentColor" className="shrink-0" aria-hidden />
+        </button>
+        {track.media ? (
+          <div className="px-3">
+            <MediaEmbed
+              url={track.media}
+              title={track.title}
+              onOpen={() => recordWorkEvent(track.id, "link_click")}
+              onPlay={() => recordPlay(track.id)}
+            />
+          </div>
+        ) : null}
+        <WorkDetails
+          onDark
+          id={track.id}
+          title={track.title}
+          description={track.project}
+          collaborators={track.collaborators}
+          year={track.year}
+        />
+      </div>
     </article>
   );
 }
@@ -1017,12 +1058,15 @@ export function AudioTrackCard({
  * with, the year; then Like (once the likes table exists) and Share.
  */
 function WorkDetails({
+  onDark = false,
   id,
   title,
   description,
   collaborators,
   year,
 }: {
+  /** On a now-playing card: white text and controls. */
+  onDark?: boolean;
   id: string;
   title: string;
   description?: string | undefined;
@@ -1032,11 +1076,14 @@ function WorkDetails({
   const likes = useWorkLikes(isDbId(id) ? [id] : []);
   const meta = joinParts(collaborators?.length ? `with ${collaborators.join(", ")}` : "", year);
   return (
-    <div className="px-4 pb-2 pt-1">
-      {description ? (
-        <p className="line-clamp-3 text-1 text-muted-foreground">{description}</p>
-      ) : null}
-      {meta ? <p className="mt-1 truncate text-1 text-muted-foreground">{meta}</p> : null}
+    <div
+      className={cn(
+        "px-4 pb-2 pt-2",
+        onDark ? "text-ink-foreground/75 [&_button]:text-ink-foreground" : "text-muted-foreground",
+      )}
+    >
+      {description ? <p className="line-clamp-3 text-1">{description}</p> : null}
+      {meta ? <p className="mt-1 truncate text-1">{meta}</p> : null}
       <div className="-ml-2 mt-1 flex items-center">
         {likes.available ? <LikeButton id={id} likes={likes} /> : null}
         {isDbId(id) ? <ShareWorkButton id={id} title={title} /> : null}
@@ -1113,7 +1160,7 @@ export function VideoCard({
     return (
       <article
         className={cn(
-          "overflow-hidden rounded-lg bg-card shadow-elevation-2 ring-1 ring-border animate-in fade-in duration-200",
+          "overflow-hidden rounded-lg bg-card ring-1 ring-border animate-in fade-in duration-200",
           layout === "grid" && "col-span-full",
         )}
       >
@@ -1181,7 +1228,7 @@ export function VideoCard({
   return (
     <article className={cn("min-w-0", layout === "grid" ? "w-full" : "w-[220px] shrink-0")}>
       {/* Same tile as audio: a square cover, rounded, the source's play button, a Video tag. */}
-      <div className="relative aspect-square overflow-hidden rounded-md bg-ink/5 shadow-xs">
+      <div className="relative aspect-square overflow-hidden rounded-md bg-ink/5">
         {v.thumb || coverFor(v.media) ? (
           <img
             src={sized((v.thumb || coverFor(v.media))!, { width: 412 })}
@@ -1347,9 +1394,8 @@ export function ServiceCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const real = /^[0-9a-f-]{36}$/i.test(s.id);
-  const taxonomy = useTaxonomy().options;
-  const category = s.categories?.[0] ? labelFor(taxonomy?.service_categories, s.categories[0]) : "";
-  const meta = [category, s.mode].filter(Boolean).join(" · ");
+  // No service category any more (owner, 10 Oct 2026); the meta line is the work mode.
+  const meta = s.mode ?? "";
   const allDeliverables = s.deliverables ?? [];
   const gets = expanded ? allDeliverables : allDeliverables.slice(0, 3);
   // Collapsed by default, so anything beyond the name and the stub is a detail to open.
@@ -1393,8 +1439,8 @@ export function ServiceCard({
       className={cn(
         "group relative flex flex-col justify-between overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-standard",
         selected
-          ? "border-foreground ring-2 ring-foreground/15 shadow-sm"
-          : "border-border/80 hover:border-foreground/40 hover:shadow-xs",
+          ? "border-foreground ring-2 ring-foreground/15"
+          : "border-border/80 hover:border-foreground/40",
         disabled && "opacity-60",
         className,
       )}
@@ -1559,7 +1605,7 @@ export function ReviewCard({
   return (
     <article
       className={cn(
-        "group flex h-full w-[min(300px,82vw)] flex-col justify-between rounded-lg border border-border/80 bg-card p-4 shadow-2xs transition-all duration-150 hover:shadow-xs",
+        "group flex h-full w-[min(300px,82vw)] flex-col justify-between rounded-lg border border-border/80 bg-card p-4 transition-all duration-150",
         className,
       )}
     >
@@ -1771,6 +1817,78 @@ export function SocialLinks({
         );
       })}
     </ul>
+  );
+}
+
+/** Where a stored link goes: a full address as is, a handle on its platform's site. */
+function linkHref(platform: string | undefined, handle: string): string | null {
+  const h = handle.trim();
+  if (/^https?:\/\//i.test(h)) return h;
+  const bare = h.replace(/^@/, "");
+  if (!bare) return null;
+  switch (platform) {
+    case "instagram":
+      return `https://instagram.com/${bare}`;
+    case "youtube":
+      return `https://youtube.com/@${bare}`;
+    case "x":
+    case "twitter":
+      return `https://x.com/${bare}`;
+    case "soundcloud":
+      return `https://soundcloud.com/${bare}`;
+    case "linkedin":
+      return `https://linkedin.com/in/${bare}`;
+    case "website":
+      return `https://${bare}`;
+    default:
+      return /\./.test(bare) ? `https://${bare}` : null;
+  }
+}
+
+/**
+ * Links at the top of a profile (owner, 5 Oct; ref img 13): platform icons, plain (no circles),
+ * each opening its page; a website becomes "Visit site". Nothing when there are none.
+ */
+export function ProfileLinksRow({
+  links,
+}: {
+  links: { platform?: string | undefined; label: string; handle: string }[];
+}) {
+  const site = links.find((l) => l.platform === "website");
+  const socials = links.filter((l) => l !== site && linkHref(l.platform, l.handle));
+  const siteHref = site ? linkHref("website", site.handle) : null;
+  if (!socials.length && !siteHref) return null;
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div className="-ml-2.5 flex items-center">
+        {socials.map((l) => {
+          const Icon = (l.platform ? linkIcons[l.platform] : undefined) ?? Globe;
+          return (
+            <a
+              key={l.label}
+              href={linkHref(l.platform, l.handle)!}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${l.label}: ${l.handle}`}
+              className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full text-foreground"
+            >
+              <Icon size={iconSize.md} aria-hidden />
+            </a>
+          );
+        })}
+      </div>
+      {siteHref ? (
+        <a
+          href={siteHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hit-area inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-semibold"
+        >
+          Visit site
+          <ExternalLink size={iconSize.sm} aria-hidden />
+        </a>
+      ) : null}
+    </div>
   );
 }
 
@@ -1999,7 +2117,7 @@ export function ProfileCompletion({
   cta?: boolean | undefined;
 }) {
   return (
-    <div className="rounded-lg border border-border/80 bg-card p-4 shadow-xs">
+    <div className="rounded-lg border border-border/80 bg-card p-4">
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-1 font-bold text-foreground">{title}</p>
         <span className="tabular-nums text-1 font-bold text-foreground">{gaps.percent}%</span>

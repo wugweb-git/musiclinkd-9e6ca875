@@ -15,7 +15,8 @@ import { Switch } from "@/components/ui/switch";
 import { Btn, Sheet } from "@/components/ml/ui";
 import { ContributorPicker } from "@/components/ml/portfolio";
 import { ChipPicker, InlineField, useScrollEdges } from "@/components/ml/onboarding";
-import { creditRoles, genres, workType, type PortfolioItem } from "@/data/portfolio";
+import { creditRoles, workType, type PortfolioItem } from "@/data/portfolio";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { haptic } from "@/lib/haptics";
 import { getLinkPreview, type LinkPreview } from "@/lib/link-preview.functions";
 import { savePortfolioItem } from "@/lib/portfolio.functions";
@@ -96,10 +97,22 @@ export function WorkForm({
   // `role` holds the credit roles and then the genres, one list (portfolio_items has no genre
   // column). Read back, a genre goes to Genre and the rest to Your role, so editing never moves
   // genres into the role.
+  // Genres are the one live list (taxonomy_options, owner 10 Oct 2026), stored here by label.
+  const genres = (useTaxonomy().options?.genres ?? []).map((o) => o.label);
   const stored = initial?.role ? initial.role.split(", ").filter(Boolean) : [];
-  const genreNames = new Set<string>(genres);
-  const [roles, setRoles] = useState<string[]>(stored.filter((r) => !genreNames.has(r)));
-  const [genre, setGenre] = useState<string[]>(stored.filter((r) => genreNames.has(r)));
+  const [roles, setRoles] = useState<string[]>(stored);
+  const [genre, setGenre] = useState<string[]>([]);
+  // Once the list arrives, a stored genre goes back to Genre rather than Your role.
+  const split = useRef(false);
+  useEffect(() => {
+    if (split.current || !genres.length) return;
+    split.current = true;
+    const names = new Set(genres);
+    setRoles((cur) => cur.filter((r) => !names.has(r)));
+    setGenre(stored.filter((r) => names.has(r)));
+    // `stored` is the initial value only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [genres.length]);
   const [year, setYear] = useState(initial?.release_year ? String(initial.release_year) : "");
   const [collabList, setCollabList] = useState<string[]>(initial?.collaborators ?? []);
   const [isPublic, setIsPublic] = useState(initial ? initial.published : true);

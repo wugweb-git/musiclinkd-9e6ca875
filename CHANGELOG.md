@@ -5,6 +5,125 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed — retired taxonomy, service categories and role details (10 Oct, owner)
+
+- Services have no categories: the picker, card label and category icons are gone; the database
+  drops profile_services.category/categories, person_type_service_categories,
+  service_category_specialties, service_categories and engineer_specialties. studio_services is
+  renamed business_services.
+- Every talent type shares one profile schema: role details (Professional details section, edit
+  screen, At a glance detail tiles) are removed and profile_role_details is dropped with the
+  dj_types, vocal_range, singing_styles, lyricist and composition style lists.
+- Opportunity "kind of work" (old payment terms) and the collab project type are removed from the
+  app. Budget tier is removed (profiles.budget_tier dropped).
+- Deleted unused lists: availability_status, session_types, budget_type, session_duration_tiers,
+  project_roles, director_specializations, podcast_categories.
+- Amenities offer the 18 in Notion; the other 15 stay readable for places that already list them.
+- Collaborations take the six types (20261004190000_collab_types.sql applied, keeping the live
+  parameter defaults; the two test project rows deleted).
+- Migrations 20261010140000–170000 with undo snapshots in supabase/dumps; Notion Master Taxonomy
+  updated to match.
+
+### Changed — one genre list of 14 for every persona (10 Oct, owner)
+
+- Genres are Bollywood, Classical, Folk, Rock, Indie, Jazz, Fusion, Sufi, Devotional, Electronic,
+  Hip-Hop, Regional, Pop, Other (taxonomy_options). The 47 stale genres are deleted; every genre
+  stored on profiles (119), bands, collabs and opportunities was mapped to one of the 14, none lost
+  (20261010130000_genres_fourteen.sql; undo snapshot supabase/dumps/2026-10-10-before-genres-14.sql).
+  genre_languages dropped. Notion Master Taxonomy updated to the 14.
+- No hardcoded genre lists: src/data/onboarding.ts and src/data/portfolio.ts lose theirs; the
+  portfolio work form reads the live list.
+- Genre screens: talent "Which genres do you work in?", business "Which genres do you serve?"
+  (4 Oct decisions: Genres / Genres served).
+
+### Changed — Edit profile is the way back to the setup screens; persona_bucket retired (10 Oct, owner)
+
+- Edit profile, for talent and business: one list of rows in setup order (done mark, row, current
+  answer), each opening its setup screen in its edit state (Save ✓, back to Edit profile). Screens
+  with no setup counterpart (photos, role details) open on their own. Experience removed from the
+  list. Talent rows: Roles, About you, Instruments, Languages, Genres, How you work, Goals, Links.
+  Business rows: type, name and tagline, location, languages, genres, policies.
+- Business setup steps take `from=edit`: they load the saved profile and business and save only
+  their own fields. Business type edits on the shared role screen (`persona=business`, the screen
+  variable `setupPersona`). Review step removed; Continue on Policies creates the business.
+- Business setup has its own Languages and Genres screens (same as talent); "What does it offer?"
+  is gone. Policies are one large text box, one rule per line (up to 12).
+- City box matches the PIN code field; pills pack rows by their measured widths.
+- One list per category for every persona: Genres and Instruments read taxonomy_options directly.
+  `persona_bucket` is removed from the app and dropped from the database
+  (20261010120000_drop_persona_bucket.sql; undo in supabase/dumps/2026-10-10-before-drop-persona-bucket.sql).
+
+### Changed — one set of question screens for setup, editing and both account types (10 Oct, owner)
+
+- The question screens live at `/setup/<question>` (was `/onboarding/step/…`); old addresses
+  redirect. Business step 1 is the shared role screen (`/setup/role?as=business`), and the type
+  carries into business setup (`/business/new?step=basics&type=…`).
+- Edit profile (talent) opens these screens for roles, genres, instruments (then "how long"),
+  languages, how you work, links and visibility, and goals; edit mode has no step count or
+  progress bar, a Save ✓ button, and returns to Edit profile after the save lands.
+- Pills: one picker, three layouts (centred cloud, one per row, big words for languages), dashed
+  with + when off and ink with − when on; clouds pack rows to fill space. No group headings.
+- Roles: up to three on step 1, the first is the main role; the second roles screen is gone.
+  Goals are one deduplicated list; "Show me more" follows from them.
+- Availability is one "Open to work" switch, on the work-mode step, on Home (talent and business)
+  and on Edit profile; saved as "Available" or nothing.
+- Onboarding: role first for talent, no Skip, no Optional chip or info note, step count always out
+  of every step, warm ground, 414px column, back arrow locked at 20/26 on every screen checked,
+  Continue → and Save ✓ icons. Drawer triggers use the 44px / 8px field shape.
+- Profile data: the saved columns, not the old draft copy, fill the question screens.
+
+### Changed — onboarding Select banners and step fields (6 Oct, owner)
+
+- Select screen (`/onboarding`): warm page, back button only, "How will you use MusicLinkd?".
+  Talent and Business are photo banners with a Market-style glass label, a large title, a round
+  ↗ button and a branded art cluster (rises on load, floats, fans on press; brand glow behind).
+  Academy is a frosted panel with a drawn 6px dashed edge (8/8) and a "Coming soon" sticker.
+  Step count, setup time, supporting copy and the "Live card preview" toggle are gone.
+- Branded artwork lives in `ml/select-art.tsx`; every piece carries `data-brand-id`
+  (`brand-0001`…`brand-0010`) for Storybook.
+- Onboarding fields: 44px, 8px corners, 16px text for inputs and pickers; the info note is a
+  bordered block, not a pill; the username shows `@` with the full link in the hint. Continue is
+  never greyed out — pressing it early marks missing fields inline. Onboarding screens use the
+  sign-in ground.
+- Removed legacy pages `/me`, `/singers`, `/academy`, `/identity/business`,
+  `/portfolio/analytics`. Rentals and listings are one page: the rental mine/listings/nearby
+  routes redirect to Market, saved rentals to Bookmarks. The menu's Market group is Sell or rent,
+  My listings, Nearby; Saved is now "Bookmarks".
+
+### Fixed — one surface rule; back from every page (5 Oct, owner)
+
+- Surfaces: anything sitting on the page (cards, tiles, rows, panels, selected states) has a 1px
+  hairline border and no shadow; only floating things keep a shadow (bottom nav, create pill,
+  sheets, popovers, round floating buttons, scroll-edge hints, a dragged kanban card). 48 class
+  lists changed across 17 files; cards that had a shadow and no border gained the hairline.
+- `NavDock`: a page puts a control in the dock above the bottom nav beside the + pill (owner,
+  5 Oct); Market and Collaborations put their Filters there instead of in the header.
+- Profile links sit at the top, under the actions (owner, 5 Oct; ref img 13): plain platform
+  icons that open the page (a handle becomes its platform address) and "Visit site" for a
+  website. The External links section at the bottom is gone.
+- Market listing "Details" is a bento like the profile's At a glance: short facts in pairs, long
+  values and a lone last tile across the row.
+- Menu reaches every useful page (owner, 5 Oct): an audit found 15 pages nothing linked to. Added
+  Search; My opportunities, Applications, Find a match, New collaboration; a Market group (Sell
+  or rent, My listings, Nearby, Rentals, My rentals, Saved rentals, Rentals nearby). Legacy pages
+  (/me, /singers, /academy, /identity/business, /portfolio/analytics) stay unlinked; Settings
+  sub-pages stay under Settings.
+- `/opportunities/search` (the old version) redirects to Search on its Opportunities tab with the
+  same query. Opportunities: the fake search field and filter link are gone; the top bar has + New
+  then a Search icon; "Browse by need" is a side-scrolling row that opens Search with the need.
+- Selected audio is a now-playing card (owner's refs: Spotify / Apple Music widgets): the cover,
+  blurred, fills the card behind a dark scrim; cover, source mark, title and artist in white,
+  pause on the right, the player, then what the owner added with Like and Share.
+- In the dock, Filters is a labelled pill (icon + "Filters", "Filters · 2" when on), like the +
+  pill. The header filter button lost its circle.
+- No circle behind icons anywhere (owner, 5 Oct): the shared icon button's "outline" style is a
+  plain icon now (48dp tap area kept); the conversation composer and opportunity header icons
+  too. "ghost" (ink 5%) marks the selected grid/row toggle. Text buttons, the booking counters,
+  the × over gallery photos and the scan button keep their outline.
+- Market listing tiles save with a bookmark, not a heart. Market's location icon is a plain icon.
+- `TopBar back="history"` goes back to wherever you came from (Home when there is nothing).
+  Notifications, Bands, Bookings and Business bookings had no back at all; they use it now.
+
 ### Changed — top bar order and scroll, page tones (5 Oct, owner)
 
 - One icon order on every header: page action · Search · Bell · Settings; a screen shows only

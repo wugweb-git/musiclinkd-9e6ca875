@@ -3,6 +3,7 @@ import { SheetSelect } from "./listing-form";
 // FLOW-02 — Onboarding UI kit. Extends Gestalt; no new tokens.
 
 import {
+  useLayoutEffect,
   createContext,
   useCallback,
   useContext,
@@ -26,6 +27,9 @@ import {
   Trash2,
   MapPin,
   type LucideIcon,
+  Plus,
+  ArrowRight,
+  ArrowUpRight,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -55,14 +59,7 @@ import {
   type OnboardingDraft,
 } from "@/data/onboarding";
 import type { UsernameStatus } from "@/lib/username";
-import {
-  choicesFor,
-  loadPersonaBucket,
-  useTaxonomy,
-  type LoadState,
-  type PersonaBucket,
-  type TaxonomyOption,
-} from "@/lib/taxonomy";
+import { choicesFor, useTaxonomy, type LoadState, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { PUBLIC_HOST } from "@/lib/site";
 import { sized } from "@/lib/image-url";
@@ -110,10 +107,8 @@ type Store = {
   hydrated: boolean;
   sync: SyncState;
   retry: () => void;
-  /** Instruments and genres for the draft's roles and languages (persona_bucket). */
-  bucket: PersonaBucket | null;
-  bucketState: LoadState;
-  retryBucket: () => void;
+  /** Save now, skipping the autosave wait, and resolve when it is stored. */
+  flush: () => Promise<void>;
   /** The username stored on the profile. Once set it cannot change. Null until claimed. */
   claimedUsername: string | null;
   /** Claim draft.username for this account. In dev preview it always succeeds and nothing is stored. */
@@ -189,7 +184,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       }
       setSync("saving");
       try {
-        const step = resumeTarget(next, bucketRef.current);
+        const step = resumeTarget(next);
         await persist({ data: draftToProfile(next, step) });
         setSync("saved");
       } catch {
@@ -257,45 +252,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       .finally(() => setHydrated(true));
   }, [authLoading, signedIn, userId, navigate, loadProfile, writeCache, devPreview]);
 
-  // Refetch the persona bucket whenever the roles or languages change.
-  const [bucket, setBucket] = useState<PersonaBucket | null>(null);
-  const [bucketState, setBucketState] = useState<LoadState>("loading");
-  const [bucketAttempt, setBucketAttempt] = useState(0);
-  const bucketRef = useRef<PersonaBucket | null>(null);
-  const bucketKey = [
-    draft.primaryRole ?? "",
-    draft.secondaryRoles.join(","),
-    draft.languages.join(","),
-  ].join("|");
-  useEffect(() => {
-    if (!hydrated) return;
-    // A stale bucket from the previous roles would hide or show the wrong steps; clear it first.
-    bucketRef.current = null;
-    setBucket(null);
-    const primary = draft.primaryRole;
-    if (!primary) {
-      bucketRef.current = null;
-      setBucket(null);
-      setBucketState("ready");
-      return;
-    }
-    let active = true;
-    setBucketState("loading");
-    loadPersonaBucket(primary, draft.secondaryRoles, draft.languages)
-      .then((b) => {
-        if (!active) return;
-        bucketRef.current = b;
-        setBucket(b);
-        setBucketState("ready");
-      })
-      .catch(() => active && setBucketState("error"));
-    return () => {
-      active = false;
-    };
-    // bucketKey stands in for the three draft fields it is built from.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated, bucketKey, bucketAttempt]);
-
   const persistDraft = useCallback(
     (next: OnboardingDraft) => {
       setDraft(next);
@@ -317,9 +273,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       hydrated,
       sync,
       retry: () => void push(draft),
-      bucket,
-      bucketState,
-      retryBucket: () => setBucketAttempt((n) => n + 1),
+      flush: () => {
+        if (timer.current) window.clearTimeout(timer.current);
+        pending.current = null;
+        return push(latest.current);
+      },
       set: (patch) => persistDraft({ ...latest.current, ...patch }),
       toggle: (field, val) => {
         const list = (latest.current[field] as unknown as string[]) ?? [];
@@ -342,18 +300,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         return status;
       },
     }),
-    [
-      draft,
-      hydrated,
-      sync,
-      persistDraft,
-      push,
-      bucket,
-      bucketState,
-      claimedUsername,
-      claim,
-      devPreview,
-    ],
+    [draft, hydrated, sync, persistDraft, push, claimedUsername, claim, devPreview],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -380,8 +327,8 @@ export function useOnboarding(): Store {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
-export function resumeTarget(draft: OnboardingDraft, bucket: PersonaBucket | null = null): string {
-  const list = visibleSteps(draft, bucket);
+export function resumeTarget(draft: OnboardingDraft): string {
+  const list = visibleSteps(draft);
   const next = list.find((s) => !draft.completedSteps.includes(s.id));
   return next ? next.id : "contact";
 }
@@ -449,7 +396,10 @@ export function StepShell({
   onSubmit,
   optional = false,
   status,
+  editing = false,
 }: {
+  /** Opened from Edit profile (owner, 10 Oct 2026): no step count or progress, just the question. */
+  editing?: boolean | undefined;
   step: number;
   total: number;
   group: string;
@@ -513,11 +463,11 @@ export function StepShell({
         e.preventDefault();
         onSubmit?.();
       }}
-      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-[414px] flex-col bg-warm"
     >
       {/* Modern top app bar: frosted glass with segmented story-style progress track */}
       <header
-        className={`vt-flow-header pt-safe sticky top-0 z-bar border-b bg-background/90 px-5 pb-3.5 backdrop-blur-md transition-colors duration-200 ease-standard ${
+        className={`vt-flow-header pt-safe sticky top-0 z-bar border-b bg-warm/90 px-5 pb-3.5 backdrop-blur-md transition-colors duration-200 ease-standard ${
           edges.top ? "border-border shadow-2xs" : "border-transparent"
         }`}
       >
@@ -526,7 +476,7 @@ export function StepShell({
             <IconBtn
               label="Back"
               variant="plain"
-              className="-ml-2 hover:bg-subtle active:scale-90"
+              className="-ml-2.5 hover:bg-subtle active:scale-90"
               onClick={onBack}
             >
               <ArrowLeft size={iconSize.md} aria-hidden />
@@ -543,10 +493,8 @@ export function StepShell({
                     titleTucked ? "-translate-y-full opacity-0" : ""
                   }`}
                 >
-                  <span className="font-semibold text-foreground">{group}</span>
-                  <span className="mx-1.5 opacity-50">·</span>
-                  <span>
-                    Step {step} of {total}
+                  <span className="font-semibold text-foreground">
+                    {editing ? "Edit profile" : `Step ${step} of ${total}`}
                   </span>
                 </p>
                 <p
@@ -563,6 +511,7 @@ export function StepShell({
 
             {/* Segmented story-style progress track (Tinder / Snapchat / Instagram story UX) */}
             <div
+              hidden={editing}
               className="mt-2 flex w-full gap-1"
               role="progressbar"
               aria-valuenow={pct}
@@ -586,17 +535,9 @@ export function StepShell({
               })}
             </div>
           </div>
-          {/* Same width with or without Skip, so the progress bar never changes length between steps. */}
-          <span className="flex w-10 shrink-0 justify-end">
-            {onSkip ? (
-              <AuthTextButton
-                onClick={onSkip}
-                className="text-1 font-semibold text-muted-foreground hover:text-foreground"
-              >
-                Skip
-              </AuthTextButton>
-            ) : null}
-          </span>
+          {/* No Skip (owner, 10 Oct 2026): an optional step goes on with Continue, answered or not.
+              The slot keeps the progress bar centred against the back arrow. */}
+          <span aria-hidden className="w-10 shrink-0" />
         </div>
       </header>
 
@@ -610,27 +551,16 @@ export function StepShell({
           <h1 ref={titleRef} className="text-3 font-bold text-foreground leading-tight">
             {title}
           </h1>
-          {optional ? (
-            <span className="mt-1 shrink-0 rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground border border-border/60">
-              Optional
-            </span>
-          ) : null}
+          {/* No Optional chip, group label or "why" note (owner, 6 Oct 2026): Skip says it's optional. */}
         </div>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
-
-        {why ? (
-          <div className="mt-2.5 inline-flex items-start gap-1.5 rounded-full bg-subtle/80 px-3 py-1 text-1 text-muted-foreground border border-border/50">
-            <Info size={14} className="mt-0.5 shrink-0 text-foreground/60" aria-hidden />
-            <span>{why}</span>
-          </div>
-        ) : null}
 
         <div className="mt-6">{children}</div>
       </main>
 
       {/* Frosted floating bottom footer bar */}
       <div
-        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard ${
+        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-[414px] border-t bg-warm/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard ${
           edges.bottom ? "border-border shadow-xs" : "border-transparent"
         }`}
       >
@@ -653,38 +583,114 @@ export type PickerOption =
       media?: ReactNode;
     };
 
-/** Chips from the global `Chip`. Selection is the caller's. */
+export type PickerLayout = "cloud" | "stack" | "script";
+
+/*
+ * Adaptive order for wrapping pills (owner, 6 & 10 Oct 2026): pills move so each row is filled and
+ * none is left half empty. The real pill widths are measured, then packed first-fit, widest first,
+ * into rows of the container's width; repacked when the width changes.
+ */
+const PILL_GAP = 8;
+function packByWidth(values: string[], widths: Map<string, number>, row: number): string[] {
+  const sorted = [...values].sort((x, y) => (widths.get(y) ?? 0) - (widths.get(x) ?? 0));
+  const rows: { left: number; items: string[] }[] = [];
+  for (const v of sorted) {
+    const w = Math.min((widths.get(v) ?? 0) + PILL_GAP, row);
+    const fit = rows.find((r) => r.left >= w);
+    if (fit) {
+      fit.items.push(v);
+      fit.left -= w;
+    } else rows.push({ left: row - w, items: [v] });
+  }
+  return rows.flatMap((r) => r.items);
+}
+
+function usePackedOrder(values: string[], enabled: boolean) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [order, setOrder] = useState<string[] | null>(null);
+  const key = values.join("|");
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!enabled || !el) return;
+    const pack = () => {
+      const widths = new Map<string, number>();
+      for (const child of Array.from(el.children) as HTMLElement[]) {
+        const v = child.dataset["value"];
+        if (v) widths.set(v, child.getBoundingClientRect().width);
+      }
+      if (widths.size !== values.length) return;
+      const next = packByWidth(values, widths, el.clientWidth + PILL_GAP);
+      setOrder((cur) => (cur && cur.join("|") === next.join("|") ? cur : next));
+    };
+    pack();
+    const ro = new ResizeObserver(pack);
+    ro.observe(el);
+    return () => ro.disconnect();
+    // `key` stands in for the values list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key, enabled]);
+  const ordered =
+    enabled && order && order.length === values.length && order.every((v) => values.includes(v))
+      ? order
+      : values;
+  return { ref, ordered };
+}
+
+/*
+ * Chips from the global `Chip`, in one of three layouts (owner refs, 6 Oct 2026). Selection is the
+ * caller's.
+ *   cloud  — centred, wrapping: long lists of short labels (roles, instruments, genres, types).
+ *   stack  — one pill per row, centred: short lists where each choice is a statement (intent).
+ *   script — big centred words: languages, written in their own script.
+ */
 export function ChipPicker({
   options,
   selected,
   onToggle,
   max,
+  layout = "cloud",
 }: {
   options: PickerOption[];
   selected: string[];
   onToggle: (v: string) => void;
   /** When this many are selected, unselected chips are disabled. */
   max?: number;
+  layout?: PickerLayout | undefined;
 }) {
-  const full = max !== undefined && selected.length >= max;
+  const full = max !== undefined && max > 1 && selected.length >= max;
+  const items = options.map((opt) => (typeof opt === "string" ? { value: opt, label: opt } : opt));
+  const byValue = new Map(items.map((o) => [o.value, o]));
+  const { ref, ordered } = usePackedOrder(
+    items.map((o) => o.value),
+    layout !== "stack",
+  );
   return (
-    <div className="flex flex-wrap gap-2">
-      {options.map((opt) => {
-        const o = typeof opt === "string" ? { value: opt, label: opt } : opt;
+    <div
+      ref={ref}
+      className={cn(
+        "flex gap-2",
+        layout === "stack" ? "flex-col items-center" : "flex-wrap justify-center",
+      )}
+    >
+      {ordered.map((value) => {
+        const o = byValue.get(value)!;
         const on = selected.includes(o.value);
         return (
-          <Chip
-            key={o.value}
-            active={on}
-            media={o.media}
-            atLimit={full && !on}
-            onClick={() => {
-              haptic("select");
-              onToggle(o.value);
-            }}
-          >
-            {o.label}
-          </Chip>
+          <span key={o.value} data-value={o.value} className="inline-flex">
+            <Chip
+              variant="select"
+              size={layout === "script" ? "lg" : "md"}
+              active={on}
+              media={o.media}
+              atLimit={full && !on}
+              onClick={() => {
+                haptic("select");
+                onToggle(o.value);
+              }}
+            >
+              {o.label}
+            </Chip>
+          </span>
         );
       })}
     </div>
@@ -700,6 +706,7 @@ export function PersonTypePicker({
   max,
   exclude = [],
   icon,
+  layout = "cloud",
 }: {
   groups: readonly { key: string; label: string }[];
   options: TaxonomyOption[];
@@ -708,9 +715,12 @@ export function PersonTypePicker({
   max?: number;
   exclude?: string[];
   icon?: (o: TaxonomyOption) => ReactNode;
+  layout?: PickerLayout | undefined;
 }) {
   return (
+    // One list, in group order, no group headings (owner, 6 Oct 2026). "Other" stays last.
     <ChipPicker
+      layout={layout}
       options={groups
         .flatMap((g) => options.filter((o) => (o.metadata?.group ?? "other") === g.key))
         .filter((o) => !exclude.includes(o.slug))
@@ -818,7 +828,7 @@ export function InlineField({
 }) {
   const messageId = `${inputId}-message`;
   const shared =
-    "w-full min-w-0 bg-transparent text-2 outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
+    "w-full min-w-0 bg-transparent text-[16px] outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
   return (
     <div className="group">
       {/* Same label states as TextField: grey at rest, ink while focused, red when invalid. */}
@@ -833,11 +843,10 @@ export function InlineField({
       </label>
       <div
         className={cn(
-          // One input shape for the app (owner, 24 Sep): a pill, the same shape as the pickers it
-          // sits beside. A textarea keeps a rounded rectangle — a pill around four lines reads
-          // wrong — which is the shape the other multi-line fields already use.
-          "flex items-center gap-1 border bg-card shadow-xs transition-all duration-150 ease-standard",
-          multiline ? "rounded-lg px-4 py-3" : "h-13 rounded-full px-5",
+          // Phone plan: one field shape — 8px corners, 44px tall, 16px text — for inputs and the
+          // pickers beside them. A textarea keeps the same corners and grows.
+          "flex items-center gap-1 border bg-card transition-all duration-150 ease-standard",
+          multiline ? "rounded-sm px-3.5 py-3" : "h-11 rounded-sm px-3.5",
           readOnly && "bg-background",
           error
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
@@ -963,7 +972,7 @@ export function UsernameField({
     <InlineField
       inputId={inputId}
       label="Username"
-      prefix={`${PUBLIC_HOST}/@`}
+      prefix="@"
       value={value}
       onChange={(v) => onChange(v.toLowerCase().replace(/\s/g, ""))}
       placeholder="yourname"
@@ -975,7 +984,9 @@ export function UsernameField({
         : claimError
           ? { error: claimError }
           : !value
-            ? { hint: "Your profile link: lowercase letters, numbers, dots and underscores." }
+            ? {
+                hint: `Your link: ${PUBLIC_HOST}/@yourname. Lowercase letters, numbers, dots, underscores.`,
+              }
             : !check.ok
               ? { error: check.message }
               : status === "taken"
@@ -996,17 +1007,33 @@ export function UsernameField({
 export function DrawerField({
   label,
   hint,
+  error,
   children,
 }: {
   label: string;
   hint?: string | undefined;
+  /** Shown under the picker after Continue is pressed without a choice. */
+  error?: string | null | undefined;
   children: ReactNode;
 }) {
   return (
     <div>
-      <p className="mb-1.5 block text-sm font-medium text-foreground">{label}</p>
+      <p
+        className={cn(
+          "mb-1.5 block text-sm font-medium",
+          error ? "text-destructive" : "text-foreground",
+        )}
+      >
+        {label}
+      </p>
       {children}
-      {hint ? <p className="mt-1.5 text-1 text-muted-foreground">{hint}</p> : null}
+      {error ? (
+        <p role="alert" className="mt-1.5 text-1 text-destructive">
+          {error}
+        </p>
+      ) : hint ? (
+        <p className="mt-1.5 text-1 text-muted-foreground">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -1089,7 +1116,7 @@ export function DateDrawerField({
         type="button"
         aria-haspopup="dialog"
         onClick={openDrawer}
-        className="flex h-13 w-full items-center justify-between gap-2 rounded-full border border-input bg-card px-5 text-left text-sm"
+        className="flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-[16px]"
       >
         <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
           {shown}
@@ -1419,75 +1446,154 @@ export function PrivateDetailsFields() {
 }
 
 /*
- * One account-type choice on the Select screen, drawn after the owner's reference (4 Oct 2026): a
- * large card with the name top-left, a loose cluster of role icons top-right and the description
- * along the bottom. Tapping it is the choice and the next step. `hollow` is the outlined variant.
- * The cluster is icons only, never people or counts: nothing on a sign-up screen claims who is here.
+ * One account-type choice on the Select screen, as a banner (owner refs, 5 Oct 2026): a soft
+ * grey panel, a quiet meta row, a centred title and line, and a few tilted objects rising from the
+ * bottom edge. Tapping it is the choice. `hollow` is the coming-soon banner: dashed, one dashed
+ * "+" tile, not tappable. Objects are icons only: nothing on a sign-up screen claims who is here.
  */
 export function AccountTypeCard({
   title,
-  description,
-  icon: Icon,
-  cluster,
+  label,
+  tag,
+  art,
+  photo,
+  sticker,
+  tone = "light",
   onSelect,
   hollow = false,
 }: {
   title: string;
-  description: string;
-  icon: LucideIcon;
-  /** Up to four role icons for the top-right cluster. */
-  cluster: LucideIcon[];
-  /** Absent on an upcoming type: the card is shown, disabled, and says so. */
+  /** Accessible name for the tap, e.g. "Create my profile". The banner shows only the arrow. */
+  label: string;
+  /** The frosted label top-left (ml-widgets .ml-glass): an icon and a few words. */
+  tag: { text: string };
+  /** Up to three branded art pieces (select-art.tsx): back left, front, back right. */
+  art?: ReactNode[] | undefined;
+  /** Photo behind the banner, under an ink scrim; the title sits on it in white. */
+  photo?: string | undefined;
+  /** A rotated pink stamp over the art (ml-widgets "sticker"), e.g. "Coming soon". */
+  sticker?: string | undefined;
+  /** The round arrow button: brand pink, or white on a darker photo. */
+  tone?: "brand" | "light" | undefined;
+  /** Absent on an upcoming type: the banner is shown, not tappable, and says so. */
   onSelect?: (() => void) | undefined;
+  /** The upcoming banner: a frosted light panel, no photo, no arrow. */
   hollow?: boolean | undefined;
 }) {
-  // Fixed spots for the cluster, largest first, so the cards read as one family.
-  const spots = [
-    "right-4 top-4 h-11 w-11",
-    "right-16 top-10 h-9 w-9",
-    "right-28 top-3 h-8 w-8",
-    "right-8 top-16 h-7 w-7",
+  // Resting place of each piece in the top-right composition, and where it fans to on press.
+  // The two back pieces sit smaller and fainter, so the cluster has depth.
+  const slots = [
+    "right-32 top-9 h-16 w-14 -rotate-[16deg] opacity-80 group-hover:-rotate-[22deg] group-hover:-translate-x-2 group-active:-rotate-[22deg]",
+    "right-11 top-3 z-10 h-22 w-22 rotate-6 group-hover:-translate-y-1 group-active:-translate-y-1",
+    "right-3 top-14 h-14 w-12 rotate-12 opacity-80 group-hover:rotate-[22deg] group-hover:translate-x-1 group-active:rotate-[22deg]",
   ];
   const Root = onSelect ? "button" : "div";
   return (
     <Root
-      {...(onSelect ? { type: "button" as const, onClick: onSelect } : { "aria-disabled": true })}
+      {...(onSelect
+        ? { type: "button" as const, onClick: onSelect, "aria-label": `${title}: ${label}` }
+        : { "aria-disabled": true, "aria-label": `${title}: ${label}` })}
       className={cn(
-        "relative flex min-h-36 w-full flex-col justify-between overflow-hidden rounded-lg p-4 text-left transition-transform duration-150 ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        onSelect ? "active:scale-98" : "",
+        "group relative flex min-h-44 w-full flex-col justify-between overflow-hidden rounded-lg p-4 text-left transition-[transform,box-shadow] duration-200 ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         hollow
-          ? "border border-dashed border-input bg-transparent"
-          : "border border-border bg-card shadow-xs",
+          ? "ml-grain bg-card/60 backdrop-blur-md"
+          : "bg-ink text-white shadow-md active:scale-98 [@media(hover:hover)]:hover:shadow-lg",
       )}
     >
-      <span className="text-3 font-bold text-foreground">{title}</span>
-      <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
-        {cluster.slice(0, spots.length).map((C, i) => (
+      {photo && !hollow ? (
+        <>
+          <img
+            src={photo}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-standard group-hover:scale-105"
+          />
           <span
-            key={i}
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-tr from-ink/90 via-ink/45 to-ink/5"
+          />
+        </>
+      ) : null}
+      {art?.length && !hollow ? (
+        // Brand glow behind the art: allowed in branded banners (owner, 6 Oct 2026).
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-brand/35 blur-2xl"
+        />
+      ) : null}
+      {art?.length ? (
+        <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-1/2">
+          {art.map((piece, i) => (
+            <span
+              key={i}
+              className={cn(
+                "absolute animate-art-rise transition-[rotate,translate] duration-300 ease-standard motion-reduce:transition-none [&>*]:h-full [&>*]:w-full",
+                slots[i],
+              )}
+              style={{ animationDelay: `${120 + i * 80}ms` }}
+            >
+              <span
+                className="block h-full w-full animate-art-float"
+                style={{ animationDelay: `${i * 600}ms` }}
+              >
+                {piece}
+              </span>
+            </span>
+          ))}
+          {sticker ? (
+            <span
+              data-brand-id="brand-0007"
+              className="absolute right-3 top-24 z-20 -rotate-6 animate-art-rise whitespace-nowrap rounded-full bg-brand px-3 py-1 text-sm font-bold text-white shadow-md"
+              style={{ animationDelay: "360ms" }}
+            >
+              {sticker}
+            </span>
+          ) : null}
+        </span>
+      ) : null}
+      {/* The glass label: the Market product card's badge (market.tsx), text only, no outline. */}
+      <span
+        className={cn(
+          "relative self-start rounded-full px-2.5 py-1.5 text-1 leading-none backdrop-blur-md",
+          hollow ? "bg-ink/5 text-foreground" : "bg-background/25 text-background",
+        )}
+      >
+        {tag.text}
+      </span>
+      {hollow ? (
+        // Academy's dashed edge (owner, 6 Oct 2026): a 6px stroke in 8px dashes and 8px gaps.
+        // CSS dashed borders can't set dash length, so it is drawn.
+        <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full">
+          <rect
+            x="3"
+            y="3"
+            rx="13"
+            fill="none"
+            strokeWidth="6"
+            strokeDasharray="8 8"
+            className="stroke-ink/15"
+            style={{ width: "calc(100% - 6px)", height: "calc(100% - 6px)" }}
+          />
+        </svg>
+      ) : null}
+      <span className="relative mt-8 flex items-end justify-between gap-3">
+        <span
+          className={cn("text-4 font-bold leading-none", hollow ? "text-foreground" : "text-white")}
+        >
+          {title}
+        </span>
+        {hollow ? null : (
+          // The one round control on this screen, per the owner's arrow reference (6 Oct 2026).
+          <span
+            aria-hidden
             className={cn(
-              "absolute flex items-center justify-center rounded-full text-muted-foreground",
-              // --subtle is white, the card's own colour: the tiles take the page grey.
-              hollow ? "border border-dashed border-input" : "bg-background",
-              spots[i],
+              "flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-md transition-transform duration-200 ease-standard group-hover:-translate-y-0.5 group-hover:translate-x-0.5",
+              tone === "brand" ? "bg-brand text-white" : "bg-card text-foreground",
             )}
           >
-            <C size={i === 0 ? iconSize.md : iconSize.sm} />
+            <ArrowUpRight size={iconSize.md} strokeWidth={3} />
           </span>
-        ))}
-      </span>
-      <span className="mt-6 flex items-center gap-3">
-        <span
-          className={cn(
-            "flex h-12 w-12 shrink-0 items-center justify-center rounded-full",
-            hollow
-              ? "border border-dashed border-input text-muted-foreground"
-              : "bg-ink text-ink-foreground",
-          )}
-        >
-          <Icon size={iconSize.md} aria-hidden />
-        </span>
-        <span className="min-w-0 text-sm font-semibold text-foreground">{description}</span>
+        )}
       </span>
     </Root>
   );

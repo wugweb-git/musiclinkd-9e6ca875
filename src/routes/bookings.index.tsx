@@ -61,7 +61,7 @@ function MyBookings() {
 
   return (
     <Screen>
-      <TopBar title="My bookings" subtitle="Studios, rooms and sessions" />
+      <TopBar back="history" title="My bookings" subtitle="Studios, rooms and sessions" />
 
       <div className="px-5 pb-3">
         <Segmented value={tab} options={tabs} labels={tabLabels} onChange={setTab} />

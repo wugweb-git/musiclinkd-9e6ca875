@@ -32,7 +32,6 @@ import {
   Users,
   type LucideIcon,
   UserRound,
-  SlidersHorizontal,
 } from "lucide-react";
 import {
   profileIdByUsername,
@@ -62,6 +61,7 @@ import {
   ReviewInviteCard,
   ShareSheet,
   SocialLinks,
+  ProfileLinksRow,
   VideoCard,
   InfoRow,
   ChipGroup,
@@ -174,6 +174,10 @@ export function TalentProfileExperience({
           ) : (
             <ViewerActions profileId={p.profileId} username={p.username} />
           )}
+          {/* Links sit at the top, under the actions (owner, 5 Oct), not in a footer. */}
+          <div className="mt-3">
+            <ProfileLinksRow links={p.links} />
+          </div>
         </div>
       </div>
 
@@ -202,8 +206,8 @@ export function TalentProfileExperience({
           </>
         ) : (
           <>
-            {/* One bento for who they are (owner, 5 Oct): facts, music identity and professional
-                details together, each fact once. About is only the bio. */}
+            {/* One bento for who they are (owner, 5 Oct): facts and music identity together, each
+                fact once. About is only the bio. */}
             <AtAGlance p={p} />
             {p.longBio ? (
               <ProfileSection title="About">
@@ -221,11 +225,6 @@ export function TalentProfileExperience({
               onGalleryChange={onGalleryChange}
             />
             {owner || p.reviews.length ? <Reviews p={p} owner={owner} /> : null}
-            {p.links.length ? (
-              <ProfileSection title="External links">
-                <SocialLinks links={p.links} />
-              </ProfileSection>
-            ) : null}
             {!owner && signedIn && p.profileId ? (
               <MessageCard name={p.name} profileId={p.profileId} />
             ) : null}
@@ -652,7 +651,7 @@ function Portfolio({
           <span className="flex items-center gap-1">
             <IconBtn
               label="Grid view"
-              variant={layout === "grid" ? "outline" : "ghost"}
+              variant={layout === "grid" ? "ghost" : "plain"}
               className="h-10 w-10"
               onClick={() => setLayout("grid")}
             >
@@ -660,7 +659,7 @@ function Portfolio({
             </IconBtn>
             <IconBtn
               label="Row view"
-              variant={layout === "rows" ? "outline" : "ghost"}
+              variant={layout === "rows" ? "ghost" : "plain"}
               className="h-10 w-10"
               onClick={() => setLayout("rows")}
             >
@@ -780,7 +779,7 @@ function About({
   part = "all",
 }: {
   p: TalentProfile;
-  /** One scroll: "text" (bio, details) up top, "identity" (chips, links) after Reviews. */
+  /** One scroll: "text" (bio) up top, "identity" (chips, links) after Reviews. */
   part?: "all" | "text" | "identity";
 }) {
   const text = part !== "identity";
@@ -788,7 +787,7 @@ function About({
   return (
     <>
       {part === "all" ? <FactGrid p={p} /> : null}
-      {text && (part === "all" || p.longBio || professionalDetails(p).length) ? (
+      {text && (part === "all" || p.longBio) ? (
         <>
           <ProfileSection title="About">
             {p.longBio ? (
@@ -797,20 +796,6 @@ function About({
               </div>
             ) : (
               <EmptyState title="No bio yet" body="This professional has not written a bio yet." />
-            )}
-          </ProfileSection>
-          <ProfileSection title="Professional details">
-            {professionalDetails(p).length ? (
-              <div className="divide-y divide-border rounded-lg bg-subtle">
-                {professionalDetails(p).map((item) => (
-                  <InfoRow key={item.label} label={item.label} value={item.value} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState
-                title="No details yet"
-                body="Setup, tools and working details will appear here."
-              />
             )}
           </ProfileSection>
         </>
@@ -1114,8 +1099,8 @@ export function MessageCard({ name, profileId }: { name: string; profileId: stri
 }
 
 /**
- * At a glance as one bento (owner, 5 Oct): Type, Genres (wide), Instruments, Languages, City,
- * Experience and each professional detail — every fact once, from real values only. A lone tile
+ * At a glance as one bento (owner, 5 Oct): Type, Genres (wide), Instruments, Languages, City and
+ * Experience — every fact once, from real values only; no per-role tiles (owner, 10 Oct 2026). A lone tile
  * at the end of a row spans it, so there is never an empty half cell.
  */
 function AtAGlance({ p }: { p: TalentProfile }) {
@@ -1134,17 +1119,6 @@ function AtAGlance({ p }: { p: TalentProfile }) {
   if (p.location) tiles.push({ key: "city", icon: MapPin, label: "City", body: text(p.location) });
   if (p.yearsActive)
     tiles.push({ key: "exp", icon: Clock3, label: "Experience", body: text(p.yearsActive) });
-  for (const d of professionalDetails(p)) {
-    const v = String(d.value);
-    // A long value reads better across the row; a short one pairs with its neighbour.
-    tiles.push({
-      key: `d-${d.label}`,
-      icon: SlidersHorizontal,
-      label: d.label,
-      body: text(v),
-      wide: v.length > 22,
-    });
-  }
   if (!tiles.length) return null;
   // Fill rows of two: a single tile left alone before a wide one, or at the end, spans the row.
   let col = 0;
@@ -1170,12 +1144,5 @@ function AtAGlance({ p }: { p: TalentProfile }) {
         ))}
       </div>
     </ProfileSection>
-  );
-}
-
-/** No price, rate or budget on a profile (owner, 4 Oct, item 8): those live on Service Cards. */
-function professionalDetails(p: TalentProfile) {
-  return p.professional.filter(
-    (item) => typeof item.value === "string" && !/budget|rate|price|fee/i.test(item.label),
   );
 }

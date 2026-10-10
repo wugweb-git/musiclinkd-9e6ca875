@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { fileReport, type ReportSubject } from "@/lib/reports.functions";
 import { makeOffer } from "@/lib/offers.functions";
 import {
-  Heart,
+  Bookmark,
   MapPin,
   Star,
   ShieldCheck,
@@ -306,7 +306,7 @@ export function ProductCard({
   const unit = unitName(item.price?.unit);
 
   const body = (
-    <div className="overflow-hidden rounded-lg bg-card shadow-sm transition-transform duration-300 ease-spring group-active:scale-[0.96]">
+    <div className="overflow-hidden rounded-lg bg-card transition-transform duration-300 ease-spring group-active:scale-[0.96] border border-border/80">
       <div className="p-2">
         <div className="relative aspect-square overflow-hidden rounded-sm bg-subtle">
           {item.photos.length ? (
@@ -391,7 +391,8 @@ export function ProductCard({
         tapped ? "animate-tab-tap" : ""
       }`}
     >
-      <StateIcon outline={Heart} solid="heart" active={isSaved} size={iconSize.sm} move="beat" />
+      {/* Save is a bookmark, never a heart (owner, 5 Oct). */}
+      <Bookmark size={iconSize.sm} fill={isSaved ? "currentColor" : "none"} aria-hidden />
     </button>
   ) : null;
 
@@ -1048,13 +1049,34 @@ export function ActiveFilters({
 }
 
 /** The Filters button: dark with a count while any filter is set. */
-export function FilterButton({ count, onClick }: { count: number; onClick: () => void }) {
+export function FilterButton({
+  count,
+  onClick,
+  labelled = false,
+}: {
+  count: number;
+  onClick: () => void;
+  /** In the dock above the bottom nav: a pill with the icon and "Filters", like the + pill. */
+  labelled?: boolean;
+}) {
+  if (labelled)
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={count ? `Filters, ${count} applied` : "Filters"}
+        className={`hit-area state-layer inline-flex h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold ${count ? "bg-ink text-ink-foreground" : "bg-card text-foreground"}`}
+      >
+        <SlidersHorizontal size={iconSize.sm} aria-hidden />
+        {count ? `Filters · ${count}` : "Filters"}
+      </button>
+    );
   return (
     <button
       type="button"
       aria-label={count ? `Filters, ${count} applied` : "Filters"}
       onClick={onClick}
-      className={`hit-area relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${count ? "border-foreground bg-ink text-background" : "border-border bg-card"}`}
+      className={`hit-area relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${count ? "bg-ink text-background" : "text-foreground"}`}
     >
       <SlidersHorizontal size={iconSize.sm} aria-hidden />
       {count ? (

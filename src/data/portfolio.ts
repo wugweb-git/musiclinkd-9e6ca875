@@ -145,19 +145,6 @@ export const creditRoles = [
   "Director",
 ];
 
-export const genres = [
-  "Indie",
-  "Hip-Hop",
-  "Film",
-  "Pop",
-  "Classical",
-  "Electronic",
-  "Rock",
-  "Devotional",
-  "Fusion",
-  "Jazz",
-];
-
 export const visibilityOptions: { value: Visibility; label: string; blurb: string }[] = [
   { value: "public", label: "Public", blurb: "Visible on your public profile." },
   { value: "members", label: "MusicLinkd members", blurb: "Visible to signed-in members." },

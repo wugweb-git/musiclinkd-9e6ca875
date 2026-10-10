@@ -159,7 +159,7 @@ export function WorkLinkRow({
 }) {
   const t = workType(work.kind);
   return (
-    <div className="flex items-center overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs">
+    <div className="flex items-center overflow-hidden rounded-lg border border-border/80 bg-card">
       <Link
         to="/portfolio/$id"
         params={{ id: work.id }}
@@ -364,7 +364,7 @@ export function WorkCard({
         onClick={() => setOpen(true)}
         className="state-layer block min-w-0 text-left"
       >
-        <span className="relative block aspect-square overflow-hidden rounded-md shadow-xs">
+        <span className="relative block aspect-square overflow-hidden rounded-md">
           {cover ? (
             <img
               src={sized(cover, { width: 412 })}
@@ -389,7 +389,7 @@ export function WorkCard({
     <div
       className={cn(
         "overflow-hidden rounded-lg bg-card",
-        open ? "shadow-elevation-2 ring-1 ring-border" : "",
+        open ? "ring-1 ring-border" : "",
         layout === "portrait" && "col-span-full",
       )}
     >

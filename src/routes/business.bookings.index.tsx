@@ -86,6 +86,7 @@ function ProviderBookingsContent() {
   return (
     <Screen>
       <TopBar
+        back="history"
         title="Provider workspace"
         subtitle="Requests and sessions for the spaces you run"
         right={

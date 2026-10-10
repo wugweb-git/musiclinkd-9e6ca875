@@ -1,10 +1,8 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-/**
- * Rentals near you are Market's Nearby view. Market is one marketplace (owner, 22 Sep 2026); this path stays so links keep working.
- */
+// Rentals and listings are one page (owner, 5 Oct); saved rentals live in Bookmarks.
 export const Route = createFileRoute("/marketplace/rent/nearby")({
   beforeLoad: () => {
-    throw redirect({ to: "/marketplace", search: { view: "Nearby" }, replace: true });
+    throw redirect({ to: "/marketplace/nearby", replace: true });
   },
 });

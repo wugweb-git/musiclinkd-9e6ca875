@@ -84,8 +84,6 @@ export type ServiceItem = {
   turnaround?: string | undefined;
   mode?: "Remote" | "In person" | "Remote · In person" | undefined;
   availability?: string | undefined;
-  /** service_categories slugs, most specific first; the card names the first. */
-  categories?: string[] | undefined;
   /** What the client gets, as the owner listed it. */
   deliverables?: string[] | undefined;
   /** A studio's service: the amenities and equipment it uses, by name. */
@@ -147,7 +145,6 @@ export type TalentProfile = {
   languages: string[];
   influences: string[];
   specialisations: string[];
-  professional: { label: string; value: string | PriceParts }[];
   stats: { connections: string; followers: string; plays: string; credits: number };
   rating: number;
   reviewCount: number;
@@ -211,7 +208,6 @@ export function emptySections(): Omit<
     languages: [],
     influences: [],
     specialisations: [],
-    professional: [],
     stats: { connections: "—", followers: "—", plays: "—", credits: 0 },
     rating: 0,
     reviewCount: 0,
@@ -269,13 +265,6 @@ const rahul: TalentProfile = {
   languages: ["English", "Tamil", "Kannada", "Hindi"],
   influences: ["Jai Paul", "Sneha Khanwalkar", "Jamie xx", "A. R. Rahman"],
   specialisations: ["Vocal production", "Analog summing", "Hybrid mixing", "Stem mastering prep"],
-  professional: [
-    { label: "DAW", value: "Ableton Live · Pro Tools" },
-    { label: "Production styles", value: "Hybrid analog, live tracking" },
-    { label: "Monitoring", value: "Focal Shape 65 · Neumann KH 80" },
-    { label: "Turnaround", value: "3–5 working days per mix" },
-    { label: "Session experience", value: "180+ released tracks" },
-  ],
   stats: { connections: "1,284", followers: "8.1k", plays: "2.4M", credits: 67 },
   rating: 4.8,
   reviewCount: 46,
@@ -752,13 +741,6 @@ const ananya: TalentProfile = {
   languages: ["Hindi", "Marathi", "English", "Punjabi"],
   influences: ["Shreya Ghoshal", "Kavita Krishnamurthy", "Norah Jones"],
   specialisations: ["Playback", "Vocal stacking", "Live scratch sessions"],
-  professional: [
-    { label: "Vocal type", value: "Mezzo-soprano" },
-    { label: "Vocal range", value: "F3 — D6" },
-    { label: "Booth", value: "Treated home booth · TLM 103 · Apollo Twin X" },
-    { label: "Turnaround", value: "48 hours for stems" },
-    { label: "Performance", value: "60+ live shows, 42 credited tracks" },
-  ],
   stats: { connections: "2,140", followers: "12.4k", plays: "5.8M", credits: 42 },
   rating: 4.9,
   reviewCount: 38,

@@ -5,6 +5,7 @@ import {
   useRouterState,
   type LinkProps,
 } from "@tanstack/react-router";
+import { createPortal } from "react-dom";
 import { haptic } from "@/lib/haptics";
 import {
   useEffect,
@@ -24,7 +25,11 @@ import {
   User,
   ArrowLeft,
   X,
+  Briefcase,
+  Sparkles,
+  MapPin,
   Plus,
+  Minus,
   Search,
   Grid2x2,
   ArrowLeftRight,
@@ -194,6 +199,7 @@ const menuGroups: {
       { to: "/marketplace", label: "Market", icon: ShoppingBag },
       { to: "/profile", label: "Profile", icon: User },
       { to: "/notifications", label: "Notifications", icon: Bell },
+      { to: "/search", label: "Search", icon: Search },
     ],
   },
   {
@@ -202,16 +208,26 @@ const menuGroups: {
       { to: "/portfolio", label: "Portfolio", icon: FolderKanban },
       { to: "/services", label: "Services", icon: BriefcaseBusiness },
       { to: "/opportunities", label: "Opportunities", icon: Megaphone },
+      { to: "/opportunities/mine", label: "My opportunities", icon: Megaphone },
+      { to: "/opportunities/applications", label: "Applications", icon: Briefcase },
+      { to: "/discover/match", label: "Find a match", icon: Sparkles },
       { to: "/collab", label: "Collaborations", icon: Handshake },
+      { to: "/collab/new", label: "New collaboration", icon: Handshake },
       { to: "/bands", label: "Bands", icon: UsersRound },
       { to: "/reviews", label: "Reviews", icon: Star },
     ],
   },
   {
-    title: "Bookings & rentals",
+    title: "Bookings",
+    items: [{ to: "/bookings", label: "Bookings", icon: CalendarCheck }],
+  },
+  {
+    // Every Market page that had no way in (owner, 5 Oct: route everything via the menu).
+    title: "Market",
     items: [
-      { to: "/bookings", label: "Bookings", icon: CalendarCheck },
-      { to: "/marketplace", search: { view: "Rent" }, label: "Rentals", icon: Package },
+      { to: "/marketplace/sell", label: "Sell or rent", icon: Package },
+      { to: "/marketplace/mine", label: "My listings", icon: Package },
+      { to: "/marketplace/nearby", label: "Nearby", icon: MapPin },
     ],
   },
   {
@@ -225,8 +241,8 @@ const menuGroups: {
     ],
   },
   {
-    title: "Bookmarked",
-    items: [{ to: "/saved", label: "Saved & recently viewed", icon: Bookmark }],
+    title: "Bookmarks",
+    items: [{ to: "/saved", label: "Bookmarks", icon: Bookmark }],
   },
 ];
 
@@ -257,6 +273,20 @@ function createFor(
   return null;
 }
 
+/** Put a page's control (its Filters) in the dock above the bottom nav, beside the + pill. */
+export function NavDock({ children }: { children: ReactNode }) {
+  const [el, setEl] = useState<HTMLElement | null>(null);
+  useEffect(() => setEl(document.getElementById("nav-dock")), []);
+  return el
+    ? createPortal(
+        <span className="pointer-events-auto rounded-full bg-card shadow-elevation-3 ring-1 ring-border">
+          {children}
+        </span>,
+        el,
+      )
+    : null;
+}
+
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const create = createFor(path.replace(/\/$/, "") || "/");
@@ -269,10 +299,10 @@ export function BottomNav() {
       {/* A floating pill (owner's ref img 1, plan §7.1): side margins, rounded ends, a soft
           shadow, the active tab as an inner pill; clear of the gesture bar. */}
       <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        {create ? (
-          // The tab's main create action as a labelled pill above the nav (owner, 5 Oct: it
-          // changes per tab), not an icon-only round button.
-          <div className="mb-2 flex justify-center">
+        {/* The dock above the nav: the page's create pill and, beside it, whatever the page puts
+            here with <NavDock> (its Filters; owner, 5 Oct). Empty, it takes no space. */}
+        <div id="nav-dock" className="mb-2 flex justify-center gap-2 empty:hidden">
+          {create ? (
             <Link
               to={create.to}
               {...(create.search ? { search: create.search } : {})}
@@ -281,8 +311,8 @@ export function BottomNav() {
               <Plus size={iconSize.sm} aria-hidden />
               {create.label}
             </Link>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
         <ul className="pointer-events-auto flex items-stretch justify-between gap-1 rounded-full bg-card/95 px-2 shadow-elevation-3 ring-1 ring-border backdrop-blur">
           {navItems.map((item) => {
             const active = path === item.to || path.startsWith(`${item.to}/`);
@@ -405,17 +435,33 @@ export function TopBar({
   title: string;
   /** Not shown: top bars carry the title only (owner rule, 5 Oct). Kept so callers still compile. */
   subtitle?: string;
+  /** A path, or "history" to go back to wherever you came from (Home when there is nothing). */
   back?: string;
   right?: ReactNode;
 }) {
   const chrome = useScrollChrome();
+  const goBack = () => {
+    if (window.history.length > 1) window.history.back();
+    else window.location.assign("/home");
+  };
   return (
     <header
       className={`pt-safe sticky top-0 z-bar flex items-center gap-3 border-b border-border/70 bg-card/92 px-5 backdrop-blur transition-[transform,padding] duration-200 ease-standard ${
         chrome.compact ? "pb-2" : "pb-3.5"
       } ${chrome.hidden ? "-translate-y-full" : ""}`}
     >
-      {back ? (
+      {back === "history" ? (
+        <button
+          type="button"
+          onClick={goBack}
+          // -ml-2.5: the 40px tap area is centred on a 20px arrow, so without it the arrow sat
+          // 10px further in than the content below and the bar looked shifted right.
+          className="hit-area -ml-2.5 flex h-10 w-10 shrink-0 items-center justify-center transition-transform duration-200 ease-standard active:scale-97"
+          aria-label="Back"
+        >
+          <ArrowLeft size={iconSize.md} aria-hidden />
+        </button>
+      ) : back ? (
         <Link
           to={back}
           // -ml-2.5: the 40px tap area is centred on a 20px arrow, so without it the arrow sat
@@ -552,8 +598,17 @@ export function Chip({
   media,
   disabled = false,
   atLimit = false,
+  variant = "default",
+  size = "md",
 }: {
   children: ReactNode;
+  /**
+   * `select`: the onboarding pick (owner refs, 6 Oct 2026) — dashed with a + when off, solid ink
+   * with a − when on.
+   */
+  variant?: "default" | "select" | undefined;
+  /** `lg`: big words, for a choice whose label is the point (languages in their own script). */
+  size?: "md" | "lg" | undefined;
   active?: boolean;
   onClick?: () => void;
   /** A leading circle: an icon element, an image URL, or nothing. */
@@ -588,13 +643,17 @@ export function Chip({
       disabled={disabled}
       aria-disabled={atLimit || undefined}
       aria-pressed={active === undefined ? undefined : active}
-      className={`state-layer hit-area inline-flex min-h-control-sm shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
+      className={`state-layer hit-area inline-flex shrink-0 items-center gap-2 rounded-full ${
+        size === "lg" ? "min-h-12 text-2 font-bold" : "min-h-control-sm text-sm font-medium"
+      } ${variant === "select" && !active ? "border-[1.5px] border-dashed" : "border"} transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
         atLimit ? "border-border/50" : ""
       } ${refused ? "animate-shake" : picked && active ? "animate-select" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
         active
           ? "border-transparent bg-selected-bg text-selected-text"
-          : `border-border bg-card ${atLimit ? "text-muted-foreground" : "text-foreground"}`
-      }`}
+          : variant === "select"
+            ? `bg-transparent ${atLimit ? "border-muted-foreground/40 text-muted-foreground" : "border-foreground/60 text-foreground"}`
+            : `border-border bg-card ${atLimit ? "text-muted-foreground" : "text-foreground"}`
+      } ${variant === "select" && !media ? "pl-4 pr-3" : ""}`}
     >
       {media ? (
         <span
@@ -611,6 +670,13 @@ export function Chip({
         </span>
       ) : null}
       {children}
+      {variant === "select" ? (
+        active ? (
+          <Minus size={iconSize.xs} strokeWidth={3} aria-hidden className="animate-pop" />
+        ) : (
+          <Plus size={iconSize.xs} strokeWidth={3} aria-hidden />
+        )
+      ) : null}
     </button>
   );
 }
@@ -715,10 +781,12 @@ function useRipple() {
 
 function BtnContent({
   icon,
+  iconEnd,
   loading,
   children,
 }: {
   icon?: ReactNode;
+  iconEnd?: ReactNode;
   loading?: boolean;
   children: ReactNode;
 }) {
@@ -732,6 +800,11 @@ function BtnContent({
         </span>
       ) : null}
       {children}
+      {iconEnd && !loading ? (
+        <span aria-hidden className="inline-flex shrink-0">
+          {iconEnd}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -739,6 +812,7 @@ function BtnContent({
 export function Btn({
   children,
   icon,
+  iconEnd,
   variant = "primary",
   className = "",
   onClick,
@@ -750,6 +824,8 @@ export function Btn({
   children: ReactNode;
   /** Leading icon. Decorative: the text is the button's name. */
   icon?: ReactNode;
+  /** Trailing icon, e.g. the arrow on Continue. Decorative. */
+  iconEnd?: ReactNode;
   variant?: BtnVariant;
   className?: string;
   onClick?: () => void;
@@ -772,7 +848,7 @@ export function Btn({
       className={btnClass(variant, className)}
     >
       {ripple.layer}
-      <BtnContent icon={icon} loading={loading}>
+      <BtnContent icon={icon} iconEnd={iconEnd} loading={loading}>
         {children}
       </BtnContent>
     </button>
@@ -812,9 +888,11 @@ export const BtnLink = createLink(BtnAnchor);
 
 type IconBtnVariant = "outline" | "ink" | "ghost" | "plain";
 const iconBtnVariants: Record<IconBtnVariant, string> = {
-  outline: "border border-border bg-card text-foreground",
+  // No circle behind icons (owner, 5 Oct): "outline" is a plain icon now, on every screen. The
+  // 48dp tap area is unchanged. "ghost" is the soft fill that marks a selected toggle.
+  outline: "text-foreground",
   ink: "bg-ink text-ink-foreground",
-  ghost: "bg-subtle text-foreground",
+  ghost: "bg-ink/5 text-foreground",
   plain: "text-foreground",
 };
 function iconBtnClass(variant: IconBtnVariant, className: string) {
