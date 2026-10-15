@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Security — structured data escaped; portfolio links web-only (15 Oct)
+
+- Profile, band and listing pages write their search-engine data through `jsonLd` (`lib/site.ts`),
+  which escapes `<`: a name or bio containing `</script>` can no longer run code for visitors.
+- A portfolio item's "Open media link" shows only for http(s) addresses.
+
 ### Fixed — CI green again (10 Oct)
 
 - `bun.lock` matches `package.json` (@lovable.dev/vite-tanstack-config 2.25.3); CI's frozen install

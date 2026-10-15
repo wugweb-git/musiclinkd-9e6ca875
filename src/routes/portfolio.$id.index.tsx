@@ -192,7 +192,10 @@ function WorkDetail() {
             ) : null}
 
             {/* Neither audio nor video (a credit, a live date): the link, opened elsewhere. */}
+            {/* Only web links: media_url is checked by the form alone, so a javascript: URL never
+                becomes a link here. */}
             {item.media_url &&
+            /^https?:\/\//i.test(item.media_url) &&
             workType(item.kind).media !== "audio" &&
             workType(item.kind).media !== "video" ? (
               <a

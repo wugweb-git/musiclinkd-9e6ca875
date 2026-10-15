@@ -57,6 +57,7 @@ import { countSellerListings } from "@/lib/catalog.functions";
 import { inr, priceText } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
+import { jsonLd } from "@/lib/site";
 
 export const Route = createFileRoute("/marketplace/l/$id")({
   // The id is a database listing slug; related listings are the other listings in its category.
@@ -235,7 +236,7 @@ function ListingDetail() {
     <Screen className="pb-28">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(productStructuredData) }}
       />
       {/* Media runs under the top bar: full width, as tall as the screen allows (a square on a
           phone, at most 62% of the viewport). Back, share and save float over it. */}

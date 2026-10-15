@@ -5,7 +5,7 @@ import { LoadError } from "@/components/ml/kit";
 import { BusinessProfileExperience } from "@/components/ml/business-profile";
 import { TalentProfileExperience } from "@/components/ml/talent-profile";
 import { businessViewFromRecord } from "@/lib/business-view";
-import { profileUrl } from "@/lib/site";
+import { profileUrl, jsonLd } from "@/lib/site";
 import {
   getPublicProfile,
   getPublicProfileSections,
@@ -175,7 +175,7 @@ export function PublicProfileScreen({
       {structuredData ? (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }}
         />
       ) : null}
       {view ? (
