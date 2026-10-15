@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — no greyed-out Continue on Post an opportunity and Add a service (15 Oct)
+
+- Continue and Publish stay pressable; pressed with something missing they show "Add the required
+  details to continue" and name what is missing, as the setup screens do.
+
 ### Security — structured data escaped; portfolio links web-only (15 Oct)
 
 - Profile, band and listing pages write their search-engine data through `jsonLd` (`lib/site.ts`),

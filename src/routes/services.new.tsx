@@ -33,6 +33,7 @@ import type { ServiceItem } from "@/data/profile";
 import { useAuth } from "@/hooks/use-auth";
 import { useRefreshServices, useService, useServiceOptions } from "@/hooks/use-services";
 import { haptic } from "@/lib/haptics";
+import { AuthNotice } from "@/components/ml/auth";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
@@ -154,6 +155,7 @@ function NewService() {
   const [price, setPrice] = useState("");
   const [turnaround, setTurnaround] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
+  const [missingOn, setMissingOn] = useState<Step | null>(null);
   const [busy, setBusy] = useState<"draft" | "active" | null>(null);
   const [published, setPublished] = useState(false);
   const [filled, setFilled] = useState<string | null>(null);
@@ -249,16 +251,29 @@ function NewService() {
     rupees && Number.isFinite(Number(rupees)) ? Math.round(Number(rupees) * 100) : null;
   const previewPrice = priceParts(pricePaise, null);
 
-  // Each step's Continue waits for that step's own fields.
-  const ready =
+  // Continue and Publish are never greyed out (owner, 15 Oct 2026): pressed with a field missing,
+  // they name what's missing, the same as the setup screens.
+  const missingFields =
     step === "details"
-      ? Boolean(
-          title.trim() &&
-          description.trim() &&
-          deliverables.length &&
-          (isBusiness || band || exampleIds.length),
-        )
-      : Boolean((pricePaise ?? 0) > 0 && turnaround && mode);
+      ? [
+          !title.trim() && "a title",
+          !description.trim() && "a description",
+          !deliverables.length && "what the client gets",
+          !(isBusiness || band || exampleIds.length) && "an example of your work",
+        ]
+      : [
+          !((pricePaise ?? 0) > 0) && "a starting price",
+          !turnaround && "a turnaround",
+          !mode && "where you work",
+        ];
+  const missing = missingFields.filter((f): f is string => Boolean(f));
+  const blocked = () => {
+    if (!missing.length) return false;
+    setMissingOn(step);
+    haptic("error");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return true;
+  };
 
   async function submit(status: "draft" | "active") {
     if (!signedIn) {
@@ -331,6 +346,14 @@ function NewService() {
 
       <div className="px-5 pt-4">
         <StepProgress total={steps.length} current={idx} />
+
+        {missing.length && missingOn === step ? (
+          <div className="mt-4">
+            <AuthNotice title="Add the required details to continue">
+              Add {missing.join(", ")}.
+            </AuthNotice>
+          </div>
+        ) : null}
 
         {optionsError ? (
           <StateCard
@@ -500,9 +523,12 @@ function NewService() {
           last={step === "price"}
           onCancel={() => void navigate({ to: source ? `/services/${source.id}` : "/services" })}
           onBack={() => void go(steps[idx - 1]!)}
-          onNext={() => (step === "price" ? void submit("active") : void go(steps[idx + 1]!))}
+          onNext={() => {
+            if (blocked()) return;
+            if (step === "price") void submit("active");
+            else void go(steps[idx + 1]!);
+          }}
           onSaveDraft={() => void submit("draft")}
-          disabled={!ready}
           busy={busy !== null}
           publishLabel={source ? "Save changes" : "Publish"}
         />
