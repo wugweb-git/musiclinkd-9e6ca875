@@ -36,3 +36,12 @@ export function profileUrl(username: string) {
 export function codeUrl(code: string) {
   return shareUrl(`/q/${code}`);
 }
+
+/**
+ * Structured data for a `<script type="application/ld+json">` tag. JSON.stringify leaves `<` as
+ * is, so a name or bio containing `</script>` would close the tag and run what follows for every
+ * visitor; `<` is the same character to a JSON parser and can't end the tag.
+ */
+export function jsonLd(data: unknown) {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { shareUrl } from "@/lib/site";
+import { shareUrl, jsonLd } from "@/lib/site";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import {
@@ -194,7 +194,7 @@ function BandProfile() {
       {bandStructuredData ? (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(bandStructuredData) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(bandStructuredData) }}
         />
       ) : null}
       {/* The profiles' header: cover at the top, the band's square picture over it, the name once. */}
