@@ -9,6 +9,7 @@ import { Card, StatusPill } from "@/components/ml/kit";
 import { createOpportunity } from "@/lib/applications.functions";
 import { draftHiringCopy } from "@/lib/hiring-copy.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { AuthNotice } from "@/components/ml/auth";
 import { CityField, Field as SharedField, inputClass } from "@/components/ml/listing-form";
 import { iconSize } from "@/lib/tokens";
 import type { ReactNode } from "react";
@@ -145,12 +146,31 @@ function CreateOpportunity() {
     void nav({ to: "/opportunities/new", search: { step: s } });
   };
 
-  const canContinue =
-    step === "basics"
-      ? title.trim().length > 4
-      : step === "location"
-        ? city.trim().length > 1
-        : true;
+  // Continue and Publish are never greyed out: pressed with something missing, they say what
+  // (owner, 15 Oct 2026; the same as the setup screens).
+  const missing =
+    step === "basics" && title.trim().length <= 4
+      ? "Say what you need in a few words."
+      : step === "location" && city.trim().length <= 1
+        ? "Add the city."
+        : step === "preview" && !signedIn
+          ? "Sign in to publish."
+          : step === "preview" && !approvedCopy.trim()
+            ? "Add the description applicants will read."
+            : step === "preview" && !reviewed
+              ? "Tick that you have reviewed the copy."
+              : null;
+  const [missingOn, setMissingOn] = useState<Step | null>(null);
+  const next = () => {
+    if (missing) {
+      setMissingOn(step);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    setMissingOn(null);
+    if (step === "preview") publish.mutate();
+    else go(order[idx + 1]!);
+  };
 
   return (
     <Screen>
@@ -168,6 +188,10 @@ function CreateOpportunity() {
             />
           ))}
         </div>
+
+        {missing && missingOn === step ? (
+          <AuthNotice title="Add the required details to continue">{missing}</AuthNotice>
+        ) : null}
 
         {step === "basics" ? (
           <>
@@ -417,12 +441,8 @@ function CreateOpportunity() {
                 <ArrowRight size={iconSize.sm} aria-hidden />
               )
             }
-            disabled={
-              !canContinue ||
-              (step === "preview" && (!signedIn || !reviewed || !approvedCopy.trim()))
-            }
             loading={publish.isPending}
-            onClick={() => (step === "preview" ? publish.mutate() : go(order[idx + 1]!))}
+            onClick={next}
           >
             {step === "preview" ? "Publish" : "Continue"}
           </Btn>

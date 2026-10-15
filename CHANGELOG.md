@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — no greyed-out Continue on Post an opportunity and Add a service (15 Oct)
+
+- Continue and Publish stay pressable; pressed with something missing they show "Add the required
+  details to continue" and name what is missing, as the setup screens do.
+
 ### Fixed — CI green again (10 Oct)
 
 - `bun.lock` matches `package.json` (@lovable.dev/vite-tanstack-config 2.25.3); CI's frozen install
