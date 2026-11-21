@@ -135,6 +135,11 @@ export type HelpArticle = {
 export const getHelpArticle = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }): Promise<HelpArticle | null> => {
+    // 1. Try live WordPress REST API first
+    const wpArticle = await fetchWpHelpArticle(data.slug);
+    if (wpArticle) return wpArticle;
+
+    // 2. Fallback to Supabase
     const client = db(await anonClient());
     const { data: row, error } = await client
       .from("cms_pages")
@@ -295,6 +300,112 @@ function lastUpdatedLabel(iso: string) {
   return `Last updated ${d.getUTCDate()} ${MONTHS_LONG[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
+const WP_API_BASE = "https://musiclinkd.com/wp-json/wp/v2/pages";
+
+const SLUG_MAP: Record<string, string> = {
+  "legal-privacy": "privacy",
+  "legal-terms": "terms",
+  "legal-cookies": "cookies",
+};
+
+/** Parses WordPress rendered HTML into native app ContentBlocks adhering to system tokens */
+function parseWpHtmlToBlocks(html: string): ContentBlock[] {
+  let content = html.replace(/<div class="[^"]*wp-block-button[^"]*"[\s\S]*?<\/div>\s*<\/div>/gi, "");
+  content = content.replace(/<h1[^>]*>[\s\S]*?<\/h1>/gi, "");
+  content = content.replace(/<p[^>]*>[^<]*(?:Trust|Studio|Sound|Safety|Profile|Booking|Release)\s*·[\s\S]*?<\/p>/gi, "");
+  content = content.replace(/<p[^>]*>[^<]*Verified Guide[\s\S]*?<\/p>/gi, "");
+
+  const clean = content
+    .replace(/&#8217;/g, "'")
+    .replace(/&#8220;/g, '"')
+    .replace(/&#8221;/g, '"')
+    .replace(/&#8212;/g, "—")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&nbsp;/g, " ");
+
+  const blocks: ContentBlock[] = [];
+  const regex = /<(h[23]|p|li|blockquote)[^>]*>(.*?)<\/\1>/gis;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(clean)) !== null) {
+    const rawTag = match[1];
+    const rawContent = match[2];
+    if (!rawTag || !rawContent) continue;
+    const tag = rawTag.toLowerCase();
+    const text = rawContent.replace(/<[^>]+>/g, "").trim();
+    if (!text || text.includes("Back to Help Centre") || text.includes("Was this guide helpful?")) continue;
+    if (tag.startsWith("h")) {
+      blocks.push({ type: "heading", text });
+    } else if (tag === "blockquote" || text.startsWith("💡") || text.toLowerCase().startsWith("short version:") || text.toLowerCase().startsWith("pro tip:")) {
+      blocks.push({ type: "callout", text });
+    } else if (tag === "p") {
+      blocks.push({ type: "para", text });
+    } else if (tag === "li") {
+      const last = blocks[blocks.length - 1];
+      if (last && last.type === "list") {
+        last.items.push(text);
+      } else {
+        blocks.push({ type: "list", items: [text] });
+      }
+    }
+  }
+  return blocks;
+}
+
+async function fetchWpSitePage(slug: string): Promise<SitePage | null> {
+  const wpSlug = SLUG_MAP[slug] ?? slug;
+  try {
+    const res = await fetch(`${WP_API_BASE}?slug=${encodeURIComponent(wpSlug)}`);
+    if (!res.ok) return null;
+    const pages = await res.json();
+    if (!Array.isArray(pages) || !pages.length) return null;
+    const p = pages[0];
+    const rawSummary = p.excerpt?.rendered?.replace(/<[^>]+>/g, "").trim() ?? "";
+    const blocks = parseWpHtmlToBlocks(p.content?.rendered ?? "");
+    if (!blocks.length) return null;
+    return {
+      slug,
+      title: p.title?.rendered ? p.title.rendered.replace(/&#8217;/g, "'").replace(/&amp;/g, "&") : "MusicLinkd",
+      summary: rawSummary,
+      seoDescription: rawSummary,
+      updated: lastUpdatedLabel(p.modified),
+      blocks,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchWpHelpArticle(slug: string): Promise<HelpArticle | null> {
+  try {
+    const res = await fetch(`${WP_API_BASE}?slug=${encodeURIComponent(slug)}`);
+    if (!res.ok) return null;
+    const pages = await res.json();
+    if (!Array.isArray(pages) || !pages.length) return null;
+    const p = pages[0];
+    const blocks = parseWpHtmlToBlocks(p.content?.rendered ?? "");
+    if (!blocks.length) return null;
+    return {
+      page: {
+        slug,
+        title: p.title?.rendered ? p.title.rendered.replace(/&#8217;/g, "'").replace(/&amp;/g, "&") : slug,
+        summary: p.excerpt?.rendered?.replace(/<[^>]+>/g, "").trim() ?? "",
+        category: "guide",
+        readTime: "4 min read",
+        updated: updatedLabel(p.modified),
+        kind: "guide",
+        blocks,
+        related: [],
+        popularRank: null,
+      },
+      categoryLabel: "Help Centre",
+      related: [],
+    };
+  } catch {
+    return null;
+  }
+}
+
 /** `content` split on blank lines, one paragraph each. */
 function contentBlocks(content: string | null): ContentBlock[] {
   return (content ?? "")
@@ -308,6 +419,11 @@ function contentBlocks(content: string | null): ContentBlock[] {
 export const getSitePage = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }): Promise<SitePage | null> => {
+    // 1. Try live WordPress REST API first
+    const wpPage = await fetchWpSitePage(data.slug);
+    if (wpPage) return wpPage;
+
+    // 2. Fallback to Supabase
     const { data: row, error } = await db(await anonClient())
       .from("cms_pages")
       .select("slug, title, summary, content, seo_description, updated_at, body")
