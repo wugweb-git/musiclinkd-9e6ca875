@@ -17,13 +17,8 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Dialog, EmptyState, Loading, StepProgress, StateCard } from "@/components/ml/kit";
 
 import { ListingStepFooter } from "@/components/ml/market";
-import {
-  Field,
-  inputClass,
-  SheetMultiSelect,
-  SheetSelect,
-  TagListField,
-} from "@/components/ml/listing-form";
+import { Field, SheetMultiSelect, SheetSelect, TagListField } from "@/components/ml/listing-form";
+import { inputClass } from "@/lib/listing-draft";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { iconSize } from "@/lib/tokens";
 import { amenityIcon } from "@/lib/amenity-icons";
@@ -37,7 +32,7 @@ import { AuthNotice } from "@/components/ml/auth";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
-import { useMyBookableEquipment, useMyBookablePhotos } from "@/components/ml/bookable-setup";
+import { useMyBookableEquipment, useMyBookablePhotos } from "@/hooks/use-bookable";
 import { sized } from "@/lib/image-url";
 
 /*

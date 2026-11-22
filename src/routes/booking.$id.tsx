@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { Btn } from "@/components/ml/ui";
 import { BookingDraftProvider } from "@/components/ml/booking-context";
 import { getBookableBySlug } from "@/lib/catalog.functions";
 import { getBookableCalendar } from "@/lib/bookable-calendar.functions";
@@ -38,13 +39,9 @@ function BookingLoadError({ reset }: { reset: () => void }) {
     <div role="alert" className="mx-auto max-w-app px-5 py-10 text-sm text-foreground">
       <h1 className="text-3 font-semibold">Booking could not load</h1>
       <p className="mt-2 text-muted-foreground">Check your connection and try again.</p>
-      <button
-        type="button"
-        onClick={reset}
-        className="state-layer mt-5 min-h-touch rounded-lg bg-ink px-5 font-semibold text-ink-foreground"
-      >
+      <Btn variant="primary" onClick={reset} className="mt-5">
         Retry
-      </button>
+      </Btn>
     </div>
   );
 }

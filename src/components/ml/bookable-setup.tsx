@@ -43,23 +43,15 @@ import { sized } from "@/lib/image-url";
  *     business_policies taxonomy.
  */
 
-export const PHOTOS_KEY = ["studio-photos", "mine"];
-export const EQUIPMENT_KEY = ["studio-equipment", "mine"];
+import {
+  PHOTOS_KEY,
+  EQUIPMENT_KEY,
+  useMyBookablePhotos,
+  useMyBookableEquipment,
+} from "@/hooks/use-bookable";
 
 const inputCls =
   "min-h-control w-full rounded-lg border border-input bg-card px-4 text-sm outline-none field-focus";
-
-/** The business's amenities and photos. Off for accounts that aren't a business. */
-export function useMyBookablePhotos(enabled = true) {
-  const load = useServerFn(listMyBookablePhotos);
-  return useQuery({ queryKey: PHOTOS_KEY, queryFn: () => load(), enabled, retry: false });
-}
-
-/** The business's equipment list. Off for accounts that aren't a business. */
-export function useMyBookableEquipment(enabled = true) {
-  const load = useServerFn(getMyBookableEquipment);
-  return useQuery({ queryKey: EQUIPMENT_KEY, queryFn: () => load(), enabled, retry: false });
-}
 
 /* ------------------------------------------------------------------ */
 /* Amenities                                                            */

@@ -129,13 +129,13 @@ function NotificationsScreen() {
         subtitle={unread ? `${unread} unread` : "Everything that needs you"}
         right={
           unread ? (
-            <button
-              type="button"
+            <Btn
+              variant="outline"
               onClick={() => mark.mutate(undefined)}
-              className="pill bg-background text-muted-foreground"
+              className="text-xs h-8 px-3"
             >
               Mark all read
-            </button>
+            </Btn>
           ) : undefined
         }
       />

@@ -24,7 +24,7 @@ import {
   listingModeLabels,
   readListingDraft,
   type ListingDraft,
-} from "@/components/ml/listing-form";
+} from "@/lib/listing-draft";
 import { deleteListing, listMyManagedListings, type MyListing } from "@/lib/catalog.functions";
 import {
   listMyIncomingRentalRequests,

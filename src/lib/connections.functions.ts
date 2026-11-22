@@ -187,9 +187,7 @@ export const removeConnection = createServerFn({ method: "POST" })
 /** Follow or unfollow, one way, no asking. */
 export const setFollowing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) =>
-    z.object({ profileId: z.string().uuid(), following: z.boolean() }).parse(d),
-  )
+  .validator((d) => z.object({ profileId: z.string().uuid(), following: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
     if (data.following) {
       const { error } = await db(context.supabase)

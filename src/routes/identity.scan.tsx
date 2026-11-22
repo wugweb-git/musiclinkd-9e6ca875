@@ -46,7 +46,7 @@ const cameraAvailable = () =>
   typeof navigator !== "undefined" && Boolean(navigator.mediaDevices?.getUserMedia);
 
 /** A MusicLinkd QR encodes a profile URL (short link /@username or legacy /profile/username) — extract the username. */
-export function usernameFromScan(text: string): string | null {
+function usernameFromScan(text: string): string | null {
   const trimmed = text.trim();
   if (!trimmed) return null;
 

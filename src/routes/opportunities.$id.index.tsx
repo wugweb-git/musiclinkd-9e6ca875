@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { Bookmark, Share2, CalendarDays, MapPin, Wallet, CheckCircle2, Circle } from "lucide-react";
-import { ActionBar, Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
+import { ActionBar, Screen, TopBar, Btn, BtnLink, IconBtn, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import { ApplicantFit, statusTone, useSavedOpportunities } from "@/components/ml/opportunity";
 import { payParts } from "@/data/opportunities";
@@ -96,14 +96,9 @@ function OpportunityDetail() {
         subtitle={o.closesAt}
         back="/opportunities"
         right={
-          <button
-            type="button"
-            onClick={() => setShare(true)}
-            className="hit-area flex h-10 w-10 items-center justify-center rounded-full"
-            aria-label="Share"
-          >
-            <Share2 size={iconSize.sm} />
-          </button>
+          <IconBtn label="Share" onClick={() => setShare(true)}>
+            <Share2 size={iconSize.sm} aria-hidden />
+          </IconBtn>
         }
       />
 
@@ -233,18 +228,19 @@ function OpportunityDetail() {
 
       <ActionBar>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
+          <IconBtn
+            label={saved ? "Bookmarked" : "Bookmark"}
             onClick={() => toggle(o.id)}
-            aria-label={saved ? "Bookmarked" : "Bookmark"}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-background"
+            variant="outline"
+            className="h-12 w-12"
           >
             <Bookmark
               size={iconSize.md}
               className={saved ? "text-ink" : "text-muted-foreground"}
               fill={saved ? "currentColor" : "none"}
+              aria-hidden
             />
-          </button>
+          </IconBtn>
           {applied && applied !== "withdrawn" ? (
             <BtnLink to="/opportunities/applications" className="min-w-0 flex-1 w-full">
               {applied === "pending"

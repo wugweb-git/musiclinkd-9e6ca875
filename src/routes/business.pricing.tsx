@@ -12,7 +12,8 @@ import {
   Loading,
   SegmentedField,
 } from "@/components/ml/kit";
-import { Field, inputClass } from "@/components/ml/listing-form";
+import { Field } from "@/components/ml/ui";
+import { inputClass } from "@/lib/listing-draft";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { StickyBar } from "@/components/ml/booking";
 import { unitLabel } from "@/lib/price";

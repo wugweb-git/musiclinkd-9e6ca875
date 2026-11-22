@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/aria-role -- QrIdentityCard takes musical role prop, not ARIA role */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   QrCode,
@@ -71,11 +72,7 @@ export const ScannerChrome: Story = {
   render: () => (
     <CameraSurface>
       <ScanFrame scanning />
-      <ScannerControls
-        flash={false}
-        onFlash={() => {}}
-        onGallery={() => {}}
-      />
+      <ScannerControls flash={false} onFlash={() => {}} onGallery={() => {}} />
     </CameraSurface>
   ),
 };

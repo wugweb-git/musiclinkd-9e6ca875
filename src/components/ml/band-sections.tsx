@@ -9,13 +9,8 @@ import { Card } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
 import { MediaEmbed } from "@/components/ml/media-embed";
 import { ImagePickButton } from "@/components/ml/profile";
-import {
-  Field,
-  SheetSelect,
-  TagListField,
-  inputClass,
-  videoProblem,
-} from "@/components/ml/listing-form";
+import { Field, SheetSelect, TagListField } from "@/components/ml/listing-form";
+import { inputClass, videoProblem } from "@/lib/listing-draft";
 import { riderLine, type BandLiveVideoView } from "@/lib/band-view";
 import { GalleryEditor, type GallerySource } from "@/components/ml/gallery";
 import {

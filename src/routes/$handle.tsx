@@ -1,10 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import {
-  PublicProfileError,
-  PublicProfileScreen,
-  loadPublicProfile,
-  publicProfileHead,
-} from "@/components/ml/public-profile";
+import { PublicProfileError, PublicProfileScreen } from "@/components/ml/public-profile";
+import { loadPublicProfile, publicProfileHead } from "@/lib/public-profile";
 
 /*
  * musiclinkd.com/@username: every profile's short link, talent and business alike (owner, 22 Sep

@@ -82,7 +82,9 @@ function Resume() {
             >
               <div
                 className="h-full rounded-full bg-foreground transition-all duration-300"
-                style={{ width: `${Math.round((done / Math.max(1, list.length)) * 100)}%` }} /* token-drift-allow: dynamic progress width */
+                style={{
+                  width: `${Math.round((done / Math.max(1, list.length)) * 100)}%`,
+                }} /* token-drift-allow: dynamic progress width */
               />
             </div>
           </div>

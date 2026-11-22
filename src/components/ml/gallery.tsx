@@ -268,7 +268,10 @@ function SortablePhoto({
   return (
     <div
       ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition }} /* token-drift-allow: dnd-kit transform */
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+      }} /* token-drift-allow: dnd-kit transform */
       className={`relative touch-manipulation ${isDragging ? "z-10 opacity-80" : ""}`}
     >
       {/* A tap opens the photos; a hold (or space, then the arrow keys) moves this one. */}

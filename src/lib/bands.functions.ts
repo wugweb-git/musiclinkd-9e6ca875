@@ -345,9 +345,7 @@ export const listBandGallery = createServerFn({ method: "GET" })
 /** Records a photo a manager has just uploaded to their gallery folder, at the end. */
 export const addBandGalleryPhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) =>
-    z.object({ id: z.string().uuid(), url: z.string().url().max(1000) }).parse(d),
-  )
+  .validator((d) => z.object({ id: z.string().uuid(), url: z.string().url().max(1000) }).parse(d))
   .handler(async ({ context, data }): Promise<GalleryPhoto> => {
     const client = db(context.supabase);
     if (!data.url.startsWith("https://") || !galleryPath(data.url, context.userId)) {

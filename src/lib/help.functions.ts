@@ -191,9 +191,7 @@ export const getMyHelpFeedback = createServerFn({ method: "GET" })
 /** Records (or changes) the signed-in person's answer for one guide. */
 export const giveHelpFeedback = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) =>
-    z.object({ slug: z.string().min(1).max(120), helpful: z.boolean() }).parse(d),
-  )
+  .validator((d) => z.object({ slug: z.string().min(1).max(120), helpful: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("help_feedback")

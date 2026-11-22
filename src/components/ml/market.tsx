@@ -54,8 +54,8 @@ import {
   DrawerSearch,
   DrawerSearchButton,
   SheetSectionHeading,
-  matching,
 } from "./drawer-list";
+import { matching } from "@/lib/options";
 import {
   applyMarketFilter,
   conditionOptions,
@@ -316,6 +316,7 @@ export function ProductCard({
         <div className="relative aspect-square overflow-hidden rounded-sm bg-subtle">
           {item.photos.length ? (
             <div
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- axe scrollable-region-focusable requires keyboard focus on scrollable container
               tabIndex={0}
               role="region"
               aria-label={`${item.title} photos`}
@@ -1311,7 +1312,7 @@ export function OfferSheet({
 }
 
 /** Files a report and says so; the sheet closes either way once it's with the team. */
-export function useFileReport(onDone: () => void) {
+function useFileReport(onDone: () => void) {
   const report = useServerFn(fileReport);
   return useMutation({
     mutationFn: (v: { subjectType: ReportSubject; subjectId: string; reason: string }) =>

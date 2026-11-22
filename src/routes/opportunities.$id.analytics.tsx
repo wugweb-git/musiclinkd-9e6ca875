@@ -123,7 +123,9 @@ function OpportunityAnalytics() {
               <div
                 key={i}
                 className="flex-1 rounded-t-lg bg-ink/80"
-                style={{ height: `${(d / peakReal) * 100}%` }} /* token-drift-allow: dynamic bar height */
+                style={{
+                  height: `${(d / peakReal) * 100}%`,
+                }} /* token-drift-allow: dynamic bar height */
                 aria-label={`${d} views`}
               />
             ))}

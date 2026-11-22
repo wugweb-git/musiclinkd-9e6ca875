@@ -466,12 +466,15 @@ function ListingDetail() {
         ) : null}
 
         {mine ? null : (
-          <button
+          <Btn
+            type="button"
+            variant="ghost"
             onClick={() => setReport(true)}
-            className="mx-auto mt-6 flex items-center gap-1.5 text-1 font-semibold text-foreground"
+            icon={<Flag size={iconSize.xs} aria-hidden />}
+            className="mx-auto mt-6"
           >
-            <Flag size={iconSize.xs} /> Report this listing
-          </button>
+            Report this listing
+          </Btn>
         )}
       </div>
 

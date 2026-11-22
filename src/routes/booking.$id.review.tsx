@@ -116,13 +116,13 @@ function Review() {
                   {draft.requirements}
                 </p>
               ) : null}
-              <button
-                type="button"
+              <Btn
+                variant="ghost"
                 onClick={() => navigate({ to: "/booking/$id/details", params: { id: b.id } })}
-                className="mt-3 min-h-touch text-1 font-bold text-foreground"
+                className="mt-3"
               >
                 Edit details
-              </button>
+              </Btn>
             </section>
 
             {/* A service with no price quotes nothing; the business names it in its reply. */}

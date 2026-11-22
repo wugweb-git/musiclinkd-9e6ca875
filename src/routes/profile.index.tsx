@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { TalentProfileExperience } from "@/components/ml/talent-profile";
 import { ProfileSkeleton } from "@/components/ml/profile";
-import { PublicProfileScreen, loadPublicProfile } from "@/components/ml/public-profile";
+import { PublicProfileScreen } from "@/components/ml/public-profile";
+import { loadPublicProfile } from "@/lib/public-profile";
 
 import {
   getMyProfile,

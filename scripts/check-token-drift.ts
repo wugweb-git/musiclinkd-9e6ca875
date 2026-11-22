@@ -41,8 +41,19 @@ for (const dir of SCOPED_DIRS) {
   for (const file of walk(dir)) {
     const lines = readFileSync(file, "utf8").split("\n");
     let fileCount = 0;
-    for (const line of lines) {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
       if (line.includes("token-drift-allow") || line.includes("token-drift-ignore")) continue;
+      // Multi-line Prettier JSX formatting: check adjacent lines within +/- 6
+      const isAllowed = [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6].some((offset) => {
+        const idx = i + offset;
+        return (
+          idx >= 0 &&
+          idx < lines.length &&
+          (lines[idx].includes("token-drift-allow") || lines[idx].includes("token-drift-ignore"))
+        );
+      });
+      if (isAllowed) continue;
       for (const { re } of PATTERNS) {
         const matches = line.match(re);
         if (matches) fileCount += matches.length;

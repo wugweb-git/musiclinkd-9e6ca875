@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { Check, Search, X, type LucideIcon } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
 import { IconBtn } from "./ui";
+import { matching } from "@/lib/options";
 
 /*
  * The one option list every bottom sheet uses (owner, 22 Sep 2026: "recycle blocks"): pickers in
@@ -92,12 +93,6 @@ export function DrawerSearch({
       />
     </div>
   );
-}
-
-/** Options whose label contains the query, case-insensitive. */
-export function matching<T extends { label: string }>(options: readonly T[], query: string) {
-  const q = query.trim().toLowerCase();
-  return q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
 }
 
 function OptionIcon({ option: o }: { option: DrawerOption }) {

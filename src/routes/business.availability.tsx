@@ -25,7 +25,8 @@ import {
   type Weekday,
   type WeeklyHours,
 } from "@/lib/bookable-slots";
-import { Field, inputClass } from "@/components/ml/listing-form";
+import { Field } from "@/components/ml/ui";
+import { inputClass } from "@/lib/listing-draft";
 
 export const Route = createFileRoute("/business/availability")({
   head: () => ({

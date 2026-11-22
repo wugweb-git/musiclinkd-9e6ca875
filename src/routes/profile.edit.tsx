@@ -45,11 +45,8 @@ import { InlineField, SelectField } from "@/components/ml/onboarding";
 import { CityField } from "@/components/ml/listing-form";
 import { usePinFill } from "@/hooks/use-pin-fill";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import {
-  PoliciesEditor,
-  useMyBookableEquipment,
-  useMyBookablePhotos,
-} from "@/components/ml/bookable-setup";
+import { PoliciesEditor } from "@/components/ml/bookable-setup";
+import { useMyBookableEquipment, useMyBookablePhotos } from "@/hooks/use-bookable";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
 import { sized } from "@/lib/image-url";

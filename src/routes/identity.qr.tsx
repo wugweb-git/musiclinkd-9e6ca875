@@ -35,9 +35,9 @@ import {
   ShareActions,
   ActionRow,
   DownloadNote,
-  downloadQr,
   nativeShare,
 } from "@/components/ml/qr";
+import { downloadQr } from "@/lib/qr-download";
 import { qrStyles, type QrStyle } from "@/data/identity";
 import { iconSize } from "@/lib/tokens";
 
@@ -260,7 +260,10 @@ function DigitalId() {
               <span
                 aria-hidden
                 className="h-10 w-10 shrink-0 rounded-sm border border-border"
-                style={{ background: s.light, boxShadow: `inset 0 0 0 6px ${s.dark}` }} /* token-drift-allow: dynamic QR theme */
+                style={{
+                  background: s.light,
+                  boxShadow: `inset 0 0 0 6px ${s.dark}`,
+                }} /* token-drift-allow: dynamic QR theme */
               />
               <span className="min-w-0">
                 <span className="block text-2 font-semibold">{s.label}</span>

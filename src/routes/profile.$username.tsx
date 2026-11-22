@@ -1,10 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  PublicProfileError,
-  PublicProfileScreen,
-  loadPublicProfile,
-  publicProfileHead,
-} from "@/components/ml/public-profile";
+import { PublicProfileError, PublicProfileScreen } from "@/components/ml/public-profile";
+import { loadPublicProfile, publicProfileHead } from "@/lib/public-profile";
 
 // The long form of a profile link; /@username is the short one (src/routes/$handle.tsx).
 export const Route = createFileRoute("/profile/$username")({

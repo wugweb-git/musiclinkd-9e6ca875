@@ -4,7 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Bookmark, ChevronDown, Info, MapPin, X } from "lucide-react";
-import { DrawerList, DrawerOptionRow, DrawerSearch, matching } from "@/components/ml/drawer-list";
+import { DrawerList, DrawerOptionRow, DrawerSearch } from "@/components/ml/drawer-list";
+import { matching } from "@/lib/options";
 import {
   Btn,
   Chip,
@@ -21,7 +22,8 @@ import { EMPTY_ART, EmptyState, LoadError, OfflineBanner, Segmented } from "@/co
 import { SectionActionLink } from "@/components/ml/links";
 import { ListingGrid } from "@/components/ml/market";
 import { OpportunityCard } from "@/components/ml/opportunity";
-import { useWorkLikes, WorkLinkRow } from "@/components/ml/portfolio";
+import { WorkLinkRow } from "@/components/ml/portfolio";
+import { useWorkLikes } from "@/hooks/use-work-likes";
 import { workMediaFilters } from "@/data/portfolio";
 
 import { useAuth } from "@/hooks/use-auth";

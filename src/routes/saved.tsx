@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { X } from "lucide-react";
-import { Screen, TopBar } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, IconBtn } from "@/components/ml/ui";
 import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { SavedSearchList } from "@/components/ml/saved-market";
 import {
@@ -138,30 +138,27 @@ function Saved() {
 function Actions({ onRemove }: { onRemove: () => void }) {
   return (
     <div className="mt-3 flex gap-2">
-      <button
+      <Btn
         type="button"
+        variant="primary"
         disabled
         aria-label="Messaging isn't open yet"
-        className="hit-area min-h-touch flex-1 rounded-full bg-ink text-1 font-semibold text-background disabled:opacity-40"
+        className="flex-1"
       >
         Message
-      </button>
-      <button
+      </Btn>
+      <Btn
         type="button"
+        variant="outline"
         disabled
         aria-label="Sharing isn't open yet"
-        className="hit-area min-h-touch flex-1 rounded-full border border-border text-1 font-semibold disabled:opacity-40"
+        className="flex-1"
       >
         Share
-      </button>
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label="Remove from saved"
-        className="hit-area flex min-h-touch w-12 items-center justify-center rounded-full border border-border"
-      >
+      </Btn>
+      <IconBtn label="Remove from saved" onClick={onRemove}>
         <X size={iconSize.sm} aria-hidden />
-      </button>
+      </IconBtn>
     </div>
   );
 }

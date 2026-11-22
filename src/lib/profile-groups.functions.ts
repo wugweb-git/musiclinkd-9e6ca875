@@ -369,9 +369,7 @@ export const addTeamMember = createServerFn({ method: "POST" })
 /** Change a team roster row's part. Owner only, via RLS. */
 export const updateTeamMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) =>
-    z.object({ id: z.string().uuid(), role: z.string().trim().max(60) }).parse(d),
-  )
+  .validator((d) => z.object({ id: z.string().uuid(), role: z.string().trim().max(60) }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { error } = await client

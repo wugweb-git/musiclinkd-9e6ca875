@@ -10,7 +10,8 @@ import { createOpportunity } from "@/lib/applications.functions";
 import { draftHiringCopy } from "@/lib/hiring-copy.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthNotice } from "@/components/ml/auth";
-import { CityField, Field, inputClass } from "@/components/ml/listing-form";
+import { CityField, Field } from "@/components/ml/listing-form";
+import { inputClass } from "@/lib/listing-draft";
 import { iconSize } from "@/lib/tokens";
 import type { ReactNode } from "react";
 

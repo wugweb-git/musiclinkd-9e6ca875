@@ -49,7 +49,8 @@ import {
 import { searchPeople } from "@/lib/profile-groups.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { CityField, Field, SheetSelect, inputClass } from "@/components/ml/listing-form";
+import { CityField, Field, SheetSelect } from "@/components/ml/listing-form";
+import { inputClass } from "@/lib/listing-draft";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { CoverHero, ImagePickButton } from "@/components/ml/profile";
 import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";

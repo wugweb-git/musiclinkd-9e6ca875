@@ -21,33 +21,7 @@ import { styleFor, type DestinationPreview, type QrStyle } from "@/data/identity
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
 import { DOWNLOAD_UNAVAILABLE, downloadBlob } from "@/lib/download";
-
-/**
- * Saves the QR for `value` as a PNG through the browser (talent and business QR screens).
- * Black on white with a quiet zone, large enough to print.
- */
-export async function downloadQr(value: string, fileName: string) {
-  try {
-    const { name, png } = await qrPng(value, fileName);
-    if (downloadBlob(name, png)) toast.success("QR image saved");
-    else toast.error(DOWNLOAD_UNAVAILABLE);
-  } catch {
-    toast.error("Couldn't make the QR image. Try again.");
-  }
-}
-
-/** The QR for `value` as a printable PNG (black on white, quiet zone), with its file name. */
-async function qrPng(value: string, fileName: string) {
-  const QRCode = await loadQrCode();
-  const dataUrl = await QRCode.toDataURL(value, {
-    width: 1024,
-    margin: 4,
-    errorCorrectionLevel: "M",
-    color: { dark: "#000000", light: "#ffffff" },
-  });
-  const name = `${fileName.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "") || "musiclinkd"}-qr.png`;
-  return { name, png: await (await fetch(dataUrl)).blob() };
-}
+import { downloadQr, qrPng } from "@/lib/qr-download";
 
 /**
  * Sends the QR image itself through the share sheet. Where the device can't share files, the
@@ -130,7 +104,11 @@ export function QrCode({
   return (
     <div
       className={`relative flex items-center justify-center rounded-lg ${className}`}
-      style={{ background: s.light, width: size, height: size }} /* token-drift-allow: dynamic QR palette and dimensions */
+      style={{
+        background: s.light,
+        width: size,
+        height: size,
+      }} /* token-drift-allow: dynamic QR palette and dimensions */
     >
       {src ? (
         <>
@@ -147,7 +125,8 @@ export function QrCode({
               alt=""
               aria-hidden
               className="absolute rounded-full border-4 object-cover"
-              style={{ /* token-drift-allow: dynamic QR overlay geometry */
+              style={{
+                /* token-drift-allow: dynamic QR overlay geometry */
                 width: size * 0.26,
                 height: size * 0.26,
                 borderColor: s.light,
@@ -213,7 +192,10 @@ export function QrIdentityCard({
           style={{ border: `2px solid ${s.dark}20` }} /* token-drift-allow: dynamic QR border */
         />
         <div className="flex items-center justify-center gap-1.5">
-          <h2 className="text-2 leading-tight" style={{ color: s.dark }} /* token-drift-allow: dynamic QR text color */>
+          <h2
+            className="text-2 leading-tight"
+            style={{ color: s.dark }} /* token-drift-allow: dynamic QR text color */
+          >
             {name}
           </h2>
           {verified ? <VerifiedBadge size={16} /> : null}

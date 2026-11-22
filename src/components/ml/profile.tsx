@@ -52,7 +52,8 @@ import { roleIcon } from "@/lib/role-icons";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { MediaEmbed } from "./media-embed";
 import { coverFor, playSource } from "@/lib/embed";
-import { LikeButton, ShareWorkButton, useWorkLikes } from "./portfolio";
+import { LikeButton, ShareWorkButton } from "./portfolio";
+import { useWorkLikes } from "@/hooks/use-work-likes";
 import { QrCode } from "./qr";
 import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
@@ -643,17 +644,14 @@ export function CoverHero({
             <ArrowLeft size={iconSize.md} aria-hidden />
           </Link>
         ) : null}
-        {actions ? (
-          <div
-            className="top-safe absolute right-5 flex gap-2"
-          >
-            {actions}
-          </div>
-        ) : null}
+        {actions ? <div className="top-safe absolute right-5 flex gap-2">{actions}</div> : null}
       </div>
 
       <div className="-mt-12 px-5">
-        <div className="relative motion-reduce:!w-34" style={{ width: `${photoSize}px` }} /* token-drift-allow: dynamic avatar size */>
+        <div
+          className="relative motion-reduce:!w-34"
+          style={{ width: `${photoSize}px` }} /* token-drift-allow: dynamic avatar size */
+        >
           {photo ? (
             <img
               src={sized(photo, { width: imageWidth.avatarLg })}
@@ -678,7 +676,9 @@ export function CoverHero({
                 "flex aspect-square w-full items-center justify-center border-4 border-background bg-icon-chip font-semibold text-ink-foreground",
                 square ? "rounded-lg" : "rounded-full",
               )}
-              style={{ fontSize: `${Math.round(photoSize * 0.3)}px` }} /* token-drift-allow: dynamic avatar initials size */
+              style={{
+                fontSize: `${Math.round(photoSize * 0.3)}px`,
+              }} /* token-drift-allow: dynamic avatar initials size */
             >
               {initialsOf(name) || <User size={iconSize.xl} aria-hidden />}
             </span>
@@ -987,7 +987,9 @@ export function AudioTrackCard({
                 <span
                   aria-hidden
                   className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: source.bg }} /* token-drift-allow: dynamic external brand color */
+                  style={{
+                    backgroundColor: source.bg,
+                  }} /* token-drift-allow: dynamic external brand color */
                 />
                 {source.label}
               </span>
@@ -1064,7 +1066,11 @@ function WorkDetails({
   );
 }
 
-const EQ_DELAYS = ["[animation-delay:0s]", "[animation-delay:0.18s]", "[animation-delay:0.36s]"] as const;
+const EQ_DELAYS = [
+  "[animation-delay:0s]",
+  "[animation-delay:0.18s]",
+  "[animation-delay:0.36s]",
+] as const;
 
 /** Three bars over a playing track's cover (respects reduced motion via the CSS). */
 function Equaliser() {
@@ -1074,10 +1080,7 @@ function Equaliser() {
       className="absolute inset-0 flex items-end justify-center gap-0.5 bg-ink/45 pb-2.5"
     >
       {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className={cn("eq-bar w-1 rounded-full bg-ink-foreground", EQ_DELAYS[i])}
-        />
+        <span key={i} className={cn("eq-bar w-1 rounded-full bg-ink-foreground", EQ_DELAYS[i])} />
       ))}
     </span>
   );
@@ -2103,7 +2106,12 @@ export function ProfileCompletion({
         aria-valuemax={100}
         aria-label="Profile completion"
       >
-        <div className="h-full rounded-full bg-foreground" style={{ width: `${gaps.percent}%` }} /* token-drift-allow: dynamic completion percentage */ />
+        <div
+          className="h-full rounded-full bg-foreground"
+          style={{
+            width: `${gaps.percent}%`,
+          }} /* token-drift-allow: dynamic completion percentage */
+        />
       </div>
       {gaps.missing.length ? (
         <p className="mt-2 text-1 leading-relaxed text-muted-foreground">

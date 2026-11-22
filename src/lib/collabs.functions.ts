@@ -268,9 +268,7 @@ export const addCollabMember = createServerFn({ method: "POST" })
 /** Your answer to an invitation: join, or say no and the row goes. */
 export const answerCollabInvite = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) =>
-    z.object({ id: z.string().uuid(), answer: z.enum(["join", "no"]) }).parse(d),
-  )
+  .validator((d) => z.object({ id: z.string().uuid(), answer: z.enum(["join", "no"]) }).parse(d))
   .handler(async ({ context, data }) => {
     const client = db(context.supabase);
     const { error } =

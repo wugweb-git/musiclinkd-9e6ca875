@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, IconBtn } from "@/components/ml/ui";
 import { Card, EmptyState, LoadError, Loading, StatusPill } from "@/components/ml/kit";
 import { reviewPolicy } from "@/data/reviews";
 import { listReviewable, writeReview } from "@/lib/reviews.functions";
@@ -150,13 +150,12 @@ function WriteReview() {
           <h2 className="text-sm">Rate the experience</h2>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((n) => (
-              <button
+              <IconBtn
                 key={n}
-                type="button"
-                aria-label={`${n} of 5`}
+                label={`${n} of 5`}
                 aria-pressed={n === rating}
                 onClick={() => setRating(n)}
-                className="p-1"
+                variant="plain"
               >
                 <Star
                   size={iconSize.lg}
@@ -164,7 +163,7 @@ function WriteReview() {
                   fill={n <= rating ? "currentColor" : "none"}
                   aria-hidden
                 />
-              </button>
+              </IconBtn>
             ))}
           </div>
         </Card>

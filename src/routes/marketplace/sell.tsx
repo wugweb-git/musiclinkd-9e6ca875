@@ -5,18 +5,16 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { ListingStepFooter } from "@/components/ml/market";
+import { ListingMediaStep, ListingWhatStep, ListingWhereStep } from "@/components/ml/listing-form";
 import {
   clearListingDraft,
   draftFromListing,
-  ListingMediaStep,
   listingPayload,
   listingStepComplete,
   listingSteps,
-  ListingWhatStep,
-  ListingWhereStep,
   saveListingDraft,
   useListingDraft,
-} from "@/components/ml/listing-form";
+} from "@/lib/listing-draft";
 import { useGearTaxonomy } from "@/lib/listing-category";
 import { createListing, listMyManagedListings, updateListing } from "@/lib/catalog.functions";
 import { useAuth } from "@/hooks/use-auth";

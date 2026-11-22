@@ -1496,8 +1496,16 @@ export function AccountTypeCard({
     "right-16 top-3 z-10 h-22 w-22 rotate-6 group-hover:-translate-y-1 group-active:-translate-y-1",
     "right-2 top-10 h-14 w-12 rotate-12 opacity-80 group-hover:rotate-[22deg] group-hover:translate-x-1 group-active:rotate-[22deg]",
   ];
-  const riseDelays = ["[animation-delay:120ms]", "[animation-delay:200ms]", "[animation-delay:280ms]"];
-  const floatDelays = ["[animation-delay:0ms]", "[animation-delay:600ms]", "[animation-delay:1200ms]"];
+  const riseDelays = [
+    "[animation-delay:120ms]",
+    "[animation-delay:200ms]",
+    "[animation-delay:280ms]",
+  ];
+  const floatDelays = [
+    "[animation-delay:0ms]",
+    "[animation-delay:600ms]",
+    "[animation-delay:1200ms]",
+  ];
   const Root = onSelect ? "button" : "div";
   return (
     <Root
@@ -1543,9 +1551,7 @@ export function AccountTypeCard({
                 riseDelays[i],
               )}
             >
-              <span
-                className={cn("block h-full w-full animate-art-float", floatDelays[i])}
-              >
+              <span className={cn("block h-full w-full animate-art-float", floatDelays[i])}>
                 {piece}
               </span>
             </span>

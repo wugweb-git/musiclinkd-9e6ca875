@@ -395,9 +395,7 @@ export const listMySavedOpportunitySlugs = createServerFn({ method: "GET" })
 
 export const setOpportunitySaved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) =>
-    z.object({ slug: z.string().min(1).max(120), saved: z.boolean() }).parse(d),
-  )
+  .validator((d) => z.object({ slug: z.string().min(1).max(120), saved: z.boolean() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: boolean }> => {
     const client = db(context.supabase);
     const opportunityId = await opportunityIdFor(client, data.slug);
