@@ -310,9 +310,15 @@ const SLUG_MAP: Record<string, string> = {
 
 /** Parses WordPress rendered HTML into native app ContentBlocks adhering to system tokens */
 function parseWpHtmlToBlocks(html: string): ContentBlock[] {
-  let content = html.replace(/<div class="[^"]*wp-block-button[^"]*"[\s\S]*?<\/div>\s*<\/div>/gi, "");
+  let content = html.replace(
+    /<div class="[^"]*wp-block-button[^"]*"[\s\S]*?<\/div>\s*<\/div>/gi,
+    "",
+  );
   content = content.replace(/<h1[^>]*>[\s\S]*?<\/h1>/gi, "");
-  content = content.replace(/<p[^>]*>[^<]*(?:Trust|Studio|Sound|Safety|Profile|Booking|Release)\s*·[\s\S]*?<\/p>/gi, "");
+  content = content.replace(
+    /<p[^>]*>[^<]*(?:Trust|Studio|Sound|Safety|Profile|Booking|Release)\s*·[\s\S]*?<\/p>/gi,
+    "",
+  );
   content = content.replace(/<p[^>]*>[^<]*Verified Guide[\s\S]*?<\/p>/gi, "");
 
   const clean = content
@@ -333,10 +339,16 @@ function parseWpHtmlToBlocks(html: string): ContentBlock[] {
     if (!rawTag || !rawContent) continue;
     const tag = rawTag.toLowerCase();
     const text = rawContent.replace(/<[^>]+>/g, "").trim();
-    if (!text || text.includes("Back to Help Centre") || text.includes("Was this guide helpful?")) continue;
+    if (!text || text.includes("Back to Help Centre") || text.includes("Was this guide helpful?"))
+      continue;
     if (tag.startsWith("h")) {
       blocks.push({ type: "heading", text });
-    } else if (tag === "blockquote" || text.startsWith("💡") || text.toLowerCase().startsWith("short version:") || text.toLowerCase().startsWith("pro tip:")) {
+    } else if (
+      tag === "blockquote" ||
+      text.startsWith("💡") ||
+      text.toLowerCase().startsWith("short version:") ||
+      text.toLowerCase().startsWith("pro tip:")
+    ) {
       blocks.push({ type: "callout", text });
     } else if (tag === "p") {
       blocks.push({ type: "para", text });
@@ -365,7 +377,9 @@ async function fetchWpSitePage(slug: string): Promise<SitePage | null> {
     if (!blocks.length) return null;
     return {
       slug,
-      title: p.title?.rendered ? p.title.rendered.replace(/&#8217;/g, "'").replace(/&amp;/g, "&") : "MusicLinkd",
+      title: p.title?.rendered
+        ? p.title.rendered.replace(/&#8217;/g, "'").replace(/&amp;/g, "&")
+        : "MusicLinkd",
       summary: rawSummary,
       seoDescription: rawSummary,
       updated: lastUpdatedLabel(p.modified),
@@ -388,7 +402,9 @@ async function fetchWpHelpArticle(slug: string): Promise<HelpArticle | null> {
     return {
       page: {
         slug,
-        title: p.title?.rendered ? p.title.rendered.replace(/&#8217;/g, "'").replace(/&amp;/g, "&") : slug,
+        title: p.title?.rendered
+          ? p.title.rendered.replace(/&#8217;/g, "'").replace(/&amp;/g, "&")
+          : slug,
         summary: p.excerpt?.rendered?.replace(/<[^>]+>/g, "").trim() ?? "",
         category: "guide",
         readTime: "4 min read",
