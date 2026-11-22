@@ -93,7 +93,7 @@ export const getSpotifyStatus = createServerFn({ method: "GET" })
 
 export const startSpotifyConnect = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ sharing: z.enum(["connections", "approved"]) }).parse(d))
+  .validator((d) => z.object({ sharing: z.enum(["connections", "approved"]) }).parse(d))
   .handler(async ({ data }) => {
     const cfg = config();
     if (!cfg) throw new Error("unavailable");
@@ -118,7 +118,7 @@ export const startSpotifyConnect = createServerFn({ method: "POST" })
 
 export const finishSpotifyConnect = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ code: z.string().min(1), state: z.string().min(1) }).parse(d))
+  .validator((d) => z.object({ code: z.string().min(1), state: z.string().min(1) }).parse(d))
   .handler(async ({ context, data }) => {
     const cfg = config();
     if (!cfg) throw new Error("unavailable");

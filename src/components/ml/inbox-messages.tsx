@@ -169,7 +169,7 @@ export function MessagesPanel() {
                                 {name}
                               </span>
                               <span
-                                className={`shrink-0 text-[11px] ${unreadRow ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                                className={`shrink-0 text-1 ${unreadRow ? "font-semibold text-foreground" : "text-muted-foreground"}`}
                               >
                                 {whenLabel(t.lastMessageAt)}
                               </span>
@@ -183,7 +183,7 @@ export function MessagesPanel() {
                                   : "No messages yet"}
                               </span>
                               {unreadRow ? (
-                                <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-ink px-1.5 text-[11px] font-bold text-background">
+                                <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-ink px-1.5 text-1 font-bold text-background">
                                   {t.unread}
                                 </span>
                               ) : null}

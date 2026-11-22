@@ -15,7 +15,7 @@ export type ReportSubject = "review" | "listing" | "rental" | "profile";
 
 export const fileReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         subjectType: z.enum(["review", "listing", "rental", "profile"]),

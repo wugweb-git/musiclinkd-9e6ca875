@@ -166,7 +166,7 @@ export const listLinkedProfiles = createServerFn({ method: "GET" })
  */
 export const enterLinkedProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ tokenHash: string }> => {
     const supabaseAdmin = await admin();
     const client = supabaseAdmin as unknown as SupabaseClient;

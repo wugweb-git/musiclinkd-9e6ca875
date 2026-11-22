@@ -39,11 +39,14 @@ const perFile = new Map<string, number>();
 
 for (const dir of SCOPED_DIRS) {
   for (const file of walk(dir)) {
-    const text = readFileSync(file, "utf8");
+    const lines = readFileSync(file, "utf8").split("\n");
     let fileCount = 0;
-    for (const { re } of PATTERNS) {
-      const matches = text.match(re);
-      if (matches) fileCount += matches.length;
+    for (const line of lines) {
+      if (line.includes("token-drift-allow") || line.includes("token-drift-ignore")) continue;
+      for (const { re } of PATTERNS) {
+        const matches = line.match(re);
+        if (matches) fileCount += matches.length;
+      }
     }
     if (fileCount > 0) {
       perFile.set(file, fileCount);

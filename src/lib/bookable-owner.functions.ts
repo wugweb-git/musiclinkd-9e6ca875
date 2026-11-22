@@ -53,7 +53,7 @@ const PAISE = z.number().int().min(0).max(100_000_000).nullable();
 /** The studio's add-ons, replacing the stored list. */
 export const updateMyBookableAddOns = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         addOns: z
@@ -81,7 +81,7 @@ export const updateMyBookableAddOns = createServerFn({ method: "POST" })
 
 export const updateMyBookable = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         hourly_rate_paise: z.number().int().min(0).optional().nullable(),
@@ -111,7 +111,7 @@ export const updateMyBookable = createServerFn({ method: "POST" })
  */
 export const updateMyAmenities = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ amenities: z.array(AMENITY).max(40) }).parse(d))
+  .validator((d) => z.object({ amenities: z.array(AMENITY).max(40) }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const amenities = [...new Set(data.amenities)];
     const { data: rows, error } = await db(context.supabase)
@@ -172,7 +172,7 @@ const EQUIPMENT = z.object({
 /** Adds an item after the last one, or with an id changes that item. */
 export const saveMyBookableEquipment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => EQUIPMENT.extend({ id: z.string().uuid().optional() }).parse(d))
+  .validator((d) => EQUIPMENT.extend({ id: z.string().uuid().optional() }).parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = db(context.supabase);
     const me = context.userId;
@@ -221,7 +221,7 @@ export const saveMyBookableEquipment = createServerFn({ method: "POST" })
 
 export const removeMyBookableEquipment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = db(context.supabase);
     const { error } = await client

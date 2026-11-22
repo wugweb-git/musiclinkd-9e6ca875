@@ -332,14 +332,14 @@ const idInput = z.object({ id: z.string().uuid() });
 /** One of the signed-in profile's services, drafts included, or null when it is not theirs. */
 export const getMyService = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => idInput.parse(d))
+  .validator((d) => idInput.parse(d))
   .handler(async ({ context, data }) =>
     serviceDetail(context.supabase as unknown as SupabaseClient, data.id, context.userId),
   );
 
 /** A service anyone may read (not a draft, on a readable profile), or null. */
 export const getPublicService = createServerFn({ method: "GET" })
-  .inputValidator((d) => idInput.parse(d))
+  .validator((d) => idInput.parse(d))
   .handler(async ({ data }) =>
     serviceDetail((await anonClient()) as unknown as SupabaseClient, data.id),
   );
@@ -355,7 +355,7 @@ export type BookableService = {
 
 /** A profile's live services, in page order: what a studio's Book lets people pick. */
 export const listPublicServices = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<BookableService[]> => {
     const client = (await anonClient()) as unknown as SupabaseClient;
     const { data: rows, error } = await client
@@ -477,7 +477,7 @@ async function replaceChildren(
 /** Creates or updates one of the signed-in profile's services, as a draft or live. */
 export const saveService = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => saveSchema.parse(d))
+  .validator((d) => saveSchema.parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { id, packages, addons, bandId, ...fields } = data;
@@ -535,7 +535,7 @@ export const saveService = createServerFn({ method: "POST" })
 /** Pauses, publishes or returns one of the signed-in profile's services to draft. */
 export const setServiceStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), status: z.enum(["active", "paused", "draft"]) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ status: ServiceStatus }> => {
@@ -554,7 +554,7 @@ export const setServiceStatus = createServerFn({ method: "POST" })
 /** A copy of one of the signed-in profile's services, with its packages and add-ons, as a draft. */
 export const duplicateService = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => idInput.parse(d))
+  .validator((d) => idInput.parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const source = await serviceDetail(client, data.id, context.userId);
@@ -592,7 +592,7 @@ export const duplicateService = createServerFn({ method: "POST" })
 /** Deletes one of the signed-in profile's services; its packages and add-ons go with it. */
 export const deleteService = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => idInput.extend({ bandId: z.string().uuid().optional() }).parse(d))
+  .validator((d) => idInput.extend({ bandId: z.string().uuid().optional() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const base = (context.supabase as unknown as SupabaseClient)
       .from("profile_services")
@@ -612,7 +612,7 @@ export const deleteService = createServerFn({ method: "POST" })
  */
 export const listBandServicesToManage = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ bandId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ bandId: z.string().uuid() }).parse(d))
   .handler(
     async ({ context, data }): Promise<{ id: string; name: string; status: ServiceStatus }[]> => {
       const { data: rows, error } = await (context.supabase as unknown as SupabaseClient)

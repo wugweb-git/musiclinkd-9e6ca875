@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Field as SharedField, SheetSelect } from "@/components/ml/listing-form";
+import { Field, SheetSelect } from "@/components/ml/listing-form";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
@@ -125,18 +125,5 @@ function Details() {
         onPrimary={() => navigate({ to: "/booking/$id/addons", params: { id: b.id } })}
       />
     </Screen>
-  );
-}
-
-/**
- * The shared field wrapper, with an id derived from its label. This was a copy that gave the
- * label no association with its control at all, so a screen reader read the two apart.
- */
-function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
-  const id = `booking-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-  return (
-    <SharedField label={label} id={id} {...(hint ? { hint } : {})}>
-      {children}
-    </SharedField>
   );
 }

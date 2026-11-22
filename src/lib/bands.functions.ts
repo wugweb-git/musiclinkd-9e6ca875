@@ -132,7 +132,7 @@ export const listBands = createServerFn({ method: "GET" }).handler(async (): Pro
 });
 
 export const getBandBySlug = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(60) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(60) }).parse(d))
   .handler(async ({ data }): Promise<BandRow | null> => {
     const client = await anonClient();
     const { data: row, error } = await client
@@ -164,7 +164,7 @@ const httpsUrl = z
 
 export const saveBandRider = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -186,7 +186,7 @@ export const saveBandRider = createServerFn({ method: "POST" })
 
 export const saveBandStagePlot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -209,7 +209,7 @@ export const saveBandStagePlot = createServerFn({ method: "POST" })
 
 export const addBandLiveVideo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -236,7 +236,7 @@ export const addBandLiveVideo = createServerFn({ method: "POST" })
 
 export const removeBandLiveVideo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ videoId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ videoId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { data: rows, error } = await db(context.supabase)
       .from("collab_live_videos")
@@ -251,7 +251,7 @@ export const removeBandLiveVideo = createServerFn({ method: "POST" })
 /** A release on the band's discography; owners and admins only (the database checks). */
 export const addBandRelease = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -282,7 +282,7 @@ export const addBandRelease = createServerFn({ method: "POST" })
 
 export const removeBandRelease = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ releaseId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ releaseId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { data: rows, error } = await db(context.supabase)
       .from("collab_releases")
@@ -300,7 +300,7 @@ export const removeBandRelease = createServerFn({ method: "POST" })
  */
 export const deleteBand = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { data: rows, error } = await db(context.supabase)
       .from("collabs")
@@ -325,7 +325,7 @@ const GALLERY_COLUMNS = "id, image_url";
 /** The band's showcase in order, for its editor, and whether uploads are open. */
 export const listBandGallery = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<MyGallery> => {
     const client = db(context.supabase);
     const [rows, bucket] = await Promise.all([
@@ -345,7 +345,7 @@ export const listBandGallery = createServerFn({ method: "GET" })
 /** Records a photo a manager has just uploaded to their gallery folder, at the end. */
 export const addBandGalleryPhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), url: z.string().url().max(1000) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<GalleryPhoto> => {
@@ -382,7 +382,7 @@ export const addBandGalleryPhoto = createServerFn({ method: "POST" })
  */
 export const removeBandGalleryPhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ photoId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ photoId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const client = db(context.supabase);
     const { data: rows, error } = await client
@@ -403,7 +403,7 @@ export const removeBandGalleryPhoto = createServerFn({ method: "POST" })
 /** Saves the showcase's order: each photo's position in `ids`. The first one leads. */
 export const reorderBandGallery = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -437,7 +437,7 @@ export const reorderBandGallery = createServerFn({ method: "POST" })
  * then the column doesn't exist and this returns none rather than failing the band page.
  */
 export const listBandServices = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ bandId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ bandId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<ProfileSections["services"]> => {
     const client = await anonClient();
     const { data: rows, error } = await db(client)
@@ -499,7 +499,7 @@ export const listMyBandInvites = createServerFn({ method: "GET" })
 
 export const answerBandInvite = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ bandId: z.string().uuid(), answer: z.enum(["join", "no"]) }).parse(d),
   )
   .handler(async ({ context, data }) => {

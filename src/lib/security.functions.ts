@@ -37,7 +37,7 @@ export const listMySessions = createServerFn({ method: "GET" })
 /** Sign a single one of the account's own sessions out. */
 export const revokeMySession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const admin = supabaseAdmin as unknown as SupabaseClient;

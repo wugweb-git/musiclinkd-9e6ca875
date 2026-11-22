@@ -67,7 +67,7 @@ export type VerificationRequestInfo = {
 
 /** Every published verification type with its details and requirements, and those these roles fit. */
 export const getVerificationTypes = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ roles: z.array(z.string().max(60)).max(12) }).parse(d))
+  .validator((d) => z.object({ roles: z.array(z.string().max(60)).max(12) }).parse(d))
   .handler(async ({ data }): Promise<{ types: VerificationTypeInfo[]; applicable: string[] }> => {
     const client = await anonClient();
     const rpc = client.rpc as unknown as (
@@ -241,7 +241,7 @@ async function folderFiles(client: SupabaseClient, userId: string, requestId: st
 /** The signed-in profile's open draft of this type, or a new one. */
 export const startVerificationRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ type: z.string().min(1).max(40) }).parse(d))
+  .validator((d) => z.object({ type: z.string().min(1).max(40) }).parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { data: draft, error } = await client
@@ -278,7 +278,7 @@ const itemInput = z.object({
  */
 export const submitVerificationRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         requestId: z.string().uuid(),
@@ -359,7 +359,7 @@ export const submitVerificationRequest = createServerFn({ method: "POST" })
 /** Withdraws a draft or a request in review, then deletes its files. */
 export const withdrawVerificationRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { data: rows, error } = await client
@@ -386,7 +386,7 @@ export const withdrawVerificationRequest = createServerFn({ method: "POST" })
  */
 export const resubmitVerificationRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ fromId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ fromId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const [source, items, privateRow] = await Promise.all([

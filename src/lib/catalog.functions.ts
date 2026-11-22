@@ -260,7 +260,7 @@ export const listBookables = createServerFn({ method: "GET" }).handler(async () 
 });
 
 export const getBookableBySlug = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
     const { data: row, error } = await withFallback(
@@ -303,7 +303,7 @@ export const listMyOpportunities = createServerFn({ method: "GET" })
   });
 
 export const getOpportunityRow = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
     const { data: row, error } = await client
@@ -318,7 +318,7 @@ export const getOpportunityRow = createServerFn({ method: "GET" })
 /** The poster closes, fills or reopens their own listing. There is no "paused" status in the schema. */
 export const setOpportunityStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), status: z.enum(["open", "closed", "filled"]) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
@@ -337,7 +337,7 @@ export const setOpportunityStatus = createServerFn({ method: "POST" })
  * database rather than from a list that leaves services out (the listing page's own catalog).
  */
 export const countSellerListings = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<number> => {
     const client = await anonClient();
     const base = () =>
@@ -398,7 +398,7 @@ export const listMyListings = createServerFn({ method: "GET" })
   });
 
 export const getListing = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
     const { data: row, error } = await withFallback(
@@ -413,7 +413,7 @@ export const getListing = createServerFn({ method: "GET" })
 
 /** One seller's public listings (any category), newest first — for their profile page. */
 export const getSellerListings = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ sellerProfileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ sellerProfileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
     const { data: rows, error } = await withFallback(
@@ -508,7 +508,7 @@ function listingColumns(data: ListingInput) {
 /** Sell, rent out or offer a service. "Studio" isn't here — a studio is its own richer entity. */
 export const createListing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => listingInput.parse(d))
+  .validator((d) => listingInput.parse(d))
   .handler(async ({ context, data }): Promise<{ slug: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const slug = listingSlug(data.title);
@@ -565,7 +565,7 @@ export const listMyManagedListings = createServerFn({ method: "GET" })
 /** The seller edits one of their own listings. */
 export const updateListing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => listingInput.extend({ id: z.string().uuid() }).parse(d))
+  .validator((d) => listingInput.extend({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ slug: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { data: row, error } = await client
@@ -587,7 +587,7 @@ export const updateListing = createServerFn({ method: "POST" })
  */
 export const deleteListing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const client = context.supabase as unknown as SupabaseClient;
     const { count: live } = await client

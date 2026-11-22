@@ -65,7 +65,7 @@ export function ArtSetlist({ className }: ArtProps) {
   return (
     <Tile id="art-talent-setlist" brandId="brand-0002" className={className}>
       <span className="flex h-full w-full flex-col rounded-lg bg-card p-2.5 text-left shadow-md">
-        <span className="text-[10px] font-semibold text-foreground">Setlist</span>
+        <span className="text-1 font-semibold text-foreground">Setlist</span>
         <span className="mt-1.5 space-y-1">
           {["w-4/5", "w-3/5", "w-11/12", "w-2/3"].map((w, i) => (
             <span key={i} className={cn("block h-1 rounded-full bg-ink/15", w)} />
@@ -111,8 +111,8 @@ export function ArtTicket({ className }: ArtProps) {
   return (
     <Tile id="art-business-ticket" brandId="brand-0004" className={className}>
       <span className="relative flex h-full w-full flex-col justify-between rounded-lg bg-brand p-2.5 text-left text-white shadow-md">
-        <span className="text-[10px] font-semibold">Live · Fri</span>
-        <span className="border-t border-dashed border-white/50 pt-1 text-[10px]">Admit one</span>
+        <span className="text-1 font-semibold">Live · Fri</span>
+        <span className="border-t border-dashed border-white/50 pt-1 text-1">Admit one</span>
         <span className="absolute -left-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-ink" />
         <span className="absolute -right-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-ink" />
       </span>
@@ -125,7 +125,7 @@ export function ArtBooking({ className }: ArtProps) {
   return (
     <Tile id="art-business-booking" brandId="brand-0005" className={className}>
       <span className="flex h-full w-full flex-col rounded-lg bg-ink p-2.5 text-left text-ink-foreground shadow-md">
-        <span className="text-[10px] font-semibold">Studio A</span>
+        <span className="text-1 font-semibold">Studio A</span>
         <span className="mt-1.5 space-y-1">
           {[false, true, false].map((taken, i) => (
             <span
@@ -184,13 +184,24 @@ export function ArtPlay({ className }: ArtProps) {
   );
 }
 
+const WAVE_HEIGHTS = [
+  "h-[30%]",
+  "h-[60%]",
+  "h-[45%]",
+  "h-[80%]",
+  "h-[55%]",
+  "h-[70%]",
+  "h-[35%]",
+  "h-[50%]",
+] as const;
+
 /** Academy: a frosted pink tile with a waveform. */
 export function ArtWave({ className }: ArtProps) {
   return (
     <Tile id="art-academy-wave" brandId="brand-0010" className={className}>
       <span className="flex h-full w-full items-center justify-center gap-0.5 rounded-lg border border-white/60 bg-brand/15 shadow-md backdrop-blur-md">
-        {[30, 60, 45, 80, 55, 70, 35, 50].map((h, i) => (
-          <span key={i} className="w-0.5 rounded-full bg-brand/70" style={{ height: `${h}%` }} />
+        {WAVE_HEIGHTS.map((hClass, i) => (
+          <span key={i} className={cn("w-0.5 rounded-full bg-brand/70", hClass)} />
         ))}
       </span>
     </Tile>

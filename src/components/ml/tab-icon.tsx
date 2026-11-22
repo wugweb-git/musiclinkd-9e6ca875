@@ -91,7 +91,7 @@ export function StateIcon({
   return (
     <span
       className="relative inline-block shrink-0"
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size }} /* token-drift-allow: dynamic icon size */
       aria-hidden
     >
       <Outline

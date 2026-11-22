@@ -43,7 +43,7 @@ export const listMyPortfolio = createServerFn({ method: "GET" })
  */
 export const myPortfolioPlays = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({ days: z.number().int().min(1).max(365).optional() })
       .optional()
@@ -74,7 +74,7 @@ export const myPortfolioPlays = createServerFn({ method: "GET" })
  */
 export const reorderPortfolio = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         ids: z.array(z.string().uuid()).max(200),
@@ -101,7 +101,7 @@ export const reorderPortfolio = createServerFn({ method: "POST" })
 
 export const getMyPortfolioItem = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { data: row, error } = await context.supabase
       .from("portfolio_items")
@@ -118,7 +118,7 @@ export const getMyPortfolioItem = createServerFn({ method: "GET" })
  * Drafts stay the owner's: only a published row comes back.
  */
 export const getPublicPortfolioItem = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
     const { data: row, error } = await client
@@ -133,7 +133,7 @@ export const getPublicPortfolioItem = createServerFn({ method: "GET" })
 
 export const savePortfolioItem = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => itemSchema.parse(d))
+  .validator((d) => itemSchema.parse(d))
   .handler(async ({ context, data }) => {
     const payload = {
       user_id: context.userId,
@@ -172,7 +172,7 @@ export const savePortfolioItem = createServerFn({ method: "POST" })
 /** Publish or hide one work. A hidden work stays in the account's list but leaves the profile. */
 export const setPortfolioPublished = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), published: z.boolean() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid(), published: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase
       .from("portfolio_items")
@@ -185,7 +185,7 @@ export const setPortfolioPublished = createServerFn({ method: "POST" })
 
 export const deletePortfolioItem = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase
       .from("portfolio_items")
@@ -327,7 +327,7 @@ const PENDING_COLUMNS = ["pin_code", "influences", "rate_paise", "rate_unit"];
 
 export const saveMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => profilePatchSchema.parse(d))
+  .validator((d) => profilePatchSchema.parse(d))
 
   .handler(async ({ context, data }) => {
     const patch = Object.fromEntries(
@@ -406,7 +406,7 @@ function usernameError(error: {
  */
 export const claimMyUsername = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ username: z.string().min(1).max(30) }).parse(d))
+  .validator((d) => z.object({ username: z.string().min(1).max(30) }).parse(d))
   .handler(async ({ context, data }): Promise<{ status: UsernameClaim }> => {
     const { error } = await context.supabase
       .from("profiles")
@@ -455,7 +455,7 @@ const PUBLIC_PROFILE =
 
 /** Public profile read — anon key, safe columns only, no session. */
 export const getPublicProfile = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ username: z.string().min(1).max(60) }).parse(d))
+  .validator((d) => z.object({ username: z.string().min(1).max(60) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
 
@@ -743,7 +743,7 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
 
 /** Sections of a public profile, read with the anon key. */
 export const getPublicProfileSections = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => loadSections(await anonClient(), data.profileId));
 
 /** The signed-in user's own sections. */
@@ -759,7 +759,7 @@ export const getMyProfileSections = createServerFn({ method: "GET" })
  */
 export const saveMyExperience = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         items: z
@@ -812,7 +812,7 @@ export type WorkEventCounts = {
  */
 export const myPortfolioEvents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<WorkEventCounts | null> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { data: rows, error } = await client
@@ -848,7 +848,7 @@ export const myPortfolioEvents = createServerFn({ method: "GET" })
  * no Like button, never one that does nothing. Counts never say who liked.
  */
 export const portfolioLikeCounts = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(60) }).parse(d))
+  .validator((d) => z.object({ ids: z.array(z.string().uuid()).max(60) }).parse(d))
   .handler(async ({ data }): Promise<{ available: boolean; counts: Record<string, number> }> => {
     if (!data.ids.length) return { available: true, counts: {} };
     const client = (await anonClient()) as unknown as SupabaseClient;
@@ -863,7 +863,7 @@ export const portfolioLikeCounts = createServerFn({ method: "GET" })
 /** Which of these works the signed-in user has liked. */
 export const myPortfolioLikes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(60) }).parse(d))
+  .validator((d) => z.object({ ids: z.array(z.string().uuid()).max(60) }).parse(d))
   .handler(async ({ context, data }): Promise<string[]> => {
     if (!data.ids.length) return [];
     const { data: rows, error } = await (context.supabase as unknown as SupabaseClient)
@@ -877,7 +877,7 @@ export const myPortfolioLikes = createServerFn({ method: "GET" })
 
 export const toggleLike = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), liked: z.boolean() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid(), liked: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
     const db = context.supabase as unknown as SupabaseClient;
     const { error } = data.liked

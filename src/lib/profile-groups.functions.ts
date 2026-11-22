@@ -276,7 +276,7 @@ async function businessRecord(
 
 /** The business account with this username, or null for talent, a private profile or no one. */
 export const getPublicBusiness = createServerFn({ method: "GET" })
-  .inputValidator((d) => username.parse(d))
+  .validator((d) => username.parse(d))
   .handler(async ({ data }): Promise<BusinessRecord | null> => {
     const client = await anonClient();
     const { data: row, error } = await softSelect(
@@ -308,7 +308,7 @@ export const getMyBusiness = createServerFn({ method: "GET" })
 /** The signed-in business updates its own profile_business row (e.g. operating hours). */
 export const updateMyBusiness = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         operating_hours: z.string().max(500).nullable().optional(),
@@ -341,7 +341,7 @@ export const updateMyBusiness = createServerFn({ method: "POST" })
 /** Add a row to the signed-in business's own team roster (profile_members, kind 'team'). */
 export const addTeamMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         name: z.string().trim().min(1).max(80),
@@ -369,7 +369,7 @@ export const addTeamMember = createServerFn({ method: "POST" })
 /** Change a team roster row's part. Owner only, via RLS. */
 export const updateTeamMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), role: z.string().trim().max(60) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
@@ -386,7 +386,7 @@ export const updateTeamMember = createServerFn({ method: "POST" })
 /** Remove someone from the team roster. */
 export const removeTeamMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { error } = await client
@@ -437,7 +437,7 @@ export type BandRecord = {
 };
 
 export const getPublicBand = createServerFn({ method: "GET" })
-  .inputValidator((d) => username.parse(d))
+  .validator((d) => username.parse(d))
   .handler(async ({ data }): Promise<BandRecord | null> => {
     const client = await anonClient();
     const profile = await publicProfile(client, data.username);
@@ -522,7 +522,7 @@ function directoryPerson(r: ProfileBase): DirectoryPerson {
  * what the query returns.
  */
 export const listPeopleByRole = createServerFn({ method: "GET" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         role: z.string().min(1).max(60).optional(),
@@ -555,7 +555,7 @@ export const listPeopleByRole = createServerFn({ method: "GET" })
  * database gives — nothing here estimates.
  */
 export const searchPeople = createServerFn({ method: "GET" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         q: z.string().trim().max(80).optional(),
@@ -699,7 +699,7 @@ async function isTalentAccount(
 
 export const createMyBusiness = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         type: z.string().regex(/^[a-z_]{2,40}$/),

@@ -85,7 +85,7 @@ export const listMyConnections = createServerFn({ method: "GET" })
 /** Where this account stands with one profile, for the button on their page. */
 export const connectionWith = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(
     async ({
       context,
@@ -131,7 +131,7 @@ export const connectionWith = createServerFn({ method: "GET" })
  */
 export const contactPhone = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ phone: string | null }> => {
     const { data: phone, error } = await db(context.supabase).rpc("contact_phone", {
       p_profile: data.profileId,
@@ -143,7 +143,7 @@ export const contactPhone = createServerFn({ method: "GET" })
 /** Ask to connect. The pair index means a second request cannot be created either way round. */
 export const requestConnection = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ profileId: z.string().uuid(), note: z.string().max(500).optional() }).parse(d),
   )
   .handler(async ({ context, data }) => {
@@ -161,7 +161,7 @@ export const requestConnection = createServerFn({ method: "POST" })
 /** Accept or decline a request addressed to this account. */
 export const answerConnection = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), accept: z.boolean() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid(), accept: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("connections")
@@ -174,7 +174,7 @@ export const answerConnection = createServerFn({ method: "POST" })
 /** Withdraw a request, or remove a connection. Either side can. */
 export const removeConnection = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("connections")
@@ -187,7 +187,7 @@ export const removeConnection = createServerFn({ method: "POST" })
 /** Follow or unfollow, one way, no asking. */
 export const setFollowing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ profileId: z.string().uuid(), following: z.boolean() }).parse(d),
   )
   .handler(async ({ context, data }) => {
@@ -209,7 +209,7 @@ export const setFollowing = createServerFn({ method: "POST" })
 
 /** Public follower and connection counts for a profile page. */
 export const profileCounts = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
     const { count, error } = await client
@@ -225,7 +225,7 @@ export const profileCounts = createServerFn({ method: "GET" })
  * the real follower count. Follows are public; private profiles stay out (RLS on profiles).
  */
 export const followerFaces = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(
     async ({
       data,

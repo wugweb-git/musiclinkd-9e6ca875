@@ -88,7 +88,7 @@ export async function amenitiesOf(client: SupabaseClient, profileId: string) {
 
 /** Every amenity and equipment photo of one business, in order. Public; empty on any failure. */
 export const getBookablePhotos = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<BookablePhoto[]> => {
     const client = db(await anonClient());
     const { data: rows, error } = await client
@@ -125,7 +125,7 @@ export const listMyBookablePhotos = createServerFn({ method: "GET" })
 /** Records a photo the business has just uploaded to its own folder. */
 export const addMyBookablePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         subjectType: z.enum(["equipment", "amenity"]),
@@ -190,7 +190,7 @@ export const addMyBookablePhoto = createServerFn({ method: "POST" })
 
 export const removeMyBookablePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = db(context.supabase);
     const { data: rows, error } = await client

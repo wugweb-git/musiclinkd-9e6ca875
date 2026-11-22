@@ -536,7 +536,7 @@ export type SearchGroup = (typeof SEARCH_GROUPS)[number];
  * group not asked for, or one whose read fails, comes back empty rather than failing the rest.
  */
 export const searchEverything = createServerFn({ method: "GET" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         q: z.string().trim().max(80).optional(),
@@ -597,7 +597,7 @@ function tally(out: Record<string, number>, value: string | null | undefined) {
  * city part of the stored place.
  */
 export const searchFacets = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ group: z.enum(SEARCH_GROUPS) }).parse(d))
+  .validator((d) => z.object({ group: z.enum(SEARCH_GROUPS) }).parse(d))
   .handler(async ({ data }): Promise<SearchFacets> => {
     const client = (await anonClient()) as unknown as SupabaseClient;
     const city: Record<string, number> = {};
@@ -895,7 +895,7 @@ function snippet(value: string, word: string) {
 }
 
 export const explainResult = createServerFn({ method: "GET" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         kind: z.enum([

@@ -9,7 +9,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  */
 export const recordPortfolioPlay = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ itemId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ itemId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     // record_portfolio_play is not in the generated types yet.
     const client = context.supabase as unknown as SupabaseClient;

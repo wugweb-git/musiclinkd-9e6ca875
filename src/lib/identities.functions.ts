@@ -54,7 +54,7 @@ export const listMySignInMethods = createServerFn({ method: "GET" })
 
 export const removeMySignInMethod = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ id: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const token = callerToken();
     const methods = await methodsOf(context.supabase, token);

@@ -568,7 +568,7 @@ function CoverFallback({ name }: { name: string }) {
         <span
           key={i}
           className="w-1 shrink-0 rounded-full bg-background/20"
-          style={{ height: `${height}%` }}
+          style={{ height: `${height}%` }} /* token-drift-allow: dynamic waveform height */
         />
       ))}
     </div>
@@ -619,7 +619,7 @@ export function CoverHero({
     <div>
       <div
         className="relative overflow-hidden motion-reduce:!h-33"
-        style={{ height: `${coverHeight}px` }}
+        style={{ height: `${coverHeight}px` }} /* token-drift-allow: dynamic scroll height */
       >
         {cover ? (
           <>
@@ -638,16 +638,14 @@ export function CoverHero({
           <Link
             to={back}
             aria-label="Back"
-            style={{ top: "calc(env(safe-area-inset-top) + 1.25rem)" }}
-            className="hit-area absolute left-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
+            className="hit-area top-safe absolute left-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
           >
             <ArrowLeft size={iconSize.md} aria-hidden />
           </Link>
         ) : null}
         {actions ? (
           <div
-            style={{ top: "calc(env(safe-area-inset-top) + 1.25rem)" }}
-            className="absolute right-5 flex gap-2"
+            className="top-safe absolute right-5 flex gap-2"
           >
             {actions}
           </div>
@@ -655,7 +653,7 @@ export function CoverHero({
       </div>
 
       <div className="-mt-12 px-5">
-        <div className="relative motion-reduce:!w-34" style={{ width: `${photoSize}px` }}>
+        <div className="relative motion-reduce:!w-34" style={{ width: `${photoSize}px` }} /* token-drift-allow: dynamic avatar size */>
           {photo ? (
             <img
               src={sized(photo, { width: imageWidth.avatarLg })}
@@ -680,7 +678,7 @@ export function CoverHero({
                 "flex aspect-square w-full items-center justify-center border-4 border-background bg-icon-chip font-semibold text-ink-foreground",
                 square ? "rounded-lg" : "rounded-full",
               )}
-              style={{ fontSize: `${Math.round(photoSize * 0.3)}px` }}
+              style={{ fontSize: `${Math.round(photoSize * 0.3)}px` }} /* token-drift-allow: dynamic avatar initials size */
             >
               {initialsOf(name) || <User size={iconSize.xl} aria-hidden />}
             </span>
@@ -989,7 +987,7 @@ export function AudioTrackCard({
                 <span
                   aria-hidden
                   className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: source.bg }}
+                  style={{ backgroundColor: source.bg }} /* token-drift-allow: dynamic external brand color */
                 />
                 {source.label}
               </span>
@@ -1066,6 +1064,8 @@ function WorkDetails({
   );
 }
 
+const EQ_DELAYS = ["[animation-delay:0s]", "[animation-delay:0.18s]", "[animation-delay:0.36s]"] as const;
+
 /** Three bars over a playing track's cover (respects reduced motion via the CSS). */
 function Equaliser() {
   return (
@@ -1076,8 +1076,7 @@ function Equaliser() {
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="eq-bar w-1 rounded-full bg-ink-foreground"
-          style={{ animationDelay: `${i * 0.18}s` }}
+          className={cn("eq-bar w-1 rounded-full bg-ink-foreground", EQ_DELAYS[i])}
         />
       ))}
     </span>
@@ -2104,7 +2103,7 @@ export function ProfileCompletion({
         aria-valuemax={100}
         aria-label="Profile completion"
       >
-        <div className="h-full rounded-full bg-foreground" style={{ width: `${gaps.percent}%` }} />
+        <div className="h-full rounded-full bg-foreground" style={{ width: `${gaps.percent}%` }} /* token-drift-allow: dynamic completion percentage */ />
       </div>
       {gaps.missing.length ? (
         <p className="mt-2 text-1 leading-relaxed text-muted-foreground">

@@ -106,7 +106,7 @@ async function inviteByUsername(
 /** Start a project room. You are its owner; private unless you say otherwise. */
 export const createCollab = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         name: z.string().trim().min(2).max(80),
@@ -233,7 +233,7 @@ export const listMyCollabs = createServerFn({ method: "GET" })
 /** One project room. Private ones are readable only by their members. */
 export const getCollab = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<Collab | null> => {
     const { data: row, error } = await db(context.supabase)
       .from("collabs")
@@ -250,7 +250,7 @@ export const getCollab = createServerFn({ method: "GET" })
  */
 export const addCollabMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -268,7 +268,7 @@ export const addCollabMember = createServerFn({ method: "POST" })
 /** Your answer to an invitation: join, or say no and the row goes. */
 export const answerCollabInvite = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), answer: z.enum(["join", "no"]) }).parse(d),
   )
   .handler(async ({ context, data }) => {
@@ -294,7 +294,7 @@ export const answerCollabInvite = createServerFn({ method: "POST" })
 /** Change what someone is in the room, or take them out. Owners and admins can. */
 export const setMemberRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -315,7 +315,7 @@ export const setMemberRole = createServerFn({ method: "POST" })
 
 export const removeMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid(), profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("collab_members")
@@ -329,7 +329,7 @@ export const removeMember = createServerFn({ method: "POST" })
 /** Hand the room over: they become owner, you stay as an admin. */
 export const transferCollab = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid(), profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const client = db(context.supabase);
     // Demote first: one owner per collab is enforced by an index.
@@ -351,7 +351,7 @@ export const transferCollab = createServerFn({ method: "POST" })
 /** Who can see it: a project can be opened up, or closed again. */
 export const setCollabVisibility = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), visibility: z.enum(["public", "private"]) }).parse(d),
   )
   .handler(async ({ context, data }) => {
@@ -366,7 +366,7 @@ export const setCollabVisibility = createServerFn({ method: "POST" })
 /** Move the project along: active, paused, completed, archived. */
 export const setCollabStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -386,7 +386,7 @@ export const setCollabStatus = createServerFn({ method: "POST" })
 /** Leave a project room. The owner cannot walk out of their own. */
 export const leaveCollab = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const client = db(context.supabase);
     const { data: mine } = await client
@@ -413,7 +413,7 @@ export const leaveCollab = createServerFn({ method: "POST" })
  */
 export const updateCollab = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -445,7 +445,7 @@ export const updateCollab = createServerFn({ method: "POST" })
 /** The project's banner or picture, once uploaded to the owner's storage folder. */
 export const setCollabImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -466,7 +466,7 @@ export const setCollabImage = createServerFn({ method: "POST" })
 /** Close a project for good. Only its owner can, and only a project — a band is not ended here. */
 export const deleteCollab = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { data: rows, error } = await db(context.supabase)
       .from("collabs")
@@ -497,7 +497,7 @@ export type CollabMessage = {
 /** The project's budget, for the people in it; null for anyone else or when none was set. */
 export const getCollabBudget = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ budgetPaise: number | null }> => {
     const { data: row } = await db(context.supabase)
       .from("collab_private")
@@ -511,7 +511,7 @@ export const getCollabBudget = createServerFn({ method: "GET" })
 /** Set or change the budget; owners and admins only (the database checks). */
 export const setCollabBudget = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -542,7 +542,7 @@ export type CollabInviteLink = { token: string; active: boolean; needs_approval:
 
 export const getCollabInviteLink = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<CollabInviteLink | null> => {
     const { data: row, error } = await db(context.supabase)
       .from("collab_invite_links")
@@ -556,7 +556,7 @@ export const getCollabInviteLink = createServerFn({ method: "GET" })
 /** Make the link, turn it on or off, or change whether the owner approves each join. */
 export const setCollabInviteLink = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -589,7 +589,7 @@ export const setCollabInviteLink = createServerFn({ method: "POST" })
 /** Join by link: 'invited' while the owner approves each join, otherwise straight in. */
 export const joinCollabByLink = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     // Any text: a wrong token gets the database's plain answer, not a validation error.
     z.object({ token: z.string().trim().max(80) }).parse(d),
   )
@@ -606,7 +606,7 @@ export const joinCollabByLink = createServerFn({ method: "POST" })
 /** Let in someone who asked to join by link. Owners and admins can (the database checks). */
 export const letInCollabMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid(), profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("collab_members")

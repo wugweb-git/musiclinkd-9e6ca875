@@ -338,8 +338,8 @@ export function Field({
   children,
 }: {
   label: string;
-  /** The field's identity; the control answers to `<id>-control`. */
-  id: string;
+  /** The field's identity; the control answers to `<id>-control`. Defaults to auto-slug from label. */
+  id?: string;
   /** One line under the label that says what the field is for. */
   hint?: string;
   /** What is wrong and how to fix it, under the control; nothing when the field is fine. */
@@ -348,9 +348,10 @@ export function Field({
   required?: boolean | undefined;
   children: ReactNode;
 }) {
-  const controlId = `${id}-control`;
+  const fieldId = id ?? label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const controlId = `${fieldId}-control`;
   const describedBy =
-    [hint ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean).join(" ") ||
+    [hint ? `${fieldId}-hint` : null, error ? `${fieldId}-error` : null].filter(Boolean).join(" ") ||
     undefined;
   const control = {
     id: controlId,

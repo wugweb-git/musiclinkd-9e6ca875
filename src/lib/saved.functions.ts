@@ -41,7 +41,7 @@ const savedTable = (client: unknown) =>
 /** Just the ids for one type — cheap enough to call from any listing screen's own loader. */
 export const listMySavedIds = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ targetType }).parse(d))
+  .validator((d) => z.object({ targetType }).parse(d))
   .handler(async ({ context, data }): Promise<string[]> => {
     const { data: rows, error } = await savedTable(context.supabase)
       .select("target_id")
@@ -53,7 +53,7 @@ export const listMySavedIds = createServerFn({ method: "GET" })
 
 export const saveTarget = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ targetType, targetId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ targetType, targetId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const { error } = await savedTable(context.supabase).upsert(
       {
@@ -69,7 +69,7 @@ export const saveTarget = createServerFn({ method: "POST" })
 
 export const unsaveTarget = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ targetType, targetId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ targetType, targetId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const { error } = await savedTable(context.supabase)
       .delete()

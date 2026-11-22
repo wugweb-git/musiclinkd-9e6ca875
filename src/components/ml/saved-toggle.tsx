@@ -80,7 +80,7 @@ export function SaveButton({
         onToggle();
       }}
       className="hit-area flex items-center justify-center rounded-full bg-card transition-transform active:scale-97"
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size }} /* token-drift-allow: dynamic button size */
     >
       <Bookmark
         size={size * 0.45}

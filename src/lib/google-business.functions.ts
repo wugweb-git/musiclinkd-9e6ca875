@@ -25,7 +25,7 @@ export type GoogleSync = {
 
 export const syncBusinessFromGoogle = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ url: z.string().trim().max(500).regex(GOOGLE_MAPS).optional() }).parse(d ?? {}),
   )
   .handler(async ({ context, data }): Promise<GoogleSync> => {

@@ -24,7 +24,7 @@ export type PinPlace = {
 };
 
 export const placeFromPin = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ pin: z.string().regex(/^[1-9]\d{5}$/) }).parse(d))
+  .validator((d) => z.object({ pin: z.string().regex(/^[1-9]\d{5}$/) }).parse(d))
   .handler(async ({ data }): Promise<PinPlace | null> => {
     try {
       const res = await fetch(`https://api.postalpincode.in/pincode/${data.pin}`, {

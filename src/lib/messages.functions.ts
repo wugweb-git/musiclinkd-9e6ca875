@@ -98,7 +98,7 @@ const PAGE = 50;
  */
 export const getConversation = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({ id: z.string().uuid(), before: z.string().datetime({ offset: true }).optional() })
       .parse(d),
@@ -172,7 +172,7 @@ export const getConversation = createServerFn({ method: "GET" })
 /** The conversation with one person, started if this is the first message. */
 export const conversationWith = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     // Settings > Privacy > "Who can message you" (discovery_prefs.who_can_message): Nobody closes
     // new conversations, Connections needs an accepted connection. Anyone is the default.
@@ -207,7 +207,7 @@ export const conversationWith = createServerFn({ method: "POST" })
 /** Say something. The trigger moves the conversation to the top of both people's lists. */
 export const sendMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({ conversationId: z.string().uuid(), body: z.string().trim().min(1).max(4000) })
       .parse(d),

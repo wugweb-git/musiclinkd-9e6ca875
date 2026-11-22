@@ -1071,18 +1071,8 @@ function EditProfile() {
   );
 }
 
-/**
- * The shared field (InlineField), with an id derived from its label so this screen's eighteen
- * fields don't each have to name one. This used to be a second, differently styled copy of the
- * same idea — rounded-lg where the rest of the app is a pill, its own label and error treatment.
- */
-function Field({
-  inputId,
-  ...props
-}: Omit<ComponentProps<typeof InlineField>, "inputId"> & { inputId?: string }) {
-  const id = inputId ?? `edit-${props.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-  return <InlineField {...props} inputId={id} />;
-}
+/** Canonical inline field (derives inputId automatically from label if not provided). */
+const Field = InlineField;
 
 function TaxonomyChips({
   label,

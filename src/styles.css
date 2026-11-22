@@ -1071,6 +1071,13 @@
   padding-top: env(safe-area-inset-top);
 }
 
+/*
+ * Below the status bar on an edge-to-edge phone: the top inset plus 1.25rem (20px).
+ */
+@utility top-safe {
+  top: calc(env(safe-area-inset-top) + 1.25rem);
+}
+
 /* ------------------------------------------------------------------ page motion
  * Material 3 shared axis X for the registration flow, driven by the View Transitions API through
  * the router (src/lib/flow-motion.ts). Forward enters from the right, back from the left; the exit

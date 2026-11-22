@@ -18,7 +18,7 @@ const facts = z.object({
 /** Suggestion only. The posting request sends the employer's reviewed text, never this response automatically. */
 export const draftHiringCopy = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => facts.parse(input))
+  .validator((input) => facts.parse(input))
   .handler(async ({ data }) => {
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey)

@@ -35,7 +35,7 @@ const SELECT = `id, amount_paise, message, status, created_at,
 /** Make an offer on someone else's listing. */
 export const makeOffer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         listingId: z.string().uuid(),
@@ -96,7 +96,7 @@ export const listOffersOnMyListings = createServerFn({ method: "GET" })
 /** The seller accepts or declines an offer on their own listing. */
 export const answerOffer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), status: z.enum(["accepted", "declined"]) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ status: OfferStatus }> => {
@@ -111,7 +111,7 @@ export const answerOffer = createServerFn({ method: "POST" })
 /** The buyer pulls their own offer back. */
 export const withdrawOffer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ status: "withdrawn" }> => {
     const { error } = await db(context.supabase)
       .from("marketplace_offers")

@@ -815,7 +815,7 @@ export function InlineField({
   leading?: ReactNode;
   multiline?: boolean;
   maxLength?: number;
-  inputId: string;
+  inputId?: string;
   autoComplete?: string;
   inputMode?: "text" | "url" | "email" | "numeric" | "decimal" | "tel";
   /** A date field opens the phone's date picker. */
@@ -829,14 +829,15 @@ export function InlineField({
   /** Adds a muted " *" after the label (owner, 10 Oct 2026). Never on an "(optional)" label. */
   required?: boolean | undefined;
 }) {
-  const messageId = `${inputId}-message`;
+  const resolvedId = inputId ?? label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const messageId = `${resolvedId}-message`;
   const shared =
     "w-full min-w-0 bg-transparent text-2 outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
   return (
     <div className="group">
       {/* Same label states as TextField: grey at rest, ink while focused, red when invalid. */}
       <label
-        htmlFor={inputId}
+        htmlFor={resolvedId}
         className={cn(
           "mb-1.5 block text-sm font-medium transition-colors duration-125 ease-standard",
           error ? "text-destructive" : "text-muted-foreground group-focus-within:text-foreground",
@@ -866,7 +867,7 @@ export function InlineField({
         {prefix ? <span className="shrink-0 text-2 text-muted-foreground">{prefix}</span> : null}
         {multiline ? (
           <textarea
-            id={inputId}
+            id={resolvedId}
             value={value}
             rows={4}
             maxLength={maxLength}
@@ -879,7 +880,7 @@ export function InlineField({
           />
         ) : (
           <input
-            id={inputId}
+            id={resolvedId}
             type={type}
             max={max}
             value={value}
@@ -1495,6 +1496,8 @@ export function AccountTypeCard({
     "right-16 top-3 z-10 h-22 w-22 rotate-6 group-hover:-translate-y-1 group-active:-translate-y-1",
     "right-2 top-10 h-14 w-12 rotate-12 opacity-80 group-hover:rotate-[22deg] group-hover:translate-x-1 group-active:rotate-[22deg]",
   ];
+  const riseDelays = ["[animation-delay:120ms]", "[animation-delay:200ms]", "[animation-delay:280ms]"];
+  const floatDelays = ["[animation-delay:0ms]", "[animation-delay:600ms]", "[animation-delay:1200ms]"];
   const Root = onSelect ? "button" : "div";
   return (
     <Root
@@ -1537,12 +1540,11 @@ export function AccountTypeCard({
               className={cn(
                 "absolute animate-art-rise transition-[rotate,translate] duration-300 ease-standard motion-reduce:transition-none [&>*]:h-full [&>*]:w-full",
                 slots[i],
+                riseDelays[i],
               )}
-              style={{ animationDelay: `${120 + i * 80}ms` }}
             >
               <span
-                className="block h-full w-full animate-art-float"
-                style={{ animationDelay: `${i * 600}ms` }}
+                className={cn("block h-full w-full animate-art-float", floatDelays[i])}
               >
                 {piece}
               </span>
@@ -1551,8 +1553,7 @@ export function AccountTypeCard({
           {sticker ? (
             <span
               data-brand-id="brand-0007"
-              className="absolute right-3 top-24 z-20 -rotate-6 animate-art-rise whitespace-nowrap rounded-full bg-brand px-3 py-1 text-sm font-bold text-white shadow-md"
-              style={{ animationDelay: "360ms" }}
+              className="absolute right-3 top-24 z-20 -rotate-6 animate-art-rise [animation-delay:360ms] whitespace-nowrap rounded-full bg-brand px-3 py-1 text-sm font-bold text-white shadow-md"
             >
               {sticker}
             </span>
@@ -1575,12 +1576,13 @@ export function AccountTypeCard({
           <rect
             x="3"
             y="3"
+            width="calc(100% - 6px)"
+            height="calc(100% - 6px)"
             rx="13"
             fill="none"
             strokeWidth="6"
             strokeDasharray="8 8"
             className="stroke-ink/15"
-            style={{ width: "calc(100% - 6px)", height: "calc(100% - 6px)" }}
           />
         </svg>
       ) : null}

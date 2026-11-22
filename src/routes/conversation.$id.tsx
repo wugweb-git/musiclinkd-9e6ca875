@@ -423,7 +423,7 @@ function Conversation() {
                         <PersonAvatar
                           name={name}
                           photo={person?.avatar_url}
-                          className="h-7 w-7 shrink-0 text-[10px]"
+                          className="h-7 w-7 shrink-0 text-1"
                         />
                       )
                     ) : null}
@@ -437,7 +437,7 @@ function Conversation() {
                   </div>
                   {!joinsNext ? (
                     <p
-                      className={`mt-1 text-[11px] text-muted-foreground ${m.mine ? "text-right" : "pl-9"}`}
+                      className={`mt-1 text-1 text-muted-foreground ${m.mine ? "text-right" : "pl-9"}`}
                     >
                       {m.pending ? "Sending…" : timeLabel(m.created_at)}
                     </p>

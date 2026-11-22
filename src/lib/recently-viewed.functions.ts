@@ -35,7 +35,7 @@ const view = z.object({
 /** Keep one or more views (the newest time wins for each thing). */
 export const recordViews = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ views: z.array(view).min(1).max(60) }).parse(d))
+  .validator((d) => z.object({ views: z.array(view).min(1).max(60) }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase).upsert(
       data.views.map((v) => ({
@@ -68,7 +68,7 @@ export const listMyViews = createServerFn({ method: "GET" })
 /** Clear the list of profiles and studios, or of Market listings. */
 export const clearMyViews = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ scope: z.enum(["pages", "listings"]) }).parse(d))
+  .validator((d) => z.object({ scope: z.enum(["pages", "listings"]) }).parse(d))
   .handler(async ({ context, data }) => {
     const kinds = data.scope === "listings" ? ["listing"] : ["person", "studio"];
     const { error } = await db(context.supabase)

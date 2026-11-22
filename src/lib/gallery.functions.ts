@@ -58,7 +58,7 @@ export const listMyGallery = createServerFn({ method: "GET" })
 /** Records a photo the owner has just uploaded to their gallery folder, at the end. */
 export const addMyGalleryPhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ url: z.string().url().max(1000) }).parse(d))
+  .validator((d) => z.object({ url: z.string().url().max(1000) }).parse(d))
   .handler(async ({ context, data }): Promise<GalleryPhoto> => {
     const client = db(context.supabase);
     if (!data.url.startsWith("https://") || !galleryPath(data.url, context.userId)) {
@@ -92,7 +92,7 @@ export const addMyGalleryPhoto = createServerFn({ method: "POST" })
 /** Removes one photo and, when it was uploaded here, its file. Other URLs keep their files. */
 export const removeMyGalleryPhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = db(context.supabase);
     const { data: rows, error } = await client
@@ -113,7 +113,7 @@ export const removeMyGalleryPhoto = createServerFn({ method: "POST" })
 /** Saves the gallery's order: each photo's position in `ids`. The first one leads. */
 export const reorderMyGallery = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ ids: z.array(z.string().uuid()).max(MAX_GALLERY_PHOTOS * 2) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ ordered: number }> => {

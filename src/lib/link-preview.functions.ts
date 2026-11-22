@@ -114,7 +114,7 @@ function decodeEntities(s: string) {
 
 export const getLinkPreview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ url: z.string().url().max(500) }).parse(d))
+  .validator((d) => z.object({ url: z.string().url().max(500) }).parse(d))
   .handler(async ({ data }): Promise<LinkPreview> => {
     const u = new URL(data.url);
     const empty: LinkPreview = {

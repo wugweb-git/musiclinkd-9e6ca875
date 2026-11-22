@@ -316,7 +316,10 @@ export function ProductCard({
         <div className="relative aspect-square overflow-hidden rounded-sm bg-subtle">
           {item.photos.length ? (
             <div
-              className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto"
+              tabIndex={0}
+              role="region"
+              aria-label={`${item.title} photos`}
+              className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               onScroll={(e) => {
                 const el = e.currentTarget;
                 setShown(Math.round(el.scrollLeft / el.clientWidth));
@@ -1085,7 +1088,7 @@ export function FilterButton({
     >
       <SlidersHorizontal size={iconSize.sm} aria-hidden />
       {count ? (
-        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[11px] font-bold text-background ring-2 ring-background">
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-1 font-bold text-background ring-2 ring-background">
           {count}
         </span>
       ) : null}

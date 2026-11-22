@@ -109,7 +109,7 @@ async function listingIdFor(client: SupabaseClient, slug: string) {
 /** Request a booking against a listing. */
 export const requestRentalBooking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         listingSlug: z.string().min(1).max(120),
@@ -170,7 +170,7 @@ export const listMyRentalBookings = createServerFn({ method: "GET" })
 /** One booking this account made, for a detail screen. */
 export const getMyRentalBooking = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<MyRentalBooking | null> => {
     const { data: row, error } = await db(context.supabase)
       .from("rental_bookings")
@@ -185,7 +185,7 @@ export const getMyRentalBooking = createServerFn({ method: "GET" })
 /** The requests against one of this account's own listings. */
 export const listIncomingRentalRequests = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ listingSlug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ listingSlug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }): Promise<MyRentalBooking[]> => {
     const client = db(context.supabase);
     const listingId = await listingIdFor(client, data.listingSlug);
@@ -222,7 +222,7 @@ export const listMyIncomingRentalRequests = createServerFn({ method: "GET" })
 /** The listing owner moves a request along: offer sent, confirmed, active, completed, declined. */
 export const setRentalBookingStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -242,7 +242,7 @@ export const setRentalBookingStatus = createServerFn({ method: "POST" })
 /** The renter cancels their own booking. The row stays, so the owner sees what happened. */
 export const cancelRentalBooking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("rental_bookings")
@@ -357,7 +357,7 @@ function equipmentFromRow(row: RentalListingRow): Equipment {
 
 /** A real listing, mapped to the same Equipment shape the request wizard already renders. */
 export const getRentalListingDetail = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }): Promise<Equipment | null> => {
     const client = await anonClient();
     const { data: row, error } = await client
@@ -397,7 +397,7 @@ type ProviderProfileRow = {
 const PROVIDER_PROFILE = "id, display_name, headline, bio, city, avatar_url, is_verified";
 
 export const getRentalProvider = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<RealProvider | null> => {
     const client = await anonClient();
     const profileOf = (select: string) =>
@@ -456,14 +456,19 @@ export const getRentalProvider = createServerFn({ method: "GET" })
  */
 export const getRentalBookingCounts = createServerFn({ method: "GET" }).handler(
   async (): Promise<Record<string, number>> => {
-    const client = await anonClient();
-    const rpc = client.rpc as unknown as (fn: string) => Promise<{
-      data: { listing_id: string; bookings: number }[] | null;
-      error: { message: string } | null;
-    }>;
-    const { data, error } = await rpc.call(client, "rental_booking_counts");
-    if (error) return {};
-    return Object.fromEntries((data ?? []).map((r) => [r.listing_id, Number(r.bookings)]));
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const client = (supabaseAdmin as unknown as SupabaseClient) ?? (await anonClient());
+      const rpc = client.rpc as unknown as (fn: string) => Promise<{
+        data: { listing_id: string; bookings: number }[] | null;
+        error: { message: string } | null;
+      }>;
+      const { data, error } = await rpc.call(client, "rental_booking_counts");
+      if (error) return {};
+      return Object.fromEntries((data ?? []).map((r) => [r.listing_id, Number(r.bookings)]));
+    } catch {
+      return {};
+    }
   },
 );
 
@@ -525,7 +530,7 @@ export const listMyListingStandings = createServerFn({ method: "GET" })
 /** The owner takes a listing out of browsing (unavailable, archived) or puts it back (active). */
 export const setMyListingStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),

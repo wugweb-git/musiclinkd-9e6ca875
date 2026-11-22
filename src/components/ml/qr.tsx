@@ -130,7 +130,7 @@ export function QrCode({
   return (
     <div
       className={`relative flex items-center justify-center rounded-lg ${className}`}
-      style={{ background: s.light, width: size, height: size }}
+      style={{ background: s.light, width: size, height: size }} /* token-drift-allow: dynamic QR palette and dimensions */
     >
       {src ? (
         <>
@@ -147,7 +147,7 @@ export function QrCode({
               alt=""
               aria-hidden
               className="absolute rounded-full border-4 object-cover"
-              style={{
+              style={{ /* token-drift-allow: dynamic QR overlay geometry */
                 width: size * 0.26,
                 height: size * 0.26,
                 borderColor: s.light,
@@ -201,7 +201,7 @@ export function QrIdentityCard({
   return (
     <article
       className="overflow-hidden rounded-lg border border-border p-5 text-center"
-      style={{ background: s.light, color: s.dark }}
+      style={{ background: s.light, color: s.dark }} /* token-drift-allow: dynamic QR palette */
     >
       <p className="pill bg-background/10">MusicLinkd</p>
 
@@ -210,10 +210,10 @@ export function QrIdentityCard({
           src={sized(photo, { width: 64 })}
           alt=""
           className="h-16 w-16 rounded-full object-cover"
-          style={{ border: `2px solid ${s.dark}20` }}
+          style={{ border: `2px solid ${s.dark}20` }} /* token-drift-allow: dynamic QR border */
         />
         <div className="flex items-center justify-center gap-1.5">
-          <h2 className="text-2 leading-tight" style={{ color: s.dark }}>
+          <h2 className="text-2 leading-tight" style={{ color: s.dark }} /* token-drift-allow: dynamic QR text color */>
             {name}
           </h2>
           {verified ? <VerifiedBadge size={16} /> : null}
@@ -234,7 +234,7 @@ export function QrIdentityCard({
       <p className={`mt-4 truncate text-1 font-semibold ${onInk ? "opacity-85" : "opacity-70"}`}>
         {url.replace(/^https?:\/\//, "")}
       </p>
-      <p className="text-1 opacity-50">@{handle}</p>
+      <p className="text-1 opacity-70">@{handle}</p>
     </article>
   );
 }

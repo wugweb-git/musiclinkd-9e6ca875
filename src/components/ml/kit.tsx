@@ -835,7 +835,7 @@ export function Meter({
         <span className="text-muted-foreground">{hint ?? value}</span>
       </div>
       <div className="mt-1 h-2 rounded-full bg-subtle">
-        <div className="h-2 rounded-full bg-ink" style={{ width: `${pct}%` }} />
+        <div className="h-2 rounded-full bg-ink" style={{ width: `${pct}%` }} /* token-drift-allow: dynamic progress percentage */ />
       </div>
     </div>
   );

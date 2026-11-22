@@ -259,11 +259,5 @@ function CreateBand() {
   );
 }
 
-/** The shared field, with an id from its label. Was a third styled copy of the same input. */
-function Field({
-  inputId,
-  ...props
-}: Omit<ComponentProps<typeof InlineField>, "inputId"> & { inputId?: string }) {
-  const id = inputId ?? `band-${props.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-  return <InlineField {...props} inputId={id} />;
-}
+/** The canonical inline field (derives inputId from label if not provided). */
+const Field = InlineField;

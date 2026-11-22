@@ -19,7 +19,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  */
 export const saveMyPushToken = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         token: z.string().trim().min(16).max(4096),
@@ -47,7 +47,7 @@ export const saveMyPushToken = createServerFn({ method: "POST" })
 /** Stop this device receiving pushes — signing out, or turning notifications off. */
 export const removeMyPushToken = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ token: z.string().trim().min(16).max(4096) }).parse(d))
+  .validator((d) => z.object({ token: z.string().trim().min(16).max(4096) }).parse(d))
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { error } = await client.from("push_tokens").delete().eq("token", data.token);

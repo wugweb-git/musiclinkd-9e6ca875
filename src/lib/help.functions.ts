@@ -133,7 +133,7 @@ export type HelpArticle = {
 
 /** One published guide with its related guides, or null. Public. */
 export const getHelpArticle = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }): Promise<HelpArticle | null> => {
     // 1. Try live WordPress REST API first
     const wpArticle = await fetchWpHelpArticle(data.slug);
@@ -176,7 +176,7 @@ export const getHelpArticle = createServerFn({ method: "GET" })
 /** The signed-in person's answer to "was this helpful" on one guide, or null. */
 export const getMyHelpFeedback = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }): Promise<boolean | null> => {
     const { data: row, error } = await db(context.supabase)
       .from("help_feedback")
@@ -191,7 +191,7 @@ export const getMyHelpFeedback = createServerFn({ method: "GET" })
 /** Records (or changes) the signed-in person's answer for one guide. */
 export const giveHelpFeedback = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ slug: z.string().min(1).max(120), helpful: z.boolean() }).parse(d),
   )
   .handler(async ({ context, data }) => {
@@ -224,7 +224,7 @@ export type SupportRequest = {
 /** Sends a request to the team from the help centre. */
 export const sendSupportRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         topic: z.string().regex(/^[a-z0-9-]{1,40}$/),
@@ -433,7 +433,7 @@ function contentBlocks(content: string | null): ContentBlock[] {
 
 /** One published site page, or null (missing, draft, or unreadable). Public. */
 export const getSitePage = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }): Promise<SitePage | null> => {
     // 1. Try live WordPress REST API first
     const wpPage = await fetchWpSitePage(data.slug);

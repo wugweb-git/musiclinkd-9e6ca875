@@ -95,7 +95,7 @@ export const unreadCount = createServerFn({ method: "GET" })
 /** Mark one read, or everything. */
 export const markRead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid().optional() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid().optional() }).parse(d))
   .handler(async ({ context, data }) => {
     const now = new Date().toISOString();
     let query = db(context.supabase)
@@ -130,7 +130,7 @@ export const getNotificationPrefs = createServerFn({ method: "GET" })
 
 export const saveNotificationPrefs = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         channels: z.record(

@@ -78,7 +78,7 @@ async function opportunityIdFor(client: SupabaseClient, slug: string) {
 /** Send an application. A second one for the same opportunity updates the first. */
 export const applyToOpportunity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         slug: z.string().min(1).max(120),
@@ -107,7 +107,7 @@ export const applyToOpportunity = createServerFn({ method: "POST" })
 /** Where this account stands with one opportunity, for the Apply button. */
 export const myApplicationTo = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }): Promise<{ status: ApplicationStatus | null }> => {
     const client = db(context.supabase);
     const { data: opportunity } = await client
@@ -145,7 +145,7 @@ export const listMyApplications = createServerFn({ method: "GET" })
 /** The applications to one of this account's own opportunities. */
 export const listApplicants = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }): Promise<ApplicantSummary[]> => {
     const client = db(context.supabase);
     const opportunityId = await opportunityIdFor(client, data.slug);
@@ -163,7 +163,7 @@ export const listApplicants = createServerFn({ method: "GET" })
 /** The poster moves an application along: shortlisted, accepted, rejected. */
 export const setApplicationStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -190,7 +190,7 @@ export type AttachedWork = {
 /** The published work an applicant attached to their application, in the order they chose. */
 export const listAttachedWork = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(20) }).parse(d))
+  .validator((d) => z.object({ ids: z.array(z.string().uuid()).max(20) }).parse(d))
   .handler(async ({ context, data }): Promise<AttachedWork[]> => {
     if (!data.ids.length) return [];
     const { data: rows, error } = await db(context.supabase)
@@ -207,7 +207,7 @@ export const listAttachedWork = createServerFn({ method: "GET" })
 /** The applicant pulls out. The row stays, so the poster sees what happened. */
 export const withdrawApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }) => {
     const client = db(context.supabase);
     const opportunityId = await opportunityIdFor(client, data.slug);
@@ -233,7 +233,7 @@ function slugFor(title: string) {
 /** Post an opportunity, or save it as a draft only the poster can see. */
 export const createOpportunity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         title: z.string().trim().min(3).max(140),
@@ -284,7 +284,7 @@ export const createOpportunity = createServerFn({ method: "POST" })
  */
 export const recordOpportunityView = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         slug: z.string().min(1).max(120),
@@ -318,7 +318,7 @@ export type OpportunityViewStats = { totalViews: number; daily: number[] };
 /** The poster's own view stats for the last 7 days. Empty for anyone else's opportunity. */
 export const getOpportunityViewStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }): Promise<OpportunityViewStats> => {
     const client = db(context.supabase);
     const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
@@ -347,7 +347,7 @@ export type OpportunityViewSource = { source: string; views: number };
 /** Where the poster's own opportunity was opened from, all time. Empty for anyone else's. */
 export const getOpportunityViewSources = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }): Promise<OpportunityViewSource[]> => {
     const client = db(context.supabase);
     const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
@@ -395,7 +395,7 @@ export const listMySavedOpportunitySlugs = createServerFn({ method: "GET" })
 
 export const setOpportunitySaved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ slug: z.string().min(1).max(120), saved: z.boolean() }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ ok: boolean }> => {
@@ -423,7 +423,7 @@ export const setOpportunitySaved = createServerFn({ method: "POST" })
 /** How many people saved the poster's own opportunity. Zero for anyone else's. */
 export const getOpportunitySaveCount = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ context, data }): Promise<number | null> => {
     const client = db(context.supabase);
     const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);

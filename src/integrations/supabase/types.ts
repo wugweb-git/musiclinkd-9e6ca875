@@ -1629,42 +1629,6 @@ export type Database = {
           },
         ]
       }
-      person_type_instruments: {
-        Row: {
-          instrument_category: string
-          instrument_slug: string
-          person_type_category: string
-          person_type_slug: string
-        }
-        Insert: {
-          instrument_category?: string
-          instrument_slug: string
-          person_type_category?: string
-          person_type_slug: string
-        }
-        Update: {
-          instrument_category?: string
-          instrument_slug?: string
-          person_type_category?: string
-          person_type_slug?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_type_instruments_instrument_category_instrument_slu_fkey"
-            columns: ["instrument_category", "instrument_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-          {
-            foreignKeyName: "person_type_instruments_person_type_category_person_type_s_fkey"
-            columns: ["person_type_category", "person_type_slug"]
-            isOneToOne: false
-            referencedRelation: "taxonomy_options"
-            referencedColumns: ["category_key", "slug"]
-          },
-        ]
-      }
       portfolio_item_events: {
         Row: {
           created_at: string

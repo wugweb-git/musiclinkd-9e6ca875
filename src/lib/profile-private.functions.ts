@@ -54,7 +54,7 @@ export const getMyPrivateDetails = createServerFn({ method: "GET" })
 
 export const saveMyPrivateDetails = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         dateOfBirth: z

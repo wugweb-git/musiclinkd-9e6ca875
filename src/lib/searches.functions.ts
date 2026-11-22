@@ -35,7 +35,7 @@ export type PopularSearches = { items: string[]; searched: boolean };
 
 /** The most-run searches in one scope over the last 30 days, optionally in one Market city. */
 export const popularSearches = createServerFn({ method: "GET" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         scope: z.enum(["market", "rent", "discover", "global"]),
@@ -112,7 +112,7 @@ async function mostListed(client: SupabaseClient, scope: SearchScope): Promise<s
 /** This account's saved searches in one scope, newest first. */
 export const listMySavedSearches = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ scope: z.enum(["market", "rent", "global"]) }).parse(d))
+  .validator((d) => z.object({ scope: z.enum(["market", "rent", "global"]) }).parse(d))
   .handler(async ({ context, data }): Promise<SavedSearch[]> => {
     const { data: rows, error } = await db(context.supabase)
       .from("saved_searches")
@@ -129,7 +129,7 @@ export const listMySavedSearches = createServerFn({ method: "GET" })
 /** Keep a search. Saving the same words again changes nothing. */
 export const saveSearch = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         scope: z.enum(["market", "rent", "global"]),
@@ -150,7 +150,7 @@ export const saveSearch = createServerFn({ method: "POST" })
 
 export const removeSavedSearch = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const { error } = await db(context.supabase)
       .from("saved_searches")

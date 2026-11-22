@@ -90,7 +90,7 @@ const withMine = (row: BookingRequest, userId: string): BookingRequest => ({
  */
 export const requestBooking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         studioSlug: z.string().min(1).max(120).optional(),
@@ -198,7 +198,7 @@ export const listMyBookings = createServerFn({ method: "GET" })
 /** One request, for the detail screen. Readable by the requester and whoever was asked. */
 export const getBookingRequest = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<BookingRequest | null> => {
     const { data: row, error } = await db(context.supabase)
       .from("booking_requests")
@@ -258,7 +258,7 @@ export const listBookableBookings = createServerFn({ method: "GET" })
 /** The studio answers: reviewing, confirmed or declined, with a line back. */
 export const answerBooking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -297,7 +297,7 @@ export const answerBooking = createServerFn({ method: "POST" })
 /** The requester pulls out. The row stays, so the studio sees what happened. */
 export const cancelBooking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("booking_requests")
@@ -314,7 +314,7 @@ export const cancelBooking = createServerFn({ method: "POST" })
  */
 export const rescheduleBooking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),

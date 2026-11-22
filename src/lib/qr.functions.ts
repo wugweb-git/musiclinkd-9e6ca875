@@ -25,7 +25,7 @@ export type ScannedProfile = {
 /** Resolve a scanned username to a public profile, and log the scan. No-op for your own code. */
 export const recordScan = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ username: z.string().min(1).max(60) }).parse(d))
+  .validator((d) => z.object({ username: z.string().min(1).max(60) }).parse(d))
   .handler(async ({ context, data }): Promise<ScannedProfile | null> => {
     const { data: row, error } = await context.supabase
       .from("profiles")

@@ -155,7 +155,7 @@ export const listReviewable = createServerFn({ method: "GET" })
 /** Write one. The database refuses anything this account has not actually worked with. */
 export const writeReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         targetProfileId: z.string().uuid().optional(),
@@ -207,7 +207,7 @@ export const listMyReviews = createServerFn({ method: "GET" })
 /** Correct the wording of a review you wrote. Rating is locked once published — body only. */
 export const editMyReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), body: z.string().trim().min(10).max(2000) }).parse(d),
   )
   .handler(async ({ context, data }) => {
@@ -223,7 +223,7 @@ export const editMyReview = createServerFn({ method: "POST" })
 /** Remove a review you wrote. */
 export const deleteMyReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("reviews")
@@ -249,7 +249,7 @@ export const listReviewsAboutMe = createServerFn({ method: "GET" })
 
 /** Public reviews about one profile, for their page. */
 export const listReviewsFor = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<ReviewRow[]> => {
     const client = await anonClient();
     const read = (select: string) =>
@@ -382,7 +382,7 @@ export const listReviewAskTargets = createServerFn({ method: "GET" })
 /** Ask, or — a week after asking — send the one reminder. */
 export const askForReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         profileId: z.string().uuid(),

@@ -10,7 +10,7 @@ import { createOpportunity } from "@/lib/applications.functions";
 import { draftHiringCopy } from "@/lib/hiring-copy.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthNotice } from "@/components/ml/auth";
-import { CityField, Field as SharedField, inputClass } from "@/components/ml/listing-form";
+import { CityField, Field, inputClass } from "@/components/ml/listing-form";
 import { iconSize } from "@/lib/tokens";
 import type { ReactNode } from "react";
 
@@ -449,18 +449,5 @@ function CreateOpportunity() {
         </div>
       </ActionBar>
     </Screen>
-  );
-}
-
-/**
- * The shared field wrapper, with an id derived from its label. This was a copy that gave the
- * label no association with its control at all, so a screen reader read the two apart.
- */
-function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
-  const id = `opportunity-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-  return (
-    <SharedField label={label} id={id} {...(hint ? { hint } : {})}>
-      {children}
-    </SharedField>
   );
 }

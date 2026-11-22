@@ -210,5 +210,5 @@ export async function readPlace(url: string): Promise<MapsPlace> {
 
 export const readMapsLink = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ url: z.string().trim().max(500).regex(GOOGLE_MAPS) }).parse(d))
+  .validator((d) => z.object({ url: z.string().trim().max(500).regex(GOOGLE_MAPS) }).parse(d))
   .handler(({ data }): Promise<MapsPlace> => readPlace(data.url));

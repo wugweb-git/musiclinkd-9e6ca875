@@ -77,7 +77,7 @@ const local = (ts: string) => ts.replace(" ", "T").slice(0, 19);
 
 /** The weekly hours, and with a date range the busy times inside it. Public. */
 export const getBookableCalendar = createServerFn({ method: "GET" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({ slug: z.string().min(1).max(120), from: DATE.optional(), to: DATE.optional() })
       .parse(d),
@@ -123,7 +123,7 @@ const SPAN = z.object({
 /** The owner's weekly hours. Written through the "Owners write their own" policy on studios. */
 export const updateMyWeeklyHours = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         weeklyHours: z.object(
@@ -153,7 +153,7 @@ export const updateMyWeeklyHours = createServerFn({ method: "POST" })
 /** The owner's notice and blackout days. Either may be sent alone; the other is left as it is. */
 export const updateMyBookingRules = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         noticeHours: z.number().int().min(0).max(720).optional(),
@@ -279,7 +279,7 @@ export const listMyBookableBlocks = createServerFn({ method: "GET" })
 
 export const addMyBookableBlock = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         startsAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/),
@@ -308,7 +308,7 @@ export const addMyBookableBlock = createServerFn({ method: "POST" })
 
 export const removeMyBookableBlock = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     // RLS keeps this to the owner's own studio.
     const { error } = await db(context.supabase).from("bookable_blocks").delete().eq("id", data.id);

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useId, useRef } from "react";
+import { useCallback, useEffect, useId, useRef } from "react";
 import { LayoutGrid, Plus } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
@@ -35,7 +35,7 @@ export function GearCta() {
   const smoke = `smoke-${useId().replace(/:/g, "")}`;
   const reducedMotion = usePrefersReducedMotion();
 
-  function strum() {
+  const strum = useCallback(() => {
     if (reducedMotion) return;
     cancelAnimationFrame(frame.current);
     const start = performance.now();
@@ -55,7 +55,7 @@ export function GearCta() {
       if (moving) frame.current = requestAnimationFrame(tick);
     };
     frame.current = requestAnimationFrame(tick);
-  }
+  }, [reducedMotion]);
 
   // One strum the first time the card is mostly on screen.
   useEffect(() => {
@@ -75,7 +75,7 @@ export function GearCta() {
       seen.disconnect();
       cancelAnimationFrame(frame.current);
     };
-  }, []);
+  }, [strum]);
 
   return (
     <section
@@ -105,7 +105,7 @@ export function GearCta() {
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 opacity-20 mix-blend-overlay"
-        style={{ backgroundImage: GRAIN }}
+        style={{ backgroundImage: GRAIN }} /* token-drift-allow: SVG noise data-URI */
       />
 
       <div className="px-5 pb-5 pt-5">
@@ -130,7 +130,7 @@ export function GearCta() {
               stroke="white"
               strokeWidth={s.width}
               vectorEffect="non-scaling-stroke"
-              style={{ opacity: 0.16 }}
+              strokeOpacity={0.16}
             />
           ))}
         </svg>

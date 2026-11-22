@@ -49,7 +49,7 @@ const slugs = (max: number) => z.array(z.string().trim().min(1).max(80)).max(max
 
 export const saveMyDiscoverySettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         roles: slugs(20),
@@ -67,7 +67,7 @@ export const saveMyDiscoverySettings = createServerFn({ method: "POST" })
 /** Swiped left on the deck: that person is not suggested again until feedback is cleared. */
 export const skipRecommendedPerson = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = context.supabase as unknown as SupabaseClient;
     await writeRecommend(client, context.userId, (current) => ({
