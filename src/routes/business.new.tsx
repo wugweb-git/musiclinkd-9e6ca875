@@ -572,7 +572,7 @@ function NewBusiness() {
                     <button
                       type="button"
                       disabled
-                      className="flex h-11 w-full items-center rounded-sm border border-input bg-card px-3.5 text-left text-[16px] text-muted-foreground opacity-60"
+                      className="flex h-11 w-full items-center rounded-sm border border-input bg-card px-3.5 text-left text-2 text-muted-foreground opacity-60"
                     >
                       State first
                     </button>

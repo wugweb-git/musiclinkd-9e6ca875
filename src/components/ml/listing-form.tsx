@@ -298,7 +298,7 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
  */
 export const inputClass =
   // field-focus: ink border + 1.5px ink ring on focus, red border when aria-invalid (owner, 10 Oct 2026).
-  "field-focus h-11 w-full rounded-sm border border-input bg-card px-3.5 text-[16px] outline-none";
+  "field-focus h-11 w-full rounded-sm border border-input bg-card px-3.5 text-2 outline-none";
 
 /**
  * What a `Field` knows that its control needs: the id to answer to, what describes it, and whether
@@ -460,7 +460,7 @@ export function SheetMultiSelect({
         type="button"
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
-        className="flex min-h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 py-2.5 text-left text-[16px]"
+        className="flex min-h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 py-2.5 text-left text-2"
       >
         <span className="min-w-0 truncate text-foreground">
           {picked.length ? picked.map((o) => o.label).join(", ") : placeholder}
@@ -565,7 +565,7 @@ export function SheetSelect({
         // The trigger is the field's control: it takes the label, the hint and the error.
         {...field}
         // Red border when its Field is wrong, like the text fields (owner, 10 Oct 2026).
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-[16px] aria-invalid:border-destructive ${className}`}
+        className={`flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-2 aria-invalid:border-destructive ${className}`}
       >
         {/*
          * A stored value the options don't contain — a city typed before this was a picker, one

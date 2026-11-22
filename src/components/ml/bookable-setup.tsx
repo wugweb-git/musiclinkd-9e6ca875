@@ -417,7 +417,7 @@ export function PoliciesEditor({
         aria-invalid={problem ? true : undefined}
         aria-describedby="policies-message"
         className={cn(
-          "w-full resize-none rounded-sm border bg-card px-3.5 py-3 text-[16px] leading-relaxed outline-none field-focus",
+          "w-full resize-none rounded-sm border bg-card px-3.5 py-3 text-2 leading-relaxed outline-none field-focus",
           problem ? "border-destructive" : "border-input",
         )}
       />

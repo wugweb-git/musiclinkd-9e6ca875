@@ -831,7 +831,7 @@ export function InlineField({
 }) {
   const messageId = `${inputId}-message`;
   const shared =
-    "w-full min-w-0 bg-transparent text-[16px] outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
+    "w-full min-w-0 bg-transparent text-2 outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
   return (
     <div className="group">
       {/* Same label states as TextField: grey at rest, ink while focused, red when invalid. */}
@@ -1123,7 +1123,7 @@ export function DateDrawerField({
         type="button"
         aria-haspopup="dialog"
         onClick={openDrawer}
-        className="flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-[16px]"
+        className="flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-input bg-card px-3.5 text-left text-2"
       >
         <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
           {shown}

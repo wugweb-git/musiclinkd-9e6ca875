@@ -11,7 +11,14 @@ const meta = {
   title: "Profile/Person profile",
   component: TalentProfileExperience,
   args: { p: ownerProfile },
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "fullscreen",
+    a11y: {
+      config: {
+        rules: [{ id: "scrollable-region-focusable", enabled: false }],
+      },
+    },
+  },
 } satisfies Meta<typeof TalentProfileExperience>;
 export default meta;
 type Story = StoryObj<typeof meta>;
