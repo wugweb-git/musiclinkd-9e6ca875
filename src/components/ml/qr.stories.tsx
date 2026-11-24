@@ -20,7 +20,7 @@ const meta = {
     photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80",
     verified: true,
     handle: "ananya",
-    url: "https://musiclinkd.com/@ananya",
+    url: "https://app.musiclinkd.com/@ananya",
   },
   parameters: { layout: "padded" },
 } satisfies Meta<typeof QrIdentityCard>;
@@ -38,7 +38,7 @@ export const IdentityCards: Story = {
         photo="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80"
         verified
         handle="ananya"
-        url="https://musiclinkd.com/@ananya"
+        url="https://app.musiclinkd.com/@ananya"
         tagline="Available for live sets & playback studio sessions in Mumbai."
       />
       <QrIdentityCard
@@ -47,7 +47,7 @@ export const IdentityCards: Story = {
         photo="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400&q=80"
         verified
         handle="soundcraft"
-        url="https://musiclinkd.com/studios/soundcraft"
+        url="https://app.musiclinkd.com/studios/soundcraft"
         style="dark"
         compact
       />
@@ -59,10 +59,10 @@ export const StandaloneCodes: Story = {
   name: "Standalone QR Codes",
   render: () => (
     <div className="flex flex-wrap gap-4">
-      <QrCode value="https://musiclinkd.com/@ananya" size={160} style="light" />
-      <QrCode value="https://musiclinkd.com/@ananya" size={160} style="dark" />
-      <QrCode value="https://musiclinkd.com/@ananya" size={160} style="branded" />
-      <QrCode value="https://musiclinkd.com/@ananya" size={160} style="minimal" />
+      <QrCode value="https://app.musiclinkd.com/@ananya" size={160} style="light" />
+      <QrCode value="https://app.musiclinkd.com/@ananya" size={160} style="dark" />
+      <QrCode value="https://app.musiclinkd.com/@ananya" size={160} style="branded" />
+      <QrCode value="https://app.musiclinkd.com/@ananya" size={160} style="minimal" />
     </div>
   ),
 };
@@ -111,9 +111,9 @@ export const Sharing: Story = {
   name: "Copy and Share Actions",
   render: () => (
     <div className="space-y-4">
-      <CopyLinkRow url="https://musiclinkd.com/@ananya" />
+      <CopyLinkRow url="https://app.musiclinkd.com/@ananya" />
       <ShareActions
-        url="https://musiclinkd.com/@ananya"
+        url="https://app.musiclinkd.com/@ananya"
         title="Connect with Ananya on MusicLinkd"
       />
     </div>

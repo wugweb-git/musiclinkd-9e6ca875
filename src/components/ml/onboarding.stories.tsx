@@ -212,7 +212,7 @@ export const Fields: Story = {
       <InlineField
         inputId="s-user-ok"
         label="Username"
-        prefix="musiclinkd.com/"
+        prefix="app.musiclinkd.com/"
         value="aditirao"
         onChange={() => {}}
         placeholder="yourname"
@@ -221,7 +221,7 @@ export const Fields: Story = {
       <InlineField
         inputId="s-user-err"
         label="Username"
-        prefix="musiclinkd.com/"
+        prefix="app.musiclinkd.com/"
         value="aditi rao"
         onChange={() => {}}
         placeholder="yourname"
@@ -230,7 +230,7 @@ export const Fields: Story = {
       <InlineField
         inputId="s-user-lock"
         label="Username"
-        prefix="musiclinkd.com/"
+        prefix="app.musiclinkd.com/"
         value="aditirao"
         onChange={() => {}}
         placeholder="yourname"

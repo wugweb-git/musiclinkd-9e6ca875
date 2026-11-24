@@ -37,7 +37,7 @@ const FIXED_FIELDS = new Set<FieldKey>(["language", "currency"]);
 const FIELD_HINTS: Record<FieldKey, string> = {
   email: "Where we send sign-in links and account mail.",
   phone: "For sign-in codes and booking updates.",
-  username: "Your public link: musiclinkd.com/your-name.",
+  username: "Your public link: app.musiclinkd.com/your-name.",
   language: "The language the app uses.",
   currency: "How prices are shown to you.",
 };
