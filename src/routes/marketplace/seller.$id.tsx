@@ -147,13 +147,14 @@ function SellerProfile() {
           )}
         </div>
 
-        <button
+        <Btn
           type="button"
+          variant="ghost"
           onClick={() => setReport(true)}
-          className="mt-6 w-full text-left text-1 text-muted-foreground underline underline-offset-2"
+          className="mt-6 w-full justify-start text-1 text-muted-foreground underline underline-offset-2"
         >
           Report or block this seller
-        </button>
+        </Btn>
       </div>
 
       <ReportSheet

@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MoonStar } from "lucide-react";
-import { Screen, TopBar } from "@/components/ml/ui";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, Switch } from "@/components/ml/kit";
 import { notificationIcon } from "@/components/ml/notification-icons";
 import {
@@ -112,17 +112,16 @@ function NotificationSettings() {
             </p>
             <div className="flex flex-wrap gap-2">
               {channels.map((c) => (
-                <button
+                <Btn
                   key={c.key}
                   type="button"
                   aria-pressed={p[c.key]}
+                  variant={p[c.key] ? "primary" : "outline"}
                   onClick={() => toggle(p.category, c.key)}
-                  className={`min-h-9 rounded-full px-3.5 text-1 font-semibold ${
-                    p[c.key] ? "bg-ink text-ink-foreground" : "bg-background text-muted-foreground"
-                  }`}
+                  className="!min-h-9 !h-9 !px-3.5 !text-1"
                 >
                   {c.label}
-                </button>
+                </Btn>
               ))}
             </div>
           </Card>

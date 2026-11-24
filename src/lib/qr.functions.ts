@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { qrPrefsOf } from "@/lib/qr-prefs";
+import { anonClient } from "@/lib/portfolio.functions";
 
 /*
  * Scan history and analytics for the QR module (public.qr_scans, 20260918130000_qr_real.sql).
@@ -132,4 +133,84 @@ export const getMyQrAnalytics = createServerFn({ method: "GET" })
       last7Days: rows.filter((r) => new Date(r.created_at).getTime() >= days(7)).length,
       last30Days: rows.filter((r) => new Date(r.created_at).getTime() >= days(30)).length,
     };
+  });
+
+export type ResolvedDestination = {
+  kind: "profile" | "business";
+  title: string;
+  subtitle: string;
+  route: string;
+  avatarUrl: string | null;
+  verified: boolean;
+  status: "active" | "private" | "invalid" | "deactivated";
+};
+
+/** Resolve a public QR code, username, or business slug to a destination. Public. */
+export const resolveDestination = createServerFn({ method: "GET" })
+  .validator((d) => z.object({ code: z.string().min(1).max(100) }).parse(d))
+  .handler(async ({ data }): Promise<ResolvedDestination | null> => {
+    const client = await anonClient();
+    const cleanCode = data.code.trim();
+
+    // 1. Try public profile by username
+    const { data: profile } = await client
+      .from("profiles")
+      .select("id, username, display_name, avatar_url, verified, headline, city, visibility")
+      .eq("username", cleanCode)
+      .maybeSingle();
+
+    if (profile) {
+      if (profile.visibility === "deactivated") {
+        return {
+          kind: "profile",
+          title: profile.display_name ?? profile.username ?? "Member",
+          subtitle: "Account deactivated",
+          route: `/profile/${profile.username}`,
+          avatarUrl: profile.avatar_url,
+          verified: Boolean(profile.verified),
+          status: "deactivated",
+        };
+      }
+      if (profile.visibility === "private") {
+        return {
+          kind: "profile",
+          title: profile.display_name ?? profile.username ?? "Member",
+          subtitle: "Private profile",
+          route: `/profile/${profile.username}`,
+          avatarUrl: profile.avatar_url,
+          verified: Boolean(profile.verified),
+          status: "private",
+        };
+      }
+      return {
+        kind: "profile",
+        title: profile.display_name ?? profile.username ?? "Member",
+        subtitle: profile.headline ?? profile.city ?? "Music professional",
+        route: `/profile/${profile.username}`,
+        avatarUrl: profile.avatar_url,
+        verified: Boolean(profile.verified),
+        status: "active",
+      };
+    }
+
+    // 2. Try public business by slug
+    const { data: bookable } = await client
+      .from("bookables")
+      .select("id, slug, name, hero, category, city, verified")
+      .eq("slug", cleanCode)
+      .maybeSingle();
+
+    if (bookable) {
+      return {
+        kind: "business",
+        title: bookable.name,
+        subtitle: bookable.category ? `${bookable.category} · ${bookable.city}` : bookable.city,
+        route: `/booking/${bookable.slug}`,
+        avatarUrl: bookable.hero,
+        verified: Boolean(bookable.verified),
+        status: "active",
+      };
+    }
+
+    return null;
   });

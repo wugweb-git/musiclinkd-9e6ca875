@@ -108,7 +108,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "India's professional network for the music industry. Discover singers, bands, studios, labels and venues.",
       },
       { name: "author", content: "MusicLinkd" },
-      { name: "theme-color", content: "#F5F5F5" },
+      { name: "theme-color", content: "#F3F1EC" },
       { property: "og:title", content: "MusicLinkd — Discover Music Talent in India" },
       {
         property: "og:description",

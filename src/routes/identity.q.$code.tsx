@@ -1,10 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { StateCard } from "@/components/ml/kit";
-/**
- * FLOW-23 · QR-08..16 destination results + QR-29..35 invalid / expired / private /
- * deleted / deactivated / offline / error states.
- * route: /identity/q/$code — the canonical resolver for every MusicLinkd QR.
- */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PUBLIC_HOST } from "@/lib/site";
 import { useEffect, useState } from "react";
@@ -12,9 +7,14 @@ import { MessageCircle, ScanLine, Share2, UserPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { DestinationPreviewCard, PrimaryPair, nativeShare } from "@/components/ml/qr";
 import { canonicalUrl, previewFor, resolveCode, statusCopy } from "@/data/identity";
+import { resolveDestination } from "@/lib/qr.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/q/$code")({
+  loader: async ({ params }) => {
+    const live = await resolveDestination({ data: { code: params.code } }).catch(() => null);
+    return { live };
+  },
   head: () => ({
     meta: [
       { title: "Scanned MusicLinkd code" },
@@ -36,18 +36,35 @@ export const Route = createFileRoute("/identity/q/$code")({
 
 function QrResult() {
   const { code } = Route.useParams();
+  const { live } = Route.useLoaderData();
   const nav = useNavigate();
   const [phase, setPhase] = useState<"loading" | "done" | "offline">("loading");
 
   useEffect(() => {
     setPhase("loading");
     const online = typeof navigator === "undefined" || navigator.onLine;
-    const t = setTimeout(() => setPhase(online ? "done" : "offline"), 420);
+    const t = setTimeout(() => setPhase(online ? "done" : "offline"), 200);
     return () => clearTimeout(t);
   }, [code]);
 
   const dest = resolveCode(code);
-  const preview = previewFor(dest);
+  const fallbackPreview = previewFor(dest);
+
+  const preview =
+    live && live.status === "active"
+      ? {
+          kind: live.kind,
+          title: live.title,
+          subtitle: live.subtitle,
+          meta: live.subtitle,
+          route: live.route,
+          image: live.avatarUrl ?? "",
+          verified: live.verified,
+        }
+      : fallbackPreview;
+
+  const resolvedStatus = live ? live.status : dest.status;
+  const statusKey = resolvedStatus === "active" ? "invalid" : resolvedStatus;
   const url = canonicalUrl(code);
 
   return (
@@ -124,11 +141,11 @@ function QrResult() {
         ) : (
           <StateCard
             variant="subtle"
-            title={statusCopy[dest.status === "active" ? "invalid" : dest.status].title}
-            body={statusCopy[dest.status === "active" ? "invalid" : dest.status].body}
+            title={statusCopy[statusKey]?.title ?? "Invalid code"}
+            body={statusCopy[statusKey]?.body ?? "This code is not a valid MusicLinkd link."}
           >
             <BtnLink to="/identity/scan" className="w-full">
-              {statusCopy[dest.status === "active" ? "invalid" : dest.status].cta}
+              {statusCopy[statusKey]?.cta ?? "Back to Scanner"}
             </BtnLink>
             <BtnLink to="/discover" variant="outline" className="w-full">
               <Share2 size={iconSize.sm} className="mr-2" /> Discover on MusicLinkd

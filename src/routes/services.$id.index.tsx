@@ -130,13 +130,14 @@ function ServiceDetail() {
         back="/services"
         right={
           owner ? (
-            <button
+            <Btn
               type="button"
+              variant="ghost"
               onClick={() => setManage(true)}
-              className="text-1 font-semibold text-foreground"
+              className="text-1 font-semibold"
             >
               Manage
-            </button>
+            </Btn>
           ) : null
         }
       />

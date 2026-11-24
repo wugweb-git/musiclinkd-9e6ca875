@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Field, SheetSelect } from "@/components/ml/listing-form";
-import { Screen, TopBar } from "@/components/ml/ui";
+import { Screen, TopBar, IconBtn } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/lib/price";
@@ -86,23 +86,23 @@ function Details() {
 
           <Field label="Number of people">
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                aria-label="Fewer people"
+              <IconBtn
+                label="Fewer people"
                 onClick={() => set({ people: Math.max(1, draft.people - 1) })}
-                className="h-12 w-12 rounded-full border border-border bg-card text-2"
+                variant="outline"
+                className="h-12 w-12 text-2 border border-border bg-card"
               >
                 −
-              </button>
+              </IconBtn>
               <span className="min-w-8 text-center text-2 font-semibold">{draft.people}</span>
-              <button
-                type="button"
-                aria-label="More people"
+              <IconBtn
+                label="More people"
                 onClick={() => set({ people: Math.min(200, draft.people + 1) })}
-                className="h-12 w-12 rounded-full border border-border bg-card text-2"
+                variant="outline"
+                className="h-12 w-12 text-2 border border-border bg-card"
               >
                 +
-              </button>
+              </IconBtn>
             </div>
           </Field>
 

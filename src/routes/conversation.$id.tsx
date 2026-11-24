@@ -13,7 +13,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Screen, Sheet } from "@/components/ml/ui";
+import { Screen, Sheet, Btn, IconBtn } from "@/components/ml/ui";
 import { DrawerList, DrawerOptionRow } from "@/components/ml/drawer-list";
 import { useViewer } from "@/components/ml/viewer";
 import { listMyServices } from "@/lib/services.functions";
@@ -320,26 +320,27 @@ function Conversation() {
           {q.isError ? (
             <div role="alert" className="py-6 text-sm text-muted-foreground">
               This conversation couldn't load. Check your connection and try again.
-              <button
+              <Btn
                 type="button"
+                variant="outline"
                 onClick={() => void q.refetch()}
-                className="state-layer mt-3 flex min-h-touch w-full items-center justify-center rounded-lg border border-border bg-card font-semibold text-foreground"
+                className="mt-3 w-full"
               >
                 Retry
-              </button>
+              </Btn>
             </div>
           ) : null}
           {q.isLoading ? <Loading rows={3} /> : null}
           {hasMore ? (
-            <button
+            <Btn
               type="button"
-              disabled={loadingOlder}
+              variant="ghost"
+              loading={loadingOlder}
               onClick={() => void loadOlder()}
-              className="state-layer min-h-touch w-full py-3 text-center text-1 font-semibold text-foreground disabled:text-muted-foreground"
-              aria-live="polite"
+              className="w-full py-3 text-center text-1 font-semibold"
             >
-              {loadingOlder ? "Loading earlier messages…" : "Load earlier messages"}
-            </button>
+              Load earlier messages
+            </Btn>
           ) : null}
 
           {q.data?.service ? (
@@ -458,14 +459,14 @@ function Conversation() {
             submit();
           }}
         >
-          <button
-            type="button"
-            aria-label="Share your profile, a service or a work"
+          <IconBtn
+            label="Share your profile, a service or a work"
             onClick={() => setSharing(true)}
-            className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-foreground transition-transform duration-200 ease-standard active:scale-97"
+            variant="plain"
+            className="h-12 w-12 shrink-0 text-foreground"
           >
             <Plus size={iconSize.md} aria-hidden />
-          </button>
+          </IconBtn>
           <div className="flex min-h-12 min-w-0 flex-1 items-center rounded-full border border-input bg-card px-5 transition-shadow duration-200 focus-within:ring-2 focus-within:ring-ring">
             <label htmlFor="message" className="sr-only">
               Message
