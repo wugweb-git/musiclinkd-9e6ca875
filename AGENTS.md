@@ -37,7 +37,7 @@ Component, route and database rules live in `src/components/`, `src/routes/` and
 - Option lists come from `taxonomy_options`; read with `labelFor`, compare cities with `sameCity`.
 
 ## Checks
-Default `bunx tsc --noEmit`. Before a push run CI: tsc, `bun run lint`, `bun run test-storybook`,
-`bun run check-token-drift`, `bun run build`. Screenshots and `CHANGELOG.md` only when asked. No
+Default `bunx tsc --noEmit`. Before a push run CI: tsc, `bun run lint`, `bun run check-token-drift`,
+`bun run build`. Storybook is not a gate (owner, 4 Oct; dropped from CI 10 Oct). Screenshots and `CHANGELOG.md` only when asked. No
 `roadmap.md`; open work goes in the reply. Don't commit dated audit reports or one-off prompts.
 Say plainly what was not run, what couldn't be read, and where sources disagree.

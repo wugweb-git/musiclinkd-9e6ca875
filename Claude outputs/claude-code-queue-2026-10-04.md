@@ -1,5 +1,7 @@
 # Claude Code queue — 4 Oct 2026
 
+> **Closed (24 Nov 2026).** Every item shipped to main (merge 0d82ad7, 4 Oct) and its migrations are live, including 20261004190000 (collaboration types, live by 10 Oct). Kept for the decisions it records; open work is in Notion: [Status & Pending (24 Nov)](https://app.notion.com/p/422bb710b9ab8193a069c13c2334c37c).
+
 Compiled by Cowork Claude. Checked against `main` at 27665f4 (Mac clone) and the live database.
 
 ## Ground rule for this whole queue (owner, 4 Oct)

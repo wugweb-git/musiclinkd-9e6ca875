@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — site pages from WordPress; button and hook clean-up (22–24 Nov)
+
+Committed on main, **not yet published** (live still serves theme colour #ECECF1 on 24 Nov).
+
+- Help guides and site pages (Terms, Privacy, Cookies, Contact) are read first from WordPress at
+  `musiclinkd.com/wp-json/wp/v2/pages`, then from `cms_pages` if WordPress has no page
+  (`src/lib/help.functions.ts`). The WordPress Privacy page (modified 21 Nov) does not yet carry the
+  sharing, retention and contact sections added to `cms_pages` on 4 Oct (20261004230000).
+- `/identity/q/$code` resolves QR codes from the database instead of a fixed list.
+- Theme colour and the web manifest use the warm ground #F3F1EC.
+- Raw `<button>`s moved to `Btn` / `IconBtn` in two batches; hooks and helpers moved out of
+  component files so fast refresh works (`use-bookable.ts`, `use-work-likes.ts`, `public-profile.ts`,
+  `qr-download.ts`, `listing-draft.ts`); input text recycled to `text-2`; token drift cleared.
+- `rental_booking_counts()` callable again by visitors (20261122180000; revoked by mistake on
+  22 Sep).
+- Storybook suites were added back (168 stories) although CI dropped the Storybook gate on 10 Oct.
+
 ### Changed — other sessions, 22–24 Nov (written up 24 Nov)
 
 - Help guides and site pages can come from WordPress: `lib/help.functions.ts` reads its REST API.
