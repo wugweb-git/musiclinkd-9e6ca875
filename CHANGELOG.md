@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — other sessions, 22–24 Nov (written up 24 Nov)
+
+- Help guides and site pages can come from WordPress: `lib/help.functions.ts` reads its REST API.
+- QR codes resolve live: `/identity/q/$code` asks the database (`resolveDestination` in
+  `lib/qr.functions.ts`) instead of the static placeholder states.
+- The installed app's theme colour (`manifest.webmanifest`, `__root.tsx`) is the warm ground #F3F1EC.
+- Raw buttons on saved, booking, opportunities, reviews, notifications, marketplace, services and
+  chat screens use the shared `Btn` / `IconBtn`.
+- Form inputs use `text-2` in place of arbitrary sizes; token drift is zero.
+- Server functions moved to the current validator API; hooks and helpers split out to
+  `hooks/use-bookable.ts`, `hooks/use-work-likes.ts`, `lib/public-profile.ts`,
+  `lib/qr-download.ts` and `lib/listing-draft.ts`, which clears every fast-refresh warning.
+- New `top-safe` utility in `styles.css` (status-bar inset plus 20px).
+- Migration `20261122180000_fix_rental_booking_counts_rpc.sql` re-grants `rental_booking_counts()`
+  to visitors; it only returns counts per listing. Not confirmed applied to the live database.
+- Story files were added (booking, collab, market, qr). Storybook is retired (4 Oct), so CI does
+  not run them.
+
 ### Changed — no greyed-out Continue on Post an opportunity and Add a service (15 Oct)
 
 - Continue and Publish stay pressable; pressed with something missing they show "Add the required
