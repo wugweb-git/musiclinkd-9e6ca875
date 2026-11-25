@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -82,17 +82,17 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "studio_equipment_studio_id_fkey"
-            columns: ["bookable_id"]
-            isOneToOne: false
-            referencedRelation: "bookables"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "bookable_equipment_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_equipment_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
         ]
@@ -130,17 +130,17 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "studio_photos_studio_id_fkey"
-            columns: ["bookable_id"]
-            isOneToOne: false
-            referencedRelation: "bookables"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "bookable_photos_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_photos_studio_id_fkey"
+            columns: ["bookable_id"]
+            isOneToOne: false
+            referencedRelation: "bookables"
             referencedColumns: ["id"]
           },
         ]
@@ -3599,6 +3599,13 @@ export type Database = {
       is_talent: { Args: { p_profile_id: string }; Returns: boolean }
       join_collab_by_link: { Args: { p_token: string }; Returns: Json }
       listing_is_mine: { Args: { p_listing_id: string }; Returns: boolean }
+      my_portfolio_play_counts: {
+        Args: { p_days?: number }
+        Returns: {
+          item_id: string
+          plays: number
+        }[]
+      }
       notify: {
         Args: {
           p_actor: string
