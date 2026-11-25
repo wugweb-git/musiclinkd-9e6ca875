@@ -330,6 +330,14 @@ export const transferCollab = createServerFn({ method: "POST" })
   .validator((d) => z.object({ id: z.string().uuid(), profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const client = db(context.supabase);
+    if (data.profileId === context.userId) {
+      throw new Error("Choose another member to transfer ownership.");
+    }
+    const { data: isOwner, error: ownerError } = await client.rpc("collab_is_owner", {
+      p_collab_id: data.id,
+    });
+    if (ownerError) throw new Error(ownerError.message);
+    if (!isOwner) throw new Error("Only the owner can transfer this collaboration.");
     // Demote first: one owner per collab is enforced by an index.
     const { error: demote } = await client
       .from("collab_members")
