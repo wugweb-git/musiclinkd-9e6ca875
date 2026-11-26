@@ -50,8 +50,55 @@ const CALENDAR_FEED = /^\/cal\/([A-Za-z0-9_-]{20,64})\.ics$/;
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const url = new URL(request.url);
+    const pathname = url.pathname;
+
+    if (request.method === "GET") {
+      if (pathname === "/sitemap.xml") {
+        try {
+          const { generateSitemapXml } = await import("./lib/seo-feed.server");
+          return new Response(generateSitemapXml(), {
+            headers: {
+              "content-type": "text/xml; charset=utf-8",
+              "cache-control": "public, max-age=3600",
+            },
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      if (pathname === "/robots.txt") {
+        try {
+          const { generateRobotsTxt } = await import("./lib/seo-feed.server");
+          return new Response(generateRobotsTxt(), {
+            headers: {
+              "content-type": "text/plain; charset=utf-8",
+              "cache-control": "public, max-age=3600",
+            },
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      if (pathname === "/llms.txt") {
+        try {
+          const { generateLlmsTxt } = await import("./lib/seo-feed.server");
+          return new Response(generateLlmsTxt(), {
+            headers: {
+              "content-type": "text/plain; charset=utf-8",
+              "cache-control": "public, max-age=3600",
+            },
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+
     const feed =
-      request.method === "GET" ? CALENDAR_FEED.exec(new URL(request.url).pathname) : null;
+      request.method === "GET" ? CALENDAR_FEED.exec(pathname) : null;
     if (feed) {
       try {
         const { calendarFeed } = await import("./lib/calendar-feed.server");

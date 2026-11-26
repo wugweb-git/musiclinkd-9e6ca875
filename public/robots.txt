@@ -13,5 +13,8 @@ Allow: /
 User-agent: *
 Allow: /
 
+# Dual Ecosystem Sitemaps
 Sitemap: https://app.musiclinkd.com/sitemap.xml
 Sitemap: https://musiclinkd.com/sitemap_index.xml
+Sitemap: https://musiclinkd.com/ecosystem-sitemap.xml
+Sitemap: https://musiclinkd.com/app-sitemap.xml
