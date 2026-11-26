@@ -88,6 +88,35 @@ function ErrorComponent({ error, reset }: { error: unknown; reset: () => void })
 
 const IMG_FALLBACK = `document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")t.setAttribute("data-broken","")},true);`;
 
+const JSON_LD_ORG = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "MusicOrganization",
+  "@id": "https://app.musiclinkd.com/#organization",
+  name: "MusicLinkd",
+  legalName: "MusicLinkd Technologies",
+  url: "https://app.musiclinkd.com",
+  logo: "https://musiclinkd.com/assets/img/brand/logo.svg",
+  email: "contact@musiclinkd.com",
+  description:
+    "India’s professional music network connecting verified talent, session musicians, recording studios, sound engineers, producers, and venues with 0% platform fees.",
+  foundingLocation: {
+    "@type": "Place",
+    name: "India",
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "IN",
+    },
+  },
+  sameAs: [
+    "https://musiclinkd.com/",
+    "https://www.instagram.com/musiclinkd/",
+    "https://open.spotify.com/user/musiclinkd",
+    "https://www.linkedin.com/company/musiclinkd",
+    "https://www.youtube.com/@musiclinkd",
+    "https://twitter.com/musiclinkd",
+  ],
+});
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
@@ -101,23 +130,35 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content",
       },
-      { title: "MusicLinkd — Discover Music Talent in India" },
+      { title: "MusicLinkd — India’s Professional Music Network · Talent, Studios & Gigs" },
       {
         name: "description",
         content:
-          "India's professional network for the music industry. Discover singers, bands, studios, labels and venues.",
+          "India's premier professional ecosystem for music talent, recording studios, session musicians, producers, and venues. 0% platform fee, verified identity pass, and escrow protection.",
       },
-      { name: "author", content: "MusicLinkd" },
+      {
+        name: "keywords",
+        content:
+          "music talent network India, hire session musicians India, recording studios Mumbai, music producers Bangalore, artist booking India, music collaboration platform, audio stems player",
+      },
+      { name: "author", content: "MusicLinkd Technologies" },
       { name: "theme-color", content: "#F3F1EC" },
-      { property: "og:title", content: "MusicLinkd — Discover Music Talent in India" },
+      { property: "og:site_name", content: "MusicLinkd" },
+      { property: "og:title", content: "MusicLinkd — India’s Professional Music Network" },
       {
         property: "og:description",
-        content: "Discover singers, bands, studios, labels and venues across India.",
+        content:
+          "Discover singers, bands, studios, labels, and venues across India with 0% platform fee.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://musiclinkd.com/assets/img/brand/og-card.png" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@musiclinkd" },
+      { name: "twitter:creator", content: "@musiclinkd" },
     ],
     links: [
+      { rel: "canonical", href: "https://app.musiclinkd.com" },
+      { rel: "alternate", type: "text/plain", href: "/llms.txt", title: "AI Context Discovery" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -151,6 +192,7 @@ function RootShell({ children }: { children: ReactNode }) {
             is hidden, so the tile behind it (grey placeholder or the ink no-cover mark) shows
             instead of a broken-image icon. Inline so it catches failures before hydration. */}
         <script dangerouslySetInnerHTML={{ __html: IMG_FALLBACK }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON_LD_ORG }} />
       </head>
       <body>
         {children}

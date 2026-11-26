@@ -12,3 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://app.musiclinkd.com/sitemap.xml
+Sitemap: https://musiclinkd.com/sitemap_index.xml

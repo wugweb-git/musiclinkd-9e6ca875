@@ -1,0 +1,27 @@
+# MusicLinkd App (app.musiclinkd.com)
+
+> India's professional music industry application connecting verified talent, session musicians, recording studios, sound engineers, and venues with 0% platform fees.
+
+## Core Modules & Features
+- Talent & Studio Directory: https://app.musiclinkd.com/discover
+- Lossless Multi-track Stems Player: Integrated WebAudio waveform player supporting multi-track stem auditioning.
+- Dynamic QR Identity Pass: Instant profile and booking verification at https://app.musiclinkd.com/identity/q/:username
+- Studio Booking Desk & Room Rental: Direct room, engineer, and gear reservations across 22+ verified recording studios.
+- Industry Gigs & Opportunities: Open casting, vocal gigs, and production contracts at https://app.musiclinkd.com/opportunities
+- Help Centre & Guides: https://app.musiclinkd.com/help
+
+## Ecosystem Personas
+- Talent Users: Singers, playback vocalists, session guitarists, keyboardists, drummers, mixing/mastering engineers, music directors, lyricists.
+- Business Users: Commercial recording studios, jam pads, indie record labels, live music venues, artist management agencies.
+
+## Guarantees & Terms
+- Commission: 0% Platform Fee on peer-to-peer artist transactions.
+- Copyright: 100% Creator Rights Retention ("Your work stays yours").
+- Reviews: Double-blind verified feedback preventing client or artist retaliation.
+- Payment Protection: Direct UPI/NEFT peer-to-peer agreements with milestone deliverables.
+
+## Sitemaps & Feeds
+- Web App Sitemap: https://app.musiclinkd.com/sitemap.xml
+- Website Sitemap: https://musiclinkd.com/sitemap_index.xml
+- Marketing & CMS: https://musiclinkd.com/
+- Contact: contact@musiclinkd.com

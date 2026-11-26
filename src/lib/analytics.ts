@@ -81,7 +81,12 @@ export async function startAnalytics(): Promise<void> {
   gtag("js", new Date());
   // send_page_view off: the router reports paths itself, so a client-side route change counts
   // once rather than the first screen counting twice and the rest not at all.
-  gtag("config", measurementId, { send_page_view: false, anonymize_ip: true });
+  // linker: preserves sessions and cross-domain attribution between marketing site and app.
+  gtag("config", measurementId, {
+    send_page_view: false,
+    anonymize_ip: true,
+    linker: { domains: ["musiclinkd.com", "app.musiclinkd.com"] },
+  });
 }
 
 /** Stop reporting and drop Google's cookies for this site. */
@@ -120,4 +125,11 @@ export function trackPageview(pathname: string) {
     page_path: safePath(pathname),
     page_location: `${window.location.origin}${safePath(pathname)}`,
   });
+}
+
+/** Emit a custom GA4 / dataLayer event. Safe when analytics is off or unconsented. */
+export function trackEvent(eventName: string, params?: Record<string, unknown>) {
+  if (!started || !window.gtag || !measurementId) return;
+  window.gtag("event", eventName, params ?? {});
+  window.dataLayer?.push({ event: eventName, ...(params ?? {}) });
 }
