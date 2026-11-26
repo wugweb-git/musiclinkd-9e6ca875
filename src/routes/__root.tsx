@@ -158,7 +158,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "canonical", href: "https://app.musiclinkd.com" },
-      { rel: "alternate", type: "text/plain", href: "/llms.txt", title: "AI Context Discovery" },
+      {
+        rel: "alternate",
+        type: "text/plain",
+        href: "https://musiclinkd.com/llms.txt",
+        title: "AI Context Discovery",
+      },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
