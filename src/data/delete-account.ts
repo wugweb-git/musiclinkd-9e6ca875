@@ -30,12 +30,13 @@ export const deleteAccountPage: SitePage = {
     {
       type: "list",
       items: [
-        "Your profile, portfolio and services",
+        "Your profile, portfolio, services, and business studio pages",
+        "Bookable rooms, studio equipment catalogs and amenities (for business accounts)",
         "Messages you sent, your posts, follows and connections",
         "Your Market listings and saved items",
         "Your notifications and the devices registered for them",
         "Your verification requests",
-        "Every file you uploaded: profile photo, cover, gallery and listing photos, and verification documents",
+        "Every file you uploaded: profile photo, cover, gallery, studio media, and verification documents",
       ],
     },
     { type: "para", text: "Deleting your account is immediate and can't be undone." },
@@ -57,6 +58,7 @@ export const deleteAccountPage: SitePage = {
       type: "list",
       items: [
         "A piece of work: open it in Portfolio and delete it.",
+        "Studio equipment or amenities: Business Hub / Services, remove the item.",
         "Gallery photos: on your profile's Portfolio tab, remove the photo.",
         "Profile photo or cover: Edit profile.",
         "A service: Services, open the service, Manage, Delete.",

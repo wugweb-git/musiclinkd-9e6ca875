@@ -18,10 +18,12 @@ import { Route as DeleteAccountRouteImport } from './routes/delete-account'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
@@ -196,6 +198,11 @@ const MessagesRoute = MessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -214,6 +221,11 @@ const SignupRoute = SignupRouteImport.update({
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -877,10 +889,12 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/messages': typeof MessagesRoute
+  '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
@@ -1020,10 +1034,12 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/messages': typeof MessagesRoute
+  '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
@@ -1163,10 +1179,12 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/inbox': typeof InboxRoute
   '/messages': typeof MessagesRoute
+  '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
@@ -1308,10 +1326,12 @@ export interface FileRouteTypes {
     | '/home'
     | '/inbox'
     | '/messages'
+    | '/privacy'
     | '/reset-password'
     | '/saved'
     | '/signup'
     | '/studio'
+    | '/terms'
     | '/welcome'
     | '/auth/forgot'
     | '/auth/otp'
@@ -1451,10 +1471,12 @@ export interface FileRouteTypes {
     | '/home'
     | '/inbox'
     | '/messages'
+    | '/privacy'
     | '/reset-password'
     | '/saved'
     | '/signup'
     | '/studio'
+    | '/terms'
     | '/welcome'
     | '/auth/forgot'
     | '/auth/otp'
@@ -1593,10 +1615,12 @@ export interface FileRouteTypes {
     | '/home'
     | '/inbox'
     | '/messages'
+    | '/privacy'
     | '/reset-password'
     | '/saved'
     | '/signup'
     | '/studio'
+    | '/terms'
     | '/welcome'
     | '/auth/forgot'
     | '/auth/otp'
@@ -1737,10 +1761,12 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   InboxRoute: typeof InboxRoute
   MessagesRoute: typeof MessagesRoute
+  PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
   SignupRoute: typeof SignupRoute
   StudioRoute: typeof StudioRoute
+  TermsRoute: typeof TermsRoute
   WelcomeRoute: typeof WelcomeRoute
   AuthForgotRoute: typeof AuthForgotRoute
   AuthOtpRoute: typeof AuthOtpRoute
@@ -1930,6 +1956,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -1956,6 +1989,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/welcome': {
@@ -2889,10 +2929,12 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   InboxRoute: InboxRoute,
   MessagesRoute: MessagesRoute,
+  PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
   SignupRoute: SignupRoute,
   StudioRoute: StudioRoute,
+  TermsRoute: TermsRoute,
   WelcomeRoute: WelcomeRoute,
   AuthForgotRoute: AuthForgotRoute,
   AuthOtpRoute: AuthOtpRoute,

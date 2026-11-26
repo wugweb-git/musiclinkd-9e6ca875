@@ -143,6 +143,13 @@ export const settingsGroups: SettingsGroup[] = [
         to: "/delete-account",
         icon: "file-text",
       },
+      {
+        key: "delete-account",
+        label: "Delete account",
+        hint: "Permanently delete account and all data",
+        to: "/settings/delete-account",
+        icon: "trash",
+      },
     ],
   },
   {

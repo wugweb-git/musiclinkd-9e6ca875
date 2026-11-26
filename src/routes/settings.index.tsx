@@ -21,6 +21,7 @@ import {
   Shield,
   User,
   Music,
+  Trash2,
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
@@ -99,6 +100,7 @@ const rowIcons: Record<string, LucideIcon> = {
   scroll: ScrollText,
   "file-text": FileText,
   "log-out": LogOut,
+  trash: Trash2,
 };
 
 export const Route = createFileRoute("/settings/")({

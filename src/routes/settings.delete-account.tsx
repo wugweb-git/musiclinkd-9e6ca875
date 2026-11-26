@@ -7,6 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { deactivateMyAccount, deleteMyAccount } from "@/lib/account.functions";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 
 export const Route = createFileRoute("/settings/delete-account")({
   head: () => ({
@@ -26,19 +27,29 @@ export const Route = createFileRoute("/settings/delete-account")({
   component: DeleteAccount,
 });
 
-const removed = [
-  "Your public profile and username",
-  "Portfolio tracks, credits and media",
-  "Services, availability and listings",
-  "Messages and connection history",
+const removedTalent = [
+  "Your public artist profile, headline and @username",
+  "Portfolio tracks, audio recordings, stems and credits",
+  "Creative services, packages and booking availability",
+  "Direct messages and connection history",
+  "Uploaded avatar, cover photo and verification documents",
+];
+
+const removedBusiness = [
+  "Your business page, studio/venue listing and profile",
+  "Bookable rooms, studio equipment inventory and amenities",
+  "Business media, space photos and service packages",
+  "Client booking inquiries, message history and reviews",
+  "Uploaded business media and company verification documents",
 ];
 
 const kept = [
-  "Records of completed bookings, for dispute and tax reasons",
-  "Reviews you left, shown as “Former member”",
+  "Records of completed bookings, for dispute resolution, accounting and tax requirements",
+  "Reviews left by or for you, anonymized as “Former member”",
 ];
 
 function DeleteAccount() {
+  const { allowed: isBusiness } = useRequireBusiness();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [confirm, setConfirm] = useState("");
@@ -103,9 +114,11 @@ function DeleteAccount() {
         </AuthNotice>
 
         <section className="rounded-lg bg-subtle p-4">
-          <h2 className="text-sm font-semibold">Deleted permanently</h2>
+          <h2 className="text-sm font-semibold">
+            {isBusiness ? "Business & studio data deleted permanently" : "Deleted permanently"}
+          </h2>
           <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
-            {removed.map((r) => (
+            {(isBusiness ? removedBusiness : removedTalent).map((r) => (
               <li key={r}>• {r}</li>
             ))}
           </ul>
