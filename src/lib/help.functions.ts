@@ -486,9 +486,15 @@ export const sitePageHead =
               { property: "og:description", content: page.seoDescription },
             ]
           : []),
+        {
+          name: "keywords",
+          content: `${page?.title ?? fallbackTitle}, musiclinkd creator guides, music industry India, musician resources, studio policies`,
+        },
+        { name: "focus-keyphrase", content: `${page?.title ?? fallbackTitle}`.toLowerCase() },
+        { name: "author", content: "MusicLinkd Technologies" },
         { property: "og:title", content: title },
         { property: "og:type", content: "article" },
-        { name: "twitter:card", content: "summary" },
+        { name: "twitter:card", content: "summary_large_image" },
         ...(page ? [] : [{ name: "robots", content: "noindex" }]),
       ],
     };

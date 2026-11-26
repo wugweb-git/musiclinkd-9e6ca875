@@ -21,16 +21,22 @@ export const Route = createFileRoute("/opportunities/")({
   loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
-      { title: "Opportunities for music professionals | MusicLinkd" },
+      { title: "Music Gigs, Casting & Studio Opportunities | MusicLinkd" },
       {
         name: "description",
         content:
-          "Find singers, producers, engineers, studios and gigs — structured music-industry requests you can apply to with your portfolio.",
+          "Find vocal casting calls, session guitarist gigs, studio mixing contracts, and live performance bookings across India. Apply directly with your stems portfolio.",
       },
-      { property: "og:title", content: "Opportunities for music professionals | MusicLinkd" },
+      {
+        name: "keywords",
+        content:
+          "music gigs India, vocalist auditions Mumbai, music producer jobs Bangalore, audio engineer freelance contracts, session musician opportunities",
+      },
+      { name: "focus-keyphrase", content: "music gigs and audio contracts India" },
+      { property: "og:title", content: "Music Gigs & Production Opportunities | MusicLinkd" },
       {
         property: "og:description",
-        content: "Discoverable demand across the Indian music industry.",
+        content: "Discoverable demand and casting calls across the Indian music industry.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

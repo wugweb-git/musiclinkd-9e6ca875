@@ -40,16 +40,22 @@ import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 export const Route = createFileRoute("/discover/")({
   head: () => ({
     meta: [
-      { title: "Discover Music Professionals | MusicLinkd" },
+      { title: "Discover Music Professionals, Studios & Producers | MusicLinkd" },
       {
         name: "description",
         content:
-          "Search talent, businesses, studios and opportunities across India's music industry.",
+          "Search verified session musicians, vocalists, audio engineers, recording studios, and live opportunities across India.",
       },
+      {
+        name: "keywords",
+        content:
+          "discover musicians India, hire music producers, find recording studios Mumbai, session guitarists Bangalore, vocalist booking India",
+      },
+      { name: "focus-keyphrase", content: "discover music professionals India" },
       { property: "og:title", content: "Discover Music Professionals | MusicLinkd" },
       {
         property: "og:description",
-        content: "Find the people, places and work for your next music project.",
+        content: "Find the people, places and work for your next music project in India.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

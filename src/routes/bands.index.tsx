@@ -20,11 +20,18 @@ export const Route = createFileRoute("/bands/")({
   loader: () => loadBands(),
   head: () => ({
     meta: [
-      { title: "Bands & Groups | MusicLinkd" },
+      { title: "Bands, Ensembles & Music Collectives | MusicLinkd" },
       {
         name: "description",
-        content: "Discover working bands, manage your own group, and find members on MusicLinkd.",
+        content:
+          "Discover working bands, find musicians to join your group, and manage gigs and live performance services on MusicLinkd.",
       },
+      {
+        name: "keywords",
+        content:
+          "find musicians for band India, join a band Mumbai, live wedding band booking, indie music collective Bangalore, hire live bands",
+      },
+      { name: "focus-keyphrase", content: "bands and music collectives India" },
       { property: "og:title", content: "Bands & Groups | MusicLinkd" },
       { property: "og:description", content: "Discover working bands and manage your own group." },
       { property: "og:type", content: "website" },

@@ -73,10 +73,21 @@ export function publicProfileHead(username: string, loaderData: PublicProfileDat
     meta: [
       { title },
       { name: "description", content: description },
+      {
+        name: "keywords",
+        content: `${profile.name}, ${profile.primaryRole}, hire ${profile.name}, music professional India, MusicLinkd profile`,
+      },
+      {
+        name: "focus-keyphrase",
+        content: `${profile.name} ${profile.primaryRole}`.trim().toLowerCase(),
+      },
       { property: "og:title", content: title },
       { property: "og:description", content: profile.headline || description },
       { property: "og:type", content: "profile" },
+      { property: "og:url", content: `https://app.musiclinkd.com/@${username}` },
+      { property: "profile:username", content: username },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: `https://app.musiclinkd.com/@${username}` }],
   };
 }

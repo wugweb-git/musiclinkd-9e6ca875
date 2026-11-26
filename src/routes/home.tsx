@@ -51,11 +51,18 @@ import { useTaxonomy } from "@/lib/taxonomy";
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
-      { title: "Home | MusicLinkd" },
+      { title: "Music Creator Dashboard & Feed | MusicLinkd" },
       {
         name: "description",
-        content: "Your work, requests, opportunities and music network in one place.",
+        content:
+          "Your work, booking requests, casting opportunities, and professional music network across India in one place.",
       },
+      {
+        name: "keywords",
+        content:
+          "music creator dashboard, session bookings, artist inbox, music gigs feed, recording studio requests",
+      },
+      { name: "focus-keyphrase", content: "music creator dashboard India" },
       { property: "og:title", content: "Home | MusicLinkd" },
       { property: "og:description", content: "What needs your attention across MusicLinkd." },
       { property: "og:type", content: "website" },

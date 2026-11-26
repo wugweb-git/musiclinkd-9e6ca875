@@ -9,8 +9,14 @@ import { deleteAccountPage } from "@/data/delete-account";
 export const Route = createFileRoute("/delete-account")({
   head: () => ({
     meta: [
-      { title: "Delete your account — MusicLinkd" },
+      { title: "Delete Your Account & Data — MusicLinkd" },
       { name: "description", content: deleteAccountPage.seoDescription },
+      {
+        name: "keywords",
+        content:
+          "musiclinkd delete account, musiclinkd data deletion, right to erasure, creator privacy rights",
+      },
+      { name: "focus-keyphrase", content: "delete musiclinkd account" },
       { property: "og:title", content: "Delete your account — MusicLinkd" },
       { property: "og:type", content: "website" },
     ],

@@ -139,9 +139,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "keywords",
         content:
-          "music talent network India, hire session musicians India, recording studios Mumbai, music producers Bangalore, artist booking India, music collaboration platform, audio stems player",
+          "music talent network India, hire session musicians India, recording studios Mumbai, music producers Bangalore, artist booking India, music collaboration platform, audio stems player, gig opportunities",
       },
+      { name: "focus-keyphrase", content: "music talent network India" },
       { name: "author", content: "MusicLinkd Technologies" },
+      { name: "geo.region", content: "IN" },
+      { name: "geo.placename", content: "India" },
       { name: "theme-color", content: "#F3F1EC" },
       { property: "og:site_name", content: "MusicLinkd" },
       { property: "og:title", content: "MusicLinkd — India’s Professional Music Network" },

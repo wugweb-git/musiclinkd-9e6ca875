@@ -148,14 +148,22 @@ export const Route = createFileRoute("/search/")({
   },
   head: () => ({
     meta: [
-      { title: "Search Results | MusicLinkd" },
+      { title: "Search Music Talent, Studios & Gear | MusicLinkd" },
       {
         name: "description",
         content:
-          "Find people, businesses, studios, bands, opportunities, gear, services and work in India's music industry.",
+          "Search verified singers, session musicians, recording studios, audio equipment, bands, and opportunities across India.",
       },
+      {
+        name: "keywords",
+        content:
+          "search musicians India, find recording studios, hire session artists, music gear search, audio engineer directory",
+      },
+      { name: "focus-keyphrase", content: "search music talent and studios India" },
       { property: "og:title", content: "Search Results | MusicLinkd" },
       { property: "og:description", content: "Search everything on MusicLinkd." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SearchResults,

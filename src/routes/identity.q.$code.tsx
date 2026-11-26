@@ -17,13 +17,19 @@ export const Route = createFileRoute("/identity/q/$code")({
   },
   head: () => ({
     meta: [
-      { title: "Scanned MusicLinkd code" },
+      { title: "Digital ID & Verified MusicPass | MusicLinkd" },
       {
         name: "description",
         content:
-          "Preview where a MusicLinkd QR leads before you open it — profile, business, service, listing or portfolio work.",
+          "Instant verified destination for MusicLinkd QR and NFC passes — connecting directly to verified music profiles, studio desks, and services.",
       },
-      { property: "og:title", content: "Scanned MusicLinkd code" },
+      {
+        name: "keywords",
+        content:
+          "digital music pass, artist QR identity, musician business card, music verification code",
+      },
+      { name: "focus-keyphrase", content: "digital music identity pass" },
+      { property: "og:title", content: "Scanned MusicLinkd Code — Verified Digital Pass" },
       {
         property: "og:description",
         content: "Every MusicLinkd code resolves to a public, canonical destination.",

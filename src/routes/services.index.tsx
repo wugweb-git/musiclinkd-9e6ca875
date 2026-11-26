@@ -24,13 +24,19 @@ import { iconSize } from "@/lib/tokens";
 export const Route = createFileRoute("/services/")({
   head: () => ({
     meta: [
-      { title: "Services | MusicLinkd" },
+      { title: "Music Services & Availability | MusicLinkd" },
       {
         name: "description",
         content:
-          "Publish what you offer, set pricing and packages, and control when you are bookable.",
+          "Publish your music services, set transparent pricing in INR, configure packages, and control your booking calendar with zero commission.",
       },
-      { property: "og:title", content: "Services | MusicLinkd" },
+      {
+        name: "keywords",
+        content:
+          "music services pricing, hire music producer India, audio mixing services, vocal recording session rates, session musician packages",
+      },
+      { name: "focus-keyphrase", content: "music production services India" },
+      { property: "og:title", content: "Music Services & Availability | MusicLinkd" },
       { property: "og:description", content: "Services, pricing and availability in one place." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

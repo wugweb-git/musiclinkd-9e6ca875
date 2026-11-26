@@ -36,12 +36,18 @@ export const Route = createFileRoute("/portfolio/")({
   }),
   head: () => ({
     meta: [
-      { title: "Portfolio — MusicLinkd" },
+      { title: "Music Portfolio & Lossless Audio Stems | MusicLinkd" },
       {
         name: "description",
         content:
-          "Publish the tracks, projects, performances and credits that prove what you've done in music.",
+          "Showcase your music discography, upload multi-track stems, and prove your engineering or songwriting credits on MusicLinkd.",
       },
+      {
+        name: "keywords",
+        content:
+          "musician portfolio, audio stem player, music producer credits, session vocalist portfolio, audio engineering showcase",
+      },
+      { name: "focus-keyphrase", content: "music portfolio and audio stems" },
       { property: "og:title", content: "Portfolio — MusicLinkd" },
       {
         property: "og:description",

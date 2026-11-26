@@ -49,13 +49,19 @@ import {
 export const Route = createFileRoute("/marketplace/")({
   head: () => ({
     meta: [
-      { title: "Market — Gear, Rentals & Studios | MusicLinkd" },
+      { title: "Market — Gear, Instrument Rentals & Studios | MusicLinkd" },
       {
         name: "description",
         content:
-          "Buy, sell and rent instruments, audio gear, studio time and music services from verified professionals across India.",
+          "Buy, sell and rent instruments, audio gear, studio rooms and music services from verified professionals across India with zero commission.",
       },
-      { property: "og:title", content: "MusicLinkd Market" },
+      {
+        name: "keywords",
+        content:
+          "music gear marketplace India, rent musical instruments, studio gear rental Mumbai, buy used microphones India, music gear classifieds",
+      },
+      { name: "focus-keyphrase", content: "music gear rental marketplace India" },
+      { property: "og:title", content: "MusicLinkd Market — Instruments, Gear & Studio Rentals" },
       {
         property: "og:description",
         content:
