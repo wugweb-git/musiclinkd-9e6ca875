@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.musiclinkd.app",
+      "sha256_cert_fingerprints": [
+        "A7:CA:16:09:07:CD:2E:9D:C1:93:BE:31:3D:49:53:21:33:9E:17:6C:24:A7:93:06:19:25:55:DF:72:D2:70:A5"
+      ]
+    }
+  }
+]
