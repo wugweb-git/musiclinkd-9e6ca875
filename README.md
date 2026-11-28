@@ -1,17 +1,17 @@
-# MusicLinkd
+# MusicLinkd App Engine
 
-India's professional network and operating system for the music industry — discovery, profiles,
-bookings, and messaging for musicians, bands, studios, labels, and venues.
+Customer PWA and native application engine for **MusicLinkd** — India's professional music network and operating system connecting verified talent, session musicians, recording studios, sound engineers, labels, and venues.
 
-- **Stack**: TanStack Start (React), Tailwind CSS, shadcn/ui (Radix), Supabase
-- **Live app**: https://app.musiclinkd.com
-- **Rules for working in this repo**: see [`AGENTS.md`](./AGENTS.md) — the GitHub↔Lovable sync
-  protocol and code conventions. Read it before making changes.
-- **Brand palette**: ink `#0D0D0D` (primary), black/greys/white. Brand pink `#EA4C89` is rare and
-  always a signal — the logo, the active tab underline, press feedback, a selected pill, prices, and
-  the `brand` button inside branded blocks; never a resting border, background or body text.
-  `src/styles.css` is the authority. Radius by role: `sm` 8, `md` 12, `lg` 16, `xl` 20, `2xl` 28,
-  `3xl` hero, `full` pill.
+- **Stack**: React 19, TanStack Start SSR, Nitro / Vite, Tailwind CSS, shadcn/ui (Radix), Supabase PostgreSQL, Capacitor Android native wrapper.
+- **Live Web App**: [https://app.musiclinkd.com](https://app.musiclinkd.com)
+- **Primary Website & CMS Hub**: [https://musiclinkd.com](https://musiclinkd.com) (Hostinger LiteSpeed + WordPress FSE Theme in parent repo `musiclinkd`)
+- **Public Directory & Marketplace**:
+  - Verified Directory: [https://musiclinkd.com/directory/](https://musiclinkd.com/directory/)
+  - Marketplace & Studio Rentals: [https://musiclinkd.com/shop/](https://musiclinkd.com/shop/)
+  - Dokan Studio Storefronts: [https://musiclinkd.com/studio/](https://musiclinkd.com/studio/)
+  - Headless WordPress Bridge: `https://musiclinkd.com/wp-json/musiclinkd/v1/`
+- **Rules for working in this repo**: see [`AGENTS.md`](./AGENTS.md) — the GitHub↔Lovable sync protocol, token parity rules, and code conventions.
+- **Brand palette**: ink `#0D0D0D` (primary), ground `#F3F1EC`, and canonical brand pink `#EA4C89`. Radius scale: `sm` 8, `md` 12, `lg` 16, `xl` 20, `2xl` 28, `3xl` hero, `full` pill. `src/styles.css` is the authority.
 
 This project was built with [Lovable](https://lovable.dev).
 

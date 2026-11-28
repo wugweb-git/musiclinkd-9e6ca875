@@ -97,8 +97,7 @@ export default {
       }
     }
 
-    const feed =
-      request.method === "GET" ? CALENDAR_FEED.exec(pathname) : null;
+    const feed = request.method === "GET" ? CALENDAR_FEED.exec(pathname) : null;
     if (feed) {
       try {
         const { calendarFeed } = await import("./lib/calendar-feed.server");

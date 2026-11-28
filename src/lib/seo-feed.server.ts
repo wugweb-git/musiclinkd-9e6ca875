@@ -1,6 +1,6 @@
 /**
  * SEO & Ecosystem Sitemap Edge Generator
- * 
+ *
  * Maps both properties:
  * 1. Web App: https://app.musiclinkd.com
  * 2. Marketing & CMS: https://musiclinkd.com
@@ -36,10 +36,26 @@ export function generateSitemapXml(): string {
     { loc: "https://musiclinkd.com/terms/", changefreq: "monthly", priority: "0.6" },
     { loc: "https://musiclinkd.com/cookies/", changefreq: "monthly", priority: "0.5" },
     { loc: "https://musiclinkd.com/help/", changefreq: "weekly", priority: "0.8" },
-    { loc: "https://musiclinkd.com/profile-that-gets-booked/", changefreq: "weekly", priority: "0.7" },
-    { loc: "https://musiclinkd.com/pricing-your-first-service/", changefreq: "weekly", priority: "0.7" },
-    { loc: "https://musiclinkd.com/how-verification-works/", changefreq: "weekly", priority: "0.7" },
-    { loc: "https://musiclinkd.com/booking-policies-explained/", changefreq: "weekly", priority: "0.7" },
+    {
+      loc: "https://musiclinkd.com/profile-that-gets-booked/",
+      changefreq: "weekly",
+      priority: "0.7",
+    },
+    {
+      loc: "https://musiclinkd.com/pricing-your-first-service/",
+      changefreq: "weekly",
+      priority: "0.7",
+    },
+    {
+      loc: "https://musiclinkd.com/how-verification-works/",
+      changefreq: "weekly",
+      priority: "0.7",
+    },
+    {
+      loc: "https://musiclinkd.com/booking-policies-explained/",
+      changefreq: "weekly",
+      priority: "0.7",
+    },
     { loc: "https://musiclinkd.com/review-policy/", changefreq: "weekly", priority: "0.7" },
     { loc: "https://musiclinkd.com/community-guidelines/", changefreq: "weekly", priority: "0.7" },
     { loc: "https://musiclinkd.com/whats-new/", changefreq: "weekly", priority: "0.7" },

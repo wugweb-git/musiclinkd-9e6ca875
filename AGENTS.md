@@ -36,6 +36,15 @@ Component, route and database rules live in `src/components/`, `src/routes/` and
 - Never fabricate counts, availability, ratings, payments or bookings. Store timestamps, not relative text.
 - Option lists come from `taxonomy_options`; read with `labelFor`, compare cities with `sameCity`.
 
+## Dual-Repo Architecture & Ecosystem Bridge
+- **Parent Repository (`musiclinkd`):** Primary production host at `musiclinkd.com` (Hostinger LiteSpeed). Houses the WordPress FSE theme, DirectoryWeb listings (`/directory/`), WooCommerce Marketplace & WPS Bookings (`/shop/`, `/product/`), Dokan Multi-Vendor studio storefronts (`/studio/`), and FluentCRM marketing automation.
+- **Child Repository (`musiclinkd-app`):** Lives at `app.musiclinkd.com` on Cloudflare Edge / Nitro runtime. Uses Supabase PostgreSQL as the low-latency operational buffer for authentication, live messaging, stems audio streaming, and realtime event subscriptions.
+- **REST Catalog Bridge Endpoints:**
+  - `GET https://musiclinkd.com/wp-json/musiclinkd/v1/directory` (DirectoryWeb listings: 140 verified creator & studio profiles)
+  - `GET https://musiclinkd.com/wp-json/musiclinkd/v1/catalog` (WooCommerce Marketplace: 288 bookable services & gear rentals)
+  - `GET https://musiclinkd.com/wp-json/musiclinkd/v1/studios` (Dokan Multi-Vendor: 46 studio storefronts)
+- **Zero In-App Checkout Payments:** Peer-to-peer agreement model (0% platform commission, offline UPI/bank settlement). In-app payment gateways remain disabled.
+
 ## Checks
 Default `bunx tsc --noEmit`. Before a push run CI: tsc, `bun run lint`, `bun run check-token-drift`,
 `bun run build`. Storybook is not a gate (owner, 4 Oct; dropped from CI 10 Oct). Screenshots and `CHANGELOG.md` only when asked. No
