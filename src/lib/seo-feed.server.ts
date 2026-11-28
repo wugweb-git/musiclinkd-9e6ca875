@@ -23,6 +23,9 @@ export function generateSitemapXml(): string {
 
     // Marketing & CMS (musiclinkd.com)
     { loc: "https://musiclinkd.com/", changefreq: "daily", priority: "1.0" },
+    { loc: "https://musiclinkd.com/directory/", changefreq: "daily", priority: "0.9" },
+    { loc: "https://musiclinkd.com/shop/", changefreq: "daily", priority: "0.9" },
+    { loc: "https://musiclinkd.com/studio/", changefreq: "daily", priority: "0.8" },
     { loc: "https://musiclinkd.com/features/", changefreq: "weekly", priority: "0.9" },
     { loc: "https://musiclinkd.com/how-it-works/", changefreq: "weekly", priority: "0.9" },
     { loc: "https://musiclinkd.com/faq/", changefreq: "weekly", priority: "0.8" },
@@ -89,7 +92,9 @@ export function generateLlmsTxt(): string {
 > India's professional music industry ecosystem connecting verified talent, session musicians, recording studios, sound engineers, and venues with 0% platform fees.
 
 ## Core Modules & Features
-- Talent & Studio Directory: https://app.musiclinkd.com/discover
+- Talent & Studio Directory: https://app.musiclinkd.com/discover & https://musiclinkd.com/directory/
+- Music Services & Rentals Marketplace: https://app.musiclinkd.com/marketplace & https://musiclinkd.com/shop/
+- Dokan Studio Storefronts: https://musiclinkd.com/studio/
 - Lossless Multi-track Stems Player: Integrated WebAudio waveform player supporting multi-track stem auditioning.
 - Dynamic QR Identity Pass: Instant profile and booking verification at https://app.musiclinkd.com/identity/q/:username
 - Studio Booking Desk & Room Rental: Direct room, engineer, and gear reservations across 22+ verified recording studios.
